@@ -1,0 +1,39 @@
+name: push
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+          cache: "pip"
+      - uses: pre-commit/action@v3.0.0
+  release:
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    needs: [lint]
+    environment: pypi
+    permissions:
+      contents: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+          cache: "pip"
+      - name: Install dependencies for building
+        run: pip install wheel setuptools_scm
+      - name: build package
+        run: python setup.py sdist bdist_wheel
+      - name: create release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            dist/*
+      - name: publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

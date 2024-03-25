@@ -1,0 +1,105 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools",
+  "setuptools-scm",
+]
+
+[project]
+name = "multimolecule"
+description = "Neural Networks for RNA, DNA, and Protein."
+readme = "README.md"
+keywords = [
+  "deep-learning",
+  "DNA",
+  "machine-learning",
+  "Protein",
+  "RNA",
+]
+license = {file = "LICENSE"}
+maintainers = [
+    {name = "Zhiyuan Chen", email = "this@zyc.ai"},
+]
+authors = [
+    {name = "Zhiyuan Chen", email = "this@zyc.ai"},
+]
+requires-python = ">=3.7"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha ",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = [
+  "version",
+]
+[project.urls]
+documentation = "https://multimolecule.danling.org"
+homepage = "https://multimolecule.danling.org"
+repository = "https://github.com/DLS5-Omics/multimolecule"
+
+[tool.setuptools]
+packages = ["multimolecule"]
+
+[tool.setuptools_scm]
+write_to = "multimolecule/_version.py"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+profile = "black"
+
+[tool.flake8]
+max-line-length = 120
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.messages_control]
+disable = """
+  E0012,
+  E0401,
+  R0201,
+  R0801,
+"""
+
+[tool.pylint.reports]
+output-format = "colorized"
+
+[tool.pylint.main]
+fail-under = 9.8
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --cov"
+
+[tool.coverage.run]
+branch = true
+include = ["multimolecule/**"]
+
+[tool.coverage.paths]
+source = ["multimolecule"]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.coverage.json]
+output = "coverage.json"
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+
+[tool.mypy]
+ignore_missing_imports = true
