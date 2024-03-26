@@ -1,3 +1,10 @@
-from . import models
+from transformers import AutoTokenizer
 
-__all__ = ["models"]
+from . import models, tokenizers
+from .models import RnaBertConfig
+from .tokenizers import RnaTokenizer
+
+AutoTokenizer.register(RnaBertConfig, RnaTokenizer)
+
+
+__all__ = ["models", "tokenizers"]

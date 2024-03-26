@@ -1,6 +1,0 @@
-<pad>
-<mask>
-A
-T
-G
-C

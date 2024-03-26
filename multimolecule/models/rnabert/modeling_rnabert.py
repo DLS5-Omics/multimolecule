@@ -273,7 +273,6 @@ class RnaBertPreTrainedModel(PreTrainedModel):
 
 
 class RnaBertModel(RnaBertPreTrainedModel):
-
     def __init__(self, config):
         super().__init__(config)
         self.embeddings = RnaBertEmbeddings(config)
@@ -329,9 +328,8 @@ class RnaBertLMHead(nn.Module):
     def __init__(self, config):
         super().__init__()
 
-        self.predictions = MaskedWordPredictions(config)
-        config.vocab_size = config.ss_size
-        self.predictions_ss = MaskedWordPredictions(config)
+        self.predictions = MaskedWordPredictions(config, config.vocab_size)
+        self.predictions_ss = MaskedWordPredictions(config, config.ss_vocab_size)
 
         self.seq_relationship = nn.Linear(config.hidden_size, 2)
 
@@ -345,13 +343,13 @@ class RnaBertLMHead(nn.Module):
 
 
 class MaskedWordPredictions(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config, vocab_size):
         super().__init__()
 
         self.transform = RnaBertPredictionHeadTransform(config)
 
-        self.decoder = nn.Linear(in_features=config.hidden_size, out_features=config.vocab_size, bias=False)
-        self.bias = nn.Parameter(torch.zeros(config.vocab_size))
+        self.decoder = nn.Linear(in_features=config.hidden_size, out_features=vocab_size, bias=False)
+        self.bias = nn.Parameter(torch.zeros(vocab_size))
 
     def forward(self, hidden_states):
         hidden_states = self.transform(hidden_states)

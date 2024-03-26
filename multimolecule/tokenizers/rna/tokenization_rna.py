@@ -4,49 +4,41 @@ from typing import List, Optional
 from transformers.tokenization_utils import PreTrainedTokenizer
 from transformers.utils import logging
 
+from .config import VOCAB_LIST
+
 logger = logging.get_logger(__name__)
 
-VOCAB_FILES_NAMES = {"vocab_file": "vocab.txt"}
 
-PRETRAINED_VOCAB_FILES_MAP = {
-    "vocab_file": {
-        "ZhiyuanChen/rnabert": "https://huggingface.co/ZhiyuanChen/rnabert/resolve/main/vocab.txt",
-    },
-}
-
-PRETRAINED_POSITIONAL_EMBEDDINGS_SIZES = {
-    "ZhiyuanChen/rnabert": 1024,
-}
-
-
-def load_vocab_file(vocab_file):
-    with open(vocab_file) as f:
-        lines = f.read().splitlines()
-        return [l.strip() for l in lines]  # noqa: E741
-
-
-class RnaBertTokenizer(PreTrainedTokenizer):
+class RnaTokenizer(PreTrainedTokenizer):
     """
     Constructs an RnaBert tokenizer.
     """
 
-    vocab_files_names = VOCAB_FILES_NAMES
-    pretrained_vocab_files_map = PRETRAINED_VOCAB_FILES_MAP
-    max_model_input_sizes = PRETRAINED_POSITIONAL_EMBEDDINGS_SIZES
     model_input_names = ["input_ids", "attention_mask"]
 
     def __init__(
         self,
-        vocab_file,
+        cls_token="<cls>",
         pad_token="<pad>",
+        eos_token="<eos>",
+        sep_token="<eos>",
+        unk_token="<unk>",
         mask_token="<mask>",
+        convert_to_uppercase=True,
+        convert_T_to_U=True,
         **kwargs,
     ):
-        self.all_tokens = load_vocab_file(vocab_file)
+        self.all_tokens = VOCAB_LIST
         self._id_to_token = dict(enumerate(self.all_tokens))
         self._token_to_id = {tok: ind for ind, tok in enumerate(self.all_tokens)}
+        self.convert_to_uppercase = convert_to_uppercase
+        self.convert_T_to_U = convert_T_to_U
         super().__init__(
+            cls_token=cls_token,
             pad_token=pad_token,
+            eos_token=eos_token,
+            sep_token=sep_token,
+            unk_token=unk_token,
             mask_token=mask_token,
             **kwargs,
         )
@@ -54,8 +46,8 @@ class RnaBertTokenizer(PreTrainedTokenizer):
         # TODO, all the tokens are added? But they are also part of the vocab... bit strange.
         # none of them are special, but they all need special splitting.
 
-        self.unique_no_split_tokens = self.all_tokens
-        self._update_trie(self.unique_no_split_tokens)
+        # self.unique_no_split_tokens = self.all_tokens
+        # self._update_trie(self.unique_no_split_tokens)
 
     def _convert_id_to_token(self, index: int) -> str:
         return self._id_to_token.get(index, self.unk_token)
@@ -63,8 +55,12 @@ class RnaBertTokenizer(PreTrainedTokenizer):
     def _convert_token_to_id(self, token: str) -> int:
         return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))
 
-    def _tokenize(self, text, **kwargs):
-        return text.split()
+    def _tokenize(self, text: str, **kwargs):
+        if self.convert_to_uppercase:
+            text = text.upper()
+        if self.convert_T_to_U:
+            text = text.replace("T", "U")
+        return list(text)
 
     def get_vocab(self):
         base_vocab = self._token_to_id.copy()
@@ -122,7 +118,7 @@ class RnaBertTokenizer(PreTrainedTokenizer):
             mask += [0] * len(token_ids_1) + [1]
         return mask
 
-    def save_vocabulary(self, save_directory, filename_prefix):
+    def save_vocabulary(self, save_directory: str, filename_prefix: Optional[str] = None):
         vocab_file = os.path.join(save_directory, (filename_prefix + "-" if filename_prefix else "") + "vocab.txt")
         with open(vocab_file, "w") as f:
             f.write("\n".join(self.all_tokens))

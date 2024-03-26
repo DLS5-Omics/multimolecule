@@ -1,3 +1,3 @@
-from .rnabert import RnaBertConfig, RnaBertModel, RnaBertTokenizer
+from .rnabert import RnaBertConfig, RnaBertModel
 
-__all__ = ["RnaBertConfig", "RnaBertModel", "RnaBertTokenizer"]
+__all__ = ["RnaBertConfig", "RnaBertModel"]

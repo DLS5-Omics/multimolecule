@@ -4,9 +4,6 @@ from transformers.utils import logging
 logger = logging.get_logger(__name__)
 
 
-DEFAULT_VOCAB_LIST = ["<pad>", "<mask>", "A", "T", "G", "C"]
-
-
 class RnaBertConfig(PretrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`RnaBertModel`]. It is used to instantiate a
@@ -64,34 +61,39 @@ class RnaBertConfig(PretrainedConfig):
 
     def __init__(
         self,
-        vocab_size=None,
-        mask_token_id=None,
-        pad_token_id=None,
+        vocab_size=25,
+        ss_vocab_size=8,
         hidden_size=None,
         multiple=None,
         num_hidden_layers=6,
         num_attention_heads=12,
         intermediate_size=40,
+        hidden_act="gelu",
         hidden_dropout_prob=0.0,
         attention_probs_dropout_prob=0.0,
         max_position_embeddings=440,
         initializer_range=0.02,
         layer_norm_eps=1e-12,
-        vocab_list=None,
+        pad_token_id=0,
+        position_embedding_type="absolute",
+        use_cache=True,
         **kwargs,
     ):
-        super().__init__(pad_token_id=pad_token_id, mask_token_id=mask_token_id, **kwargs)
+        super().__init__(pad_token_id=pad_token_id, **kwargs)
 
         self.vocab_size = vocab_size
+        self.ss_vocab_size = ss_vocab_size
         if hidden_size is None:
             hidden_size = num_attention_heads * multiple if multiple is not None else 120
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
         self.num_attention_heads = num_attention_heads
         self.intermediate_size = intermediate_size
+        self.hidden_act = hidden_act
         self.hidden_dropout_prob = hidden_dropout_prob
         self.attention_probs_dropout_prob = attention_probs_dropout_prob
         self.max_position_embeddings = max_position_embeddings
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
-        self.vocab_list = vocab_list if vocab_list is not None else DEFAULT_VOCAB_LIST
+        self.position_embedding_type = position_embedding_type
+        self.use_cache = use_cache

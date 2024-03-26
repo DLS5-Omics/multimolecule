@@ -1,11 +1,12 @@
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
+from multimolecule.tokenizers.rna import RnaTokenizer
+
 from .configuration_rnabert import RnaBertConfig
 from .modeling_rnabert import RnaBertModel
-from .tokenization_rnabert import RnaBertTokenizer
 
-__all__ = ["RnaBertConfig", "RnaBertModel", "RnaBertTokenizer"]
+__all__ = ["RnaBertConfig", "RnaBertModel"]
 
 AutoConfig.register("rnabert", RnaBertConfig)
 AutoModel.register(RnaBertConfig, RnaBertModel)
-AutoTokenizer.register(RnaBertConfig, RnaBertTokenizer)
+AutoTokenizer.register(RnaBertConfig, RnaTokenizer)
