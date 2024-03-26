@@ -1,0 +1,27 @@
+{
+  "added_tokens_decoder": {
+    "0": {
+      "content": "<pad>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "1": {
+      "content": "<mask>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    }
+  },
+  "clean_up_tokenization_spaces": true,
+  "pad_token": "<pad>",
+  "mask_token": "<mask>",
+  "cls_token": "<mask>",
+  "unk_token": "<mask>",
+  "model_max_length": 440,
+  "tokenizer_class": "RnaBertTokenizer"
+}

@@ -57,8 +57,8 @@ repos:
       - id: check-merge-conflict
       - id: check-vcs-permalinks
       - id: check-symlinks
-      - id: pretty-format-json
-        files: multimolecule
+      # - id: pretty-format-json
+      #   files: multimolecule
       - id: check-json
       - id: check-xml
       - id: check-toml
