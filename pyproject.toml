@@ -43,6 +43,10 @@ classifiers = [
 dynamic = [
   "version",
 ]
+dependencies = [
+  "chanfig>=0.0.99",
+  "transformers",
+]
 [project.urls]
 documentation = "https://multimolecule.danling.org"
 homepage = "https://multimolecule.danling.org"

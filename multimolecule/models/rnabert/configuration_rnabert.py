@@ -1,5 +1,6 @@
-from transformers.configuration_utils import PretrainedConfig
 from transformers.utils import logging
+
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PretrainedConfig
 
 logger = logging.get_logger(__name__)
 
@@ -9,35 +10,29 @@ class RnaBertConfig(PretrainedConfig):
     This is the configuration class to store the configuration of a [`RnaBertModel`]. It is used to instantiate a
     RnaBert model according to the specified arguments, defining the model architecture. Instantiating a configuration
     with the defaults will yield a similar configuration to that of the RnaBert
-    [mana438/RNABERT](https://github.com/mana438/RNABERT/blob/master/RNA_bert_config.json) architecture.
+    [mana438/RNABERT](https://github.com/mana438/RNABERT) architecture.
 
     Configuration objects inherit from [`PretrainedConfig`] and can be used to control the model outputs. Read the
     documentation from [`PretrainedConfig`] for more information.
 
 
     Args:
-        vocab_size (`int`, *optional*):
+        vocab_size (`int`, *optional*, defaults to 25):
             Vocabulary size of the RnaBert model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaBertModel`].
-        mask_token_id (`int`, *optional*):
-            The index of the mask token in the vocabulary. This must be included in the config because of the
-            "mask-dropout" scaling trick, which will scale the inputs depending on the number of masked tokens.
-        pad_token_id (`int`, *optional*):
-            The index of the padding token in the vocabulary. This must be included in the config because certain parts
-            of the RnaBert code use this instead of the attention mask.
-        hidden_size (`int`, *optional*, defaults to 768):
+        hidden_size (`int`, *optional*, defaults to 120):
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers (`int`, *optional*, defaults to 12):
             Number of hidden layers in the Transformer encoder.
-        num_attention_heads (`int`, *optional*, defaults to 12):
+        num_attention_heads (`int`, *optional*, defaults to 6):
             Number of attention heads for each attention layer in the Transformer encoder.
-        intermediate_size (`int`, *optional*, defaults to 3072):
+        intermediate_size (`int`, *optional*, defaults to 40):
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
-        hidden_dropout_prob (`float`, *optional*, defaults to 0.1):
+        hidden_dropout (`float`, *optional*, defaults to 0.0):
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
-        attention_probs_dropout_prob (`float`, *optional*, defaults to 0.1):
+        attention_dropout (`float`, *optional*, defaults to 0.0):
             The dropout ratio for the attention probabilities.
-        max_position_embeddings (`int`, *optional*, defaults to 1026):
+        max_position_embeddings (`int`, *optional*, defaults to 440):
             The maximum sequence length that this model might ever be used with. Typically set this to something large
             just in case (e.g., 512 or 1024 or 2048).
         initializer_range (`float`, *optional*, defaults to 0.02):
@@ -46,16 +41,17 @@ class RnaBertConfig(PretrainedConfig):
             The epsilon used by the layer normalization layers.
 
     Examples:
+        >>> from multimolecule import RnaBertModel, RnaBertConfig
 
-    ```python
-    >>> from multimolecule import RnaBertModel, RnaBertConfig
+        >>> # Initializing a RNABERT multimolecule/rnabert style configuration
+        >>> configuration = RnaBertConfig()
 
-    >>> # Initializing a RnaBert style configuration >>> configuration = RnaBertConfig()
+        >>> # Initializing a model (with random weights) from the multimolecule/rnabert style configuration
+        >>> model = RnaBertModel(configuration)
 
-    >>> # Initializing a model from the configuration >>> model = RnaBertModel(configuration)
-
-    >>> # Accessing the model configuration >>> configuration = model.config
-    ```"""
+        >>> # Accessing the model configuration
+        >>> configuration = model.config
+    """
 
     model_type = "rnabert"
 
@@ -69,31 +65,45 @@ class RnaBertConfig(PretrainedConfig):
         num_attention_heads=12,
         intermediate_size=40,
         hidden_act="gelu",
-        hidden_dropout_prob=0.0,
-        attention_probs_dropout_prob=0.0,
+        hidden_dropout=0.0,
+        attention_dropout=0.0,
         max_position_embeddings=440,
         initializer_range=0.02,
         layer_norm_eps=1e-12,
-        pad_token_id=0,
         position_embedding_type="absolute",
         use_cache=True,
+        head=None,
+        lm_head=None,
         **kwargs,
     ):
-        super().__init__(pad_token_id=pad_token_id, **kwargs)
+        if hidden_size is None:
+            hidden_size = num_attention_heads * multiple if multiple is not None else 120
+        if head is None:
+            head = {}
+        head.setdefault("hidden_size", hidden_size)
+        if "problem_type" in kwargs:
+            head.setdefault("problem_type", kwargs["problem_type"])
+        if "num_labels" in kwargs:
+            head.setdefault("num_labels", kwargs["num_labels"])
+        if lm_head is None:
+            lm_head = {}
+        lm_head.setdefault("hidden_size", hidden_size)
+        super().__init__(**kwargs)
 
         self.vocab_size = vocab_size
         self.ss_vocab_size = ss_vocab_size
-        if hidden_size is None:
-            hidden_size = num_attention_heads * multiple if multiple is not None else 120
+        self.type_vocab_size = 2
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
         self.num_attention_heads = num_attention_heads
         self.intermediate_size = intermediate_size
         self.hidden_act = hidden_act
-        self.hidden_dropout_prob = hidden_dropout_prob
-        self.attention_probs_dropout_prob = attention_probs_dropout_prob
+        self.hidden_dropout = hidden_dropout
+        self.attention_dropout = attention_dropout
         self.max_position_embeddings = max_position_embeddings
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
         self.use_cache = use_cache
+        self.head = HeadConfig(**head)
+        self.lm_head = MaskedLMHeadConfig(**lm_head)

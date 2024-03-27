@@ -1,11 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Optional, Tuple
 
 import torch
-from chanfig import Registry
+from chanfig import ConfigRegistry
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
-from transformers.configuration_utils import PretrainedConfig
 from transformers.modeling_outputs import ModelOutput
+
+from .configuration_utils import HeadConfig, PretrainedConfig
 
 
 class ContactPredictionHead(nn.Module):
@@ -14,35 +17,51 @@ class ContactPredictionHead(nn.Module):
     Performs symmetrization, and average product correct.
     """
 
-    def __init__(
-        self,
-        config: PretrainedConfig,
-        in_features: int,
-        *,
-        transform: str = "none",
-        dropout: float = 0.0,
-        activation: Optional[str] = None,
-        bias: bool = False,
-    ):
+    def __init__(self, config: PretrainedConfig):
         super().__init__()
-        self.in_features = in_features
+        self.config = config.head
+        self.num_labels = config.head.num_labels
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
-        self.num_labels = config.num_labels
-        self.dropout = nn.Dropout(dropout)
-        self.transform = PredictionHeadTransform.build(transform, config)
-        self.decoder = nn.Linear(in_features, config.num_labels, bias=bias)
-        self.activation = ACT2FN[activation] if activation is not None else None
+        self.pad_token_id = config.pad_token_id
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.transform = PredictionHeadTransform.build(self.config)
+        self.decoder = nn.Linear(
+            config.num_hidden_layers * config.num_attention_heads, self.num_labels, bias=self.config.bias
+        )
+        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
-    def forward(self, attentions: Tensor, input_ids: Tensor) -> Tensor:
+    def forward(
+        self, attentions: Tensor, attention_mask: Optional[Tensor] = None, input_ids: Optional[Tensor] = None
+    ) -> Tensor:
+        if attention_mask is None:
+            if input_ids is None:
+                raise ValueError(
+                    "Either attention_mask or input_ids must be provided for contact prediction head to work."
+                )
+            if self.pad_token_id is None:
+                raise ValueError(
+                    "pad_token_id must be provided when attention_mask is not passed to contact prediction head."
+                )
+            attention_mask = input_ids.ne(self.pad_token_id)
+        # In the original model, attentions for padding tokens are completely zeroed out.
+        # This makes no difference most of the time because the other tokens won't attend to them,
+        # but it does for the contact prediction task, which takes attentions as input,
+        # so we have to mimic that here.
+        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
+        attentions *= attention_mask[:, None, None, :, :]
         # remove cls token attentions
         if self.bos_token_id is not None:
             attentions = attentions[..., 1:, 1:]
+            if input_ids is not None:
+                input_ids = input_ids[..., 1:]
         # remove eos token attentions
         if self.eos_token_id is not None:
-            eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
-            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
-            attentions = attentions * eos_mask[:, None, None, :, :]
+            if input_ids is not None:
+                # Zhiyuan: Do we really need to remove the eos token attentions?
+                eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
+                eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
+                attentions *= eos_mask[:, None, None, :, :]
             attentions = attentions[..., :-1, :-1]
 
         # features: batch x channels x input_ids x input_ids (symmetric)
@@ -61,28 +80,22 @@ class ContactPredictionHead(nn.Module):
 class MaskedLMHead(nn.Module):
     """Head for masked language modeling."""
 
-    def __init__(
-        self,
-        config: PretrainedConfig,
-        weight: Optional[Tensor] = None,
-        *,
-        transform: str = "nonlinear",
-        dropout: float = 0.0,
-        activation: Optional[str] = None,
-        bias: bool = False,
-    ):
+    def __init__(self, config: PretrainedConfig, weight: Optional[Tensor] = None):
         super().__init__()
+        self.config = config.lm_head if hasattr(config, "lm_head") else config.head
         self.num_labels = config.vocab_size
-        self.dropout = nn.Dropout(dropout)
-        self.transform = PredictionHeadTransform.build(transform, config)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=bias)
-        self.bias = nn.Parameter(torch.zeros(self.num_labels))
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.transform = PredictionHeadTransform.build(self.config)
+
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=False)
         if weight is not None:
             self.decoder.weight = weight
-        self.decoder.bias = self.bias
-        self.activation = ACT2FN[activation] if activation is not None else None
+        if self.config.bias:
+            self.bias = nn.Parameter(torch.zeros(self.num_labels))
+            self.decoder.bias = self.bias
+        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
-    def forward(self, outputs: ModelOutput) -> Tensor:
+    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:
         sequence_output = outputs[0]
         output = self.dropout(sequence_output)
         output = self.transform(output)
@@ -97,24 +110,17 @@ class SequenceClassificationHead(nn.Module):
 
     num_labels: int
 
-    def __init__(
-        self,
-        config: PretrainedConfig,
-        *,
-        transform: str = "none",
-        dropout: float = 0.0,
-        activation: Optional[str] = None,
-        bias: bool = False,
-    ):
+    def __init__(self, config: PretrainedConfig):
         super().__init__()
-        self.num_labels = config.num_labels
-        self.dropout = nn.Dropout(dropout)
-        self.transform = PredictionHeadTransform.build(transform, config)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=bias)
-        self.activation = ACT2FN[activation] if activation is not None else None
+        self.config = config.head
+        self.num_labels = config.head.num_labels
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.transform = PredictionHeadTransform.build(self.config)
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=self.config.bias)
+        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
-    def forward(self, outputs: ModelOutput) -> Tensor:
-        sequence_output = outputs[0]
+    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:
+        sequence_output = outputs[1]
         output = self.dropout(sequence_output)
         output = self.transform(output)
         output = self.decoder(output)
@@ -128,24 +134,17 @@ class TokenClassificationHead(nn.Module):
 
     num_labels: int
 
-    def __init__(
-        self,
-        config: PretrainedConfig,
-        *,
-        transform: str = "none",
-        dropout: float = 0.0,
-        activation: Optional[str] = None,
-        bias: bool = False,
-    ):
+    def __init__(self, config: PretrainedConfig):
         super().__init__()
-        self.num_labels = config.num_labels
-        self.dropout = nn.Dropout(dropout)
-        self.transform = PredictionHeadTransform.build(transform, config)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=bias)
-        self.activation = ACT2FN[activation] if activation is not None else None
+        self.config = config.head
+        self.num_labels = config.head.num_labels
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.transform = PredictionHeadTransform.build(self.config)
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=self.config.bias)
+        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
-    def forward(self, outputs: ModelOutput) -> Tensor:
-        token_output = outputs[1]
+    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:
+        token_output = outputs[0]
         output = self.dropout(token_output)
         output = self.transform(output)
         output = self.decoder(output)
@@ -154,18 +153,18 @@ class TokenClassificationHead(nn.Module):
         return output
 
 
-PredictionHeadTransform = Registry()
+PredictionHeadTransform = ConfigRegistry(key="transform")
 
 
 @PredictionHeadTransform.register("nonlinear")
 class NonLinearTransform(nn.Module):
-    def __init__(self, config: PretrainedConfig):
+    def __init__(self, config: HeadConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        if isinstance(config.hidden_act, str):
-            self.transform_act_fn = ACT2FN[config.hidden_act]
+        if isinstance(config.transform_act, str):
+            self.transform_act_fn = ACT2FN[config.transform_act]
         else:
-            self.transform_act_fn = config.hidden_act
+            self.transform_act_fn = config.transform_act
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(self, hidden_states: Tensor) -> Tensor:
@@ -177,7 +176,7 @@ class NonLinearTransform(nn.Module):
 
 @PredictionHeadTransform.register("linear")
 class LinearTransform(nn.Module):
-    def __init__(self, config: PretrainedConfig):
+    def __init__(self, config: HeadConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
@@ -188,9 +187,9 @@ class LinearTransform(nn.Module):
         return hidden_states
 
 
-@PredictionHeadTransform.register("none")
+@PredictionHeadTransform.register(None)
 class IdentityTransform(nn.Identity):
-    def __init__(self, config: PretrainedConfig):  # pylint: disable=unused-argument
+    def __init__(self, config: HeadConfig):  # pylint: disable=unused-argument
         super().__init__()
 
 
