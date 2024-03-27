@@ -4,7 +4,7 @@ from typing import List, Optional
 from transformers.tokenization_utils import PreTrainedTokenizer
 from transformers.utils import logging
 
-from .config import VOCAB_LIST
+from .utils import get_vocab_list
 
 logger = logging.get_logger(__name__)
 
@@ -18,22 +18,24 @@ class RnaTokenizer(PreTrainedTokenizer):
 
     def __init__(
         self,
-        cls_token="<cls>",
-        pad_token="<pad>",
-        eos_token="<eos>",
-        sep_token="<eos>",
-        unk_token="<unk>",
-        mask_token="<mask>",
-        convert_to_uppercase=True,
-        convert_T_to_U=True,
+        bos_token: str = "<cls>",
+        cls_token: str = "<cls>",
+        pad_token: str = "<pad>",
+        eos_token: str = "<eos>",
+        sep_token: str = "<eos>",
+        unk_token: str = "<unk>",
+        mask_token: str = "<mask>",
+        convert_to_uppercase: bool = True,
+        convert_T_to_U: bool = True,
         **kwargs,
     ):
-        self.all_tokens = VOCAB_LIST
+        self.all_tokens = get_vocab_list()
         self._id_to_token = dict(enumerate(self.all_tokens))
         self._token_to_id = {tok: ind for ind, tok in enumerate(self.all_tokens)}
         self.convert_to_uppercase = convert_to_uppercase
         self.convert_T_to_U = convert_T_to_U
         super().__init__(
+            bos_token=bos_token,
             cls_token=cls_token,
             pad_token=pad_token,
             eos_token=eos_token,
@@ -53,7 +55,7 @@ class RnaTokenizer(PreTrainedTokenizer):
         return self._id_to_token.get(index, self.unk_token)
 
     def _convert_token_to_id(self, token: str) -> int:
-        return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))
+        return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))  # type: ignore[arg-type]
 
     def _tokenize(self, text: str, **kwargs):
         if self.convert_to_uppercase:
@@ -68,7 +70,7 @@ class RnaTokenizer(PreTrainedTokenizer):
         return base_vocab
 
     def token_to_id(self, token: str) -> int:
-        return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))
+        return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))  # type: ignore[arg-type]
 
     def id_to_token(self, index: int) -> str:
         return self._id_to_token.get(index, self.unk_token)

@@ -7,7 +7,7 @@ import torch
 from torch import nn
 
 from multimolecule.models import RnaBertConfig, RnaBertModel
-from multimolecule.tokenizers.rna.config import get_special_tokens_map, get_tokenizer_config, get_vocab_list
+from multimolecule.tokenizers.rna.utils import get_special_tokens_map, get_tokenizer_config, get_vocab_list
 
 CONFIG = {
     "architectures": ["RnaBertModel"],
