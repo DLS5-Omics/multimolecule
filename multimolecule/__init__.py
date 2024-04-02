@@ -6,17 +6,29 @@ from .models import (
     RnaBertForSequenceClassification,
     RnaBertForTokenClassification,
     RnaBertModel,
+    RnaMsmConfig,
+    RnaMsmForMaskedLM,
+    RnaMsmForPretraining,
+    RnaMsmForSequenceClassification,
+    RnaMsmForTokenClassification,
+    RnaMsmModel,
 )
 from .tokenizers import RnaTokenizer
 
 __all__ = [
     "models",
     "tokenizers",
+    "RnaTokenizer",
     "RnaBertConfig",
     "RnaBertModel",
     "RnaBertForMaskedLM",
     "RnaBertForPretraining",
     "RnaBertForSequenceClassification",
     "RnaBertForTokenClassification",
-    "RnaTokenizer",
+    "RnaMsmConfig",
+    "RnaMsmModel",
+    "RnaMsmForMaskedLM",
+    "RnaMsmForPretraining",
+    "RnaMsmForSequenceClassification",
+    "RnaMsmForTokenClassification",
 ]
