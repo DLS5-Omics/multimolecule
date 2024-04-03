@@ -15,6 +15,14 @@ from .rnamsm import (
     RnaMsmForTokenClassification,
     RnaMsmModel,
 )
+from .splicebert import (
+    SpliceBertConfig,
+    SpliceBertForMaskedLM,
+    SpliceBertForPretraining,
+    SpliceBertForSequenceClassification,
+    SpliceBertForTokenClassification,
+    SpliceBertModel,
+)
 
 __all__ = [
     "RnaTokenizer",
@@ -30,4 +38,10 @@ __all__ = [
     "RnaMsmForPretraining",
     "RnaMsmForSequenceClassification",
     "RnaMsmForTokenClassification",
+    "SpliceBertConfig",
+    "SpliceBertModel",
+    "SpliceBertForMaskedLM",
+    "SpliceBertForPretraining",
+    "SpliceBertForSequenceClassification",
+    "SpliceBertForTokenClassification",
 ]
