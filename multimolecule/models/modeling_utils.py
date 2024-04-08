@@ -1,230 +1,223 @@
-from typing import Optional, Tuple, Union
+from typing import Optional
 
 import torch
-from chanfig import ConfigRegistry
-from torch import nn
-from torch.nn import functional as F
+from chanfig import Registry
+from torch import Tensor, nn
 from transformers.activations import ACT2FN
-from transformers.modeling_outputs import MaskedLMOutput, SequenceClassifierOutput, TokenClassifierOutput
+from transformers.configuration_utils import PretrainedConfig
+from transformers.modeling_outputs import ModelOutput
+
+
+class ContactPredictionHead(nn.Module):
+    """
+    Head for contact-map-level tasks.
+    Performs symmetrization, and average product correct.
+    """
+
+    def __init__(
+        self,
+        config: PretrainedConfig,
+        in_features: int,
+        *,
+        transform: str = "none",
+        dropout: float = 0.0,
+        activation: Optional[str] = None,
+        bias: bool = False,
+    ):
+        super().__init__()
+        self.in_features = in_features
+        self.bos_token_id = config.bos_token_id
+        self.eos_token_id = config.eos_token_id
+        self.num_labels = config.num_labels
+        self.dropout = nn.Dropout(dropout)
+        self.transform = PredictionHeadTransform.build(transform, config)
+        self.decoder = nn.Linear(in_features, config.num_labels, bias=bias)
+        self.activation = ACT2FN[activation] if activation is not None else None
+
+    def forward(self, attentions: Tensor, input_ids: Tensor) -> Tensor:
+        # remove cls token attentions
+        if self.bos_token_id is not None:
+            attentions = attentions[..., 1:, 1:]
+        # remove eos token attentions
+        if self.eos_token_id is not None:
+            eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
+            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
+            attentions = attentions * eos_mask[:, None, None, :, :]
+            attentions = attentions[..., :-1, :-1]
+
+        # features: batch x channels x input_ids x input_ids (symmetric)
+        batch_size, layers, heads, seqlen, _ = attentions.size()
+        attentions = attentions.view(batch_size, layers * heads, seqlen, seqlen)
+        attentions = attentions.to(self.decoder.weight.device)
+        attentions = average_product_correct(symmetrize(attentions))
+        attentions = attentions.permute(0, 2, 3, 1)
+        output = self.dropout(attentions)
+        output = self.decoder(output).squeeze(3)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
 
 
 class MaskedLMHead(nn.Module):
     """Head for masked language modeling."""
 
-    def __init__(self, config):
-        super().__init__()
-        if "proj_head_mode" not in dir(config) or config.proj_head_mode is None:
-            config.proj_head_mode = "none"
-        self.transform = PredictionHeadTransform.build(config)
-        self.decoder = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
-        self.bias = nn.Parameter(torch.zeros(config.vocab_size))
-        self.decoder.bias = self.bias
-
-    def forward(
+    def __init__(
         self,
-        input_ids: Optional[torch.Tensor] = None,
-        attention_mask: Optional[torch.Tensor] = None,
-        token_type_ids: Optional[torch.Tensor] = None,
-        position_ids: Optional[torch.Tensor] = None,
-        head_mask: Optional[torch.Tensor] = None,
-        inputs_embeds: Optional[torch.Tensor] = None,
-        encoder_hidden_states: Optional[torch.Tensor] = None,
-        encoder_attention_mask: Optional[torch.Tensor] = None,
-        labels: Optional[torch.Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[torch.Tensor], MaskedLMOutput]:
+        config: PretrainedConfig,
+        weight: Optional[Tensor] = None,
+        *,
+        transform: str = "nonlinear",
+        dropout: float = 0.0,
+        activation: Optional[str] = None,
+        bias: bool = False,
+    ):
+        super().__init__()
+        self.num_labels = config.vocab_size
+        self.dropout = nn.Dropout(dropout)
+        self.transform = PredictionHeadTransform.build(transform, config)
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=bias)
+        self.bias = nn.Parameter(torch.zeros(self.num_labels))
+        if weight is not None:
+            self.decoder.weight = weight
+        self.decoder.bias = self.bias
+        self.activation = ACT2FN[activation] if activation is not None else None
 
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
-        outputs = self.bert(
-            input_ids,
-            attention_mask=attention_mask,
-            token_type_ids=token_type_ids,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-        )
-
+    def forward(self, outputs: ModelOutput) -> Tensor:
         sequence_output = outputs[0]
-        x = self.transform(sequence_output)
-        prediction_scores = self.decoder(x)
-
-        masked_lm_loss = None
-        if labels is not None:
-            masked_lm_loss = F.cross_entropy(prediction_scores.view(-1, self.config.vocab_size), labels.view(-1))
-
-        if not return_dict:
-            output = (prediction_scores,) + outputs[2:]
-            return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
-
-        return MaskedLMOutput(
-            loss=masked_lm_loss,
-            logits=prediction_scores,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
+        output = self.dropout(sequence_output)
+        output = self.transform(output)
+        output = self.decoder(output)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
 
 
 class SequenceClassificationHead(nn.Module):
-    """Head for sequence-level classification tasks."""
+    """Head for sequence-level tasks."""
 
     num_labels: int
 
-    def __init__(self, config):
+    def __init__(
+        self,
+        config: PretrainedConfig,
+        *,
+        transform: str = "none",
+        dropout: float = 0.0,
+        activation: Optional[str] = None,
+        bias: bool = False,
+    ):
         super().__init__()
-        if "proj_head_mode" not in dir(config) or config.proj_head_mode is None:
-            config.proj_head_mode = "none"
         self.num_labels = config.num_labels
-        self.transform = PredictionHeadTransform.build(config)
-        classifier_dropout = (
-            config.classifier_dropout
-            if "classifier_dropout" in dir(config) and config.classifier_dropout is not None
-            else config.hidden_dropout_prob
-        )
-        self.dropout = nn.Dropout(classifier_dropout)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=False)
+        self.dropout = nn.Dropout(dropout)
+        self.transform = PredictionHeadTransform.build(transform, config)
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=bias)
+        self.activation = ACT2FN[activation] if activation is not None else None
 
-    def forward(
-        self, outputs, labels: Optional[torch.Tensor] = None, return_dict: Optional[bool] = None
-    ) -> Union[Tuple, SequenceClassifierOutput]:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        sequence_output = outputs.last_hidden_state if return_dict else outputs[0]
-        x = self.dropout(sequence_output)
-        x = self.transform(x)
-        logits = self.decoder(x)
-
-        loss = None
-        if labels is not None:
-            if self.config.problem_type is None:
-                if self.num_labels == 1:
-                    self.config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.config.problem_type = "single_label_classification"
-                else:
-                    self.config.problem_type = "multi_label_classification"
-            if self.config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return SequenceClassifierOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
+    def forward(self, outputs: ModelOutput) -> Tensor:
+        sequence_output = outputs[0]
+        output = self.dropout(sequence_output)
+        output = self.transform(output)
+        output = self.decoder(output)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
 
 
 class TokenClassificationHead(nn.Module):
-    """Head for token-level classification tasks."""
+    """Head for token-level tasks."""
 
     num_labels: int
 
-    def __init__(self, config):
-        if "proj_head_mode" not in dir(config) or config.proj_head_mode is None:
-            config.proj_head_mode = "none"
+    def __init__(
+        self,
+        config: PretrainedConfig,
+        *,
+        transform: str = "none",
+        dropout: float = 0.0,
+        activation: Optional[str] = None,
+        bias: bool = False,
+    ):
         super().__init__()
         self.num_labels = config.num_labels
-        self.transform = PredictionHeadTransform.build(config)
-        classifier_dropout = (
-            config.classifier_dropout
-            if "classifier_dropout" in dir(config) and config.classifier_dropout is not None
-            else config.hidden_dropout_prob
-        )
-        self.dropout = nn.Dropout(classifier_dropout)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=False)
+        self.dropout = nn.Dropout(dropout)
+        self.transform = PredictionHeadTransform.build(transform, config)
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=bias)
+        self.activation = ACT2FN[activation] if activation is not None else None
 
-    def forward(
-        self, outputs, labels: Optional[torch.Tensor] = None, return_dict: Optional[bool] = None
-    ) -> Union[Tuple, TokenClassifierOutput]:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        token_output = outputs.pooled_output if return_dict else outputs[1]
-        x = self.dropout(token_output)
-        x = self.transform(x)
-        logits = self.decoder(x)
-
-        loss = None
-        if labels is not None:
-            if self.config.problem_type is None:
-                if self.num_labels == 1:
-                    self.config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.config.problem_type = "single_label_classification"
-                else:
-                    self.config.problem_type = "multi_label_classification"
-            if self.config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return TokenClassifierOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
+    def forward(self, outputs: ModelOutput) -> Tensor:
+        token_output = outputs[1]
+        output = self.dropout(token_output)
+        output = self.transform(output)
+        output = self.decoder(output)
+        if self.activation is not None:
+            output = self.activation(output)
+        return output
 
 
-PredictionHeadTransform = ConfigRegistry(key="proj_head_mode")
+PredictionHeadTransform = Registry()
 
 
 @PredictionHeadTransform.register("nonlinear")
 class NonLinearTransform(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config: PretrainedConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         if isinstance(config.hidden_act, str):
             self.transform_act_fn = ACT2FN[config.hidden_act]
         else:
             self.transform_act_fn = config.hidden_act
-        self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
-    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
+    def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
         hidden_states = self.transform_act_fn(hidden_states)
-        hidden_states = self.LayerNorm(hidden_states)
+        hidden_states = self.layer_norm(hidden_states)
         return hidden_states
 
 
 @PredictionHeadTransform.register("linear")
 class LinearTransform(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config: PretrainedConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
-        self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
-    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
+    def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
-        hidden_states = self.LayerNorm(hidden_states)
+        hidden_states = self.layer_norm(hidden_states)
         return hidden_states
 
 
 @PredictionHeadTransform.register("none")
 class IdentityTransform(nn.Identity):
-    def __init__(self, config):
+    def __init__(self, config: PretrainedConfig):  # pylint: disable=unused-argument
         super().__init__()
+
+
+def rotate_half(x):
+    x1, x2 = x.chunk(2, dim=-1)
+    return torch.cat((-x2, x1), dim=-1)
+
+
+def apply_rotary_pos_emb(x, cos, sin):
+    cos = cos[:, :, : x.shape[-2], :]
+    sin = sin[:, :, : x.shape[-2], :]
+
+    return (x * cos) + (rotate_half(x) * sin)
+
+
+def symmetrize(x):
+    "Make layer symmetric in final two dimensions, used for contact prediction."
+    return x + x.transpose(-1, -2)
+
+
+def average_product_correct(x):
+    "Perform average product correct, used for contact prediction."
+    a1 = x.sum(-1, keepdims=True)
+    a2 = x.sum(-2, keepdims=True)
+    a12 = x.sum((-1, -2), keepdims=True)
+
+    avg = a1 * a2
+    avg.div_(a12)  # in-place to reduce memory
+    normalized = x - avg
+    return normalized
