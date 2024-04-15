@@ -7,6 +7,14 @@ from .rnabert import (
     RnaBertForTokenClassification,
     RnaBertModel,
 )
+from .rnafm import (
+    RnaFmConfig,
+    RnaFmForMaskedLM,
+    RnaFmForPretraining,
+    RnaFmForSequenceClassification,
+    RnaFmForTokenClassification,
+    RnaFmModel,
+)
 from .rnamsm import (
     RnaMsmConfig,
     RnaMsmForMaskedLM,
@@ -32,6 +40,12 @@ __all__ = [
     "RnaBertForPretraining",
     "RnaBertForSequenceClassification",
     "RnaBertForTokenClassification",
+    "RnaFmConfig",
+    "RnaFmForMaskedLM",
+    "RnaFmForPretraining",
+    "RnaFmForSequenceClassification",
+    "RnaFmForTokenClassification",
+    "RnaFmModel",
     "RnaMsmConfig",
     "RnaMsmModel",
     "RnaMsmForMaskedLM",
