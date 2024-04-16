@@ -31,6 +31,14 @@ from .splicebert import (
     SpliceBertForTokenClassification,
     SpliceBertModel,
 )
+from .utrbert import (
+    UtrBertConfig,
+    UtrBertForMaskedLM,
+    UtrBertForPretraining,
+    UtrBertForSequenceClassification,
+    UtrBertForTokenClassification,
+    UtrBertModel,
+)
 from .utrlm import (
     UtrLmConfig,
     UtrLmForMaskedLM,
@@ -66,6 +74,12 @@ __all__ = [
     "SpliceBertForPretraining",
     "SpliceBertForSequenceClassification",
     "SpliceBertForTokenClassification",
+    "UtrBertConfig",
+    "UtrBertModel",
+    "UtrBertForMaskedLM",
+    "UtrBertForPretraining",
+    "UtrBertForSequenceClassification",
+    "UtrBertForTokenClassification",
     "UtrLmConfig",
     "UtrLmForMaskedLM",
     "UtrLmForPretraining",
