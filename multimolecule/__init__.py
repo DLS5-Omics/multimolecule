@@ -24,6 +24,12 @@ from .models import (
     SpliceBertForSequenceClassification,
     SpliceBertForTokenClassification,
     SpliceBertModel,
+    UtrLmConfig,
+    UtrLmForMaskedLM,
+    UtrLmForPretraining,
+    UtrLmForSequenceClassification,
+    UtrLmForTokenClassification,
+    UtrLmModel,
 )
 from .tokenizers import RnaTokenizer
 
@@ -55,4 +61,10 @@ __all__ = [
     "SpliceBertForPretraining",
     "SpliceBertForSequenceClassification",
     "SpliceBertForTokenClassification",
+    "UtrLmConfig",
+    "UtrLmModel",
+    "UtrLmForMaskedLM",
+    "UtrLmForPretraining",
+    "UtrLmForSequenceClassification",
+    "UtrLmForTokenClassification",
 ]
