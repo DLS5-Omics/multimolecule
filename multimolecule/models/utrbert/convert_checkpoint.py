@@ -59,7 +59,7 @@ def convert_checkpoint(convert_config):
     config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
     config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
     config.nmers = int(convert_config.checkpoint_path.split("/")[-1][0])
-    vocab_list = get_vocab_list(config.nmers)
+    vocab_list = get_vocab_list(config.nmers, strameline=True)
     config = Config.from_dict(config)
     del config._name_or_path
     config.architectures = ["UtrBertModel"]
@@ -87,7 +87,10 @@ def convert_checkpoint(convert_config):
     chanfig.NestedDict(get_special_tokens_map()).json(
         os.path.join(convert_config.output_path, "special_tokens_map.json")
     )
-    chanfig.NestedDict(get_tokenizer_config()).json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
+    tokenizer_config = get_tokenizer_config()
+    tokenizer_config["nmers"] = config.nmers
+    tokenizer_config["strameline"] = True
+    chanfig.NestedDict(tokenizer_config).json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
 
     if convert_config.push_to_hub:
         if HfApi is None:

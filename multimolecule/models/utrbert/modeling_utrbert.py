@@ -58,7 +58,7 @@ class UtrBertModel(UtrBertPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertModel, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=1)
+        >>> tokenizer = RnaTokenizer(nmers=1, strameline=True)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
         >>> model = UtrBertModel(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
@@ -219,7 +219,7 @@ class UtrBertForMaskedLM(UtrBertPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertForMaskedLM, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=2)
+        >>> tokenizer = RnaTokenizer(nmers=3, strameline=True)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
         >>> model = UtrBertForMaskedLM(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
@@ -320,7 +320,7 @@ class UtrBertForPretraining(UtrBertPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertForPretraining, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=3)
+        >>> tokenizer = RnaTokenizer(nmers=4, strameline=True)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
         >>> model = UtrBertForPretraining(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
@@ -394,7 +394,7 @@ class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertForSequenceClassification, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=4)
+        >>> tokenizer = RnaTokenizer(nmers=5, strameline=True)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
         >>> model = UtrBertForSequenceClassification(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
@@ -480,7 +480,7 @@ class UtrBertForTokenClassification(UtrBertPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertForTokenClassification, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=4)
+        >>> tokenizer = RnaTokenizer(nmers=6, strameline=True)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
         >>> model = UtrBertForTokenClassification(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")

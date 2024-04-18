@@ -1,10 +1,11 @@
 from ..utils import generate_kmer_vocabulary
 
 
-def get_vocab_list(nmers: int = 1):
+def get_vocab_list(nmers: int = 1, strameline: bool = False):
+    vocab_list = STRAMELINE_VOCAB_LIST if strameline else VOCAB_LIST
     if nmers > 1:
-        return generate_kmer_vocabulary(VOCAB_LIST, nmers)
-    return VOCAB_LIST
+        return generate_kmer_vocabulary(vocab_list, nmers)
+    return vocab_list
 
 
 def get_special_tokens_map():
@@ -17,6 +18,21 @@ def get_tokenizer_config():
     for i, v in enumerate(SPECIAL_TOKENS_MAP.values()):
         config["added_tokens_decoder"][str(i)] = v
     return config
+
+
+STRAMELINE_VOCAB_LIST = [
+    "<pad>",
+    "<cls>",
+    "<eos>",
+    "<unk>",
+    "<mask>",
+    "<null>",
+    "A",
+    "C",
+    "G",
+    "U",
+    "N",
+]
 
 
 VOCAB_LIST = [

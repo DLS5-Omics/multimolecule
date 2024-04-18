@@ -28,10 +28,11 @@ class RnaTokenizer(PreTrainedTokenizer):
         convert_to_uppercase: bool = True,
         convert_T_to_U: bool = True,
         nmers: int = 1,
+        strameline: bool = False,
         **kwargs,
     ):
         self.nmers = nmers
-        self.all_tokens = get_vocab_list(nmers)
+        self.all_tokens = get_vocab_list(nmers, strameline)
         self._id_to_token = dict(enumerate(self.all_tokens))
         self._token_to_id = {tok: ind for ind, tok in enumerate(self.all_tokens)}
         self.convert_to_uppercase = convert_to_uppercase
