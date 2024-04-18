@@ -10,9 +10,41 @@ jobs:
           python-version: 3.x
           cache: "pip"
       - uses: pre-commit/action@v3.0.0
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+      - name: Install dependencies for testing
+        run: pip install pytest pytest-cov torch torchvision torcheval torchmetrics accelerate transformers tokenizers
+      - name: Install module
+        run: pip install -e .
+      - name: pytest
+        run: pytest --cov=materialx --cov-report=xml --cov-report=html .
+      - name: Upload coverage report for documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: htmlcov
+          retention-days: 5
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage reports to Codacy
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
   release:
     if: startsWith(github.event.ref, 'refs/tags/v')
-    needs: [lint]
+    needs: [lint, test]
     environment: pypi
     permissions:
       contents: write
@@ -37,3 +69,29 @@ jobs:
             dist/*
       - name: publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+  develop:
+    if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
+    needs: [lint, test]
+    environment: pypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+          cache: "pip"
+      - name: Install dependencies for building
+        run: pip install wheel setuptools_scm
+      - name: build package
+        run: python setup.py sdist bdist_wheel
+      - name: create release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            dist/*
