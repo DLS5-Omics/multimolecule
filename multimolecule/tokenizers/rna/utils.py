@@ -1,4 +1,9 @@
-def get_vocab_list():
+from ..utils import generate_kmer_vocabulary
+
+
+def get_vocab_list(nmers: int = 1):
+    if nmers > 1:
+        return generate_kmer_vocabulary(VOCAB_LIST, nmers)
     return VOCAB_LIST
 
 
