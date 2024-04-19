@@ -625,7 +625,7 @@ class UtrLmEmbeddings(nn.Module):
                 embeddings.dtype
             )
 
-        if self.position_embeddings is not None:
+        if self.position_embedding_type == "absolute":
             position_embeddings = self.position_embeddings(position_ids)
             embeddings = embeddings + position_embeddings
 
