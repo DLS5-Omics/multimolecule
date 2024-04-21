@@ -87,7 +87,7 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         embedding_output = self.embeddings(input_ids, attention_mask=attention_mask)
         encoder_outputs = self.encoder(
             embedding_output,
-            key_padding_mask=attention_mask ^ 1,
+            key_padding_mask=(attention_mask ^ 1).bool(),
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
