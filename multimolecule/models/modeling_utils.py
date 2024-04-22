@@ -105,8 +105,8 @@ class MaskedLMHead(nn.Module):
         return output
 
 
-class SequenceClassificationHead(nn.Module):
-    """Head for sequence-level tasks."""
+class ClassificationHead(nn.Module):
+    """Head for all-level of tasks."""
 
     num_labels: int
 
@@ -119,9 +119,8 @@ class SequenceClassificationHead(nn.Module):
         self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:
-        sequence_output = outputs[1]
-        output = self.dropout(sequence_output)
+    def forward(self, embeddings: Tensor) -> Tensor:
+        output = self.dropout(embeddings)
         output = self.transform(output)
         output = self.decoder(output)
         if self.activation is not None:
@@ -129,27 +128,19 @@ class SequenceClassificationHead(nn.Module):
         return output
 
 
-class TokenClassificationHead(nn.Module):
+class SequenceClassificationHead(ClassificationHead):
+    """Head for sequence-level tasks."""
+
+    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:  # pylint: disable=arguments-renamed
+        output = super().forward(outputs[1])
+        return output
+
+
+class TokenClassificationHead(ClassificationHead):
     """Head for token-level tasks."""
 
-    num_labels: int
-
-    def __init__(self, config: PretrainedConfig):
-        super().__init__()
-        self.config = config.head
-        self.num_labels = config.head.num_labels
-        self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = PredictionHeadTransform.build(self.config)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=self.config.bias)
-        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:
-        token_output = outputs[0]
-        output = self.dropout(token_output)
-        output = self.transform(output)
-        output = self.decoder(output)
-        if self.activation is not None:
-            output = self.activation(output)
+    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:  # pylint: disable=arguments-renamed
+        output = super().forward(outputs[0])
         return output
 
 
