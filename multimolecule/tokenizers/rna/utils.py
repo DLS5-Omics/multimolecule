@@ -1,4 +1,13 @@
+from __future__ import annotations
+
+from typing import List, Sequence
+
+import torch
+from torch import Tensor
+
 from ..utils import generate_kmer_vocabulary
+
+torch.manual_seed(1013)
 
 
 def get_vocab_list(nmers: int = 1, strameline: bool = False):
@@ -6,6 +15,52 @@ def get_vocab_list(nmers: int = 1, strameline: bool = False):
     if nmers > 1:
         return generate_kmer_vocabulary(vocab_list, nmers)
     return vocab_list
+
+
+def get_vocab_mapping():
+    return VOCAB_MAPPING
+
+
+def convert_word_embeddings(
+    *old_embeddings: Tensor,
+    old_vocab: List[str],
+    new_vocab: List[str],
+    mean: float = 0.0,
+    std: float = 0.02,
+    vocab_mapping: dict[str, str] | None = None,
+) -> Sequence[Tensor]:
+    if old_vocab == new_vocab:
+        return old_embeddings
+    if vocab_mapping is None:
+        vocab_mapping = get_vocab_mapping()
+
+    new_embeddings = []
+    # Initialize the new embeddings
+    for embeddings in old_embeddings:
+        shape = embeddings.shape
+        if shape[0] != len(old_vocab):
+            raise ValueError("The first dimension of the embeddings must match the size of the vocabulary.")
+        if embeddings.ndim == 1:  # Bias
+            new_embeddings.append(torch.zeros(len(new_vocab)))
+        else:
+            new_embeddings.append(torch.normal(size=(len(new_vocab), *shape[1:]), mean=mean, std=std))
+
+    # First Pass, copy the embeddings for the tokens that are in both vocabularies
+    for old_index, old_token in enumerate(old_vocab):
+        new_index = new_vocab.index(old_token)
+        for new_embed, old_embed in zip(new_embeddings, old_embeddings):
+            new_embed[new_index] = old_embed[old_index]
+
+    # Second Pass, average the embeddings for the tokens that are in the new vocabulary but not in the old
+    for token, tokens in vocab_mapping.items():
+        if token not in new_vocab or token in old_vocab or len(tokens) == 1:
+            continue
+        index = new_vocab.index(token)
+        indexes = [new_vocab.index(t) for t in tokens]
+        for embed in new_embeddings:
+            embed[index] = embed[indexes].mean(dim=0)
+
+    return new_embeddings
 
 
 def get_special_tokens_map():
@@ -62,6 +117,28 @@ VOCAB_LIST = [
     "*",
     "-",
 ]
+
+VOCAB_MAPPING = {
+    "A": "A",
+    "C": "C",
+    "G": "G",
+    "U": "U",
+    "N": "N",
+    "X": "ACGU",
+    "V": "ACG",
+    "H": "ACU",
+    "D": "AGU",
+    "B": "CGU",
+    "M": "AC",
+    "R": "AG",
+    "W": "AU",
+    "S": "CG",
+    "Y": "CU",
+    "K": "GU",
+    ".": ".",
+    "*": "*",
+    "-": "-",
+}
 
 SPECIAL_TOKENS_MAP = {
     "pad_token": {

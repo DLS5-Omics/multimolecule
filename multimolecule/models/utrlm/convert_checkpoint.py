@@ -3,11 +3,15 @@ from typing import Optional
 
 import chanfig
 import torch
-from torch import nn
 
 from multimolecule.models import UtrLmConfig as Config
 from multimolecule.models import UtrLmForPretraining as Model
-from multimolecule.tokenizers.rna.utils import get_special_tokens_map, get_tokenizer_config, get_vocab_list
+from multimolecule.tokenizers.rna.utils import (
+    convert_word_embeddings,
+    get_special_tokens_map,
+    get_tokenizer_config,
+    get_vocab_list,
+)
 
 try:
     from huggingface_hub import HfApi
@@ -50,27 +54,17 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("utrlm.supervised_linear", "pretrain_head.supervised.decoder")
         state_dict[key] = value
 
-    state_vocab_size = state_dict["utrlm.embeddings.word_embeddings.weight"].size(0)
-    original_vocab_size = len(original_vocab_list)
-    if state_vocab_size != original_vocab_size:
-        raise ValueError(
-            f"Vocabulary size do not match. Expected to have {original_vocab_size}, but got {state_vocab_size}."
-        )
-    word_embed = nn.Embedding(config.vocab_size, config.hidden_size, padding_idx=config.pad_token_id)
-    word_embed_weight = word_embed.weight.data
-    predictions_decoder_weight = torch.zeros((config.vocab_size, config.hidden_size))
-    predictions_bias = torch.zeros(config.vocab_size)
-    # nn.init.normal_(pos_embed.weight, std=0.02)
-    for original_index, original_token in enumerate(original_vocab_list):
-        new_index = vocab_list.index(original_token)
-        word_embed_weight[new_index] = state_dict["utrlm.embeddings.word_embeddings.weight"][original_index]
-        predictions_decoder_weight[new_index] = state_dict["pretrain_head.predictions.decoder.weight"][original_index]
-        predictions_bias[new_index] = state_dict["pretrain_head.predictions.bias"][original_index]
-    state_dict["utrlm.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["pretrain_head.predictions.decoder.weight"] = predictions_decoder_weight
-    state_dict["pretrain_head.predictions.decoder.bias"] = state_dict["pretrain_head.predictions.bias"] = (
-        predictions_bias
+    word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
+        state_dict["utrlm.embeddings.word_embeddings.weight"],
+        state_dict["pretrain_head.predictions.decoder.weight"],
+        state_dict["pretrain_head.predictions.bias"],
+        old_vocab=original_vocab_list,
+        new_vocab=vocab_list,
+        std=config.initializer_range,
     )
+    state_dict["utrlm.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["pretrain_head.predictions.decoder.weight"] = decoder_weight
+    state_dict["pretrain_head.predictions.decoder.bias"] = state_dict["pretrain_head.predictions.bias"] = decoder_bias
     return state_dict
 
 
