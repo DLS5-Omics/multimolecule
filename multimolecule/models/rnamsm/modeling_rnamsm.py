@@ -134,7 +134,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaMsmMaskedLMOutput:
+    ) -> Tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
         outputs = self.rnamsm(
             input_ids,
             attention_mask,
@@ -152,7 +152,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmMaskedLMOutput(
+        return RnaMsmForMaskedLMOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -251,7 +251,7 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaMsmSequenceClassifierOutput:
+    ) -> Tuple[Tensor, ...] | RnaMsmForSequenceClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
             Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
@@ -293,7 +293,7 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmSequenceClassifierOutput(
+        return RnaMsmForSequenceClassifierOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -331,7 +331,7 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaMsmTokenClassifierOutput:
+    ) -> Tuple[Tensor, ...] | RnaMsmForTokenClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
             Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
@@ -373,7 +373,7 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmTokenClassifierOutput(
+        return RnaMsmForTokenClassifierOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -1190,7 +1190,7 @@ class RnaMsmForPretrainingOutput(ModelOutput):
 
 
 @dataclass
-class RnaMsmMaskedLMOutput(ModelOutput):
+class RnaMsmForMaskedLMOutput(ModelOutput):
     loss: Optional[torch.FloatTensor] = None
     logits: torch.FloatTensor = None
     hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
@@ -1199,7 +1199,7 @@ class RnaMsmMaskedLMOutput(ModelOutput):
 
 
 @dataclass
-class RnaMsmSequenceClassifierOutput(ModelOutput):
+class RnaMsmForSequenceClassifierOutput(ModelOutput):
     loss: Optional[torch.FloatTensor] = None
     logits: torch.FloatTensor = None
     hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
@@ -1208,7 +1208,7 @@ class RnaMsmSequenceClassifierOutput(ModelOutput):
 
 
 @dataclass
-class RnaMsmTokenClassifierOutput(ModelOutput):
+class RnaMsmForTokenClassifierOutput(ModelOutput):
     loss: Optional[torch.FloatTensor] = None
     logits: torch.FloatTensor = None
     hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
