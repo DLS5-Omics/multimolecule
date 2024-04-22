@@ -75,7 +75,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
 
 
 def convert_checkpoint(convert_config):
-    config = chanfig.FlatDict(num_labels=1)
+    config = chanfig.FlatDict()
     config.supervised_head = {"num_labels": 1}
     if "4.1" in convert_config.checkpoint_path:
         config.structure_head = {"num_labels": 3}

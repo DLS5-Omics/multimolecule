@@ -60,7 +60,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
 def convert_checkpoint(convert_config):
     vocab_list = get_vocab_list()
     original_vocab_list = ["<cls>", "<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "X", "N", "-", "<mask>"]
-    config = Config(num_labels=1)
+    config = Config()
     config.architectures = ["RnaMsmModel"]
     config.vocab_size = len(vocab_list)
 

@@ -20,7 +20,13 @@ class ContactPredictionHead(nn.Module):
     def __init__(self, config: PretrainedConfig):
         super().__init__()
         self.config = config.head
-        self.num_labels = config.head.num_labels
+        if self.config.hidden_size is None:
+            self.config.hidden_size = config.hidden_size
+        if self.config.num_labels is None:
+            self.config.num_labels = config.num_labels
+        if self.config.problem_type is None:
+            self.config.problem_type = config.problem_type
+        self.num_labels = self.config.num_labels
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
@@ -83,10 +89,11 @@ class MaskedLMHead(nn.Module):
     def __init__(self, config: PretrainedConfig, weight: Optional[Tensor] = None):
         super().__init__()
         self.config = config.lm_head if hasattr(config, "lm_head") else config.head
+        if self.config.hidden_size is None:
+            self.config.hidden_size = config.hidden_size
         self.num_labels = config.vocab_size
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = PredictionHeadTransform.build(self.config)
-
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=False)
         if weight is not None:
             self.decoder.weight = weight
@@ -113,7 +120,13 @@ class ClassificationHead(nn.Module):
     def __init__(self, config: PretrainedConfig):
         super().__init__()
         self.config = config.head
-        self.num_labels = config.head.num_labels
+        if self.config.hidden_size is None:
+            self.config.hidden_size = config.hidden_size
+        if self.config.num_labels is None:
+            self.config.num_labels = config.num_labels
+        if self.config.problem_type is None:
+            self.config.problem_type = config.problem_type
+        self.num_labels = self.config.num_labels
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = PredictionHeadTransform.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)

@@ -93,16 +93,6 @@ class UtrBertConfig(PretrainedConfig):
         lm_head=None,
         **kwargs,
     ):
-        if head is None:
-            head = {}
-        head.setdefault("hidden_size", hidden_size)
-        if "problem_type" in kwargs:
-            head.setdefault("problem_type", kwargs["problem_type"])
-        if "num_labels" in kwargs:
-            head.setdefault("num_labels", kwargs["num_labels"])
-        if lm_head is None:
-            lm_head = {}
-        lm_head.setdefault("hidden_size", hidden_size)
         super().__init__(**kwargs)
 
         self.vocab_size = vocab_size
@@ -120,5 +110,5 @@ class UtrBertConfig(PretrainedConfig):
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
         self.use_cache = use_cache
-        self.head = HeadConfig(**head)
-        self.lm_head = MaskedLMHeadConfig(**lm_head)
+        self.head = HeadConfig(**head if head is not None else {})
+        self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})

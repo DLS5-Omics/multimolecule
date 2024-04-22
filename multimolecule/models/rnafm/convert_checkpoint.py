@@ -98,7 +98,7 @@ def convert_checkpoint(convert_config):
         "<null>",
         "<mask>",
     ]
-    config = Config(num_labels=1)
+    config = Config()
     config.architectures = ["RnaFmModel"]
     config.vocab_size = len(vocab_list)
 

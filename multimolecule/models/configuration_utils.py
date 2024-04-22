@@ -63,7 +63,7 @@ class HeadConfig:
             The activation function of the final prediction output.
         layer_norm_eps (`float`, *optional*, defaults to 1e-12):
             The epsilon used by the layer normalization layers.
-        num_labels (`int`, *optional*, defaults to 2):
+        num_labels (`int`, *optional*, defaults to 1):
             Number of labels to use in the last layer added to the model, typically for a classification task.
         problem_type (`str`, *optional*):
             Problem type for `XxxForSequenceClassification` models. Can be one of `"regression"`,
@@ -77,7 +77,7 @@ class HeadConfig:
     bias: bool = True
     act: Optional[str] = None
     layer_norm_eps: float = 1e-12
-    num_labels: int = 2
+    num_labels: int = 1
     problem_type: Optional[str] = None
 
 
