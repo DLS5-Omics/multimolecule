@@ -17,12 +17,14 @@ from .modeling_rnamsm import (
     RnaMsmForSequenceClassification,
     RnaMsmForTokenClassification,
     RnaMsmModel,
+    RnaMsmPreTrainedModel,
 )
 
 __all__ = [
     "RnaMsmConfig",
     "RnaMsmModel",
     "RnaTokenizer",
+    "RnaMsmPreTrainedModel",
     "RnaMsmForPretraining",
     "RnaMsmForMaskedLM",
     "RnaMsmForSequenceClassification",

@@ -17,15 +17,18 @@ from .modeling_utrlm import (
     UtrLmForSequenceClassification,
     UtrLmForTokenClassification,
     UtrLmModel,
+    UtrLmPreTrainedModel,
 )
 
 __all__ = [
     "UtrLmConfig",
     "UtrLmModel",
+    "UtrLmPreTrainedModel",
     "RnaTokenizer",
     "UtrLmForMaskedLM",
     "UtrLmForSequenceClassification",
     "UtrLmForTokenClassification",
+    "UtrLmForCrisprOffTarget",
 ]
 
 AutoConfig.register("utrlm", UtrLmConfig)

@@ -17,12 +17,14 @@ from .modeling_rnafm import (
     RnaFmForSequenceClassification,
     RnaFmForTokenClassification,
     RnaFmModel,
+    RnaFmPreTrainedModel,
 )
 
 __all__ = [
     "RnaFmConfig",
     "RnaFmModel",
     "RnaTokenizer",
+    "RnaFmPreTrainedModel",
     "RnaFmForMaskedLM",
     "RnaFmForPretraining",
     "RnaFmForSequenceClassification",

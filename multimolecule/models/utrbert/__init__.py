@@ -18,15 +18,18 @@ from .modeling_utrbert import (
     UtrBertForSequenceClassification,
     UtrBertForTokenClassification,
     UtrBertModel,
+    UtrBertPreTrainedModel,
 )
 
 __all__ = [
     "UtrBertConfig",
     "UtrBertModel",
+    "UtrBertPreTrainedModel",
     "UtrBertForMaskedLM",
     "UtrBertForPretraining",
     "UtrBertForSequenceClassification",
     "UtrBertForTokenClassification",
+    "UtrBertForCrisprOffTarget",
 ]
 
 AutoConfig.register("utrbert", UtrBertConfig)

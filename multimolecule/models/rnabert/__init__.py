@@ -17,12 +17,14 @@ from .modeling_rnabert import (
     RnaBertForSequenceClassification,
     RnaBertForTokenClassification,
     RnaBertModel,
+    RnaBertPreTrainedModel,
 )
 
 __all__ = [
     "RnaBertConfig",
     "RnaBertModel",
     "RnaTokenizer",
+    "RnaBertPreTrainedModel",
     "RnaBertForMaskedLM",
     "RnaBertForPretraining",
     "RnaBertForSequenceClassification",

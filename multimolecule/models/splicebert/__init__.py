@@ -17,11 +17,13 @@ from .modeling_splicebert import (
     SpliceBertForSequenceClassification,
     SpliceBertForTokenClassification,
     SpliceBertModel,
+    SpliceBertPreTrainedModel,
 )
 
 __all__ = [
     "SpliceBertConfig",
     "SpliceBertModel",
+    "SpliceBertPreTrainedModel",
     "SpliceBertForMaskedLM",
     "SpliceBertForPretraining",
     "SpliceBertForSequenceClassification",

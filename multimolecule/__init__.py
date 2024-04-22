@@ -1,4 +1,12 @@
 from . import models, tokenizers
+from .downstream.crispr_off_target import (
+    RnaBertForCrisprOffTarget,
+    RnaFmForCrisprOffTarget,
+    RnaMsmForCrisprOffTarget,
+    SpliceBertForCrisprOffTarget,
+    UtrBertForCrisprOffTarget,
+    UtrLmForCrisprOffTarget,
+)
 from .models import (
     RnaBertConfig,
     RnaBertForMaskedLM,
@@ -79,4 +87,10 @@ __all__ = [
     "UtrLmForPretraining",
     "UtrLmForSequenceClassification",
     "UtrLmForTokenClassification",
+    "RnaBertForCrisprOffTarget",
+    "RnaFmForCrisprOffTarget",
+    "RnaMsmForCrisprOffTarget",
+    "SpliceBertForCrisprOffTarget",
+    "UtrBertForCrisprOffTarget",
+    "UtrLmForCrisprOffTarget",
 ]

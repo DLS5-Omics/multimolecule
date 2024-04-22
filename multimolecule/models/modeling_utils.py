@@ -87,7 +87,7 @@ class MaskedLMHead(nn.Module):
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = PredictionHeadTransform.build(self.config)
 
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=False)
+        self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=False)
         if weight is not None:
             self.decoder.weight = weight
         if self.config.bias:
@@ -116,7 +116,7 @@ class ClassificationHead(nn.Module):
         self.num_labels = config.head.num_labels
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = PredictionHeadTransform.build(self.config)
-        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=self.config.bias)
+        self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
     def forward(self, embeddings: Tensor) -> Tensor:
