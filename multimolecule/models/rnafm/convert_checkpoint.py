@@ -113,6 +113,12 @@ def convert_checkpoint(convert_config):
         if HfApi is None:
             raise ImportError("Please install huggingface_hub to push to the hub.")
         api = HfApi()
+        if convert_config.delete_existing:
+            api.delete_repo(
+                convert_config.repo_id,
+                token=convert_config.token,
+                missing_ok=True,
+            )
         api.create_repo(
             convert_config.repo_id,
             token=convert_config.token,
@@ -128,8 +134,13 @@ class ConvertConfig:
     checkpoint_path: str
     output_path: str = Config.model_type
     push_to_hub: bool = False
-    repo_id: str = f"multimolecule/{output_path}"
+    delete_existing: bool = False
+    repo_id: Optional[str] = None
     token: Optional[str] = None
+
+    def post(self):
+        if self.repo_id is None:
+            self.repo_id = f"multimolecule/{self.output_path}"
 
 
 if __name__ == "__main__":
