@@ -6,7 +6,7 @@ import torch
 
 from multimolecule.models import SpliceBertConfig as Config
 from multimolecule.models import SpliceBertForPretraining as Model
-from multimolecule.tokenizers.rna.utils import (
+from multimolecule.tokenisers.rna.utils import (
     convert_word_embeddings,
     get_special_tokens_map,
     get_tokenizer_config,

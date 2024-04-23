@@ -1,4 +1,4 @@
-from . import models, tokenizers
+from . import models, tokenisers
 from .downstream.crispr_off_target import (
     RnaBertForCrisprOffTarget,
     RnaFmForCrisprOffTarget,
@@ -45,11 +45,11 @@ from .models import (
     UtrLmForTokenClassification,
     UtrLmModel,
 )
-from .tokenizers import RnaTokenizer
+from .tokenisers import RnaTokenizer
 
 __all__ = [
     "models",
-    "tokenizers",
+    "tokenisers",
     "RnaTokenizer",
     "RnaBertConfig",
     "RnaBertModel",

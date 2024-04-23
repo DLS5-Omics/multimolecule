@@ -8,7 +8,7 @@ from transformers import (
     AutoTokenizer,
 )
 
-from multimolecule.tokenizers.rna import RnaTokenizer
+from multimolecule.tokenisers.rna import RnaTokenizer
 
 from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (

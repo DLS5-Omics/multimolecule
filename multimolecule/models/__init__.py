@@ -1,4 +1,4 @@
-from ..tokenizers.rna import RnaTokenizer
+from ..tokenisers.rna import RnaTokenizer
 from .rnabert import (
     RnaBertConfig,
     RnaBertForMaskedLM,
