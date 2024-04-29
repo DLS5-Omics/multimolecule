@@ -59,16 +59,22 @@ class ContactPredictionHead(nn.Module):
         # remove cls token attentions
         if self.bos_token_id is not None:
             attentions = attentions[..., 1:, 1:]
+            attention_mask = attention_mask[..., 1:, 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
         # remove eos token attentions
         if self.eos_token_id is not None:
             if input_ids is not None:
-                # Zhiyuan: Do we really need to remove the eos token attentions?
                 eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
-                eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
-                attentions *= eos_mask[:, None, None, :, :]
+                input_ids = input_ids[..., 1:]
+            else:
+                last_valid_indices = attention_mask.sum(dim=-1) - 1
+                seq_length = attention_mask.size(-1)
+                eos_mask = torch.arange(seq_length, device=attentions.device).unsqueeze(0) != last_valid_indices
+            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
+            attentions *= eos_mask[:, None, None, :, :]
             attentions = attentions[..., :-1, :-1]
+            attention_mask = attention_mask[..., 1:, 1:]
 
         # features: batch x channels x input_ids x input_ids (symmetric)
         batch_size, layers, heads, seqlen, _ = attentions.size()
