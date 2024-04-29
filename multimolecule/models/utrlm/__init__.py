@@ -13,6 +13,7 @@ from multimolecule.tokenisers.rna import RnaTokenizer
 from .configuration_utrlm import UtrLmConfig
 from .modeling_utrlm import (
     UtrLmForMaskedLM,
+    UtrLmForNucleotideClassification,
     UtrLmForPretraining,
     UtrLmForSequenceClassification,
     UtrLmForTokenClassification,
@@ -21,6 +22,7 @@ from .modeling_utrlm import (
 )
 
 __all__ = [
+    "RnaTokenizer",
     "UtrLmConfig",
     "UtrLmModel",
     "UtrLmPreTrainedModel",
@@ -28,7 +30,7 @@ __all__ = [
     "UtrLmForMaskedLM",
     "UtrLmForSequenceClassification",
     "UtrLmForTokenClassification",
-    "UtrLmForCrisprOffTarget",
+    "UtrLmForNucleotideClassification",
 ]
 
 AutoConfig.register("utrlm", UtrLmConfig)

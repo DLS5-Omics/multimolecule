@@ -14,6 +14,7 @@ from multimolecule.tokenisers.rna import RnaTokenizer
 from .configuration_utrbert import UtrBertConfig
 from .modeling_utrbert import (
     UtrBertForMaskedLM,
+    UtrBertForNucleotideClassification,
     UtrBertForPretraining,
     UtrBertForSequenceClassification,
     UtrBertForTokenClassification,
@@ -22,6 +23,7 @@ from .modeling_utrbert import (
 )
 
 __all__ = [
+    "RnaTokenizer",
     "UtrBertConfig",
     "UtrBertModel",
     "UtrBertPreTrainedModel",
@@ -29,7 +31,7 @@ __all__ = [
     "UtrBertForPretraining",
     "UtrBertForSequenceClassification",
     "UtrBertForTokenClassification",
-    "UtrBertForCrisprOffTarget",
+    "UtrBertForNucleotideClassification",
 ]
 
 AutoConfig.register("utrbert", UtrBertConfig)

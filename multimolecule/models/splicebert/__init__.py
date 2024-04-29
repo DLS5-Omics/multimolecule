@@ -13,6 +13,7 @@ from multimolecule.tokenisers.rna import RnaTokenizer
 from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
     SpliceBertForMaskedLM,
+    SpliceBertForNucleotideClassification,
     SpliceBertForPretraining,
     SpliceBertForSequenceClassification,
     SpliceBertForTokenClassification,
@@ -21,6 +22,7 @@ from .modeling_splicebert import (
 )
 
 __all__ = [
+    "RnaTokenizer",
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertPreTrainedModel",
@@ -28,6 +30,7 @@ __all__ = [
     "SpliceBertForPretraining",
     "SpliceBertForSequenceClassification",
     "SpliceBertForTokenClassification",
+    "SpliceBertForNucleotideClassification",
 ]
 
 AutoConfig.register("splicebert", SpliceBertConfig)

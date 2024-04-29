@@ -13,6 +13,7 @@ from multimolecule.tokenisers.rna import RnaTokenizer
 from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
     RnaMsmForMaskedLM,
+    RnaMsmForNucleotideClassification,
     RnaMsmForPretraining,
     RnaMsmForSequenceClassification,
     RnaMsmForTokenClassification,
@@ -21,14 +22,15 @@ from .modeling_rnamsm import (
 )
 
 __all__ = [
+    "RnaTokenizer",
     "RnaMsmConfig",
     "RnaMsmModel",
-    "RnaTokenizer",
     "RnaMsmPreTrainedModel",
     "RnaMsmForPretraining",
     "RnaMsmForMaskedLM",
     "RnaMsmForSequenceClassification",
     "RnaMsmForTokenClassification",
+    "RnaMsmForNucleotideClassification",
 ]
 
 AutoConfig.register("rnamsm", RnaMsmConfig)

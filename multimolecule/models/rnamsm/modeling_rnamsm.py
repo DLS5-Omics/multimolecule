@@ -13,7 +13,13 @@ from transformers import PreTrainedModel
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
-from ..modeling_utils import ContactPredictionHead, MaskedLMHead, SequenceClassificationHead, TokenClassificationHead
+from ..modeling_utils import (
+    ContactPredictionHead,
+    MaskedLMHead,
+    NucleotideClassificationHead,
+    SequenceClassificationHead,
+    TokenClassificationHead,
+)
 from .configuration_rnamsm import RnaMsmConfig
 
 
@@ -348,6 +354,86 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
             return_dict=return_dict,
         )
         logits = self.token_head(outputs)
+
+        loss = None
+        if labels is not None:
+            if self.head_config.problem_type is None:
+                if self.num_labels == 1:
+                    self.head_config.problem_type = "regression"
+                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
+                    self.head_config.problem_type = "single_label_classification"
+                else:
+                    self.head_config.problem_type = "multi_label_classification"
+            if self.head_config.problem_type == "regression":
+                loss = (
+                    F.mse_loss(logits.squeeze(), labels.squeeze())
+                    if self.num_labels == 1
+                    else F.mse_loss(logits, labels)
+                )
+            elif self.head_config.problem_type == "single_label_classification":
+                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
+            elif self.head_config.problem_type == "multi_label_classification":
+                loss = F.binary_cross_entropy_with_logits(logits, labels)
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return RnaMsmForTokenClassifierOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            col_attentions=outputs.col_attentions,
+            row_attentions=outputs.row_attentions,
+        )
+
+
+class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForNucleotideClassification, RnaTokenizer
+        >>> config = RnaMsmConfig()
+        >>> model = RnaMsmForNucleotideClassification(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input)
+    """
+
+    def __init__(self, config: RnaMsmConfig):
+        super().__init__(config)
+        self.num_labels = config.head.num_labels
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.head_config = self.nucleotide_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor,
+        attention_mask: Optional[Tensor] = None,
+        labels: Optional[Tensor] = None,
+        output_attentions: bool = False,
+        output_hidden_states: bool = False,
+        return_dict: bool = True,
+    ) -> Tuple[Tensor, ...] | RnaMsmForTokenClassifierOutput:
+        r"""
+        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
+            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
+            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
+            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
+        """
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+
+        outputs = self.rnamsm(
+            input_ids,
+            attention_mask=attention_mask,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+        )
+        logits = self.nucleotide_head(outputs, attention_mask, input_ids)
 
         loss = None
         if labels is not None:
