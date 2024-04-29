@@ -480,7 +480,7 @@ class UtrBertForTokenClassification(UtrBertPreTrainedModel):
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertForTokenClassification, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=2, strameline=True)
-        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
+        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size, nmers=2)
         >>> model = UtrBertForTokenClassification(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -524,7 +524,7 @@ class UtrBertForTokenClassification(UtrBertPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.token_head(outputs)
+        logits = self.token_head(outputs, attention_mask, input_ids)
 
         loss = None
         if labels is not None:
