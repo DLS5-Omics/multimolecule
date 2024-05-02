@@ -55,7 +55,7 @@ class HeadConfig:
             The dropout ratio for the hidden states.
         transform (`str`, *optional*, defaults to None):
             The transform operation applied to hidden states.
-        transform_act (`str`, *optional*, defaults to "tanh"):
+        transform_act (`str`, *optional*, defaults to "gelu"):
             The activation function of transform applied to hidden states.
         bias (`bool`, *optional*, defaults to True):
             Whether to apply bias to the final prediction layer.
@@ -73,7 +73,7 @@ class HeadConfig:
     hidden_size: Optional[int] = None
     dropout: float = 0.0
     transform: Optional[str] = None
-    transform_act: Optional[str] = "tanh"
+    transform_act: Optional[str] = "gelu"
     bias: bool = True
     act: Optional[str] = None
     layer_norm_eps: float = 1e-12
