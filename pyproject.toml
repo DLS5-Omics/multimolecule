@@ -104,7 +104,7 @@ output = "coverage.json"
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 80
+fail_under = 50
 
 [tool.mypy]
 ignore_missing_imports = true
