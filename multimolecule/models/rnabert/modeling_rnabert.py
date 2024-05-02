@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple
 
 import torch
+from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers import PreTrainedModel
@@ -79,12 +80,14 @@ class RnaBertModel(RnaBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
     ) -> Tuple[Tensor, ...] | BaseModelOutputWithPooling:
+        if isinstance(input_ids, NestedTensor):
+            input_ids, attention_mask = input_ids.tensor, input_ids.mask
         if attention_mask is None:
             attention_mask = (
                 input_ids.ne(self.pad_token_id) if self.pad_token_id is not None else torch.ones_like(input_ids)
@@ -135,7 +138,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -188,7 +191,7 @@ class RnaBertForPretraining(RnaBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         labels_ss: Optional[Tensor] = None,
@@ -253,7 +256,7 @@ class RnaBertForSequenceClassification(RnaBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -332,7 +335,7 @@ class RnaBertForTokenClassification(RnaBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -411,7 +414,7 @@ class RnaBertForNucleotideClassification(RnaBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,

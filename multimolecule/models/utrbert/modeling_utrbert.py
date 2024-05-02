@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple
 
 import torch
 import torch.utils.checkpoint
+from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers.activations import ACT2FN
@@ -91,7 +92,7 @@ class UtrBertModel(UtrBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Optional[Tensor] = None,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         position_ids: Optional[Tensor] = None,
         head_mask: Optional[Tensor] = None,
@@ -136,9 +137,11 @@ class UtrBertModel(UtrBertPreTrainedModel):
         else:
             use_cache = False
 
+        if isinstance(input_ids, NestedTensor):
+            input_ids, attention_mask = input_ids.tensor, input_ids.mask
         if input_ids is not None and inputs_embeds is not None:
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
-        elif input_ids is not None:
+        if input_ids is not None:
             self.warn_if_padding_and_no_attention_mask(input_ids, attention_mask)
             input_shape = input_ids.size()
         elif inputs_embeds is not None:
@@ -249,7 +252,7 @@ class UtrBertForMaskedLM(UtrBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Optional[Tensor] = None,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         position_ids: Optional[Tensor] = None,
         head_mask: Optional[Tensor] = None,
@@ -344,7 +347,7 @@ class UtrBertForPretraining(UtrBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Optional[Tensor] = None,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         position_ids: Optional[Tensor] = None,
         head_mask: Optional[Tensor] = None,
@@ -413,7 +416,7 @@ class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Optional[Tensor] = None,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         position_ids: Optional[Tensor] = None,
         head_mask: Optional[Tensor] = None,
@@ -498,7 +501,7 @@ class UtrBertForTokenClassification(UtrBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Optional[Tensor] = None,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         position_ids: Optional[Tensor] = None,
         head_mask: Optional[Tensor] = None,
@@ -581,7 +584,7 @@ class UtrBertForNucleotideClassification(UtrBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,

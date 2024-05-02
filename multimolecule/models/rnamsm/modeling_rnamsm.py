@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 
 import torch
 from chanfig import ConfigRegistry
+from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers import PreTrainedModel
@@ -75,12 +76,14 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
     ) -> Tuple[Tensor, ...] | RnaMsmModelOutputWithPooling:
+        if isinstance(input_ids, NestedTensor):
+            input_ids, attention_mask = input_ids.tensor, input_ids.mask
         if attention_mask is None:
             attention_mask = (
                 input_ids.ne(self.pad_token_id) if self.pad_token_id is not None else torch.ones_like(input_ids)
@@ -134,7 +137,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -188,7 +191,7 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         labels_contact: Optional[Tensor] = None,
@@ -251,7 +254,7 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -331,7 +334,7 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -411,7 +414,7 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor,
+        input_ids: Tensor | NestedTensor,
         attention_mask: Optional[Tensor] = None,
         labels: Optional[Tensor] = None,
         output_attentions: bool = False,
@@ -489,7 +492,7 @@ class RnaMsmEmbeddings(nn.Module):
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=1e-12)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
-    def forward(self, input_ids: Tensor, attention_mask: Optional[Tensor] = None) -> Tensor:
+    def forward(self, input_ids: Tensor | NestedTensor, attention_mask: Optional[Tensor] = None) -> Tensor:
         assert input_ids.ndim == 3
         if attention_mask is None:
             attention_mask = input_ids.ne(self.pad_token_id)
@@ -1259,7 +1262,7 @@ class RnaMsmPreTrainingHeads(nn.Module):
         self,
         outputs: RnaMsmModelOutput | Tuple[Tensor, ...],
         attention_mask: Optional[Tensor] = None,
-        input_ids: Optional[Tensor] = None,
+        input_ids: Tensor | NestedTensor | None = None,
     ) -> Tuple[Tensor, Tensor]:
         sequence_output, row_attentions = outputs[0], torch.stack(outputs[-1], 1)
         prediction_scores = self.predictions(sequence_output)
