@@ -287,11 +287,8 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.lm_head(outputs)
-
-        loss = None
-        if labels is not None:
-            loss = F.cross_entropy(logits.view(-1, self.config.vocab_size), labels.view(-1))
+        output = self.lm_head(outputs, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
@@ -459,27 +456,9 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.sequence_head(outputs)
+        output = self.sequence_head(outputs, labels)
+        logits, loss = output.logits, output.loss
 
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
@@ -507,8 +486,8 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.toen_head = TokenClassificationHead(config)
-        self.head_config = self.toen_head.config
+        self.token_head = TokenClassificationHead(config)
+        self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -541,27 +520,9 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.toen_head(outputs)
+        output = self.token_head(outputs, labels)
+        logits, loss = output.logits, output.loss
 
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
@@ -619,27 +580,8 @@ class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.nucleotide_head(outputs, attention_mask, input_ids)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]

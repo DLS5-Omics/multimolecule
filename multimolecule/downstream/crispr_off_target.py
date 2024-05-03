@@ -5,7 +5,6 @@ from typing import Tuple
 
 import torch
 from torch import Tensor
-from torch.nn import functional as F
 from transformers.modeling_outputs import ModelOutput
 
 from multimolecule.models.modeling_utils import ClassificationHead
@@ -36,8 +35,8 @@ class RnaBertForCrisprOffTarget(RnaBertPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.rnabert = RnaBertModel(config, add_pooling_layer=True)
         config.head.hidden_size = config.hidden_size * 2
-        self.sequence_head = ClassificationHead(config)
-        self.head_config = self.sequence_head.config
+        self.classifier = ClassificationHead(config)
+        self.head_config = self.classifier.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -78,27 +77,8 @@ class RnaBertForCrisprOffTarget(RnaBertPreTrainedModel):
         )
         target_embeddings = target_outputs[1]
         embeddings = torch.cat([sgnra_embeddings, target_embeddings], dim=-1)
-        logits = self.sequence_head(embeddings)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.classifier(embeddings, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + sgrna_outputs[2:] + target_outputs[2:]
@@ -133,8 +113,8 @@ class RnaFmForCrisprOffTarget(RnaFmPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.rnafm = RnaFmModel(config, add_pooling_layer=True)
         config.head.hidden_size = config.hidden_size * 2
-        self.sequence_head = ClassificationHead(config)
-        self.head_config = self.sequence_head.config
+        self.classifier = ClassificationHead(config)
+        self.head_config = self.classifier.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -175,27 +155,8 @@ class RnaFmForCrisprOffTarget(RnaFmPreTrainedModel):
         )
         target_embeddings = target_outputs[1]
         embeddings = torch.cat([sgnra_embeddings, target_embeddings], dim=-1)
-        logits = self.sequence_head(embeddings)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.classifier(embeddings, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + sgrna_outputs[2:] + target_outputs[2:]
@@ -230,8 +191,8 @@ class RnaMsmForCrisprOffTarget(RnaMsmPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
         config.head.hidden_size = config.hidden_size * 2
-        self.sequence_head = ClassificationHead(config)
-        self.head_config = self.sequence_head.config
+        self.classifier = ClassificationHead(config)
+        self.head_config = self.classifier.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -272,27 +233,8 @@ class RnaMsmForCrisprOffTarget(RnaMsmPreTrainedModel):
         )
         target_embeddings = target_outputs[1]
         embeddings = torch.cat([sgnra_embeddings, target_embeddings], dim=-1)
-        logits = self.sequence_head(embeddings)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.classifier(embeddings, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + sgrna_outputs[2:] + target_outputs[2:]
@@ -329,8 +271,8 @@ class SpliceBertForCrisprOffTarget(SpliceBertPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
         config.head.hidden_size = config.hidden_size * 2
-        self.sequence_head = ClassificationHead(config)
-        self.head_config = self.sequence_head.config
+        self.classifier = ClassificationHead(config)
+        self.head_config = self.classifier.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -371,27 +313,8 @@ class SpliceBertForCrisprOffTarget(SpliceBertPreTrainedModel):
         )
         target_embeddings = target_outputs[1]
         embeddings = torch.cat([sgnra_embeddings, target_embeddings], dim=-1)
-        logits = self.sequence_head(embeddings)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.classifier(embeddings, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + sgrna_outputs[2:] + target_outputs[2:]
@@ -426,8 +349,8 @@ class UtrBertForCrisprOffTarget(UtrBertPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config, add_pooling_layer=True)
         config.head.hidden_size = config.hidden_size * 2
-        self.sequence_head = ClassificationHead(config)
-        self.head_config = self.sequence_head.config
+        self.classifier = ClassificationHead(config)
+        self.head_config = self.classifier.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -468,27 +391,8 @@ class UtrBertForCrisprOffTarget(UtrBertPreTrainedModel):
         )
         target_embeddings = target_outputs[1]
         embeddings = torch.cat([sgnra_embeddings, target_embeddings], dim=-1)
-        logits = self.sequence_head(embeddings)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.classifier(embeddings, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + sgrna_outputs[2:] + target_outputs[2:]
@@ -523,8 +427,8 @@ class UtrLmForCrisprOffTarget(UtrLmPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=True)
         config.head.hidden_size = config.hidden_size * 2
-        self.sequence_head = ClassificationHead(config)
-        self.head_config = self.sequence_head.config
+        self.classifier = ClassificationHead(config)
+        self.head_config = self.classifier.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -565,27 +469,8 @@ class UtrLmForCrisprOffTarget(UtrLmPreTrainedModel):
         )
         target_embeddings = target_outputs[1]
         embeddings = torch.cat([sgnra_embeddings, target_embeddings], dim=-1)
-        logits = self.sequence_head(embeddings)
-
-        loss = None
-        if labels is not None:
-            if self.head_config.problem_type is None:
-                if self.num_labels == 1:
-                    self.head_config.problem_type = "regression"
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.head_config.problem_type = "single_label_classification"
-                else:
-                    self.head_config.problem_type = "multi_label_classification"
-            if self.head_config.problem_type == "regression":
-                loss = (
-                    F.mse_loss(logits.squeeze(), labels.squeeze())
-                    if self.num_labels == 1
-                    else F.mse_loss(logits, labels)
-                )
-            elif self.head_config.problem_type == "single_label_classification":
-                loss = F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.head_config.problem_type == "multi_label_classification":
-                loss = F.binary_cross_entropy_with_logits(logits, labels)
+        output = self.classifier(embeddings, labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + sgrna_outputs[2:] + target_outputs[2:]

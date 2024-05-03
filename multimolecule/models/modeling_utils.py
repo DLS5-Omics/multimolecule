@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from functools import partial
 from typing import Tuple
 
 import torch
 from chanfig import ConfigRegistry
 from torch import Tensor, nn
+from torch.nn import functional as F
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
@@ -40,10 +42,15 @@ class ContactPredictionHead(nn.Module):
             config.num_hidden_layers * config.num_attention_heads, self.num_labels, bias=self.config.bias
         )
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
+        self.criterion = Criterion(self.config)
 
     def forward(
-        self, attentions: Tensor, attention_mask: Tensor | None = None, input_ids: Tensor | None = None
-    ) -> Tensor:
+        self,
+        attentions: Tensor,
+        attention_mask: Tensor | None = None,
+        input_ids: Tensor | None = None,
+        labels: Tensor | None = None,
+    ) -> HeadOutput:
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
@@ -90,7 +97,9 @@ class ContactPredictionHead(nn.Module):
         output = self.decoder(output).squeeze(3)
         if self.activation is not None:
             output = self.activation(output)
-        return output
+        if labels is not None:
+            return HeadOutput(output, self.criterion(output, labels))
+        return HeadOutput(output)
 
 
 class MaskedLMHead(nn.Module):
@@ -112,14 +121,16 @@ class MaskedLMHead(nn.Module):
             self.decoder.bias = self.bias
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:
+    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None) -> HeadOutput:
         sequence_output = outputs[0]
         output = self.dropout(sequence_output)
         output = self.transform(output)
         output = self.decoder(output)
         if self.activation is not None:
             output = self.activation(output)
-        return output
+        if labels is not None:
+            return HeadOutput(output, F.cross_entropy(output.view(-1, self.config.vocab_size), labels.view(-1)))
+        return HeadOutput(output)
 
 
 class ClassificationHead(nn.Module):
@@ -141,21 +152,26 @@ class ClassificationHead(nn.Module):
         self.transform = PredictionHeadTransform.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
+        self.criterion = Criterion(self.config)
 
-    def forward(self, embeddings: Tensor) -> Tensor:
+    def forward(self, embeddings: Tensor, labels: Tensor | None = None) -> HeadOutput:
         output = self.dropout(embeddings)
         output = self.transform(output)
         output = self.decoder(output)
         if self.activation is not None:
             output = self.activation(output)
-        return output
+        if labels is not None:
+            return HeadOutput(output, self.criterion(output, labels))
+        return HeadOutput(output)
 
 
 class SequenceClassificationHead(ClassificationHead):
     """Head for sequence-level tasks."""
 
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:  # pylint: disable=arguments-renamed
-        output = super().forward(outputs[1])
+    def forward(
+        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None
+    ) -> HeadOutput:  # pylint: disable=arguments-renamed
+        output = super().forward(outputs[1], labels)
         return output
 
 
@@ -163,8 +179,10 @@ class SequenceClassificationHead(ClassificationHead):
 class TokenClassificationHead(ClassificationHead):
     """Head for token-level tasks."""
 
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tensor:  # pylint: disable=arguments-renamed
-        output = super().forward(outputs[0])
+    def forward(
+        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None
+    ) -> HeadOutput:  # pylint: disable=arguments-renamed
+        output = super().forward(outputs[0], labels)
         return output
 
 
@@ -182,12 +200,13 @@ class TokenKMerHead(ClassificationHead):
             unfold_kmer_embeddings, nmers=self.nmers, bos_token_id=self.bos_token_id, eos_token_id=self.eos_token_id
         )
 
-    def forward(  # pylint: disable=arguments-renamed
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
-    ) -> Tensor:
+        labels: Tensor | None = None,
+    ) -> HeadOutput:
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError("Either attention_mask or input_ids must be provided for TokenKMerHead to work.")
@@ -197,7 +216,7 @@ class TokenKMerHead(ClassificationHead):
 
         output = outputs[0]
         output = self.unfold_kmer_embeddings(output, attention_mask)
-        output = super().forward(output)
+        output = super().forward(output, labels)
         return output
 
 
@@ -211,12 +230,13 @@ class NucleotideClassificationHead(ClassificationHead):
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
 
-    def forward(  # pylint: disable=arguments-renamed
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
-    ) -> Tensor:
+        labels: Tensor | None = None,
+    ) -> HeadOutput:
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
@@ -248,7 +268,7 @@ class NucleotideClassificationHead(ClassificationHead):
             output = output[..., :-1, :]
             attention_mask = attention_mask[..., 1:]
 
-        output = super().forward(output)
+        output = super().forward(output, labels)
         return output
 
 
@@ -264,12 +284,13 @@ class NucleotideKMerHead(ClassificationHead):
         self.pad_token_id = config.pad_token_id
         self.unfold_kmer_embeddings = partial(unfold_kmer_embeddings, nmers=self.nmers)
 
-    def forward(  # pylint: disable=arguments-renamed
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
-    ) -> Tensor:
+        labels: Tensor | None = None,
+    ) -> HeadOutput:
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError("Either attention_mask or input_ids must be provided for NucleotideKMerHead to work.")
@@ -300,8 +321,40 @@ class NucleotideKMerHead(ClassificationHead):
             attention_mask = attention_mask[..., 1:]
 
         output = self.unfold_kmer_embeddings(output, attention_mask)
-        output = super().forward(output)
+        output = super().forward(output, labels)
         return output
+
+
+class Criterion(nn.Module):
+
+    problem_types = ["regression", "single_label_classification", "multi_label_classification"]
+
+    def __init__(self, config: HeadConfig) -> None:
+        super().__init__()
+        self.config = config
+        self.problem_type = config.problem_type
+        self.num_labels = config.num_labels
+
+    def forward(self, logits, labels) -> Tensor | None:
+        if labels is None:
+            return None
+        if self.problem_type is None:
+            if self.num_labels == 1:
+                self.problem_type = "regression"
+            elif self.num_labels > 1 and labels.dtype in (torch.long, torch.int):
+                self.problem_type = "single_label_classification"
+            else:
+                self.problem_type = "multi_label_classification"
+            self.config.problem_type = self.problem_type
+        if self.problem_type == "regression":
+            return (
+                F.mse_loss(logits.squeeze(), labels.squeeze()) if self.num_labels == 1 else F.mse_loss(logits, labels)
+            )
+        if self.problem_type == "single_label_classification":
+            return F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
+        if self.problem_type == "multi_label_classification":
+            return F.binary_cross_entropy_with_logits(logits, labels)
+        raise ValueError(f"problem_type should be one of {self.problem_types}, but got {self.problem_type}")
 
 
 PredictionHeadTransform = ConfigRegistry(key="transform")
@@ -342,6 +395,12 @@ class LinearTransform(nn.Module):
 class IdentityTransform(nn.Identity):
     def __init__(self, config: HeadConfig):  # pylint: disable=unused-argument
         super().__init__()
+
+
+@dataclass
+class HeadOutput(ModelOutput):
+    logits: torch.FloatTensor = None
+    loss: torch.FloatTensor | None = None
 
 
 def unfold_kmer_embeddings(
