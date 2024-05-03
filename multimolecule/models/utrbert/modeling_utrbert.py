@@ -405,7 +405,6 @@ class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config)
-        self.classifier = nn.Linear(config.hidden_size, config.num_labels)
         self.sequence_head = SequenceClassificationHead(config)
         self.head_config = self.sequence_head.config
 

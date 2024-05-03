@@ -419,8 +419,8 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=True)
-        self.classifier = SequenceClassificationHead(config)
-        self.head_config = self.classifier.config
+        self.sequence_head = SequenceClassificationHead(config)
+        self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -455,7 +455,7 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.classifier(outputs)
+        logits = self.sequence_head(outputs)
 
         loss = None
         if labels is not None:
@@ -503,8 +503,8 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.classifier = TokenClassificationHead(config)
-        self.head_config = self.classifier.config
+        self.toen_head = TokenClassificationHead(config)
+        self.head_config = self.toen_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -537,7 +537,7 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits = self.classifier(outputs)
+        logits = self.toen_head(outputs)
 
         loss = None
         if labels is not None:
