@@ -7,13 +7,13 @@ import torch
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.models.modeling_utils import ClassificationHead
 from multimolecule.models.rnabert import RnaBertConfig, RnaBertModel, RnaBertPreTrainedModel
 from multimolecule.models.rnafm import RnaFmConfig, RnaFmModel, RnaFmPreTrainedModel
 from multimolecule.models.rnamsm import RnaMsmConfig, RnaMsmModel, RnaMsmPreTrainedModel
 from multimolecule.models.splicebert import SpliceBertConfig, SpliceBertModel, SpliceBertPreTrainedModel
 from multimolecule.models.utrbert import UtrBertConfig, UtrBertModel, UtrBertPreTrainedModel
 from multimolecule.models.utrlm import UtrLmConfig, UtrLmModel, UtrLmPreTrainedModel
+from multimolecule.module import ClassificationHead
 
 
 class RnaBertForCrisprOffTarget(RnaBertPreTrainedModel):

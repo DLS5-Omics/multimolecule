@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from dataclasses import asdict, dataclass, is_dataclass
 
 from transformers.configuration_utils import PretrainedConfig as _PretrainedConfig
 
 
 class PretrainedConfig(_PretrainedConfig):
-    head: HeadConfig
+    head: BaseHeadConfig
 
     def __init__(
         self, pad_token_id=0, bos_token_id=1, eos_token_id=2, unk_token_id=3, mask_token_id=4, null_token_id=5, **kwargs
@@ -37,8 +38,12 @@ class PretrainedConfig(_PretrainedConfig):
         return output
 
 
+class HeadConfig(OrderedDict):
+    pass
+
+
 @dataclass
-class HeadConfig:
+class BaseHeadConfig(HeadConfig):
     r"""
     This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
     prediction head according to the specified arguments, defining the head architecture.
@@ -81,7 +86,7 @@ class HeadConfig:
 
 
 @dataclass
-class MaskedLMHeadConfig:
+class MaskedLMHeadConfig(HeadConfig):
     r"""
     This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
     prediction head according to the specified arguments, defining the head architecture.

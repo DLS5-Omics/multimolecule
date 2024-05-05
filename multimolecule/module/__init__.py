@@ -1,0 +1,35 @@
+from .criterions import Criterion
+from .heads import (
+    ClassificationHead,
+    ContactPredictionHead,
+    HeadTransforms,
+    IdentityTransform,
+    LinearTransform,
+    MaskedLMHead,
+    NonLinearTransform,
+    NucleotideClassificationHead,
+    NucleotideHeads,
+    NucleotideKMerHead,
+    SequenceClassificationHead,
+    TokenClassificationHead,
+    TokenHeads,
+    TokenKMerHead,
+)
+
+__all__ = [
+    "ClassificationHead",
+    "SequenceClassificationHead",
+    "TokenHeads",
+    "TokenClassificationHead",
+    "TokenKMerHead",
+    "NucleotideHeads",
+    "NucleotideClassificationHead",
+    "NucleotideKMerHead",
+    "ContactPredictionHead",
+    "MaskedLMHead",
+    "HeadTransforms",
+    "LinearTransform",
+    "NonLinearTransform",
+    "IdentityTransform",
+    "Criterion",
+]

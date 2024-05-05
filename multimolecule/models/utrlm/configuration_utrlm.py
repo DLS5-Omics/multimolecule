@@ -1,6 +1,6 @@
 from transformers.utils import logging
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from ..configuration_utils import BaseHeadConfig, MaskedLMHeadConfig, PretrainedConfig
 
 logger = logging.get_logger(__name__)
 
@@ -119,7 +119,7 @@ class UtrLmConfig(PretrainedConfig):
         self.use_cache = use_cache
         self.emb_layer_norm_before = emb_layer_norm_before
         self.token_dropout = token_dropout
-        self.head = HeadConfig(**head if head is not None else {})
+        self.head = BaseHeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})
-        self.structure_head = HeadConfig(**structure_head) if structure_head is not None else None
-        self.supervised_head = HeadConfig(**supervised_head) if supervised_head is not None else None
+        self.structure_head = BaseHeadConfig(**structure_head) if structure_head is not None else None
+        self.supervised_head = BaseHeadConfig(**supervised_head) if supervised_head is not None else None

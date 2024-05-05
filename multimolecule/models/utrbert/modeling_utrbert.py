@@ -19,7 +19,8 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from ..modeling_utils import MaskedLMHead, NucleotideKMerHead, SequenceClassificationHead, TokenKMerHead
+from multimolecule.module import MaskedLMHead, NucleotideKMerHead, SequenceClassificationHead, TokenKMerHead
+
 from .configuration_utrbert import UtrBertConfig
 
 logger = logging.get_logger(__name__)

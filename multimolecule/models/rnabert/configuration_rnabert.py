@@ -1,6 +1,6 @@
 from transformers.utils import logging
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from ..configuration_utils import BaseHeadConfig, MaskedLMHeadConfig, PretrainedConfig
 
 logger = logging.get_logger(__name__)
 
@@ -95,5 +95,5 @@ class RnaBertConfig(PretrainedConfig):
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
         self.use_cache = use_cache
-        self.head = HeadConfig(**head if head is not None else {})
+        self.head = BaseHeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})

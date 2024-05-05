@@ -19,12 +19,13 @@ from transformers.modeling_outputs import (
     TokenClassifierOutput,
 )
 
-from ..modeling_utils import (
+from multimolecule.module import (
     MaskedLMHead,
     NucleotideClassificationHead,
     SequenceClassificationHead,
     TokenClassificationHead,
 )
+
 from .configuration_rnabert import RnaBertConfig
 
 

@@ -8,6 +8,10 @@ from .downstream.crispr_off_target import (
     UtrLmForCrisprOffTarget,
 )
 from .models import (
+    BaseHeadConfig,
+    HeadConfig,
+    MaskedLMHeadConfig,
+    PretrainedConfig,
     RnaBertConfig,
     RnaBertForMaskedLM,
     RnaBertForNucleotideClassification,
@@ -51,9 +55,30 @@ from .models import (
     UtrLmForTokenClassification,
     UtrLmModel,
 )
+from .module import (
+    ClassificationHead,
+    ContactPredictionHead,
+    Criterion,
+    HeadTransforms,
+    IdentityTransform,
+    LinearTransform,
+    MaskedLMHead,
+    NonLinearTransform,
+    NucleotideClassificationHead,
+    NucleotideHeads,
+    NucleotideKMerHead,
+    SequenceClassificationHead,
+    TokenClassificationHead,
+    TokenHeads,
+    TokenKMerHead,
+)
 from .tokenisers import RnaTokenizer
 
 __all__ = [
+    "PretrainedConfig",
+    "BaseHeadConfig",
+    "HeadConfig",
+    "MaskedLMHeadConfig",
     "models",
     "tokenisers",
     "RnaTokenizer",
@@ -105,4 +130,19 @@ __all__ = [
     "SpliceBertForCrisprOffTarget",
     "UtrBertForCrisprOffTarget",
     "UtrLmForCrisprOffTarget",
+    "ClassificationHead",
+    "SequenceClassificationHead",
+    "TokenHeads",
+    "TokenClassificationHead",
+    "TokenKMerHead",
+    "NucleotideHeads",
+    "NucleotideClassificationHead",
+    "NucleotideKMerHead",
+    "ContactPredictionHead",
+    "MaskedLMHead",
+    "HeadTransforms",
+    "LinearTransform",
+    "NonLinearTransform",
+    "IdentityTransform",
+    "Criterion",
 ]

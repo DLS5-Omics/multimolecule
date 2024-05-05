@@ -1,6 +1,6 @@
 from transformers.utils import logging
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from ..configuration_utils import BaseHeadConfig, MaskedLMHeadConfig, PretrainedConfig
 
 logger = logging.get_logger(__name__)
 
@@ -108,5 +108,5 @@ class RnaFmConfig(PretrainedConfig):
         self.use_cache = use_cache
         self.emb_layer_norm_before = emb_layer_norm_before
         self.token_dropout = token_dropout
-        self.head = HeadConfig(**head if head is not None else {})
+        self.head = BaseHeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})

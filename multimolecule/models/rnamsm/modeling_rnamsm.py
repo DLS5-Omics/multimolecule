@@ -14,13 +14,14 @@ from transformers import PreTrainedModel
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
-from ..modeling_utils import (
+from multimolecule.module import (
     ContactPredictionHead,
     MaskedLMHead,
     NucleotideClassificationHead,
     SequenceClassificationHead,
     TokenClassificationHead,
 )
+
 from .configuration_rnamsm import RnaMsmConfig
 
 

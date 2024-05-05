@@ -1,4 +1,5 @@
 from ..tokenisers.rna import RnaTokenizer
+from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PretrainedConfig
 from .rnabert import (
     RnaBertConfig,
     RnaBertForMaskedLM,
@@ -55,6 +56,10 @@ from .utrlm import (
 )
 
 __all__ = [
+    "PretrainedConfig",
+    "HeadConfig",
+    "BaseHeadConfig",
+    "MaskedLMHeadConfig",
     "RnaTokenizer",
     "RnaBertConfig",
     "RnaBertModel",

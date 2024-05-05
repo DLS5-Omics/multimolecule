@@ -20,14 +20,15 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from ..modeling_utils import (
+from multimolecule.module import (
     ContactPredictionHead,
     MaskedLMHead,
     NucleotideClassificationHead,
     SequenceClassificationHead,
     TokenClassificationHead,
-    apply_rotary_pos_emb,
 )
+
+from ..modeling_utils import apply_rotary_pos_emb
 from .configuration_utrlm import UtrLmConfig
 
 logger = logging.get_logger(__name__)
