@@ -1,5 +1,6 @@
 from . import models, tokenisers
 from .downstream.crispr_off_target import (
+    AutoModelForCrisprOffTarget,
     RnaBertForCrisprOffTarget,
     RnaFmForCrisprOffTarget,
     RnaMsmForCrisprOffTarget,
@@ -8,6 +9,7 @@ from .downstream.crispr_off_target import (
     UtrLmForCrisprOffTarget,
 )
 from .models import (
+    AutoModelForNucleotideClassification,
     BaseHeadConfig,
     HeadConfig,
     MaskedLMHeadConfig,
@@ -79,9 +81,10 @@ __all__ = [
     "BaseHeadConfig",
     "HeadConfig",
     "MaskedLMHeadConfig",
-    "models",
     "tokenisers",
     "RnaTokenizer",
+    "models",
+    "AutoModelForNucleotideClassification",
     "RnaBertConfig",
     "RnaBertModel",
     "RnaBertForMaskedLM",
@@ -124,6 +127,7 @@ __all__ = [
     "UtrLmForSequenceClassification",
     "UtrLmForTokenClassification",
     "UtrLmForNucleotideClassification",
+    "AutoModelForCrisprOffTarget",
     "RnaBertForCrisprOffTarget",
     "RnaFmForCrisprOffTarget",
     "RnaMsmForCrisprOffTarget",

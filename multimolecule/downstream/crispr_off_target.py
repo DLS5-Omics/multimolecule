@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from dataclasses import dataclass
 from typing import Tuple
 
 import torch
+import transformers
+import transformers.models
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
+from transformers.models.auto.auto_factory import _BaseAutoModelClass, _LazyAutoMapping
+from transformers.models.auto.configuration_auto import CONFIG_MAPPING_NAMES
 
 from multimolecule.models.rnabert import RnaBertConfig, RnaBertModel, RnaBertPreTrainedModel
 from multimolecule.models.rnafm import RnaFmConfig, RnaFmModel, RnaFmPreTrainedModel
@@ -14,6 +19,14 @@ from multimolecule.models.splicebert import SpliceBertConfig, SpliceBertModel, S
 from multimolecule.models.utrbert import UtrBertConfig, UtrBertModel, UtrBertPreTrainedModel
 from multimolecule.models.utrlm import UtrLmConfig, UtrLmModel, UtrLmPreTrainedModel
 from multimolecule.module import ClassificationHead
+
+
+class AutoModelForCrisprOffTarget(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+transformers.models.auto.modeling_auto.AutoModelForCrisprOffTarget = AutoModelForCrisprOffTarget
+transformers.AutoModelForCrisprOffTarget = AutoModelForCrisprOffTarget
 
 
 class RnaBertForCrisprOffTarget(RnaBertPreTrainedModel):
@@ -94,6 +107,9 @@ class RnaBertForCrisprOffTarget(RnaBertPreTrainedModel):
         )
 
 
+AutoModelForCrisprOffTarget.register(RnaBertConfig, RnaBertForCrisprOffTarget)
+
+
 class RnaFmForCrisprOffTarget(RnaFmPreTrainedModel):
     """
     Examples:
@@ -170,6 +186,9 @@ class RnaFmForCrisprOffTarget(RnaFmPreTrainedModel):
             target_hidden_states=target_outputs.hidden_states,
             target_attentions=target_outputs.attentions,
         )
+
+
+AutoModelForCrisprOffTarget.register(RnaFmConfig, RnaFmForCrisprOffTarget)
 
 
 class RnaMsmForCrisprOffTarget(RnaMsmPreTrainedModel):
@@ -252,6 +271,9 @@ class RnaMsmForCrisprOffTarget(RnaMsmPreTrainedModel):
         )
 
 
+AutoModelForCrisprOffTarget.register(RnaMsmConfig, RnaMsmForCrisprOffTarget)
+
+
 class SpliceBertForCrisprOffTarget(SpliceBertPreTrainedModel):
     """
     Examples:
@@ -328,6 +350,9 @@ class SpliceBertForCrisprOffTarget(SpliceBertPreTrainedModel):
             target_hidden_states=target_outputs.hidden_states,
             target_attentions=target_outputs.attentions,
         )
+
+
+AutoModelForCrisprOffTarget.register(SpliceBertConfig, SpliceBertForCrisprOffTarget)
 
 
 class UtrBertForCrisprOffTarget(UtrBertPreTrainedModel):
@@ -408,6 +433,9 @@ class UtrBertForCrisprOffTarget(UtrBertPreTrainedModel):
         )
 
 
+AutoModelForCrisprOffTarget.register(UtrBertConfig, UtrBertForCrisprOffTarget)
+
+
 class UtrLmForCrisprOffTarget(UtrLmPreTrainedModel):
     """
     Examples:
@@ -486,8 +514,12 @@ class UtrLmForCrisprOffTarget(UtrLmPreTrainedModel):
         )
 
 
+AutoModelForCrisprOffTarget.register(UtrLmConfig, UtrLmForCrisprOffTarget)
+
+
 @dataclass
 class CrisprOffTargetOutput(ModelOutput):
+
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     sgrna_hidden_states: Tuple[torch.FloatTensor, ...] | None = None

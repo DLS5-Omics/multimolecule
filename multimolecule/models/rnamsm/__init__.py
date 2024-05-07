@@ -10,6 +10,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
+from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
     RnaMsmForMaskedLM,
@@ -39,4 +40,5 @@ AutoModelForMaskedLM.register(RnaMsmConfig, RnaMsmForMaskedLM)
 AutoModelForPreTraining.register(RnaMsmConfig, RnaMsmForPretraining)
 AutoModelForSequenceClassification.register(RnaMsmConfig, RnaMsmForSequenceClassification)
 AutoModelForTokenClassification.register(RnaMsmConfig, RnaMsmForTokenClassification)
+AutoModelForNucleotideClassification.register(RnaMsmConfig, RnaMsmForNucleotideClassification)
 AutoTokenizer.register(RnaMsmConfig, RnaTokenizer)

@@ -10,6 +10,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
+from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_rnabert import RnaBertConfig
 from .modeling_rnabert import (
     RnaBertForMaskedLM,
@@ -39,5 +40,5 @@ AutoModelForMaskedLM.register(RnaBertConfig, RnaBertForMaskedLM)
 AutoModelForPreTraining.register(RnaBertConfig, RnaBertForPretraining)
 AutoModelForSequenceClassification.register(RnaBertConfig, RnaBertForSequenceClassification)
 AutoModelForTokenClassification.register(RnaBertConfig, RnaBertForTokenClassification)
-# AutoModelForNucleotideClassification.register(RnaBertConfig, RnaBertForNucleotideClassification)
+AutoModelForNucleotideClassification.register(RnaBertConfig, RnaBertForNucleotideClassification)
 AutoTokenizer.register(RnaBertConfig, RnaTokenizer)

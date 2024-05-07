@@ -10,6 +10,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
+from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
     SpliceBertForMaskedLM,
@@ -39,4 +40,5 @@ AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
 AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPretraining)
 AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequenceClassification)
 AutoModelForTokenClassification.register(SpliceBertConfig, SpliceBertForTokenClassification)
+AutoModelForNucleotideClassification.register(SpliceBertConfig, SpliceBertForNucleotideClassification)
 AutoTokenizer.register(SpliceBertConfig, RnaTokenizer)

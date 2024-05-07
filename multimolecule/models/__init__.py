@@ -1,5 +1,6 @@
 from ..tokenisers.rna import RnaTokenizer
 from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from .modeling_auto import AutoModelForNucleotideClassification
 from .rnabert import (
     RnaBertConfig,
     RnaBertForMaskedLM,
@@ -61,6 +62,7 @@ __all__ = [
     "BaseHeadConfig",
     "MaskedLMHeadConfig",
     "RnaTokenizer",
+    "AutoModelForNucleotideClassification",
     "RnaBertConfig",
     "RnaBertModel",
     "RnaBertForMaskedLM",
