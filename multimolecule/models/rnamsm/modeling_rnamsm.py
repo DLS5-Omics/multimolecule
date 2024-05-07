@@ -4,6 +4,7 @@ import math
 from dataclasses import dataclass
 from functools import partial
 from typing import Tuple
+from warnings import warn
 
 import torch
 from chanfig import ConfigRegistry
@@ -380,6 +381,7 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | RnaMsmForTokenClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
@@ -387,6 +389,12 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
             config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
             `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
         """
+        if kwargs:
+            warn(
+                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
+                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
+                "This is provided for backward compatibility and may lead to unexpected behavior."
+            )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.rnamsm(
