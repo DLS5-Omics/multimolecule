@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Tuple
 
 import torch
 from danling import NestedTensor
@@ -81,7 +81,7 @@ class RnaBertModel(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -139,8 +139,8 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -192,10 +192,10 @@ class RnaBertForPretraining(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        labels_ss: Optional[Tensor] = None,
-        next_sentence_label: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        labels_ss: Tensor | None = None,
+        next_sentence_label: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -257,8 +257,8 @@ class RnaBertForSequenceClassification(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -336,8 +336,8 @@ class RnaBertForTokenClassification(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -415,8 +415,8 @@ class RnaBertForNucleotideClassification(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -698,11 +698,11 @@ class RnaBertPreTrainingHeads(nn.Module):
 
 @dataclass
 class RnaBertForPretrainingOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None  # type: ignore[assignment]
     logits_ss: torch.FloatTensor = None  # type: ignore[assignment]
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 class RnaBertLayerNorm(nn.Module):

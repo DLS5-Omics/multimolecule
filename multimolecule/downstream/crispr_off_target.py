@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Tuple
 
 import torch
 from torch import Tensor
@@ -45,10 +45,10 @@ class RnaBertForCrisprOffTarget(RnaBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor,
-        target_input_ids: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
-        target_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        target_input_ids: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        target_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -142,10 +142,10 @@ class RnaFmForCrisprOffTarget(RnaFmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor,
-        target_input_ids: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
-        target_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        target_input_ids: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        target_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -239,10 +239,10 @@ class RnaMsmForCrisprOffTarget(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor,
-        target_input_ids: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
-        target_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        target_input_ids: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        target_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -338,10 +338,10 @@ class SpliceBertForCrisprOffTarget(SpliceBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor,
-        target_input_ids: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
-        target_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        target_input_ids: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        target_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -435,10 +435,10 @@ class UtrBertForCrisprOffTarget(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor,
-        target_input_ids: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
-        target_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        target_input_ids: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        target_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -532,10 +532,10 @@ class UtrLmForCrisprOffTarget(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor,
-        target_input_ids: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
-        target_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        target_input_ids: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        target_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -603,21 +603,21 @@ class UtrLmForCrisprOffTarget(UtrLmPreTrainedModel):
 
 @dataclass
 class CrisprOffTargetOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    sgrna_hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    sgrna_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    target_hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    target_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    sgrna_hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    sgrna_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    target_hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    target_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmForCrisprOffTargetOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    sgrna_hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    sgrna_col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    sgrna_row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    target_hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    target_col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    target_row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    sgrna_hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    sgrna_col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    sgrna_row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    target_hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    target_col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    target_row_attentions: Tuple[torch.FloatTensor, ...] | None = None

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import List, Optional, Tuple
+from typing import Tuple
 
 import torch
 import torch.utils.checkpoint
@@ -93,17 +93,17 @@ class UtrBertModel(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        encoder_hidden_states: Optional[Tensor] = None,
-        encoder_attention_mask: Optional[Tensor] = None,
-        past_key_values: Optional[List[torch.FloatTensor]] = None,
-        use_cache: Optional[bool] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        past_key_values: Tuple[Tuple[torch.FloatTensor, torch.FloatTensor], ...] | None = None,
+        use_cache: bool | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         encoder_hidden_states  (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`, *optional*):
@@ -253,16 +253,16 @@ class UtrBertForMaskedLM(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        encoder_hidden_states: Optional[Tensor] = None,
-        encoder_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
@@ -348,14 +348,14 @@ class UtrBertForPretraining(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
@@ -417,14 +417,14 @@ class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | SequenceClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
@@ -502,14 +502,14 @@ class UtrBertForTokenClassification(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
@@ -585,8 +585,8 @@ class UtrBertForNucleotideClassification(UtrBertPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -659,9 +659,9 @@ class UtrBertEmbeddings(nn.Module):
 
     def forward(
         self,
-        input_ids: Optional[torch.LongTensor] = None,
-        position_ids: Optional[torch.LongTensor] = None,
-        inputs_embeds: Optional[torch.FloatTensor] = None,
+        input_ids: torch.LongTensor | None = None,
+        position_ids: torch.LongTensor | None = None,
+        inputs_embeds: torch.FloatTensor | None = None,
         past_key_values_length: int = 0,
     ) -> Tensor:
         if input_ids is not None:
@@ -700,12 +700,12 @@ class UtrBertEncoder(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_values: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
-        use_cache: Optional[bool] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_values: Tuple[Tuple[torch.FloatTensor, ...], ...] | None = None,
+        use_cache: bool | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -800,11 +800,11 @@ class UtrBertLayer(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_value: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
@@ -869,7 +869,7 @@ class UtrBertLayer(nn.Module):
 
 
 class UtrBertAttention(nn.Module):
-    def __init__(self, config: UtrBertConfig, position_embedding_type: Optional[str] = None):
+    def __init__(self, config: UtrBertConfig, position_embedding_type: str | None = None):
         super().__init__()
         self.self = UtrBertSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = UtrBertSelfOutput(config)
@@ -896,11 +896,11 @@ class UtrBertAttention(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_value: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         self_outputs = self.self(
@@ -918,7 +918,7 @@ class UtrBertAttention(nn.Module):
 
 
 class UtrBertSelfAttention(nn.Module):
-    def __init__(self, config: UtrBertConfig, position_embedding_type: Optional[str] = None):
+    def __init__(self, config: UtrBertConfig, position_embedding_type: str | None = None):
         super().__init__()
         if config.hidden_size % config.num_attention_heads != 0 and not hasattr(config, "embedding_size"):
             raise ValueError(
@@ -950,11 +950,11 @@ class UtrBertSelfAttention(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_value: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)

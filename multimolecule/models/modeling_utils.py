@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Optional, Tuple
+from typing import Tuple
 
 import torch
 from chanfig import ConfigRegistry
@@ -42,7 +42,7 @@ class ContactPredictionHead(nn.Module):
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
     def forward(
-        self, attentions: Tensor, attention_mask: Optional[Tensor] = None, input_ids: Optional[Tensor] = None
+        self, attentions: Tensor, attention_mask: Tensor | None = None, input_ids: Tensor | None = None
     ) -> Tensor:
         if attention_mask is None:
             if input_ids is None:
@@ -96,7 +96,7 @@ class ContactPredictionHead(nn.Module):
 class MaskedLMHead(nn.Module):
     """Head for masked language modeling."""
 
-    def __init__(self, config: PretrainedConfig, weight: Optional[Tensor] = None):
+    def __init__(self, config: PretrainedConfig, weight: Tensor | None = None):
         super().__init__()
         self.config = config.lm_head if hasattr(config, "lm_head") else config.head
         if self.config.hidden_size is None:
@@ -185,8 +185,8 @@ class TokenKMerHead(ClassificationHead):
     def forward(  # pylint: disable=arguments-renamed
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
-        attention_mask: Optional[Tensor] = None,
-        input_ids: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        input_ids: Tensor | None = None,
     ) -> Tensor:
         if attention_mask is None:
             if input_ids is None:
@@ -214,8 +214,8 @@ class NucleotideClassificationHead(ClassificationHead):
     def forward(  # pylint: disable=arguments-renamed
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
-        attention_mask: Optional[Tensor] = None,
-        input_ids: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        input_ids: Tensor | None = None,
     ) -> Tensor:
         if attention_mask is None:
             if input_ids is None:
@@ -267,8 +267,8 @@ class NucleotideKMerHead(ClassificationHead):
     def forward(  # pylint: disable=arguments-renamed
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
-        attention_mask: Optional[Tensor] = None,
-        input_ids: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        input_ids: Tensor | None = None,
     ) -> Tensor:
         if attention_mask is None:
             if input_ids is None:
@@ -348,8 +348,8 @@ def unfold_kmer_embeddings(
     embeddings: Tensor,
     attention_mask: Tensor,
     nmers: int,
-    bos_token_id: Optional[int] = None,
-    eos_token_id: Optional[int] = None,
+    bos_token_id: int | None = None,
+    eos_token_id: int | None = None,
 ) -> Tensor:
     r"""
     Unfold k-mer embeddings to token embeddings.

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import os
-from typing import Optional
 
 import chanfig
 import torch
@@ -117,8 +118,8 @@ class ConvertConfig:
     output_path: str = Config.model_type
     push_to_hub: bool = False
     delete_existing: bool = False
-    repo_id: Optional[str] = None
-    token: Optional[str] = None
+    repo_id: str | None = None
+    token: str | None = None
 
     def post(self):
         if self.repo_id is None:

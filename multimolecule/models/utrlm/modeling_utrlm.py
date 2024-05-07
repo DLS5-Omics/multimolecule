@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import Tuple
 
 import torch
 import torch.utils.checkpoint
@@ -100,18 +100,18 @@ class UtrLmModel(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        encoder_hidden_states: Optional[Tensor] = None,
-        encoder_attention_mask: Optional[Tensor] = None,
-        past_key_values: Optional[List[torch.FloatTensor]] = None,
-        use_cache: Optional[bool] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[Tensor, ...], BaseModelOutputWithPoolingAndCrossAttentions]:
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        past_key_values: Tuple[Tuple[torch.FloatTensor, torch.FloatTensor], ...] | None = None,
+        use_cache: bool | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         encoder_hidden_states  (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`, *optional*):
             Sequence of hidden-states at the output of the last layer of the encoder. Used in the cross-attention if
@@ -255,17 +255,17 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        encoder_hidden_states: Optional[Tensor] = None,
-        encoder_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[Tensor, ...], MaskedLMOutput]:
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
@@ -340,20 +340,20 @@ class UtrLmForPretraining(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        encoder_hidden_states: Optional[Tensor] = None,
-        encoder_attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        labels_contact: Optional[Tensor] = None,
-        labels_structure: Optional[Tensor] = None,
-        labels_supervised: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[Tensor, ...], UtrLmForPretrainingOutput]:
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        labels_contact: Tensor | None = None,
+        labels_structure: Tensor | None = None,
+        labels_supervised: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+    ) -> Tuple[Tensor, ...] | UtrLmForPretrainingOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
@@ -432,15 +432,15 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[Tensor, ...], SequenceClassifierOutput]:
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+    ) -> Tuple[Tensor, ...] | SequenceClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
             Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
@@ -516,15 +516,15 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        position_ids: Optional[Tensor] = None,
-        head_mask: Optional[Tensor] = None,
-        inputs_embeds: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        output_attentions: Optional[bool] = None,
-        output_hidden_states: Optional[bool] = None,
-        return_dict: Optional[bool] = None,
-    ) -> Union[Tuple[Tensor, ...], TokenClassifierOutput]:
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+    ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the token classification loss. Indices should be in `[0, ..., config.num_labels - 1]`.
@@ -598,8 +598,8 @@ class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -789,16 +789,16 @@ class UtrLmEncoder(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_values: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
-        use_cache: Optional[bool] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_values: Tuple[Tuple[torch.FloatTensor, ...], ...] | None = None,
+        use_cache: bool | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Union[Tuple[Tensor, ...], BaseModelOutputWithPastAndCrossAttentions]:
+    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         all_hidden_states = () if output_hidden_states else None
         all_self_attentions = () if output_attentions else None
         all_cross_attentions = () if output_attentions and self.config.add_cross_attention else None
@@ -893,11 +893,11 @@ class UtrLmLayer(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_value: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
@@ -990,11 +990,11 @@ class UtrLmAttention(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_value: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         hidden_states_ln = self.layer_norm(hidden_states)
@@ -1013,7 +1013,7 @@ class UtrLmAttention(nn.Module):
 
 
 class UtrLmSelfAttention(nn.Module):
-    def __init__(self, config: UtrLmConfig, position_embedding_type: Optional[str] = None):
+    def __init__(self, config: UtrLmConfig, position_embedding_type: str | None = None):
         super().__init__()
         if config.hidden_size % config.num_attention_heads != 0 and not hasattr(config, "embedding_size"):
             raise ValueError(
@@ -1048,11 +1048,11 @@ class UtrLmSelfAttention(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        encoder_hidden_states: Optional[torch.FloatTensor] = None,
-        encoder_attention_mask: Optional[torch.FloatTensor] = None,
-        past_key_value: Optional[Tuple[Tuple[torch.FloatTensor, ...], ...]] = None,
+        attention_mask: torch.FloatTensor | None = None,
+        head_mask: torch.FloatTensor | None = None,
+        encoder_hidden_states: torch.FloatTensor | None = None,
+        encoder_attention_mask: torch.FloatTensor | None = None,
+        past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
@@ -1220,9 +1220,9 @@ class UtrLmPreTrainingHeads(nn.Module):
     def forward(
         self,
         outputs: BaseModelOutputWithPastAndCrossAttentions | Tuple[Tensor, ...],
-        attention_mask: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
         input_ids: Tensor | NestedTensor | None = None,
-    ) -> Tuple[Tensor, Tensor, Optional[Tensor], Optional[Tensor]]:
+    ) -> Tuple[Tensor, Tensor, Tensor | None, Tensor | None]:
         logits = self.predictions(outputs)
         contact_map = self.contact(torch.stack(outputs[-1], 1), attention_mask, input_ids)
         structure = self.structure(outputs) if self.structure else None
@@ -1232,13 +1232,13 @@ class UtrLmPreTrainingHeads(nn.Module):
 
 @dataclass
 class UtrLmForPretrainingOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    contact_map: Optional[torch.FloatTensor] = None
-    structure: Optional[torch.FloatTensor] = None
-    supervised: Optional[torch.FloatTensor] = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    contact_map: torch.FloatTensor | None = None
+    structure: torch.FloatTensor | None = None
+    supervised: torch.FloatTensor | None = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 def create_position_ids_from_input_ids(input_ids, padding_idx, past_key_values_length=0):

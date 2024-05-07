@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, is_dataclass
-from typing import Optional
 
 from transformers.configuration_utils import PretrainedConfig as _PretrainedConfig
 
@@ -70,15 +69,15 @@ class HeadConfig:
             `"single_label_classification"` or `"multi_label_classification"`.
     """
 
-    hidden_size: Optional[int] = None
+    hidden_size: int | None = None
     dropout: float = 0.0
-    transform: Optional[str] = None
-    transform_act: Optional[str] = "gelu"
+    transform: str | None = None
+    transform_act: str | None = "gelu"
     bias: bool = True
-    act: Optional[str] = None
+    act: str | None = None
     layer_norm_eps: float = 1e-12
     num_labels: int = 1
-    problem_type: Optional[str] = None
+    problem_type: str | None = None
 
 
 @dataclass
@@ -108,10 +107,10 @@ class MaskedLMHeadConfig:
             The epsilon used by the layer normalization layers.
     """
 
-    hidden_size: Optional[int] = None
+    hidden_size: int | None = None
     dropout: float = 0.0
-    transform: Optional[str] = "nonlinear"
-    transform_act: Optional[str] = "gelu"
+    transform: str | None = "nonlinear"
+    transform_act: str | None = "gelu"
     bias: bool = True
-    act: Optional[str] = None
+    act: str | None = None
     layer_norm_eps: float = 1e-12

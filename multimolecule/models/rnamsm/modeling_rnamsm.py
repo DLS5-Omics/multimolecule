@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional, Tuple
+from typing import Tuple
 
 import torch
 from chanfig import ConfigRegistry
@@ -77,7 +77,7 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -138,8 +138,8 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -192,9 +192,9 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
-        labels_contact: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        labels_contact: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -255,8 +255,8 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -335,8 +335,8 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -415,8 +415,8 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
-        attention_mask: Optional[Tensor] = None,
-        labels: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -492,7 +492,7 @@ class RnaMsmEmbeddings(nn.Module):
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=1e-12)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
-    def forward(self, input_ids: Tensor | NestedTensor, attention_mask: Optional[Tensor] = None) -> Tensor:
+    def forward(self, input_ids: Tensor | NestedTensor, attention_mask: Tensor | None = None) -> Tensor:
         assert input_ids.ndim == 3
         if attention_mask is None:
             attention_mask = input_ids.ne(self.pad_token_id)
@@ -558,7 +558,7 @@ class RnaMsmEncoder(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        key_padding_mask: Optional[torch.FloatTensor] = None,
+        key_padding_mask: torch.FloatTensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -628,8 +628,8 @@ class RnaMsmAxialLayer(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        self_attention_mask: Optional[Tensor] = None,
-        self_attention_padding_mask: Optional[Tensor] = None,
+        self_attention_mask: Tensor | None = None,
+        self_attention_padding_mask: Tensor | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         """
@@ -1029,9 +1029,9 @@ class MultiheadAttention(nn.Module):
         query,
         key,
         value,
-        key_padding_mask: Optional[Tensor] = None,
+        key_padding_mask: Tensor | None = None,
         output_attentions: bool = False,
-        attention_mask: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
     ):
         return self._attention_fn(
             query,
@@ -1063,8 +1063,8 @@ class MultiheadAttention(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        key_padding_mask: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
+        key_padding_mask: Tensor | None = None,
+        attention_mask: Tensor | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         """Input shape: Time x Batch x Channel
@@ -1166,8 +1166,8 @@ class PerformerAttention(MultiheadAttention):
     def forward(
         self,
         hidden_states: Tensor,
-        key_padding_mask: Optional[Tensor] = None,
-        attention_mask: Optional[Tensor] = None,
+        key_padding_mask: Tensor | None = None,
+        attention_mask: Tensor | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         from einops import rearrange
@@ -1253,7 +1253,7 @@ class RnaMsmPooler(nn.Module):
 
 
 class RnaMsmPreTrainingHeads(nn.Module):
-    def __init__(self, config: RnaMsmConfig, weight: Optional[Tensor] = None):
+    def __init__(self, config: RnaMsmConfig, weight: Tensor | None = None):
         super().__init__()
         self.predictions = MaskedLMHead(config, weight=weight)
         self.contact = ContactPredictionHead(config)
@@ -1261,7 +1261,7 @@ class RnaMsmPreTrainingHeads(nn.Module):
     def forward(
         self,
         outputs: RnaMsmModelOutput | Tuple[Tensor, ...],
-        attention_mask: Optional[Tensor] = None,
+        attention_mask: Tensor | None = None,
         input_ids: Tensor | NestedTensor | None = None,
     ) -> Tuple[Tensor, Tensor]:
         sequence_output, row_attentions = outputs[0], torch.stack(outputs[-1], 1)
@@ -1272,53 +1272,53 @@ class RnaMsmPreTrainingHeads(nn.Module):
 
 @dataclass
 class RnaMsmForPretrainingOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    contact_map: Optional[torch.FloatTensor] = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    contact_map: torch.FloatTensor | None = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmForMaskedLMOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmForSequenceClassifierOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmForTokenClassifierOutput(ModelOutput):
-    loss: Optional[torch.FloatTensor] = None
+    loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmModelOutputWithPooling(ModelOutput):
     last_hidden_state: torch.FloatTensor = None
     pooler_output: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmModelOutput(ModelOutput):
     last_hidden_state: torch.FloatTensor = None
-    hidden_states: Optional[Tuple[torch.FloatTensor, ...]] = None
-    col_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
-    row_attentions: Optional[Tuple[torch.FloatTensor, ...]] = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None

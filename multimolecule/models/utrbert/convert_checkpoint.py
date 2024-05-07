@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import os
-from typing import Optional
 
 import chanfig
 import torch
@@ -111,11 +112,11 @@ def convert_checkpoint(convert_config):
 @chanfig.configclass
 class ConvertConfig:
     checkpoint_path: str
-    output_path: Optional[str] = None
+    output_path: str | None = None
     push_to_hub: bool = False
     delete_existing: bool = False
-    repo_id: Optional[str] = None
-    token: Optional[str] = None
+    repo_id: str | None = None
+    token: str | None = None
 
     def post(self):
         if self.output_path is None:
