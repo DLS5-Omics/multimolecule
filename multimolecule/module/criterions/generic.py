@@ -29,9 +29,10 @@ class Criterion(nn.Module):
                 self.problem_type = "multi_label_classification"
             self.config.problem_type = self.problem_type
         if self.problem_type == "regression":
-            return (
-                F.mse_loss(logits.squeeze(), labels.squeeze()) if self.num_labels == 1 else F.mse_loss(logits, labels)
-            )
+            if self.num_labels == 1:
+                return F.mse_loss(logits.squeeze(), labels.squeeze())
+            logits, labels = logits.view(-1, self.num_labels), labels.view(-1, self.num_labels)
+            return sum(F.mse_loss(logits[:, i], labels[:, i]).sqrt() for i in range(self.num_labels))
         if self.problem_type == "single_label_classification":
             return F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
         if self.problem_type == "multi_label_classification":
