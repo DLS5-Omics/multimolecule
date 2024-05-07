@@ -45,7 +45,7 @@ class NucleotideClassificationHead(ClassificationHead):
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
 
-        output = outputs[0]
+        output = outputs[0] * attention_mask.unsqueeze(-1)
         # remove cls token embeddings
         if self.bos_token_id is not None:
             output = output[..., 1:, :]
@@ -56,7 +56,7 @@ class NucleotideClassificationHead(ClassificationHead):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output)
-                input_ids = input_ids[..., 1:]
+                input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
@@ -75,9 +75,11 @@ class NucleotideKMerHead(ClassificationHead):
     def __init__(self, config: PretrainedConfig):
         super().__init__(config)
         self.nmers = config.nmers
-        self.bos_token_id = None  # Nucleotide-level head removes <cls> token.
-        self.eos_token_id = None  # Nucleotide-level head removes <eos> token.
+        self.bos_token_id = config.bos_token_id
+        self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
+        # Do not pass bos_token_id and eos_token_id to unfold_kmer_embeddings
+        # As they will be removed in preprocess
         self.unfold_kmer_embeddings = partial(unfold_kmer_embeddings, nmers=self.nmers)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
@@ -107,7 +109,7 @@ class NucleotideKMerHead(ClassificationHead):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output)
-                input_ids = input_ids[..., 1:]
+                input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)

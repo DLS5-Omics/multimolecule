@@ -510,7 +510,7 @@ class RnaFmForTokenClassification(RnaFmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        output = self.token_head(outputs, labels)
+        output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
