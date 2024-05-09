@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import models, tokenisers
+from .data import Dataset, PandasDataset
+from .defaults import LABEL_COL_NAME, LABEL_COL_NAMES, SEQUENCE_COL_NAME, SEQUENCE_COL_NAMES
 from .models import (
     AutoModelForContactPrediction,
     AutoModelForNucleotidePrediction,
@@ -136,11 +137,12 @@ from .utils import count_parameters
 __all__ = [
     "modeling_auto",
     "modeling_outputs",
+    "Dataset",
+    "PandasDataset",
     "PreTrainedConfig",
     "HeadConfig",
     "BaseHeadConfig",
     "MaskedLMHeadConfig",
-    "tokenisers",
     "DnaTokenizer",
     "RnaTokenizer",
     "ProteinTokenizer",
@@ -253,4 +255,8 @@ __all__ = [
     "SinusoidalEmbedding",
     "Criterion",
     "count_parameters",
+    "SEQUENCE_COL_NAMES",
+    "LABEL_COL_NAMES",
+    "SEQUENCE_COL_NAME",
+    "LABEL_COL_NAME",
 ]

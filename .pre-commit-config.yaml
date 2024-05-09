@@ -61,6 +61,7 @@ repos:
       # - id: pretty-format-json
       #   files: multimolecule
       - id: check-json
+        files: multimolecule
       - id: check-xml
       - id: check-toml
       - id: check-yaml
