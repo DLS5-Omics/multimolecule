@@ -47,6 +47,7 @@ dependencies = [
   "accelerate",
   "chanfig>=0.0.99",
   "danling>=0.3.6",
+  "datasets",
   "torch",
   "transformers",
 ]
@@ -90,6 +91,9 @@ fail-under = 9.8
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --cov"
+markers = [
+    "lfs: tests that involve large file handling and should be excluded from CI"
+]
 
 [tool.coverage.run]
 branch = true
