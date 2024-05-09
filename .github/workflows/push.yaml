@@ -27,7 +27,7 @@ jobs:
       - name: Install module
         run: pip install -e .
       - name: pytest
-        run: pytest --cov=materialx --cov-report=xml --cov-report=html .
+        run: pytest -m "not lfs" --cov=materialx --cov-report=xml --cov-report=html .
       - name: Upload coverage report for documentation
         uses: actions/upload-artifact@v3
         with:
