@@ -84,10 +84,11 @@ def convert_checkpoint(convert_config):
     chanfig.NestedDict(get_special_tokens_map()).json(
         os.path.join(convert_config.output_path, "special_tokens_map.json")
     )
-    tokenizer_config = get_tokenizer_config()
+    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["nmers"] = config.nmers
     tokenizer_config["strameline"] = True
-    chanfig.NestedDict(tokenizer_config).json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
+    tokenizer_config["model_max_length"] = config.max_position_embeddings
+    tokenizer_config.json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
 
     if convert_config.push_to_hub:
         if HfApi is None:

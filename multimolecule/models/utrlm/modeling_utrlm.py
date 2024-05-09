@@ -1159,11 +1159,11 @@ class UtrLmPreTrainingHeads(nn.Module):
         self.predictions = MaskedLMHead(config)
         head = config.head
         self.structure = None
-        if config.structure_head:
+        if config.structure_head is not None:
             config.head = config.structure_head
             self.structure = TokenClassificationHead(config)
         self.supervised = None
-        if config.supervised_head:
+        if config.supervised_head is not None:
             config.head = config.supervised_head
             self.supervised = SequenceClassificationHead(config)
         config.head = head
