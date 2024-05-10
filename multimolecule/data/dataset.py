@@ -17,16 +17,21 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from functools import cached_property
 from typing import Any, List
 
 import danling as dl
 import datasets
 import torch
+from chanfig import NestedDict
 from danling import NestedTensor
 from torch import Tensor
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from multimolecule import defaults
+from multimolecule.tasks import Task
+
+from .utils import infer_task
 
 
 class Dataset(datasets.Dataset):
@@ -197,6 +202,25 @@ class Dataset(datasets.Dataset):
             self.set_transform(self.torch_transform)
         else:
             self.set_transform(self.tokenize_transform)
+
+    @cached_property
+    def tasks(self) -> NestedDict:
+        return self.infer_tasks()
+
+    def infer_tasks(self, sequence_col: str | None = None) -> NestedDict:
+        return NestedDict({col: self.infer_task(col, sequence_col) for col in self.label_cols})
+
+    def infer_task(self, label_col: str, sequence_col: str | None = None) -> Task:
+        if sequence_col is None:
+            if len(self.sequence_cols) != 1:
+                raise ValueError("sequence_col must be specified if there are multiple sequence columns.")
+            sequence_col = self.sequence_cols[0]
+        sequence = self._data.column(sequence_col)
+        column = self._data.column(label_col)
+        # is_nested = isinstance(column.type, ListType)
+        # if is_nested:
+        #     column = column.combine_chunks().flatten()
+        return infer_task(sequence, column)
 
     def update(self, dataset: datasets.Dataset):
         # pylint: disable=W0212
