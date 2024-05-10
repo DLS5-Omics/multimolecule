@@ -14,9 +14,4 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SEQUENCE_COL_NAMES = ["input_ids", "sequence", "seq"]
-LABEL_COL_NAMES = ["label", "labels"]
-SEQUENCE_COL_NAME = "input_ids"
-LABEL_COL_NAME = "labels"
 LABLE_TYPE_THRESHOLD = 0.5
-TASK_INFERENCE_NUM_ROWS = 100

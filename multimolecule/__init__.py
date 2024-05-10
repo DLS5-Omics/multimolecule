@@ -129,6 +129,7 @@ from .module import (
     TokenKMerHead,
     TokenPredictionHead,
 )
+from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
 
@@ -251,6 +252,9 @@ __all__ = [
     "SinusoidalEmbedding",
     "Criterion",
     "count_parameters",
+    "Task",
+    "TaskLevel",
+    "TaskType",
     "SEQUENCE_COL_NAMES",
     "LABEL_COL_NAMES",
     "SEQUENCE_COL_NAME",
