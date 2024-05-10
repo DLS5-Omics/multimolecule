@@ -21,7 +21,7 @@ import danling as dl
 import pytest
 import torch
 
-from multimolecule import PandasDataset
+from multimolecule import PandasDataset, Task, TaskLevel, TaskType
 
 
 @pytest.mark.lfs
@@ -36,12 +36,14 @@ class TestRNADataset:
         dataset = PandasDataset(
             file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_cols=True
         )
+        task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
         assert isinstance(elem["input_ids"], dl.PNTensor)
         assert isinstance(elem["labels"], torch.FloatTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["input_ids"], dl.NestedTensor)
         assert isinstance(batch["labels"], torch.FloatTensor)
+        assert dataset.tasks["labels"] == task
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_ncrna(self, preprocess: bool):
@@ -49,12 +51,14 @@ class TestRNADataset:
         dataset = PandasDataset(
             file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_cols=True
         )
+        task = Task(type=TaskType.MultiClass, level=TaskLevel.Sequence, num_labels=13)
         elem = dataset[0]
         assert isinstance(elem["input_ids"], dl.PNTensor)
         assert isinstance(elem["labels"], torch.LongTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["input_ids"], dl.NestedTensor)
         assert isinstance(batch["labels"], torch.LongTensor)
+        assert dataset.tasks["labels"] == task
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_rnaswitches(self, preprocess: bool):
@@ -63,6 +67,7 @@ class TestRNADataset:
         dataset = PandasDataset(
             file, split="train", pretrained=self.pretrained, preprocess=preprocess, label_cols=label_cols
         )
+        task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
         assert isinstance(elem["sequence"], dl.PNTensor)
         assert isinstance(elem["ON"], torch.FloatTensor)
@@ -70,17 +75,21 @@ class TestRNADataset:
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
         assert isinstance(batch["ON_OFF"], torch.FloatTensor)
+        for t in dataset.tasks.values():
+            assert t == task
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_modifications(self, preprocess: bool):
         file = os.path.join(self.root, "modifications.json")
         dataset = PandasDataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess)
+        task = Task(type=TaskType.MultiLabel, level=TaskLevel.Sequence, num_labels=12)
         elem = dataset[0]
         assert isinstance(elem["sequence"], dl.PNTensor)
         assert isinstance(elem["label"], torch.LongTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
         assert isinstance(batch["label"], torch.LongTensor)
+        assert dataset.tasks["label"] == task
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_degradation(self, preprocess: bool):
@@ -95,6 +104,7 @@ class TestRNADataset:
             feature_cols=feature_cols,
             label_cols=label_cols,
         )
+        task = Task(type=TaskType.Regression, level=TaskLevel.Sequence, num_labels=68)
         elem = dataset[0]
         assert isinstance(elem["sequence"], dl.PNTensor)
         assert isinstance(elem["deg_pH10"], torch.FloatTensor)
@@ -102,6 +112,8 @@ class TestRNADataset:
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
         assert isinstance(batch["reactivity"], torch.FloatTensor)
+        for t in dataset.tasks.values():
+            assert t == task
 
 
 @pytest.mark.lfs
@@ -125,3 +137,46 @@ class TestSyntheticDataset:
         assert dataset[0]["label"] == 1
         dataset = dataset_factory(nan_process="drop")
         assert len(dataset) == 61
+
+    def test_rna_task_recognition_json(self):
+        file = os.path.join(self.root, "rna.json")
+        dataset = PandasDataset(file, split="train", pretrained=self.pretrained)
+        assert dataset.tasks["sequence_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Sequence, num_labels=1)
+        assert dataset.tasks["sequence_multiclass"] == Task(
+            type=TaskType.MultiClass, level=TaskLevel.Sequence, num_labels=7
+        )
+        assert dataset.tasks["sequence_multilabel"] == Task(
+            type=TaskType.MultiLabel, level=TaskLevel.Sequence, num_labels=7
+        )
+        assert dataset.tasks["sequence_multireg"] == Task(
+            type=TaskType.Regression, level=TaskLevel.Sequence, num_labels=7
+        )
+        assert dataset.tasks["sequence_regression"] == Task(
+            type=TaskType.Regression, level=TaskLevel.Sequence, num_labels=1
+        )
+        assert dataset.tasks["nucleotide_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Token, num_labels=1)
+        assert dataset.tasks["nucleotide_multiclass"] == Task(
+            type=TaskType.MultiClass, level=TaskLevel.Token, num_labels=5
+        )
+        assert dataset.tasks["nucleotide_multilabel"] == Task(
+            type=TaskType.MultiLabel, level=TaskLevel.Token, num_labels=5
+        )
+        assert dataset.tasks["nucleotide_multireg"] == Task(
+            type=TaskType.Regression, level=TaskLevel.Token, num_labels=5
+        )
+        assert dataset.tasks["nucleotide_regression"] == Task(
+            type=TaskType.Regression, level=TaskLevel.Token, num_labels=1
+        )
+        assert dataset.tasks["contact_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
+        assert dataset.tasks["contact_multiclass"] == Task(
+            type=TaskType.MultiClass, level=TaskLevel.Contact, num_labels=3
+        )
+        assert dataset.tasks["contact_multilabel"] == Task(
+            type=TaskType.MultiLabel, level=TaskLevel.Contact, num_labels=3
+        )
+        assert dataset.tasks["contact_multireg"] == Task(
+            type=TaskType.Regression, level=TaskLevel.Contact, num_labels=3
+        )
+        assert dataset.tasks["contact_regression"] == Task(
+            type=TaskType.Regression, level=TaskLevel.Contact, num_labels=1
+        )
