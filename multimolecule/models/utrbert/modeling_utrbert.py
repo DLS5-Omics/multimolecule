@@ -264,9 +264,9 @@ class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.tensor([[1]]))
         >>> output["logits"].shape
-        torch.Size([1, 2])
+        torch.Size([1, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: UtrBertConfig):
@@ -328,9 +328,9 @@ class UtrBertForTokenPrediction(UtrBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: UtrBertConfig):
@@ -393,9 +393,9 @@ class UtrBertForContactPrediction(UtrBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
+        torch.Size([1, 5, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: UtrBertConfig):

@@ -14,6 +14,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .binary import BCEWithLogitsLoss
 from .generic import Criterion
+from .multiclass import CrossEntropyLoss
+from .multilabel import MultiLabelSoftMarginLoss
+from .registry import CriterionRegistry
+from .regression import MSELoss
 
-__all__ = ["Criterion"]
+__all__ = [
+    "CriterionRegistry",
+    "Criterion",
+    "MSELoss",
+    "BCEWithLogitsLoss",
+    "CrossEntropyLoss",
+    "MultiLabelSoftMarginLoss",
+]

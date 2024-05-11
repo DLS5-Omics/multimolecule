@@ -127,5 +127,5 @@ class CaLmConfig(PreTrainedConfig):
         self.use_cache = use_cache
         self.emb_layer_norm_before = emb_layer_norm_before
         self.token_dropout = token_dropout
-        self.head = HeadConfig(**head if head is not None else {})
-        self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})
+        self.head = HeadConfig(**head) if head is not None else None
+        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
