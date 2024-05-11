@@ -50,19 +50,19 @@ class PredictionHead(nn.Module):
     """
 
     num_labels: int
+    loss_weight: float | None = None
     requires_attention: bool = False
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
             head_config = config.head or HeadConfig(num_labels=config.num_labels)
-        elif head_config.num_labels is None:
-            head_config.num_labels = config.num_labels
+        if not isinstance(head_config, HeadConfig):
+            head_config = HeadConfig(head_config)
+        head_config.setdefault("num_labels", config.num_labels)
+        head_config.setdefault("hidden_size", config.hidden_size)
+        head_config.setdefault("problem_type", config.problem_type)
         self.config = head_config
-        if self.config.hidden_size is None:
-            self.config.hidden_size = config.hidden_size
-        if self.config.problem_type is None:
-            self.config.problem_type = config.problem_type
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
@@ -72,6 +72,8 @@ class PredictionHead(nn.Module):
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
         self.criterion = CriterionRegistry.build(self.config)
+        if self.config.loss_weight is not None:
+            self.loss_weight = self.config.loss_weight
 
     def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
         r"""
@@ -95,8 +97,12 @@ class PredictionHead(nn.Module):
             if isinstance(labels, NestedTensor):
                 if isinstance(output, Tensor):
                     output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
-            return HeadOutput(output, self.criterion(output, labels))
+                loss = self.criterion(output.concat, labels.concat)
+            else:
+                loss = self.criterion(output, labels)
+            if self.loss_weight is not None:
+                loss = loss * self.loss_weight
+            return HeadOutput(output, loss)
         return HeadOutput(output)
 
     def _get_attention_mask(self, input_ids: NestedTensor | Tensor) -> Tensor:

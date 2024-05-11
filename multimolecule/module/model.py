@@ -27,6 +27,7 @@ from danling import NestedTensor
 from torch import Tensor, nn
 
 from .backbones import BackboneRegistry
+from .criterions.balancer import LossBalancerRegistry
 from .heads import HeadRegistry
 from .necks import NeckRegistry
 from .registry import ModelRegistry
@@ -42,10 +43,12 @@ class MultiMoleculeModel(nn.Module):
         self,
         backbone: dict,
         heads: dict,
+        balancer: dict | None = None,
         neck: dict | None = None,
         max_length: int = 1024,
         truncation: bool = False,
         probing: bool = False,
+        config: dict | None = None,
     ):
         super().__init__()
 
@@ -87,6 +90,8 @@ class MultiMoleculeModel(nn.Module):
             for param in self.backbone.parameters():
                 param.requires_grad = False
 
+        self.balancer = LossBalancerRegistry.build(balancer)
+
     def forward(
         self,
         sequence: NestedTensor | Tensor,
@@ -99,9 +104,13 @@ class MultiMoleculeModel(nn.Module):
         output, _ = self.backbone(sequence, discrete, continuous)
         if self.neck is not None:
             output = self.neck(**output)
+        if not labels:
+            return output
         for task, label in labels.items():
             ret[task] = self.heads[task](output, input_ids=sequence, labels=label)
-        return ret
+        if len(ret) == 1:
+            return ret, ret[task]["loss"]
+        return ret, self.balancer(ret)
 
     def trainable_parameters(
         self,

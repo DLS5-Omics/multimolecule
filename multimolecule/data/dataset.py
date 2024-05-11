@@ -33,8 +33,10 @@ import torch
 from chanfig import NestedDict
 from danling import NestedTensor
 from datasets.table import Table
+from numpy import random
 from pandas import DataFrame
 from torch import Tensor
+from torch.utils import data
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from multimolecule import defaults
@@ -513,3 +515,90 @@ class Dataset(datasets.Dataset):
         if not hasattr(self, "_discrete_map"):
             return self.infer_discrete_map()
         return self._discrete_map
+
+
+class SampleDataset(data.Dataset):
+
+    dataset: Dataset
+    ratio: float | int = 1
+    indices: Sequence
+
+    def __init__(self, dataset: Dataset, ratio: float | int = 1, seed: int = 0):
+        if ratio <= 0:
+            raise ValueError(f"Invalid ratio: {ratio}")
+        self.dataset = dataset
+        self.ratio = ratio
+        self.seed = seed
+        self._epoch = 0
+        self._access_count = 0
+        self.indices = self._sample_indices()
+
+    def __len__(self):
+        return len(self.indices)
+
+    def __getitem__(self, index: int):
+        if isinstance(index, (Sequence, slice)):
+            return self.__getitems__(index)
+        elif not isinstance(index, int):
+            raise ValueError(f"Invalid index type: {type(index)}")
+        index = self.indices[index]
+        self._access_count += 1
+        if self._access_count >= len(self):
+            self.epoch += 1
+        return self.dataset[index]
+
+    def __getitems__(self, indices: Sequence | slice):
+        if isinstance(indices, int):
+            return self.__getitem__(indices)
+        if isinstance(indices, Sequence):
+            indices = [self.indices[i] for i in indices]
+        elif isinstance(indices, slice):
+            indices = self.indices[indices]
+        else:
+            raise ValueError(f"Invalid index type: {type(indices)}")
+        self._access_count += len(indices)
+        if self._access_count >= len(self):
+            self.epoch += 1
+        if hasattr(self.dataset, "__getitems__"):
+            return self.dataset.__getitems__(indices)
+        return [self.dataset[i] for i in indices]
+
+    def _sample_indices(self):
+        g = random.default_rng(self.seed + self.epoch)
+        integer = int(self.ratio)
+        decimal = self.ratio - integer
+        if decimal == 0:
+            return [i for i in range(len(self.dataset)) for _ in range(integer)]
+        if integer == 0:
+            return sorted(g.choice(range(len(self.dataset)), size=int(len(self.dataset) * decimal), replace=False))
+        indices = [i for i in range(len(self.dataset)) for _ in range(integer)]
+        indices.extend(g.choice(range(len(self.dataset)), size=int(len(self.dataset) * decimal), replace=False))
+        return sorted(indices)
+
+    def __getattr__(self, name: str):
+        if hasattr(self.dataset, name):
+            return getattr(self.dataset, name)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(dataset={self.dataset}, ratio={self.ratio}, seed={self.seed})"
+
+    @property
+    def epoch(self):
+        return self._epoch
+
+    @epoch.setter
+    def epoch(self, epoch):
+        self.set_epoch(epoch)
+
+    def set_epoch(self, epoch):
+        self._epoch = epoch
+        self.indices = self._sample_indices()
+        self._access_count = 0
+
+
+def build_dataset(*args, ratio: float | int | None = None, **kwargs) -> Dataset:
+    dataset = Dataset(*args, **kwargs)
+    if ratio is not None:
+        dataset = SampleDataset(dataset, ratio=ratio)
+    return dataset
