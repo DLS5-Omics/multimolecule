@@ -90,7 +90,8 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
             attention_mask = (
                 input_ids.ne(self.pad_token_id) if self.pad_token_id is not None else torch.ones_like(input_ids)
             )
-        if input_ids.ndim == 2:
+        unsqueeze_input = input_ids.ndim == 2
+        if unsqueeze_input:
             input_ids = input_ids.unsqueeze(1)
         if attention_mask.ndim == 2:
             attention_mask = attention_mask.unsqueeze(1)
@@ -104,6 +105,8 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
             return_dict=return_dict,
         )
         sequence_output = encoder_outputs[0]
+        if unsqueeze_input:
+            sequence_output = sequence_output.squeeze(1)
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
 
         if not return_dict:
