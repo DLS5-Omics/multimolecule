@@ -14,11 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+TRAIN_SPLITS = ("train",)
+VALIDATION_SPLITS = ("val", "validation")
+TEST_SPLITS = ("test", "eval", "evaluation")
+INFERENCE_SPLITS = ("inf", "inference")
+DATASET_SPLITS = TRAIN_SPLITS + VALIDATION_SPLITS + TEST_SPLITS + INFERENCE_SPLITS
 ID_COL_NAMES = ["id", "idx", "index"]
 SEQUENCE_COL_NAMES = ["input_ids", "sequence", "seq"]
 SECONDARY_STRUCTURE_COL_NAMES = ["secondary_structure", "ss"]
 LABEL_COL_NAMES = ["label", "labels"]
-SEQUENCE_COL_NAME = "input_ids"
+SEQUENCE_COL_NAME = "sequence"
 LABEL_COL_NAME = "labels"
 LABLE_TYPE_THRESHOLD = 0.5
 TASK_INFERENCE_NUM_ROWS = 100

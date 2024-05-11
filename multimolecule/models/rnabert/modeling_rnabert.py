@@ -37,7 +37,13 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from multimolecule.module import ContactPredictionHead, MaskedLMHead, SequencePredictionHead, TokenPredictionHead
+from multimolecule.module import (
+    ContactPredictionHead,
+    HeadConfig,
+    MaskedLMHead,
+    SequencePredictionHead,
+    TokenPredictionHead,
+)
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
 from .configuration_rnabert import RnaBertConfig
@@ -266,9 +272,9 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.tensor([[1]]))
         >>> output["logits"].shape
-        torch.Size([1, 2])
+        torch.Size([1, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -330,9 +336,9 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -394,9 +400,9 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
+        torch.Size([1, 5, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -1065,7 +1071,7 @@ class RnaBertPreTrainingHeads(nn.Module):
         vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
         self.predictions_ss = MaskedLMHead(config)
         config.vocab_size = vocab_size
-        self.seq_relationship = SequencePredictionHead(config)
+        self.seq_relationship = SequencePredictionHead(config, HeadConfig(num_labels=2))
 
     def forward(
         self,

@@ -15,6 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .dataset import Dataset
+from .multitask import DistributedMultiTaskSampler, MultiTaskDataset, MultiTaskSampler
 from .utils import no_collate
 
-__all__ = ["Dataset", "no_collate"]
+__all__ = [
+    "Dataset",
+    "PandasDataset",
+    "MultiTaskDataset",
+    "MultiTaskSampler",
+    "DistributedMultiTaskSampler",
+    "no_collate",
+]

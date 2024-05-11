@@ -126,7 +126,7 @@ class TestRNADataset:
             feature_cols=feature_cols,
             label_cols=label_cols,
         )
-        task = Task(type=TaskType.Binary, level=TaskLevel.Nucleotide, num_labels=1)
+        task = Task(type=TaskType.Binary, level=TaskLevel.Token, num_labels=1)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["splice_ai"], torch.LongTensor)
@@ -175,20 +175,18 @@ class TestSyntheticDataset:
         assert dataset.tasks["sequence_regression"] == Task(
             type=TaskType.Regression, level=TaskLevel.Sequence, num_labels=1
         )
-        assert dataset.tasks["nucleotide_binary"] == Task(
-            type=TaskType.Binary, level=TaskLevel.Nucleotide, num_labels=1
-        )
+        assert dataset.tasks["nucleotide_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Token, num_labels=1)
         assert dataset.tasks["nucleotide_multiclass"] == Task(
-            type=TaskType.MultiClass, level=TaskLevel.Nucleotide, num_labels=5
+            type=TaskType.MultiClass, level=TaskLevel.Token, num_labels=5
         )
         assert dataset.tasks["nucleotide_multilabel"] == Task(
-            type=TaskType.MultiLabel, level=TaskLevel.Nucleotide, num_labels=5
+            type=TaskType.MultiLabel, level=TaskLevel.Token, num_labels=5
         )
         assert dataset.tasks["nucleotide_multireg"] == Task(
-            type=TaskType.Regression, level=TaskLevel.Nucleotide, num_labels=5
+            type=TaskType.Regression, level=TaskLevel.Token, num_labels=5
         )
         assert dataset.tasks["nucleotide_regression"] == Task(
-            type=TaskType.Regression, level=TaskLevel.Nucleotide, num_labels=1
+            type=TaskType.Regression, level=TaskLevel.Token, num_labels=1
         )
         assert dataset.tasks["contact_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
         assert dataset.tasks["contact_multiclass"] == Task(

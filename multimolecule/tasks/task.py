@@ -34,9 +34,8 @@ class TaskType(StrEnum):
 
 class TaskLevel(StrEnum):
     Sequence = auto()
-    Nucleotide = auto()
+    Token = auto()
     Contact = auto()
-    # Token = auto()
 
 
 @dataclass
