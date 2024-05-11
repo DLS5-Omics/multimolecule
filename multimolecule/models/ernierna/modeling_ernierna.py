@@ -42,7 +42,7 @@ from transformers.utils import logging
 
 from multimolecule.module import (
     ContactPredictionHead,
-    Criterion,
+    CriterionRegistry,
     HeadOutput,
     MaskedLMHead,
     SequencePredictionHead,
@@ -1196,7 +1196,7 @@ class ErnieRnaContactClassificationHead(nn.Module):
         self.dropout = nn.Dropout(p=0.3)
         self.conv2 = nn.Conv2d(8, 63, 7, 1, 3)
         self.resnet = ErnieRnaResNet()
-        self.criterion = Criterion(self.config)
+        self.criterion = CriterionRegistry.build(self.config)
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
@@ -1258,6 +1258,10 @@ class ErnieRnaContactClassificationHead(nn.Module):
         output = (out + out.permute(0, 1, 3, 2)).squeeze(1)
 
         if labels is not None:
+            if isinstance(labels, NestedTensor):
+                if isinstance(output, Tensor):
+                    output = labels.nested_like(output, strict=False)
+                return HeadOutput(output, self.criterion(output.concat, labels.concat))
             return HeadOutput(output, self.criterion(output, labels))
         return HeadOutput(output)
 

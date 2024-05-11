@@ -17,18 +17,31 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # For additional terms and clarifications, please refer to our License FAQ at:
-# https://multimolecule.danling.org/about/license-faq
+# <https://multimolecule.danling.org/about/license-faq>.
 
-from .dataset import Dataset, SampleDataset, build_dataset
-from .multitask import DistributedMultiTaskSampler, MultiTaskDataset, MultiTaskSampler
-from .utils import no_collate
+import danling as dl
 
-__all__ = [
-    "build_dataset",
-    "Dataset",
-    "SampleDataset",
-    "MultiTaskDataset",
-    "MultiTaskSampler",
-    "DistributedMultiTaskSampler",
-    "no_collate",
-]
+from .base_runner import BaseRunner
+
+
+class MultiMoleculeRunner(type):
+    def __new__(cls, config):
+        if config.get("platform", "torch") == "torch":
+            return TorchRunner(config)
+        if config.platform == "deepspeed":
+            return DeepSpeedRunner(config)
+        if config.platform == "accelerate":
+            return AccelerateRunner(config)
+        raise ValueError(f"Unsupported platform: {config.platform}")
+
+
+class TorchRunner(BaseRunner, dl.TorchRunner):
+    pass
+
+
+class DeepSpeedRunner(BaseRunner, dl.DeepSpeedRunner):
+    pass
+
+
+class AccelerateRunner(BaseRunner, dl.AccelerateRunner):
+    pass
