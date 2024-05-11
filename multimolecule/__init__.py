@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .apis import evaluate, infer, train
 from .data import Dataset
 from .models import (
     AutoModelForContactPrediction,
@@ -111,30 +112,33 @@ from .module import (
     HeadConfig,
     HeadRegistry,
     HeadTransformRegistry,
-    HeadTransformRegistryHF,
     IdentityTransform,
     LinearTransform,
     MaskedLMHead,
     MaskedLMHeadConfig,
     NonLinearTransform,
     PositionEmbeddingRegistry,
-    PositionEmbeddingRegistryHF,
     PredictionHead,
     RotaryEmbedding,
     SequencePredictionHead,
     SinusoidalEmbedding,
-    TokenHeadRegistryHF,
     TokenKMerHead,
     TokenPredictionHead,
 )
+from .runners import MultiMoleculeConfig, MultiMoleculeRunner
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
 
 __all__ = [
+    "train",
+    "evaluate",
+    "infer",
     "modeling_auto",
     "modeling_outputs",
     "Dataset",
+    "MultiMoleculeConfig",
+    "MultiMoleculeRunner",
     "PreTrainedConfig",
     "HeadConfig",
     "BaseHeadConfig",
@@ -233,21 +237,15 @@ __all__ = [
     "HeadRegistry",
     "PredictionHead",
     "SequencePredictionHead",
-    "TokenHeadRegistryHF",
     "TokenPredictionHead",
     "TokenKMerHead",
-    "NucleotideHeadRegistryHF",
-    "NucleotidePredictionHead",
-    "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
     "HeadTransformRegistry",
-    "HeadTransformRegistryHF",
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",
     "PositionEmbeddingRegistry",
-    "PositionEmbeddingRegistryHF",
     "RotaryEmbedding",
     "SinusoidalEmbedding",
     "Criterion",

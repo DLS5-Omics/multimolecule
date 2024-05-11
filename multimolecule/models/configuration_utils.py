@@ -30,7 +30,8 @@ class PreTrainedConfig(PretrainedConfig):
     Base class for all model configuration classes.
     """
 
-    head: HeadConfig
+    head: HeadConfig | None
+    num_labels: int = 1
 
     hidden_size: int
 
@@ -42,7 +43,15 @@ class PreTrainedConfig(PretrainedConfig):
     null_token_id: int = 5
 
     def __init__(
-        self, pad_token_id=0, bos_token_id=1, eos_token_id=2, unk_token_id=3, mask_token_id=4, null_token_id=5, **kwargs
+        self,
+        pad_token_id: int = 0,
+        bos_token_id: int = 1,
+        eos_token_id: int = 2,
+        unk_token_id: int = 3,
+        mask_token_id: int = 4,
+        null_token_id: int = 5,
+        num_labels: int = 1,
+        **kwargs,
     ):
         super().__init__(
             pad_token_id=pad_token_id,
@@ -51,6 +60,7 @@ class PreTrainedConfig(PretrainedConfig):
             unk_token_id=unk_token_id,
             mask_token_id=mask_token_id,
             null_token_id=null_token_id,
+            num_labels=num_labels,
             **kwargs,
         )
 

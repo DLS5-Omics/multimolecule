@@ -60,7 +60,7 @@ def infer_task(
             level = TaskLevel.Contact
             num_labels = len(flattened) // num_contacts
         elif len(flattened) % num_tokens == 0:
-            level = TaskLevel.Nucleotide
+            level = TaskLevel.Token
             num_labels = len(flattened) // num_tokens
         elif len(flattened) % num_elem == 0:
             level = TaskLevel.Sequence
@@ -86,7 +86,7 @@ def infer_task(
         task_type = TaskType.MultiClass if num_labels > 2 else TaskType.Binary
         num_labels = 1 if task_type == TaskType.Binary else num_labels
         if num_tokens_flattened == num_tokens:
-            return Task(task_type, level=TaskLevel.Nucleotide, num_labels=num_labels)
+            return Task(task_type, level=TaskLevel.Token, num_labels=num_labels)
         if num_contacts_flattened == num_contacts:
             return Task(task_type, level=TaskLevel.Contact, num_labels=num_labels)
         return Task(task_type, level=TaskLevel.Sequence, num_labels=num_labels)
@@ -122,7 +122,7 @@ def map_value(value: Any, mapping: dict[str, int] | None) -> Any:
 
 
 def truncate_value(value: Any, max_seq_length: int, level: int | None = None) -> Any:
-    if level == TaskLevel.Nucleotide:
+    if level == TaskLevel.Token:
         return value[:max_seq_length]
     if level == TaskLevel.Contact:
         return [i[:max_seq_length] for i in value[:max_seq_length]]
