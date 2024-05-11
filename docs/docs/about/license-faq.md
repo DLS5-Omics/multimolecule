@@ -52,7 +52,12 @@ We also consider research papers and manuscripts a special form of documentation
 
 Since research papers are considered a form of source code, publishers are legally required to open-source all materials on their server to comply with the _[License](license.md)_ if they publish papers using MultiMolecule. This is generally impractical for most publishers.
 
-As a special exemption under section 7 of the _[License](license.md)_, we grant permission to publish research papers using MultiMolecule in fully open access journals, conferences, or preprint servers, provided all published manuscripts are made available under the [GNU Free Documentation License (GFDL)](https://www.gnu.org/licenses/fdl.html), or a [Creative Commons license](https://creativecommons.org), or an [OSI-approved license](https://opensource.org/licenses) that permits the sharing of manuscripts.
+As a special exemption under section 7 of the _[License](license.md)_, we grant permission to publish research papers using MultiMolecule in fully open access journals, conferences, or preprint servers that do not charge any fee from authors, provided all published manuscripts are made available under the [GNU Free Documentation License (GFDL)](https://www.gnu.org/licenses/fdl.html), or a [Creative Commons license](https://creativecommons.org), or an [OSI-approved license](https://opensource.org/licenses) that permits the sharing of manuscripts.
+
+As a special exemption under section 7 of the _[License](license.md)_, we grant permission to publish research papers using MultiMolecule in certain non-profit journals, conferences, or preprint servers. Currently, the non-profit journals, conferences, or preprint servers we allow include:
+
+- All journals published by American Association for the Advancement of Science (AAAS)
+- eLife
 
 For publishing in closed access journals or conferences, you must obtain a separate license from us. This typically involves co-authorship, a fee to support the project, or both. Contact us at [multimolecule@zyc.ai](mailto:multimolecule@zyc.ai) for more information.
 

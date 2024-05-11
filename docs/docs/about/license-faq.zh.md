@@ -60,7 +60,12 @@
 
 由于研究论文被视为源代码的一种形式，如果发表使用 MultiMolecule 的论文，出版商必须开源其服务器上的所有材料，以符合 _[许可协议](license.zh.md)_ 的要求。对于大多数出版商来说，这是不切实际的。
 
-作为 _[许可协议](license.zh.md)_ 第 7 条的特别豁免，我们允许在完全开放获取的期刊、会议或预印本服务器上发表使用 MultiMolecule 的研究论文，前提是所有发表的手稿都应按照允许共享手稿的[GNU 自由文档许可协议（GFDL）](https://www.gnu.org/licenses/fdl.html)或[知识共享许可协议](https://creativecommons.org)或[OSI 批准许可协议](https://opensource.org/licenses)提供。
+作为 _[许可协议](license.zh.md)_ 第 7 条的特别豁免，我们允许在不向作者收取任何费用的完全开放获取的期刊、会议或预印本服务器上发表使用 MultiMolecule 的研究论文，前提是所有发表的手稿都应按照允许共享手稿的[GNU 自由文档许可协议（GFDL）](https://www.gnu.org/licenses/fdl.html)或[知识共享许可协议](https://creativecommons.org)或[OSI 批准许可协议](https://opensource.org/licenses)提供。
+
+作为 _[许可协议](license.zh.md)_ 第 7 条的特别豁免，我们允许在部分非盈利性的杂志、会议或预印本服务器上发表使用 MultiMolecule 的研究论文。目前，我们允许的非盈利性杂志、会议或预印本服务器包括：
+
+- 美国科学促进会（AAAS）旗下的所有期刊
+- eLife
 
 要在封闭获取的期刊或会议上发表论文，您必须从我们这里获得单独的许可。这通常包括共同署名、支持项目的费用或两者兼而有之。请通过 [multimolecule@zyc.ai](mailto:multimolecule@zyc.ai) 与我们联系以获取更多信息。
 
