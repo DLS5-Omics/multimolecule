@@ -9,9 +9,14 @@ repo_url: https://github.com/DLS5-Omics/multimolecule
 
 nav:
   - index.md
+  - runners:
+      - runners/index.md
+      - MultiMoleculeRunner: runners/runner.md
+      - MultiMoleculeConfig: runners/config.md
   - data:
       - data/index.md
       - Dataset: data/dataset.md
+      - multitask: data/multitask.md
   - datasets:
       - datasets/index.md
       - DNA:
