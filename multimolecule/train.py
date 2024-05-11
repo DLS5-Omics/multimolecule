@@ -14,14 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .dataset import Dataset
-from .multitask import DistributedMultiTaskSampler, MultiTaskDataset, MultiTaskSampler
-from .utils import no_collate
+from .apis import train
 
-__all__ = [
-    "Dataset",
-    "MultiTaskDataset",
-    "MultiTaskSampler",
-    "DistributedMultiTaskSampler",
-    "no_collate",
-]
+if __name__ == "__main__":
+    train()

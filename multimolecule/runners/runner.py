@@ -14,14 +14,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .dataset import Dataset
-from .multitask import DistributedMultiTaskSampler, MultiTaskDataset, MultiTaskSampler
-from .utils import no_collate
+import danling as dl
 
-__all__ = [
-    "Dataset",
-    "MultiTaskDataset",
-    "MultiTaskSampler",
-    "DistributedMultiTaskSampler",
-    "no_collate",
-]
+from .base_runner import BaseRunner
+
+
+class MultiMoleculeRunner(type):
+    def __new__(cls, config):
+        if config.get("platform", "torch") == "torch":
+            return TorchRunner(config)
+        if config.platform == "deepspeed":
+            return DeepSpeedRunner(config)
+        if config.platform == "accelerate":
+            return AccelerateRunner(config)
+        raise ValueError(f"Unsupported platform: {config.platform}")
+
+
+class TorchRunner(BaseRunner, dl.TorchRunner):
+    pass
+
+
+class DeepSpeedRunner(BaseRunner, dl.DeepSpeedRunner):
+    pass
+
+
+class AccelerateRunner(BaseRunner, dl.AccelerateRunner):
+    pass
