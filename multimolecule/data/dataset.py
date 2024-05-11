@@ -149,8 +149,9 @@ class Dataset(datasets.Dataset):
         fingerprint: str | None = None,
         ignored_cols: List[str] | None = None,
     ):
+        self._tasks = NestedDict()
         if tasks is not None:
-            self._tasks = NestedDict(tasks)
+            self.tasks = tasks
         if discrete_map is not None:
             self._discrete_map = discrete_map
         arrow_table = self.build_table(
@@ -250,6 +251,7 @@ class Dataset(datasets.Dataset):
         self.column_names_map = column_names_map
         if self.column_names_map:
             self.rename_columns(self.column_names_map)
+        self.infer_tasks()
 
         if self.preprocess:
             self.update(self.map(self.tokenization))
@@ -297,20 +299,20 @@ class Dataset(datasets.Dataset):
         except ValueError:
             return NestedTensor(data)
 
-    def infer_tasks(self, tasks: Mapping | None = None, sequence_col: str | None = None) -> NestedDict:
-        self._tasks = tasks or NestedDict()
+    def infer_tasks(self, sequence_col: str | None = None) -> NestedDict:
         for col in self.label_cols:
-            if col not in self.tasks:
-                if col in self.secondary_structure_cols:
-                    task = Task(TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
-                    self._tasks[col] = task  # type: ignore[index]
-                    warn(
-                        f"Secondary structure columns are assumed to be {task}."
-                        " Please explicitly specify the task if this is not the case."
-                    )
-                else:
-                    self._tasks[col] = self.infer_task(col, sequence_col)  # type: ignore[index]
-        return self._tasks
+            if col in self.tasks:
+                continue
+            if col in self.secondary_structure_cols:
+                task = Task(TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
+                self.tasks[col] = task  # type: ignore[index]
+                warn(
+                    f"Secondary structure columns are assumed to be {task}. "
+                    "Please explicitly specify the task if this is not the case."
+                )
+            else:
+                self.tasks[col] = self.infer_task(col, sequence_col)  # type: ignore[index]
+        return self.tasks
 
     def infer_task(self, label_col: str, sequence_col: str | None = None) -> Task:
         if sequence_col is None:
@@ -404,7 +406,7 @@ class Dataset(datasets.Dataset):
         self._label_cols = [column_mapping.get(i, i) for i in self.label_cols]
         self._sequence_cols = [column_mapping.get(i, i) for i in self.sequence_cols]
         self._secondary_structure_cols = [column_mapping.get(i, i) for i in self.secondary_structure_cols]
-        self._tasks = {column_mapping.get(k, k): v for k, v in self.tasks.items()}
+        self.tasks = {column_mapping.get(k, k): v for k, v in self.tasks.items()}
         return self
 
     def rename_column(
@@ -418,7 +420,7 @@ class Dataset(datasets.Dataset):
         self._secondary_structure_cols = [
             new_column_name if i == original_column_name else i for i in self.secondary_structure_cols
         ]
-        self._tasks = {new_column_name if k == original_column_name else k: v for k, v in self.tasks.items()}
+        self.tasks = {new_column_name if k == original_column_name else k: v for k, v in self.tasks.items()}
         return self
 
     def process_nan(self, data: Table, nan_process: str | None, fill_value: str | int | float = 0) -> Table:
@@ -470,8 +472,17 @@ class Dataset(datasets.Dataset):
     @property
     def tasks(self) -> NestedDict:
         if not hasattr(self, "_tasks"):
+            self._tasks = NestedDict()
             return self.infer_tasks()
         return self._tasks
+
+    @tasks.setter
+    def tasks(self, tasks: Mapping):
+        self._tasks = NestedDict()
+        for name, task in tasks.items():
+            if not isinstance(task, Task):
+                task = Task(**task)
+            self._tasks[name] = task
 
     @property
     def discrete_map(self) -> Mapping:

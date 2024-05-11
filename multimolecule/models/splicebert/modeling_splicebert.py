@@ -277,9 +277,9 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
+        torch.Size([1, 5, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):
@@ -341,11 +341,11 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
         >>> model = SpliceBertForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=torch.randn(1, 5))
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<MseLossBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):
@@ -407,9 +407,9 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.tensor([[1]]))
         >>> output["logits"].shape
-        torch.Size([1, 2])
+        torch.Size([1, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):
@@ -471,9 +471,9 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 7)))
         >>> output["logits"].shape
-        torch.Size([1, 7, 2])
+        torch.Size([1, 7, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):

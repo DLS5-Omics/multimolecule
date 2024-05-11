@@ -314,9 +314,9 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
+        torch.Size([1, 5, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -378,11 +378,11 @@ class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
         >>> model = ErnieRnaForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer()
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=torch.randn(1, 5))
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<MseLossBackward0>)
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -446,7 +446,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
         >>> output["logits"].shape
-        torch.Size([1, 2])
+        torch.Size([1, 1])
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -510,9 +510,9 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 7)))
         >>> output["logits"].shape
-        torch.Size([1, 7, 2])
+        torch.Size([1, 7, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -1231,7 +1231,7 @@ class ErnieRnaContactClassificationHead(nn.Module):
     def __init__(self, config: ErnieRnaConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
-            head_config = config.head
+            head_config = config.head or HeadConfig()
         self.config = head_config
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
