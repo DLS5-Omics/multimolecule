@@ -20,9 +20,13 @@
 # https://multimolecule.danling.org/about/license-faq
 
 from .dataset import Dataset
+from .multitask import DistributedMultiTaskSampler, MultiTaskDataset, MultiTaskSampler
 from .utils import no_collate
 
 __all__ = [
     "Dataset",
+    "MultiTaskDataset",
+    "MultiTaskSampler",
+    "DistributedMultiTaskSampler",
     "no_collate",
 ]
