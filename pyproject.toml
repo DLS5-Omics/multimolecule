@@ -45,8 +45,9 @@ dynamic = [
 ]
 dependencies = [
   "accelerate",
+  "art",
   "chanfig>=0.0.105",
-  "danling[torch]>=0.3.11",
+  "danling[torch]>=0.4.0b3",
   "datasets",
   'StrEnum; python_version < "3.11"',
   "torch",

@@ -20,6 +20,16 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
+from .balancer import (
+    DynamicWeightAverageBalancer,
+    EqualWeightBalancer,
+    GeometricLossBalancer,
+    GradNormBalancer,
+    LossBalancer,
+    LossBalancerRegistry,
+    RandomLossWeightBalancer,
+    UncertaintyWeightBalancer,
+)
 from .binary import BCEWithLogitsLoss
 from .generic import Criterion
 from .multiclass import CrossEntropyLoss
@@ -29,9 +39,17 @@ from .regression import MSELoss
 
 __all__ = [
     "CriterionRegistry",
+    "LossBalancerRegistry",
     "Criterion",
     "MSELoss",
     "BCEWithLogitsLoss",
     "CrossEntropyLoss",
     "MultiLabelSoftMarginLoss",
+    "LossBalancer",
+    "EqualWeightBalancer",
+    "RandomLossWeightBalancer",
+    "GeometricLossBalancer",
+    "UncertaintyWeightBalancer",
+    "DynamicWeightAverageBalancer",
+    "GradNormBalancer",
 ]

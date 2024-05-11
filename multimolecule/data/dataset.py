@@ -33,8 +33,10 @@ import torch
 from chanfig import NestedDict
 from danling import NestedTensor
 from datasets.table import Table
+from numpy import random
 from pandas import DataFrame
 from torch import Tensor
+from torch.utils import data
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from multimolecule import defaults
@@ -159,6 +161,7 @@ class Dataset(datasets.Dataset):
         indices: Sequence | Table | None = None,
         fingerprint: str | None = None,
         ignored_cols: List[str] | None = None,
+        train: bool | None = None,
     ):
         self._tasks = NestedDict()
         if tasks is not None:
@@ -185,7 +188,7 @@ class Dataset(datasets.Dataset):
             column_names_map=column_names_map,
         )
         self.ignored_cols = ignored_cols or self.id_cols
-        self.train = split == datasets.Split.TRAIN
+        self.train = train if train is not None else split == datasets.Split.TRAIN
 
     def build_table(
         self,
@@ -199,16 +202,17 @@ class Dataset(datasets.Dataset):
         if isinstance(data, str):
             try:
                 data = datasets.load_dataset(data, split=split).data
-            except FileNotFoundError:
+            except (FileNotFoundError, ValueError):
                 data = dl.load_pandas(data)
-                if isinstance(data, DataFrame):
-                    data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
-                    data = pa.Table.from_pandas(data, preserve_index=False)
-        elif isinstance(data, dict):
+        if isinstance(data, dict):
             data = pa.Table.from_pydict(data)
         elif isinstance(data, list):
             data = pa.Table.from_pylist(data)
         elif isinstance(data, DataFrame):
+            data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
+            # If there are None values in the dataset, we replace them with nan and process them later at once.
+            data = data.fillna(float("nan"))
+            data = data.map(lambda x: [float("nan") if i is None else i for i in x] if isinstance(x, list) else x)
             data = pa.Table.from_pandas(data, preserve_index=False)
         if feature_cols is not None and label_cols is not None:
             data = data.select(feature_cols + label_cols)
@@ -313,6 +317,12 @@ class Dataset(datasets.Dataset):
                 data = map_value(data, self.discrete_map[col])
             if col in self.tasks:
                 data = truncate_value(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
+        if col in self.tasks:
+            ignore_value = float("nan") if self.tasks[col].type == TaskType.Regression else -100
+            if isinstance(data, list):
+                data = [[i if i is not None else ignore_value for i in d] for d in data]
+            else:
+                data = [i if i is not None else ignore_value for i in data]
         if isinstance(data[0], str):
             return data
         try:
@@ -370,7 +380,7 @@ class Dataset(datasets.Dataset):
         self, feature_cols: List | None = None, label_cols: List | None = None, id_cols: List | None = None
     ) -> Sequence:
         all_cols = self.data.column_names
-        self._id_cols = id_cols or [i for i in all_cols if i in defaults.ID_COL_NAMES]
+        self._id_cols = id_cols or [i for i in all_cols if i.lower() in defaults.ID_COL_NAMES]
 
         string_cols: list[str] = [k for k, v in self.features.items() if k not in self.id_cols and v.dtype == "string"]
         self._sequence_cols = [i for i in string_cols if i.lower() in defaults.SEQUENCE_COL_NAMES]
@@ -513,3 +523,90 @@ class Dataset(datasets.Dataset):
         if not hasattr(self, "_discrete_map"):
             return self.infer_discrete_map()
         return self._discrete_map
+
+
+class SampleDataset(data.Dataset):
+
+    dataset: Dataset
+    ratio: float | int = 1
+    indices: Sequence
+
+    def __init__(self, dataset: Dataset, ratio: float | int = 1, seed: int = 0):
+        if ratio <= 0:
+            raise ValueError(f"Invalid ratio: {ratio}")
+        self.dataset = dataset
+        self.ratio = ratio
+        self.seed = seed
+        self._epoch = 0
+        self._access_count = 0
+        self.indices = self._sample_indices()
+
+    def __len__(self):
+        return len(self.indices)
+
+    def __getitem__(self, index: int):
+        if isinstance(index, (Sequence, slice)):
+            return self.__getitems__(index)
+        elif not isinstance(index, int):
+            raise ValueError(f"Invalid index type: {type(index)}")
+        index = self.indices[index]
+        self._access_count += 1
+        if self._access_count >= len(self):
+            self.epoch += 1
+        return self.dataset[index]
+
+    def __getitems__(self, indices: Sequence | slice):
+        if isinstance(indices, int):
+            return self.__getitem__(indices)
+        if isinstance(indices, Sequence):
+            indices = [self.indices[i] for i in indices]
+        elif isinstance(indices, slice):
+            indices = self.indices[indices]
+        else:
+            raise ValueError(f"Invalid index type: {type(indices)}")
+        self._access_count += len(indices)
+        if self._access_count >= len(self):
+            self.epoch += 1
+        if hasattr(self.dataset, "__getitems__"):
+            return self.dataset.__getitems__(indices)
+        return [self.dataset[i] for i in indices]
+
+    def _sample_indices(self):
+        g = random.default_rng(self.seed + self.epoch)
+        integer = int(self.ratio)
+        decimal = self.ratio - integer
+        if decimal == 0:
+            return [i for i in range(len(self.dataset)) for _ in range(integer)]
+        if integer == 0:
+            return sorted(g.choice(range(len(self.dataset)), size=int(len(self.dataset) * decimal), replace=False))
+        indices = [i for i in range(len(self.dataset)) for _ in range(integer)]
+        indices.extend(g.choice(range(len(self.dataset)), size=int(len(self.dataset) * decimal), replace=False))
+        return sorted(indices)
+
+    def __getattr__(self, name: str):
+        if hasattr(self.dataset, name):
+            return getattr(self.dataset, name)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(dataset={self.dataset}, ratio={self.ratio}, seed={self.seed})"
+
+    @property
+    def epoch(self):
+        return self._epoch
+
+    @epoch.setter
+    def epoch(self, epoch):
+        self.set_epoch(epoch)
+
+    def set_epoch(self, epoch):
+        self._epoch = epoch
+        self.indices = self._sample_indices()
+        self._access_count = 0
+
+
+def build_dataset(*args, ratio: float | int | None = None, **kwargs) -> Dataset:
+    dataset = Dataset(*args, **kwargs)
+    if ratio is not None:
+        dataset = SampleDataset(dataset, ratio=ratio)
+    return dataset
