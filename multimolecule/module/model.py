@@ -27,6 +27,7 @@ from danling import NestedTensor
 from torch import Tensor, nn
 
 from .backbones import BackboneRegistry
+from .criterions.balancer import LossBalancerRegistry
 from .heads import HeadRegistry
 from .necks import NeckRegistry
 from .registry import ModelRegistry
@@ -43,9 +44,7 @@ class MultiMoleculeModel(nn.Module):
         backbone: dict,
         heads: dict,
         neck: dict | None = None,
-        max_length: int = 1024,
-        truncation: bool = False,
-        probing: bool = False,
+        balancer: dict | None = None,
     ):
         super().__init__()
 
@@ -58,16 +57,12 @@ class MultiMoleculeModel(nn.Module):
         if neck:
             num_discrete = self.backbone.num_discrete
             num_continuous = self.backbone.num_continuous
-            embed_dim = self.backbone.sequence.config.hidden_size
-            attention_heads = self.backbone.sequence.config.num_attention_heads
+            hidden_size = self.backbone.sequence.config.hidden_size
             neck.update(
                 {
                     "num_discrete": num_discrete,
                     "num_continuous": num_continuous,
-                    "embed_dim": embed_dim,
-                    "attention_heads": attention_heads,
-                    "max_length": max_length,
-                    "truncation": truncation,
+                    "hidden_size": hidden_size,
                 }
             )
             self.neck = NeckRegistry.build(**neck)
@@ -83,9 +78,8 @@ class MultiMoleculeModel(nn.Module):
         if any(getattr(h, "require_attentions", False) for h in self.heads.values()):
             self.backbone.sequence.config.output_attentions = True
 
-        if probing:
-            for param in self.backbone.parameters():
-                param.requires_grad = False
+        # Loss Balancer
+        self.balancer = LossBalancerRegistry.build(balancer)
 
     def forward(
         self,
@@ -99,9 +93,13 @@ class MultiMoleculeModel(nn.Module):
         output, _ = self.backbone(sequence, discrete, continuous)
         if self.neck is not None:
             output = self.neck(**output)
+        if not labels:
+            return output
         for task, label in labels.items():
             ret[task] = self.heads[task](output, input_ids=sequence, labels=label)
-        return ret
+        if len(ret) == 1:
+            return ret, ret[task]["loss"]
+        return ret, self.balancer(ret)
 
     def trainable_parameters(
         self,

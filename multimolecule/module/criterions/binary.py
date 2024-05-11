@@ -36,9 +36,15 @@ if TYPE_CHECKING:
 
 @CriterionRegistry.register("binary")
 class BCEWithLogitsLoss(nn.BCEWithLogitsLoss):
+
+    ignore_index: int | None = None
+
     def __init__(self, config: HeadConfig) -> None:
-        super().__init__(**config.get("loss", {}))
+        loss_config = config.get("loss", {})
+        ignore_index = loss_config.pop("ignore_index", -100)
+        super().__init__(**loss_config)
         self.config = config
+        self.ignore_index = ignore_index
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
         if isinstance(input, NestedTensor):
@@ -47,4 +53,8 @@ class BCEWithLogitsLoss(nn.BCEWithLogitsLoss):
             target = torch.cat(target.flatten().storage())
         if input.ndim == target.ndim + 1:
             input = input.squeeze(-1)
+        if self.ignore_index is not None:
+            mask = target != self.ignore_index
+            input = input[mask]
+            target = target[mask]
         return super().forward(input, target.float())

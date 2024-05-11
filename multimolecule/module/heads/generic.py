@@ -70,6 +70,8 @@ class BasePredictionHead(nn.Module):
     requires_attention: bool = False
     r"""Whether the head requires attentions from the model."""
 
+    loss_weight: float | None = None
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
@@ -144,6 +146,8 @@ class PredictionHead(BasePredictionHead):
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
         self.criterion = CriterionRegistry.build(self.config)
+        if self.config.loss_weight is not None:
+            self.loss_weight = self.config.loss_weight
 
     def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
         r"""
@@ -167,6 +171,10 @@ class PredictionHead(BasePredictionHead):
             if isinstance(labels, NestedTensor):
                 if isinstance(output, Tensor):
                     output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
-            return HeadOutput(output, self.criterion(output, labels))
+                loss = self.criterion(output.concat, labels.concat)
+            else:
+                loss = self.criterion(output, labels)
+            if self.loss_weight is not None:
+                loss = loss * self.loss_weight
+            return HeadOutput(output, loss)
         return HeadOutput(output)
