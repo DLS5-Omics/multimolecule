@@ -20,7 +20,7 @@ import torch
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from multimolecule.models.configuration_utils import PretrainedConfig
+from multimolecule.models.configuration_utils import HeadConfig, PretrainedConfig
 
 from ..criterions import Criterion
 from .output import HeadOutput
@@ -34,9 +34,11 @@ class ContactPredictionHead(nn.Module):
     Performs symmetrization, and average product correct.
     """
 
-    def __init__(self, config: PretrainedConfig):
+    def __init__(self, config: PretrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
-        self.config = config.head
+        if head_config is None:
+            head_config = config.head
+        self.config = head_config
         if self.config.hidden_size is None:
             self.config.hidden_size = config.hidden_size
         if self.config.num_labels is None:

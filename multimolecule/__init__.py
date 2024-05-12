@@ -94,8 +94,8 @@ from .tokenisers import RnaTokenizer
 
 __all__ = [
     "PretrainedConfig",
-    "BaseHeadConfig",
     "HeadConfig",
+    "BaseHeadConfig",
     "MaskedLMHeadConfig",
     "tokenisers",
     "RnaTokenizer",

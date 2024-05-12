@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import os
 
+import __main__
 import chanfig
 import torch
 
@@ -36,6 +37,13 @@ except ImportError:
     HfApi = None
 
 torch.manual_seed(1013)
+
+# eval hack
+__main__.OptimizerConfig = chanfig.FlatDict()
+__main__.MSATransformerModelConfig = chanfig.FlatDict()
+__main__.DataConfig = chanfig.FlatDict()
+__main__.TrainConfig = chanfig.FlatDict()
+__main__.LoggingConfig = chanfig.FlatDict()
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -72,13 +80,14 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
 def convert_checkpoint(convert_config):
     vocab_list = get_vocab_list()
     original_vocab_list = ["<cls>", "<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "X", "N", "-", "<mask>"]
-    config = Config()
+    config = Config(num_labels=1)
     config.architectures = ["RnaMsmModel"]
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
 
     ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = ckpt.get("state_dict", ckpt)
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)

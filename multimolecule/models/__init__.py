@@ -74,8 +74,8 @@ from .utrlm import (
 
 __all__ = [
     "PretrainedConfig",
-    "HeadConfig",
     "BaseHeadConfig",
+    "HeadConfig",
     "MaskedLMHeadConfig",
     "RnaTokenizer",
     "AutoModelForNucleotideClassification",

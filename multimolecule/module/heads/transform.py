@@ -20,14 +20,14 @@ from chanfig import ConfigRegistry
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from multimolecule.models.configuration_utils import BaseHeadConfig
+from multimolecule.models.configuration_utils import HeadConfig
 
 HeadTransforms = ConfigRegistry(key="transform")
 
 
 @HeadTransforms.register("nonlinear")
 class NonLinearTransform(nn.Module):
-    def __init__(self, config: BaseHeadConfig):
+    def __init__(self, config: HeadConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         if isinstance(config.transform_act, str):
@@ -45,7 +45,7 @@ class NonLinearTransform(nn.Module):
 
 @HeadTransforms.register("linear")
 class LinearTransform(nn.Module):
-    def __init__(self, config: BaseHeadConfig):
+    def __init__(self, config: HeadConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
@@ -58,5 +58,5 @@ class LinearTransform(nn.Module):
 
 @HeadTransforms.register(None)
 class IdentityTransform(nn.Identity):
-    def __init__(self, config: BaseHeadConfig):  # pylint: disable=unused-argument
+    def __init__(self, config: HeadConfig):  # pylint: disable=unused-argument
         super().__init__()

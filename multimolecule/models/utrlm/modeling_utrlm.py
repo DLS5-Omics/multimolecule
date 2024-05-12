@@ -1173,16 +1173,12 @@ class UtrLmPreTrainingHeads(nn.Module):
         super().__init__()
         self.contact = ContactPredictionHead(config)
         self.predictions = MaskedLMHead(config)
-        head = config.head
         self.structure = None
         if config.structure_head is not None:
-            config.head = config.structure_head
-            self.structure = TokenClassificationHead(config)
+            self.structure = TokenClassificationHead(config, config.structure_head)
         self.supervised = None
         if config.supervised_head is not None:
-            config.head = config.supervised_head
-            self.supervised = SequenceClassificationHead(config)
-        config.head = head
+            self.supervised = SequenceClassificationHead(config, config.supervised_head)
 
     def forward(
         self,

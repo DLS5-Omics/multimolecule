@@ -23,7 +23,7 @@ from transformers.configuration_utils import PretrainedConfig as _PretrainedConf
 
 
 class PretrainedConfig(_PretrainedConfig):
-    head: BaseHeadConfig
+    head: HeadConfig
 
     def __init__(
         self, pad_token_id=0, bos_token_id=1, eos_token_id=2, unk_token_id=3, mask_token_id=4, null_token_id=5, **kwargs
@@ -54,21 +54,26 @@ class PretrainedConfig(_PretrainedConfig):
         return output
 
 
-class HeadConfig(OrderedDict):
+class BaseHeadConfig(OrderedDict):
     pass
 
 
 @dataclass
-class BaseHeadConfig(HeadConfig):
+class HeadConfig(BaseHeadConfig):
     r"""
     This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
     prediction head according to the specified arguments, defining the head architecture.
 
-    Configuration objects inherit from [`HeadConfig`] and can be used to control the model outputs. Read the
-    documentation from [`HeadConfig`] for more information.
+    Configuration objects inherit from [`BaseHeadConfig`] and can be used to control the model outputs. Read the
+    documentation from [`BaseHeadConfig`] for more information.
 
 
     Args:
+        num_labels (`int`, *optional*):
+            Number of labels to use in the last layer added to the model, typically for a classification task.
+        problem_type (`str`, *optional*):
+            Problem type for `XxxForSequenceClassification` models. Can be one of `"regression"`,
+            `"single_label_classification"` or `"multi_label_classification"`.
         hidden_size (`int`, *optional*, defaults to 768):
             Dimensionality of the encoder layers and the pooler layer.
         dropout (`float`, *optional*, defaults to 0.0):
@@ -83,13 +88,10 @@ class BaseHeadConfig(HeadConfig):
             The activation function of the final prediction output.
         layer_norm_eps (`float`, *optional*, defaults to 1e-12):
             The epsilon used by the layer normalization layers.
-        num_labels (`int`, *optional*, defaults to 1):
-            Number of labels to use in the last layer added to the model, typically for a classification task.
-        problem_type (`str`, *optional*):
-            Problem type for `XxxForSequenceClassification` models. Can be one of `"regression"`,
-            `"single_label_classification"` or `"multi_label_classification"`.
     """
 
+    num_labels: int = None  # type: ignore[assignment]
+    problem_type: str = None  # type: ignore[assignment]
     hidden_size: int | None = None
     dropout: float = 0.0
     transform: str | None = None
@@ -97,18 +99,16 @@ class BaseHeadConfig(HeadConfig):
     bias: bool = True
     act: str | None = None
     layer_norm_eps: float = 1e-12
-    num_labels: int = 1
-    problem_type: str | None = None
 
 
 @dataclass
-class MaskedLMHeadConfig(HeadConfig):
+class MaskedLMHeadConfig(BaseHeadConfig):
     r"""
     This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
     prediction head according to the specified arguments, defining the head architecture.
 
-    Configuration objects inherit from [`HeadConfig`] and can be used to control the model outputs. Read the
-    documentation from [`HeadConfig`] for more information.
+    Configuration objects inherit from [`BaseHeadConfig`] and can be used to control the model outputs. Read the
+    documentation from [`BaseHeadConfig`] for more information.
 
 
     Args:

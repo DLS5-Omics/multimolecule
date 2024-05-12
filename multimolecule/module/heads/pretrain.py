@@ -24,7 +24,7 @@ from torch.nn import functional as F
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.models.configuration_utils import PretrainedConfig
+from multimolecule.models.configuration_utils import MaskedLMHeadConfig, PretrainedConfig
 
 from .output import HeadOutput
 from .transform import HeadTransforms
@@ -33,9 +33,13 @@ from .transform import HeadTransforms
 class MaskedLMHead(nn.Module):
     """Head for masked language modeling."""
 
-    def __init__(self, config: PretrainedConfig, weight: Tensor | None = None):
+    def __init__(
+        self, config: PretrainedConfig, weight: Tensor | None = None, head_config: MaskedLMHeadConfig | None = None
+    ):
         super().__init__()
-        self.config = config.lm_head if hasattr(config, "lm_head") else config.head
+        if head_config is None:
+            head_config = config.lm_head if hasattr(config, "lm_head") else config.head  # type: ignore[assignment]
+        self.config: MaskedLMHeadConfig = head_config  # type: ignore[assignment]
         if self.config.hidden_size is None:
             self.config.hidden_size = config.hidden_size
         self.num_labels = config.vocab_size
@@ -57,5 +61,5 @@ class MaskedLMHead(nn.Module):
         if self.activation is not None:
             output = self.activation(output)
         if labels is not None:
-            return HeadOutput(output, F.cross_entropy(output.view(-1, self.config.vocab_size), labels.view(-1)))
+            return HeadOutput(output, F.cross_entropy(output.view(-1, self.num_labels), labels.view(-1)))
         return HeadOutput(output)

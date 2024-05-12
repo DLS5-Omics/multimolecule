@@ -16,7 +16,7 @@
 
 from transformers.utils import logging
 
-from ..configuration_utils import BaseHeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PretrainedConfig
 
 logger = logging.get_logger(__name__)
 
@@ -113,5 +113,5 @@ class RnaMsmConfig(PretrainedConfig):
         self.attention_type = attention_type
         self.embed_positions_msa = embed_positions_msa
         self.attention_bias = attention_bias
-        self.head = BaseHeadConfig(**head if head is not None else {})
+        self.head = HeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})

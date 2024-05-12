@@ -24,7 +24,7 @@ from chanfig import ConfigRegistry
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.models.configuration_utils import PretrainedConfig
+from multimolecule.models.configuration_utils import HeadConfig, PretrainedConfig
 
 from .generic import ClassificationHead
 from .output import HeadOutput
@@ -37,8 +37,8 @@ NucleotideHeads = ConfigRegistry(key="tokenizer_type")
 class NucleotideClassificationHead(ClassificationHead):
     """Head for nucleotide-level tasks."""
 
-    def __init__(self, config: PretrainedConfig):
-        super().__init__(config)
+    def __init__(self, config: PretrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
@@ -88,8 +88,8 @@ class NucleotideClassificationHead(ClassificationHead):
 class NucleotideKMerHead(ClassificationHead):
     """Head for nucleotide-level tasks."""
 
-    def __init__(self, config: PretrainedConfig):
-        super().__init__(config)
+    def __init__(self, config: PretrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
         self.nmers = config.nmers
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id

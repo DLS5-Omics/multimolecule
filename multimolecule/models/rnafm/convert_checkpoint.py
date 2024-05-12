@@ -109,13 +109,14 @@ def convert_checkpoint(convert_config):
         "<null>",
         "<mask>",
     ]
-    config = Config()
+    config = Config(num_labels=1)
     config.architectures = ["RnaFmModel"]
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
 
     ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = ckpt.get("model", ckpt)
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)

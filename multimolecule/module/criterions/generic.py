@@ -17,23 +17,24 @@
 from __future__ import annotations
 
 import torch
+from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 
-from multimolecule.models.configuration_utils import BaseHeadConfig
+from multimolecule.models.configuration_utils import HeadConfig
 
 
 class Criterion(nn.Module):
 
     problem_types = ["regression", "single_label_classification", "multi_label_classification"]
 
-    def __init__(self, config: BaseHeadConfig) -> None:
+    def __init__(self, config: HeadConfig) -> None:
         super().__init__()
         self.config = config
         self.problem_type = config.problem_type
         self.num_labels = config.num_labels
 
-    def forward(self, logits, labels) -> Tensor | None:
+    def forward(self, logits: Tensor | NestedTensor, labels: Tensor | NestedTensor) -> Tensor | None:
         if labels is None:
             return None
         if self.problem_type is None:
