@@ -126,7 +126,7 @@ def convert_checkpoint(convert_config):
         os.path.join(convert_config.output_path, "special_tokens_map.json")
     )
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["model_max_length"] = config.max_position_embeddings
+    tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
     tokenizer_config.json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
 
     if convert_config.push_to_hub:
