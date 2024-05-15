@@ -42,11 +42,11 @@ from multimolecule.module import (
     ContactPredictionHead,
     MaskedLMHead,
     NucleotideClassificationHead,
+    RotaryEmbedding,
     SequenceClassificationHead,
     TokenClassificationHead,
 )
 
-from ..modeling_utils import apply_rotary_pos_emb
 from .configuration_utrlm import UtrLmConfig
 
 logger = logging.get_logger(__name__)
@@ -579,10 +579,13 @@ class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
         r"""
@@ -602,6 +605,9 @@ class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -702,48 +708,6 @@ class UtrLmEmbeddings(nn.Module):
             self.padding_idx + 1, sequence_length + self.padding_idx + 1, dtype=torch.long, device=inputs_embeds.device
         )
         return position_ids.unsqueeze(0).expand(input_shape)
-
-
-class RotaryEmbedding(torch.nn.Module):
-    """
-    Rotary position embeddings based on those in
-    [RoFormer](https://huggingface.co/docs/transformers/model_doc/roformer). Query and keys are transformed by rotation
-    matrices which depend on their relative positions.
-    """
-
-    def __init__(self, dim: int):
-        super().__init__()
-        # Generate and save the inverse frequency buffer (non trainable)
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2, dtype=torch.int64).float() / dim))
-        self.register_buffer("inv_freq", inv_freq)
-
-        self._seq_len_cached = None
-        self._cos_cached = None
-        self._sin_cached = None
-
-    def _update_cos_sin_tables(self, x, seq_dimension=2):
-        seq_len = x.shape[seq_dimension]
-
-        # Reset the tables if the sequence length has changed,
-        # or if we're on a new device (possibly due to tracing for instance)
-        if seq_len != self._seq_len_cached or self._cos_cached.device != x.device:
-            self._seq_len_cached = seq_len
-            t = torch.arange(x.shape[seq_dimension], device=x.device).type_as(self.inv_freq)
-            freqs = torch.outer(t, self.inv_freq)
-            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
-
-            self._cos_cached = emb.cos()[None, None, :, :]
-            self._sin_cached = emb.sin()[None, None, :, :]
-
-        return self._cos_cached, self._sin_cached
-
-    def forward(self, q: Tensor, k: Tensor) -> Tuple[Tensor, Tensor]:
-        self._cos_cached, self._sin_cached = self._update_cos_sin_tables(k, seq_dimension=-2)
-
-        return (
-            apply_rotary_pos_emb(q, self._cos_cached, self._sin_cached),
-            apply_rotary_pos_emb(k, self._cos_cached, self._sin_cached),
-        )
 
 
 class UtrLmEncoder(nn.Module):

@@ -560,10 +560,13 @@ class UtrBertForNucleotideClassification(UtrBertPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
         r"""
@@ -583,6 +586,9 @@ class UtrBertForNucleotideClassification(UtrBertPreTrainedModel):
         outputs = self.utrbert(
             input_ids,
             attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,

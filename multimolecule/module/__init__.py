@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .criterions import Criterion
+from .embeddings import RotaryEmbedding
 from .heads import (
     ClassificationHead,
     ContactPredictionHead,
@@ -33,6 +34,8 @@ from .heads import (
 )
 
 __all__ = [
+    "Criterion",
+    "RotaryEmbedding",
     "ClassificationHead",
     "SequenceClassificationHead",
     "TokenHeads",
@@ -47,5 +50,4 @@ __all__ = [
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",
-    "Criterion",
 ]
