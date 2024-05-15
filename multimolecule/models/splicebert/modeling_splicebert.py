@@ -24,6 +24,7 @@ import torch
 import torch.utils.checkpoint
 from danling import NestedTensor
 from torch import Tensor, nn
+from torch.nn import functional as F
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
@@ -174,7 +175,7 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
         if input_ids is not None and inputs_embeds is not None:
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
         if input_ids is not None:
-            # self.warn_if_padding_and_no_attention_mask(input_ids, attention_mask)
+            self.warn_if_padding_and_no_attention_mask(input_ids, attention_mask)
             input_shape = input_ids.size()
         elif inputs_embeds is not None:
             input_shape = inputs_embeds.size()[:-1]
@@ -622,17 +623,17 @@ class SpliceBertForNucleotideClassification(SpliceBertPreTrainedModel):
 
 
 class SpliceBertEmbeddings(nn.Module):
-    """Construct the embeddings from word, position and token_type embeddings."""
+    """
+    Construct the embeddings from word, position and token_type embeddings.
+    """
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__()
         self.word_embeddings = nn.Embedding(config.vocab_size, config.hidden_size, padding_idx=config.pad_token_id)
         self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size)
         self.token_type_embeddings = nn.Embedding(config.type_vocab_size, config.hidden_size)
-
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
-        # position_ids (1, len position emb) is contiguous in memory and exported when serialized
         self.position_embedding_type = getattr(config, "position_embedding_type", "absolute")
         self.register_buffer(
             "position_ids", torch.arange(config.max_position_embeddings).expand((1, -1)), persistent=False
@@ -655,11 +656,11 @@ class SpliceBertEmbeddings(nn.Module):
         if position_ids is None:
             position_ids = self.position_ids[:, past_key_values_length : seq_length + past_key_values_length]
 
-        # RNA models do not use token_type_ids
-        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=self.position_ids.device)
-
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
+
+        # RNA models do not use token_type_ids
+        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=self.position_ids.device)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
 
         embeddings = inputs_embeds + token_type_embeddings
@@ -710,20 +711,15 @@ class SpliceBertEncoder(nn.Module):
             past_key_value = past_key_values[i] if past_key_values is not None else None
 
             if self.gradient_checkpointing and self.training:
-
-                def create_custom_forward(module):
-                    def custom_forward(*inputs):
-                        return module(*inputs, past_key_value, output_attentions)  # noqa: B023
-
-                    return custom_forward
-
-                layer_outputs = torch.utils.checkpoint.checkpoint(
-                    create_custom_forward(layer_module),
+                layer_outputs = self._gradient_checkpointing_func(
+                    layer_module.__call__,
                     hidden_states,
                     attention_mask,
                     layer_head_mask,
                     encoder_hidden_states,
                     encoder_attention_mask,
+                    past_key_value,
+                    output_attentions,
                 )
             else:
                 layer_outputs = layer_module(
@@ -738,7 +734,7 @@ class SpliceBertEncoder(nn.Module):
 
             hidden_states = layer_outputs[0]
             if use_cache:
-                next_decoder_cache += (layer_outputs[-1],)  # type: ignore[operator]
+                next_decoder_cache = next_decoder_cache + (layer_outputs[-1],)  # type: ignore[operator]
             if output_attentions:
                 all_self_attentions = all_self_attentions + (layer_outputs[1],)  # type: ignore[operator]
                 if self.config.add_cross_attention:
@@ -1025,7 +1021,7 @@ class SpliceBertSelfAttention(nn.Module):
                 attention_scores = attention_scores + attention_mask
 
             # Normalize the attention scores to probabilities.
-            attention_probs = nn.functional.softmax(attention_scores, dim=-1)
+            attention_probs = F.softmax(attention_scores, dim=-1)
 
             # This is actually dropping out entire tokens to attend to, which might
             # seem a bit unusual, but is taken from the original Transformer paper.
@@ -1035,7 +1031,7 @@ class SpliceBertSelfAttention(nn.Module):
             if head_mask is not None:
                 attention_probs = attention_probs * head_mask
 
-            context_layer = torch.matmul(attention_probs, value_layer)
+            context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
 
         context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
