@@ -21,8 +21,8 @@ import os
 import chanfig
 import torch
 
-from multimolecule.models.rnabert import RnaBertConfig as Config
-from multimolecule.models.rnabert import RnaBertForPretraining as Model
+from multimolecule.models import RnaBertConfig as Config
+from multimolecule.models import RnaBertForPretraining as Model
 from multimolecule.tokenisers.rna.utils import (
     convert_word_embeddings,
     get_special_tokens_map,
