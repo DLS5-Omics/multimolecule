@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ..tokenisers.rna import RnaTokenizer
-from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 from .modeling_auto import AutoModelForNucleotideClassification
 from .rnabert import (
     RnaBertConfig,
@@ -73,7 +73,7 @@ from .utrlm import (
 )
 
 __all__ = [
-    "PretrainedConfig",
+    "PreTrainedConfig",
     "BaseHeadConfig",
     "HeadConfig",
     "MaskedLMHeadConfig",

@@ -29,7 +29,7 @@ from .models import (
     BaseHeadConfig,
     HeadConfig,
     MaskedLMHeadConfig,
-    PretrainedConfig,
+    PreTrainedConfig,
     RnaBertConfig,
     RnaBertForMaskedLM,
     RnaBertForNucleotideClassification,
@@ -93,7 +93,7 @@ from .module import (
 from .tokenisers import RnaTokenizer
 
 __all__ = [
-    "PretrainedConfig",
+    "PreTrainedConfig",
     "HeadConfig",
     "BaseHeadConfig",
     "MaskedLMHeadConfig",

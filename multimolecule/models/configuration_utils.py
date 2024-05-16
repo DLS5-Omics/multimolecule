@@ -19,10 +19,10 @@ from __future__ import annotations
 from collections import OrderedDict
 from dataclasses import asdict, dataclass, is_dataclass
 
-from transformers.configuration_utils import PretrainedConfig as _PretrainedConfig
+from transformers.configuration_utils import PretrainedConfig
 
 
-class PretrainedConfig(_PretrainedConfig):
+class PreTrainedConfig(PretrainedConfig):
     head: HeadConfig
 
     pad_token_id: int = 0
@@ -47,7 +47,7 @@ class PretrainedConfig(_PretrainedConfig):
 
     def to_dict(self):
         """
-        Serializes this instance to a Python dictionary. Override the default [`~PretrainedConfig.to_dict`].
+        Serializes this instance to a Python dictionary. Override the default [`~PreTrainedConfig.to_dict`].
 
         Returns:
             `Dict[str, any]`: Dictionary of all the attributes that make up this configuration instance,
