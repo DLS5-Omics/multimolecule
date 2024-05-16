@@ -25,6 +25,13 @@ from transformers.configuration_utils import PretrainedConfig as _PretrainedConf
 class PretrainedConfig(_PretrainedConfig):
     head: HeadConfig
 
+    pad_token_id: int = 0
+    bos_token_id: int = 1
+    eos_token_id: int = 2
+    unk_token_id: int = 3
+    mask_token_id: int = 4
+    null_token_id: int = 5
+
     def __init__(
         self, pad_token_id=0, bos_token_id=1, eos_token_id=2, unk_token_id=3, mask_token_id=4, null_token_id=5, **kwargs
     ):
