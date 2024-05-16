@@ -99,7 +99,7 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
@@ -184,7 +184,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -239,7 +239,7 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         labels_contact: Tensor | None = None,
         output_attentions: bool = False,
@@ -306,7 +306,7 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -371,7 +371,7 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -436,7 +436,7 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -503,9 +503,28 @@ class RnaMsmEmbeddings(nn.Module):
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=1e-12)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
-    def forward(self, input_ids=None, attention_mask=None, position_ids=None, inputs_embeds=None):
-        assert input_ids.ndim == 3
-        _, num_alignments, seq_length = input_ids.size()
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor | None = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+    ):
+        if input_ids is not None:
+            input_shape = input_ids.size()
+        else:
+            input_shape = inputs_embeds.size()[:-1]  # type: ignore[union-attr]
+        _, num_alignments, seq_length = input_shape
+
+        if attention_mask is None:
+            if isinstance(input_ids, NestedTensor):
+                input_ids, attention_mask = input_ids.tensor, input_ids.mask
+            elif isinstance(inputs_embeds, NestedTensor):
+                inputs_embeds, attention_mask = inputs_embeds.tensor, inputs_embeds.mask
+            elif input_ids is not None and self.pad_token_id is not None:
+                attention_mask = input_ids.ne(self.pad_token_id)
+            else:
+                raise ValueError("attention_mask is not passed and can not be inferred from input_ids or inputs_embeds")
 
         if position_ids is None:
             position_ids = self.position_ids[:, :seq_length] * attention_mask.long()
