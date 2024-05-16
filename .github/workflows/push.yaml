@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
       - name: Install dependencies for testing
-        run: pip install pytest pytest-cov torch torchvision torcheval torchmetrics accelerate transformers tokenizers
+        run: pip install pytest pytest-cov torch torchvision torcheval torchmetrics accelerate
       - name: Install module
         run: pip install -e .
       - name: pytest

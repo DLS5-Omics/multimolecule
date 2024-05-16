@@ -91,6 +91,7 @@ from .module import (
     TokenKMerHead,
 )
 from .tokenisers import RnaTokenizer
+from .utils import count_parameters
 
 __all__ = [
     "PreTrainedConfig",
@@ -165,4 +166,5 @@ __all__ = [
     "NonLinearTransform",
     "IdentityTransform",
     "Criterion",
+    "count_parameters",
 ]
