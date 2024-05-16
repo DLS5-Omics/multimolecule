@@ -19,7 +19,7 @@ from __future__ import annotations
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from multimolecule.models.configuration_utils import HeadConfig, PretrainedConfig
+from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
 
 from ..criterions import Criterion
 from .output import HeadOutput
@@ -31,7 +31,7 @@ class ClassificationHead(nn.Module):
 
     num_labels: int
 
-    def __init__(self, config: PretrainedConfig, head_config: HeadConfig | None = None):
+    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
             head_config = config.head

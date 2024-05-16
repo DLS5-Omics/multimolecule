@@ -22,7 +22,7 @@ import chanfig
 import torch
 
 from multimolecule.models import RnaFmConfig as Config
-from multimolecule.models import RnaFmForPretraining as Model
+from multimolecule.models import RnaFmForPreTraining as Model
 from multimolecule.tokenisers.rna.utils import (
     convert_word_embeddings,
     get_special_tokens_map,

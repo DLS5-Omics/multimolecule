@@ -31,7 +31,7 @@ from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
     SpliceBertForMaskedLM,
     SpliceBertForNucleotideClassification,
-    SpliceBertForPretraining,
+    SpliceBertForPreTraining,
     SpliceBertForSequenceClassification,
     SpliceBertForTokenClassification,
     SpliceBertModel,
@@ -44,7 +44,7 @@ __all__ = [
     "SpliceBertModel",
     "SpliceBertPreTrainedModel",
     "SpliceBertForMaskedLM",
-    "SpliceBertForPretraining",
+    "SpliceBertForPreTraining",
     "SpliceBertForSequenceClassification",
     "SpliceBertForTokenClassification",
     "SpliceBertForNucleotideClassification",
@@ -53,7 +53,7 @@ __all__ = [
 AutoConfig.register("splicebert", SpliceBertConfig)
 AutoModel.register(SpliceBertConfig, SpliceBertModel)
 AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
-AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPretraining)
+AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPreTraining)
 AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequenceClassification)
 AutoModelForTokenClassification.register(SpliceBertConfig, SpliceBertForTokenClassification)
 AutoModelForNucleotideClassification.register(SpliceBertConfig, SpliceBertForNucleotideClassification)

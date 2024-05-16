@@ -31,7 +31,7 @@ from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
     RnaMsmForMaskedLM,
     RnaMsmForNucleotideClassification,
-    RnaMsmForPretraining,
+    RnaMsmForPreTraining,
     RnaMsmForSequenceClassification,
     RnaMsmForTokenClassification,
     RnaMsmModel,
@@ -43,7 +43,7 @@ __all__ = [
     "RnaMsmConfig",
     "RnaMsmModel",
     "RnaMsmPreTrainedModel",
-    "RnaMsmForPretraining",
+    "RnaMsmForPreTraining",
     "RnaMsmForMaskedLM",
     "RnaMsmForSequenceClassification",
     "RnaMsmForTokenClassification",
@@ -53,7 +53,7 @@ __all__ = [
 AutoConfig.register("rnamsm", RnaMsmConfig)
 AutoModel.register(RnaMsmConfig, RnaMsmModel)
 AutoModelForMaskedLM.register(RnaMsmConfig, RnaMsmForMaskedLM)
-AutoModelForPreTraining.register(RnaMsmConfig, RnaMsmForPretraining)
+AutoModelForPreTraining.register(RnaMsmConfig, RnaMsmForPreTraining)
 AutoModelForSequenceClassification.register(RnaMsmConfig, RnaMsmForSequenceClassification)
 AutoModelForTokenClassification.register(RnaMsmConfig, RnaMsmForTokenClassification)
 AutoModelForNucleotideClassification.register(RnaMsmConfig, RnaMsmForNucleotideClassification)

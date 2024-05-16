@@ -31,7 +31,7 @@ from .configuration_rnafm import RnaFmConfig
 from .modeling_rnafm import (
     RnaFmForMaskedLM,
     RnaFmForNucleotideClassification,
-    RnaFmForPretraining,
+    RnaFmForPreTraining,
     RnaFmForSequenceClassification,
     RnaFmForTokenClassification,
     RnaFmModel,
@@ -44,7 +44,7 @@ __all__ = [
     "RnaFmModel",
     "RnaFmPreTrainedModel",
     "RnaFmForMaskedLM",
-    "RnaFmForPretraining",
+    "RnaFmForPreTraining",
     "RnaFmForSequenceClassification",
     "RnaFmForTokenClassification",
     "RnaFmForNucleotideClassification",
@@ -53,7 +53,7 @@ __all__ = [
 AutoConfig.register("rnafm", RnaFmConfig)
 AutoModel.register(RnaFmConfig, RnaFmModel)
 AutoModelForMaskedLM.register(RnaFmConfig, RnaFmForMaskedLM)
-AutoModelForPreTraining.register(RnaFmConfig, RnaFmForPretraining)
+AutoModelForPreTraining.register(RnaFmConfig, RnaFmForPreTraining)
 AutoModelForSequenceClassification.register(RnaFmConfig, RnaFmForSequenceClassification)
 AutoModelForTokenClassification.register(RnaFmConfig, RnaFmForTokenClassification)
 AutoModelForNucleotideClassification.register(RnaFmConfig, RnaFmForNucleotideClassification)

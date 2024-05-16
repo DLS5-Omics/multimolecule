@@ -31,7 +31,7 @@ from .configuration_utrbert import UtrBertConfig
 from .modeling_utrbert import (
     UtrBertForMaskedLM,
     UtrBertForNucleotideClassification,
-    UtrBertForPretraining,
+    UtrBertForPreTraining,
     UtrBertForSequenceClassification,
     UtrBertForTokenClassification,
     UtrBertModel,
@@ -44,7 +44,7 @@ __all__ = [
     "UtrBertModel",
     "UtrBertPreTrainedModel",
     "UtrBertForMaskedLM",
-    "UtrBertForPretraining",
+    "UtrBertForPreTraining",
     "UtrBertForSequenceClassification",
     "UtrBertForTokenClassification",
     "UtrBertForNucleotideClassification",
@@ -53,7 +53,7 @@ __all__ = [
 AutoConfig.register("utrbert", UtrBertConfig)
 AutoModel.register(UtrBertConfig, UtrBertModel)
 AutoModelForMaskedLM.register(UtrBertConfig, UtrBertForMaskedLM)
-AutoModelForPreTraining.register(UtrBertConfig, UtrBertForPretraining)
+AutoModelForPreTraining.register(UtrBertConfig, UtrBertForPreTraining)
 AutoModelForSequenceClassification.register(UtrBertConfig, UtrBertForSequenceClassification)
 AutoModelForTokenClassification.register(UtrBertConfig, UtrBertForTokenClassification)
 AutoModelForNucleotideClassification.register(UtrBertConfig, UtrBertForNucleotideClassification)

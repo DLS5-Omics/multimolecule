@@ -215,12 +215,12 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForPretraining(RnaMsmPreTrainedModel):
+class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForPretraining, RnaTokenizer
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForPreTraining, RnaTokenizer
         >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForPretraining(config)
+        >>> model = RnaMsmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -245,7 +245,7 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaMsmForPretrainingOutput:
+    ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
@@ -270,7 +270,7 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
             output = (logits, contact_map) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmForPretrainingOutput(
+        return RnaMsmForPreTrainingOutput(
             loss=loss,
             logits=logits,
             contact_map=contact_map,
@@ -1295,7 +1295,7 @@ class RnaMsmPreTrainingHeads(nn.Module):
 
 
 @dataclass
-class RnaMsmForPretrainingOutput(ModelOutput):
+class RnaMsmForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     contact_map: torch.FloatTensor | None = None

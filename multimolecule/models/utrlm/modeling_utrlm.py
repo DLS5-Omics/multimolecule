@@ -321,7 +321,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         )
 
 
-class UtrLmForPretraining(UtrLmPreTrainedModel):
+class UtrLmForPreTraining(UtrLmPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
@@ -338,7 +338,7 @@ class UtrLmForPretraining(UtrLmPreTrainedModel):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `UtrLmForPretraining` make sure `config.is_decoder=False` for "
+                "If you want to use `UtrLmForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
@@ -369,7 +369,7 @@ class UtrLmForPretraining(UtrLmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | UtrLmForPretrainingOutput:
+    ) -> Tuple[Tensor, ...] | UtrLmForPreTrainingOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
@@ -413,7 +413,7 @@ class UtrLmForPretraining(UtrLmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return UtrLmForPretrainingOutput(
+        return UtrLmForPreTrainingOutput(
             loss=loss,
             logits=logits,
             contact_map=contact_map,
@@ -1165,7 +1165,7 @@ class UtrLmPreTrainingHeads(nn.Module):
 
 
 @dataclass
-class UtrLmForPretrainingOutput(ModelOutput):
+class UtrLmForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     contact_map: torch.FloatTensor | None = None

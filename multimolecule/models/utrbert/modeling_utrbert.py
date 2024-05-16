@@ -334,13 +334,13 @@ class UtrBertForMaskedLM(UtrBertPreTrainedModel):
         return {"input_ids": input_ids, "attention_mask": attention_mask}
 
 
-class UtrBertForPretraining(UtrBertPreTrainedModel):
+class UtrBertForPreTraining(UtrBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForPretraining, RnaTokenizer
+        >>> from multimolecule import UtrBertConfig, UtrBertForPreTraining, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=3, strameline=True)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
-        >>> model = UtrBertForPretraining(config)
+        >>> model = UtrBertForPreTraining(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
     """
@@ -351,7 +351,7 @@ class UtrBertForPretraining(UtrBertPreTrainedModel):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `UtrBertForPretraining` make sure `config.is_decoder=False` for "
+                "If you want to use `UtrBertForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.utrbert = UtrBertModel(config, add_pooling_layer=True)

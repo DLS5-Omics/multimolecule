@@ -16,20 +16,20 @@
 
 from transformers.utils import logging
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PretrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 
 logger = logging.get_logger(__name__)
 
 
-class SpliceBertConfig(PretrainedConfig):
+class SpliceBertConfig(PreTrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`SpliceBertModel`]. It is used to instantiate a
     SpliceBert model according to the specified arguments, defining the model architecture. Instantiating a
     configuration with the defaults will yield a similar configuration to that of the SpliceBert
     [biomed-AI/SpliceBERT](https://github.com/biomed-AI/SpliceBERT) architecture.
 
-    Configuration objects inherit from [`PretrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PretrainedConfig`] for more information.
+    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
+    documentation from [`PreTrainedConfig`] for more information.
 
 
     Args:

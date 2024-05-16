@@ -31,7 +31,7 @@ from .configuration_rnabert import RnaBertConfig
 from .modeling_rnabert import (
     RnaBertForMaskedLM,
     RnaBertForNucleotideClassification,
-    RnaBertForPretraining,
+    RnaBertForPreTraining,
     RnaBertForSequenceClassification,
     RnaBertForTokenClassification,
     RnaBertModel,
@@ -44,7 +44,7 @@ __all__ = [
     "RnaBertModel",
     "RnaBertPreTrainedModel",
     "RnaBertForMaskedLM",
-    "RnaBertForPretraining",
+    "RnaBertForPreTraining",
     "RnaBertForSequenceClassification",
     "RnaBertForTokenClassification",
     "RnaBertForNucleotideClassification",
@@ -53,7 +53,7 @@ __all__ = [
 AutoConfig.register("rnabert", RnaBertConfig)
 AutoModel.register(RnaBertConfig, RnaBertModel)
 AutoModelForMaskedLM.register(RnaBertConfig, RnaBertForMaskedLM)
-AutoModelForPreTraining.register(RnaBertConfig, RnaBertForPretraining)
+AutoModelForPreTraining.register(RnaBertConfig, RnaBertForPreTraining)
 AutoModelForSequenceClassification.register(RnaBertConfig, RnaBertForSequenceClassification)
 AutoModelForTokenClassification.register(RnaBertConfig, RnaBertForTokenClassification)
 AutoModelForNucleotideClassification.register(RnaBertConfig, RnaBertForNucleotideClassification)

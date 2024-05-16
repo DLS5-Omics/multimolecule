@@ -22,7 +22,7 @@ import chanfig
 import torch
 
 from multimolecule.models import UtrLmConfig as Config
-from multimolecule.models import UtrLmForPretraining as Model
+from multimolecule.models import UtrLmForPreTraining as Model
 from multimolecule.tokenisers.rna.utils import (
     convert_word_embeddings,
     get_special_tokens_map,

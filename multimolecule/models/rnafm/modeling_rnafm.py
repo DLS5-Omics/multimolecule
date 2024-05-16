@@ -321,12 +321,12 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForPretraining(RnaFmPreTrainedModel):
+class RnaFmForPreTraining(RnaFmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForPretraining, RnaTokenizer
+        >>> from multimolecule import RnaFmConfig, RnaFmForPreTraining, RnaTokenizer
         >>> config = RnaFmConfig()
-        >>> model = RnaFmForPretraining(config)
+        >>> model = RnaFmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -338,7 +338,7 @@ class RnaFmForPretraining(RnaFmPreTrainedModel):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `RnaFmForPretraining` make sure `config.is_decoder=False` for "
+                "If you want to use `RnaFmForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.rnafm = RnaFmModel(config, add_pooling_layer=False)
@@ -367,7 +367,7 @@ class RnaFmForPretraining(RnaFmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | RnaFmForPretrainingOutput:
+    ) -> Tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
@@ -404,7 +404,7 @@ class RnaFmForPretraining(RnaFmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaFmForPretrainingOutput(
+        return RnaFmForPreTrainingOutput(
             loss=loss,
             logits=logits,
             contact_map=contact_map,
@@ -1146,7 +1146,7 @@ class RnaFmPreTrainingHeads(nn.Module):
 
 
 @dataclass
-class RnaFmForPretrainingOutput(ModelOutput):
+class RnaFmForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     contact_map: torch.FloatTensor | None = None

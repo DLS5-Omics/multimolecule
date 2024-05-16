@@ -31,7 +31,7 @@ from .configuration_utrlm import UtrLmConfig
 from .modeling_utrlm import (
     UtrLmForMaskedLM,
     UtrLmForNucleotideClassification,
-    UtrLmForPretraining,
+    UtrLmForPreTraining,
     UtrLmForSequenceClassification,
     UtrLmForTokenClassification,
     UtrLmModel,
@@ -53,7 +53,7 @@ __all__ = [
 AutoConfig.register("utrlm", UtrLmConfig)
 AutoModel.register(UtrLmConfig, UtrLmModel)
 AutoModelForMaskedLM.register(UtrLmConfig, UtrLmForMaskedLM)
-AutoModelForPreTraining.register(UtrLmConfig, UtrLmForPretraining)
+AutoModelForPreTraining.register(UtrLmConfig, UtrLmForPreTraining)
 AutoModelForSequenceClassification.register(UtrLmConfig, UtrLmForSequenceClassification)
 AutoModelForTokenClassification.register(UtrLmConfig, UtrLmForTokenClassification)
 AutoModelForNucleotideClassification.register(UtrLmConfig, UtrLmForNucleotideClassification)

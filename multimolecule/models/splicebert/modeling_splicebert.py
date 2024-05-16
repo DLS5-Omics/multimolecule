@@ -349,12 +349,12 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
         return {"input_ids": input_ids, "attention_mask": attention_mask}
 
 
-class SpliceBertForPretraining(SpliceBertPreTrainedModel):
+class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForPretraining, RnaTokenizer
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForPreTraining, RnaTokenizer
         >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForPretraining(config)
+        >>> model = SpliceBertForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -366,7 +366,7 @@ class SpliceBertForPretraining(SpliceBertPreTrainedModel):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `SpliceBertForPretraining` make sure `config.is_decoder=False` for "
+                "If you want to use `SpliceBertForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.splicebert = SpliceBertModel(config, add_pooling_layer=False)

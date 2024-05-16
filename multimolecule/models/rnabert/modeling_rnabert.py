@@ -293,12 +293,12 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         )
 
 
-class RnaBertForPretraining(RnaBertPreTrainedModel):
+class RnaBertForPreTraining(RnaBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaBertConfig, RnaBertForPretraining, RnaTokenizer
+        >>> from multimolecule import RnaBertConfig, RnaBertForPreTraining, RnaTokenizer
         >>> config = RnaBertConfig()
-        >>> model = RnaBertForPretraining(config)
+        >>> model = RnaBertForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -322,7 +322,7 @@ class RnaBertForPretraining(RnaBertPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaBertForPretrainingOutput:
+    ) -> Tuple[Tensor, ...] | RnaBertForPreTrainingOutput:
         outputs = self.rnabert(
             input_ids,
             attention_mask,
@@ -347,7 +347,7 @@ class RnaBertForPretraining(RnaBertPreTrainedModel):
             output = (logits, logits_ss) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaBertForPretrainingOutput(
+        return RnaBertForPreTrainingOutput(
             loss=loss,
             logits=logits,
             logits_ss=logits_ss,
@@ -1042,7 +1042,7 @@ class RnaBertPreTrainingHeads(nn.Module):
 
 
 @dataclass
-class RnaBertForPretrainingOutput(ModelOutput):
+class RnaBertForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None  # type: ignore[assignment]
     logits_ss: torch.FloatTensor = None  # type: ignore[assignment]
