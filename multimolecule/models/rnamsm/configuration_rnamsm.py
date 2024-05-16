@@ -87,6 +87,7 @@ class RnaMsmConfig(PretrainedConfig):
         position_embedding_type="absolute",
         use_cache=True,
         max_tokens_per_msa=2**14,
+        layer_type="standard",
         attention_type="standard",
         embed_positions_msa=True,
         attention_bias=True,
@@ -110,6 +111,7 @@ class RnaMsmConfig(PretrainedConfig):
         self.position_embedding_type = position_embedding_type
         self.use_cache = use_cache
         self.max_tokens_per_msa = max_tokens_per_msa
+        self.layer_type = layer_type
         self.attention_type = attention_type
         self.embed_positions_msa = embed_positions_msa
         self.attention_bias = attention_bias
