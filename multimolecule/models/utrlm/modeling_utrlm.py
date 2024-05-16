@@ -122,7 +122,7 @@ class UtrLmModel(UtrLmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         encoder_hidden_states: Tensor | None = None,
         encoder_attention_mask: Tensor | None = None,
         past_key_values: Tuple[Tuple[torch.FloatTensor, torch.FloatTensor], ...] | None = None,
@@ -277,7 +277,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         encoder_hidden_states: Tensor | None = None,
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
@@ -359,7 +359,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         encoder_hidden_states: Tensor | None = None,
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
@@ -451,7 +451,7 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
@@ -517,7 +517,7 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
@@ -581,7 +581,7 @@ class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
@@ -655,9 +655,15 @@ class UtrLmEmbeddings(nn.Module):
             self.position_embeddings = None
         self.token_dropout = config.token_dropout
         self.mask_token_id = config.mask_token_id
+        self.pad_token_id = config.pad_token_id
 
     def forward(
-        self, input_ids=None, attention_mask=None, position_ids=None, inputs_embeds=None, past_key_values_length=0
+        self,
+        input_ids: Tensor | NestedTensor | None = None,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        past_key_values_length: int = 0,
     ):
         if position_ids is None:
             if input_ids is not None:
@@ -668,12 +674,24 @@ class UtrLmEmbeddings(nn.Module):
             # This is a bug in the original implementation
             position_ids += 1
 
+        if attention_mask is None:
+            if isinstance(input_ids, NestedTensor):
+                input_ids, attention_mask = input_ids.tensor, input_ids.mask
+            elif isinstance(inputs_embeds, NestedTensor):
+                inputs_embeds, attention_mask = inputs_embeds.tensor, inputs_embeds.mask
+            elif input_ids is not None and self.pad_token_id is not None:
+                attention_mask = input_ids.ne(self.pad_token_id)
+            else:
+                raise ValueError("attention_mask is not passed and can not be inferred from input_ids or inputs_embeds")
+
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
 
-        embeddings = inputs_embeds
+        embeddings: Tensor = inputs_embeds
 
         if self.token_dropout:
+            if input_ids is None:
+                raise ValueError("Token dropout is only supported when input_ids are provided")
             embeddings = embeddings.masked_fill((input_ids == self.mask_token_id).unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all UTRLM model training runs
             src_lengths = attention_mask.sum(-1)
