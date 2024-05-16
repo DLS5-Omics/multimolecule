@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from . import models, tokenisers
-from .analytics import count_parameters
+from .analytics import calculate_flops, count_parameters
 from .downstream.crispr_off_target import (
     AutoModelForCrisprOffTarget,
     RnaBertForCrisprOffTarget,
@@ -167,4 +167,5 @@ __all__ = [
     "IdentityTransform",
     "Criterion",
     "count_parameters",
+    "calculate_flops",
 ]
