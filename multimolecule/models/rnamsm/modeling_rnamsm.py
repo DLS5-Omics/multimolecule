@@ -41,6 +41,8 @@ from multimolecule.module import (
 
 from .configuration_rnamsm import RnaMsmConfig
 
+LAYERS = ConfigRegistry()
+
 
 class RnaMsmPreTrainedModel(PreTrainedModel):
     """
@@ -96,26 +98,47 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        output_attentions: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | RnaMsmModelOutputWithPooling:
+        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
+        output_hidden_states = (
+            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        )
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+
         if isinstance(input_ids, NestedTensor):
             input_ids, attention_mask = input_ids.tensor, input_ids.mask
+        if input_ids is not None and inputs_embeds is not None:
+            raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
+        if input_ids is not None:
+            self.warn_if_padding_and_no_attention_mask(input_ids, attention_mask)
+        elif inputs_embeds is None:
+            raise ValueError("You have to specify either input_ids or inputs_embeds")
+
         if attention_mask is None:
             attention_mask = (
                 input_ids.ne(self.pad_token_id) if self.pad_token_id is not None else torch.ones_like(input_ids)
             )
+
         unsqueeze_input = input_ids.ndim == 2
         if unsqueeze_input:
             input_ids = input_ids.unsqueeze(1)
         if attention_mask.ndim == 2:
             attention_mask = attention_mask.unsqueeze(1)
 
-        embedding_output = self.embeddings(input_ids, attention_mask=attention_mask)
+        embedding_output = self.embeddings(
+            input_ids=input_ids,
+            position_ids=position_ids,
+            attention_mask=attention_mask,
+            inputs_embeds=inputs_embeds,
+        )
         encoder_outputs = self.encoder(
             embedding_output,
-            key_padding_mask=(attention_mask ^ 1).bool(),
+            attention_mask=attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -160,6 +183,8 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -167,7 +192,9 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     ) -> Tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
         outputs = self.rnamsm(
             input_ids,
-            attention_mask,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -211,6 +238,8 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
         labels_contact: Tensor | None = None,
         output_attentions: bool = False,
@@ -219,7 +248,9 @@ class RnaMsmForPretraining(RnaMsmPreTrainedModel):
     ) -> Tuple[Tensor, ...] | RnaMsmForPretrainingOutput:
         outputs = self.rnamsm(
             input_ids,
-            attention_mask,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
             output_attentions=True,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -274,6 +305,8 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -290,6 +323,8 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -335,6 +370,8 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -351,6 +388,8 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -396,6 +435,8 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
@@ -419,6 +460,8 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -449,41 +492,41 @@ class RnaMsmEmbeddings(nn.Module):
             self.max_position_embeddings, config.hidden_size, padding_idx=config.pad_token_id
         )
         self.register_buffer(
-            "position_ids", torch.arange(config.max_position_embeddings).expand((1, -1)) + 1, persistent=False
+            "position_ids", torch.arange(self.max_position_embeddings).expand((1, -1)) + 1, persistent=False
         )
         if config.embed_positions_msa:
             self.msa_embeddings = nn.Parameter(
                 0.01 * torch.randn(1, self.max_position_embeddings, 1, 1), requires_grad=True
             )
         else:
-            self.register_parameter("msa_embeddings", None)  # type: ignore
+            self.register_parameter("msa_embeddings", None)
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=1e-12)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
-    def forward(self, input_ids: Tensor | NestedTensor, attention_mask: Tensor | None = None) -> Tensor:
+    def forward(self, input_ids=None, attention_mask=None, position_ids=None, inputs_embeds=None):
         assert input_ids.ndim == 3
-        if attention_mask is None:
-            attention_mask = input_ids.ne(self.pad_token_id)
         _, num_alignments, seq_length = input_ids.size()
-        words_embeddings = self.word_embeddings(input_ids.long())
-        position_ids = self.position_ids[:, :seq_length] * attention_mask.long()
+
+        if position_ids is None:
+            position_ids = self.position_ids[:, :seq_length] * attention_mask.long()
         position_embeddings = self.position_embeddings(position_ids)
-        msa_embeddings = 0
+
+        if inputs_embeds is None:
+            inputs_embeds = self.word_embeddings(input_ids.long())
+
+        embeddings = inputs_embeds + position_embeddings
+
         if self.msa_embeddings is not None:
             if input_ids.size(1) > self.max_position_embeddings:
                 raise RuntimeError(
                     "Using model with MSA position embedding trained on maximum MSA "
                     f"depth of {self.max_position_embeddings}, but received {num_alignments} alignments."
                 )
-            msa_embeddings += self.msa_embeddings[:, :num_alignments]
+            embeddings += self.msa_embeddings[:, :num_alignments]
 
-        embeddings = words_embeddings + position_embeddings + msa_embeddings
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
-
-        if attention_mask is not None:
-            embeddings = embeddings * attention_mask.unsqueeze(-1).type_as(embeddings)
-
+        embeddings = (embeddings * attention_mask.unsqueeze(-1)).to(embeddings.dtype)
         return embeddings
 
 
@@ -522,15 +565,18 @@ class RnaMsmEncoder(nn.Module):
         self.config = config
         self.layer = nn.ModuleList([RnaMsmAxialLayer(config) for _ in range(config.num_hidden_layers)])
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        self.gradient_checkpointing = False
 
     def forward(
         self,
         hidden_states: Tensor,
-        key_padding_mask: torch.FloatTensor | None = None,
+        attention_mask: torch.FloatTensor,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
     ) -> Tuple[Tensor, ...] | RnaMsmModelOutput:
+        key_padding_mask = (attention_mask ^ 1).bool()
+
         all_hidden_states = () if output_hidden_states else None
         all_col_attentions = () if output_attentions else None
         all_row_attentions = () if output_attentions else None
@@ -538,12 +584,26 @@ class RnaMsmEncoder(nn.Module):
         # B x R x C x D -> R x C x B x D
         hidden_states = hidden_states.permute(1, 2, 0, 3)
 
-        for layer in self.layer:
+        for layer_module in self.layer:
             if output_hidden_states:
-                all_hidden_states = all_hidden_states + (hidden_states.permute(2, 0, 1, 3),)  # type: ignore
-            layer_outputs = layer(
-                hidden_states, self_attention_padding_mask=key_padding_mask, output_attentions=output_attentions
-            )
+                all_hidden_states = all_hidden_states + (hidden_states.permute(2, 0, 1, 3),)  # type: ignore[operator]
+
+            if self.gradient_checkpointing and self.training:
+                layer_outputs = self._gradient_checkpointing_func(
+                    layer_module.__call__,
+                    hidden_states,
+                    None,
+                    key_padding_mask,
+                    output_attentions,
+                )
+            else:
+                layer_outputs = layer_module(
+                    hidden_states,
+                    None,
+                    key_padding_mask,
+                    output_attentions,
+                )
+
             hidden_states = layer_outputs[0]
             if output_attentions:
                 # H x C x B x R x R -> B x H x C x R x R
@@ -556,7 +616,7 @@ class RnaMsmEncoder(nn.Module):
         hidden_states = hidden_states.permute(2, 0, 1, 3)  # R x C x B x D -> B x R x C x D
 
         if output_hidden_states:
-            all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore
+            all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore[operator]
 
         if not return_dict:
             return tuple(
@@ -577,6 +637,10 @@ class RnaMsmEncoder(nn.Module):
         )
 
 
+layer_registry = ConfigRegistry("layer_type")
+
+
+@layer_registry.register("axial", default=True)
 class RnaMsmAxialLayer(nn.Module):
     """Implements an Axial MSA Transformer block."""
 
@@ -596,8 +660,8 @@ class RnaMsmAxialLayer(nn.Module):
     def forward(
         self,
         hidden_states: Tensor,
-        self_attention_mask: Tensor | None = None,
-        self_attention_padding_mask: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+        key_padding_mask: Tensor | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         """
@@ -606,15 +670,15 @@ class RnaMsmAxialLayer(nn.Module):
         """
         row_attention_outputs = self.row_self_attention(
             hidden_states,
-            self_attention_mask=self_attention_mask,
-            self_attention_padding_mask=self_attention_padding_mask,
+            attention_mask=attention_mask,
+            key_padding_mask=key_padding_mask,
             output_attentions=output_attentions,
         )
         row_attention_output, row_outputs = row_attention_outputs[0], row_attention_outputs[1:]
         col_attention_outputs = self.column_self_attention(
             row_attention_output,
-            self_attention_mask=self_attention_mask,
-            self_attention_padding_mask=self_attention_padding_mask,
+            attention_mask=attention_mask,
+            key_padding_mask=key_padding_mask,
             output_attentions=output_attentions,
         )
         col_attention_output, col_outputs = col_attention_outputs[0], col_attention_outputs[1:]
@@ -624,31 +688,32 @@ class RnaMsmAxialLayer(nn.Module):
         return outputs
 
 
+@layer_registry.register("standard")
 class RnaMsmLayer(nn.Module):
     """Transformer layer block."""
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.dropout = nn.Dropout(config.dropout)
-        self.self_attention = attention_registry.build(config)
-        self.self_attention_layer_norm = nn.LayerNorm(config.hidden_size)
+        self.self = attention_registry.build(config)
+        self.layer_norm = nn.LayerNorm(config.hidden_size)
         self.ffn = FeedForwardNetwork(config)
         self.final_layer_norm = nn.LayerNorm(config.hidden_size)
 
     def forward(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         residual = hidden_states
-        hidden_states = self.self_attention_layer_norm(hidden_states)
-        hidden_states, attention_probs = self.self_attention(
+        hidden_states = self.layer_norm(hidden_states)
+        hidden_states, attention_probs = self.self(
             hidden_states,
-            key_padding_mask=self_attention_padding_mask,
+            key_padding_mask=key_padding_mask,
             output_attentions=output_attentions,
-            attention_mask=self_attention_mask,
+            attention_mask=attention_mask,
         )
         hidden_states = self.dropout(hidden_states)
         hidden_states = residual + hidden_states
@@ -662,6 +727,7 @@ class RnaMsmLayer(nn.Module):
         return hidden_states, attention_probs
 
 
+@layer_registry.register("pkm")
 class RnaMsmPkmLayer(nn.Module):
     """Transformer layer block."""
 
@@ -669,8 +735,8 @@ class RnaMsmPkmLayer(nn.Module):
         from product_key_memory import PKM
 
         super().__init__()
-        self.self_attention = attention_registry.build(config)
-        self.self_attention_layer_norm = nn.LayerNorm(config.hidden_size)
+        self.self = attention_registry.build(config)
+        self.layer_norm = nn.LayerNorm(config.hidden_size)
 
         self.pkm = PKM(
             config.hidden_size,
@@ -685,19 +751,19 @@ class RnaMsmPkmLayer(nn.Module):
     def forward(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         residual = hidden_states
-        hidden_states = self.self_attention_layer_norm(hidden_states)
-        hidden_states, attention_probs = self.self_attention(
+        hidden_states = self.layer_norm(hidden_states)
+        hidden_states, attention_probs = self.self(
             query=hidden_states,
             key=hidden_states,
             value=hidden_states,
-            key_padding_mask=self_attention_padding_mask,
+            key_padding_mask=key_padding_mask,
             output_attentions=output_attentions,
-            attention_mask=self_attention_mask,
+            attention_mask=attention_mask,
         )
         hidden_states = residual + hidden_states
 
@@ -736,8 +802,8 @@ class RowSelfAttention(nn.Module):
         self,
         hidden_states,
         scaling: float,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
     ):
         num_rows, num_cols, batch_size, _ = hidden_states.size()
         q = self.q_proj(hidden_states).view(
@@ -747,22 +813,20 @@ class RowSelfAttention(nn.Module):
             num_rows, num_cols, batch_size, self.num_attention_heads, self.attention_head_size
         )
         q *= scaling
-        if self_attention_padding_mask is not None:
+        if key_padding_mask is not None:
             # Zero out any padded aligned positions - this is important since
             # we take a sum across the alignment axis.
-            q *= 1 - self_attention_padding_mask.permute(1, 2, 0).unsqueeze(3).unsqueeze(4).to(q)
-            # q *= 1 - self_attention_padding_mask.permute(3, 4, 0, 1, 2).to(q)
+            q *= 1 - key_padding_mask.permute(1, 2, 0).unsqueeze(3).unsqueeze(4).to(q)
+            # q *= 1 - key_padding_mask.permute(3, 4, 0, 1, 2).to(q)
 
         attention_scores = torch.einsum(f"rinhd,rjnhd->{self.attention_shape}", q, k)
 
-        if self_attention_mask is not None:
+        if attention_mask is not None:
             raise NotImplementedError
             # Mask Size: [B x R x C], Weights Size: [H x B x C x C]
 
-        if self_attention_padding_mask is not None:
-            attention_scores = attention_scores.masked_fill(
-                self_attention_padding_mask[:, 0].unsqueeze(0).unsqueeze(2), -10000
-            )
+        if key_padding_mask is not None:
+            attention_scores = attention_scores.masked_fill(key_padding_mask[:, 0].unsqueeze(0).unsqueeze(2), -10000)
 
         return attention_scores
 
@@ -783,17 +847,15 @@ class RowSelfAttention(nn.Module):
     def forward(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         num_rows, num_cols, _, _ = hidden_states.size()
         if (num_rows * num_cols > self.max_tokens_per_msa) and not torch.is_grad_enabled():
-            return self._batched_forward(hidden_states, self_attention_mask, self_attention_padding_mask)
+            return self._batched_forward(hidden_states, attention_mask, key_padding_mask)
         scaling = self.align_scaling(hidden_states)
-        attention_scores = self.compute_attention_weights(
-            hidden_states, scaling, self_attention_mask, self_attention_padding_mask
-        )
+        attention_scores = self.compute_attention_weights(hidden_states, scaling, attention_mask, key_padding_mask)
         attention_probs = attention_scores.softmax(-1)
         attention_probs = self.dropout(attention_probs)
         context_layer = self.compute_attention_update(hidden_states, attention_probs)
@@ -803,8 +865,8 @@ class RowSelfAttention(nn.Module):
     def _batched_forward(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ):
         num_rows, num_cols, _, _ = hidden_states.size()
@@ -815,11 +877,9 @@ class RowSelfAttention(nn.Module):
             attention_scores += self.compute_attention_weights(
                 hidden_states[start : start + max_rows],
                 scaling,
-                self_attention_mask=self_attention_mask,
-                self_attention_padding_mask=(
-                    self_attention_padding_mask[:, start : start + max_rows]
-                    if self_attention_padding_mask is not None
-                    else None
+                attention_mask=attention_mask,
+                key_padding_mask=(
+                    key_padding_mask[:, start : start + max_rows] if key_padding_mask is not None else None
                 ),
             )
         attention_probs = attention_scores.softmax(-1)  # type: ignore[attr-defined]
@@ -856,8 +916,8 @@ class ColumnSelfAttention(nn.Module):
     def compute_attention_update(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ):
         num_rows, num_cols, batch_size, hidden_size = hidden_states.size()
@@ -888,11 +948,11 @@ class ColumnSelfAttention(nn.Module):
 
             attention_scores = torch.einsum("icnhd,jcnhd->hcnij", q, k)
 
-            if self_attention_mask is not None:
+            if attention_mask is not None:
                 raise NotImplementedError
-            if self_attention_padding_mask is not None:
+            if key_padding_mask is not None:
                 attention_scores = attention_scores.masked_fill(
-                    self_attention_padding_mask.permute(2, 0, 1).unsqueeze(0).unsqueeze(3),
+                    key_padding_mask.permute(2, 0, 1).unsqueeze(0).unsqueeze(3),
                     -10000,
                 )
 
@@ -907,8 +967,8 @@ class ColumnSelfAttention(nn.Module):
     def forward(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         num_rows, num_cols, _, _ = hidden_states.size()
@@ -916,19 +976,17 @@ class ColumnSelfAttention(nn.Module):
         if (num_rows * num_cols) > self.max_tokens_per_msa and not torch.is_grad_enabled():
             return self._batched_forward(
                 hidden_states,
-                self_attention_mask,
-                self_attention_padding_mask,
+                attention_mask,
+                key_padding_mask,
             )
         else:
-            return self.compute_attention_update(
-                hidden_states, self_attention_mask, self_attention_padding_mask, output_attentions
-            )
+            return self.compute_attention_update(hidden_states, attention_mask, key_padding_mask, output_attentions)
 
     def _batched_forward(
         self,
         hidden_states,
-        self_attention_mask=None,
-        self_attention_padding_mask=None,
+        attention_mask=None,
+        key_padding_mask=None,
         output_attentions: bool = False,
     ):
         num_rows, num_cols, _, _ = hidden_states.size()
@@ -937,11 +995,9 @@ class ColumnSelfAttention(nn.Module):
         for start in range(0, num_cols, max_cols):
             output, attention = self(
                 hidden_states[:, start : start + max_cols],
-                self_attention_mask=self_attention_mask,
-                self_attention_padding_mask=(
-                    self_attention_padding_mask[:, :, start : start + max_cols]
-                    if self_attention_padding_mask is not None
-                    else None
+                attention_mask=attention_mask,
+                key_padding_mask=(
+                    key_padding_mask[:, :, start : start + max_cols] if key_padding_mask is not None else None
                 ),
             )
             contexts.append(output)
