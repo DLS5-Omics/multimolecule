@@ -197,6 +197,14 @@ SPECIAL_TOKENS_MAP = {
         "single_word": False,
         "special": True,
     },
+    "null_token": {
+        "content": "<null>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+        "special": True,
+    },
 }
 
 TOKENIZER_CONFIG = {

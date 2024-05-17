@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import os
+import re
 from typing import List, Tuple
 
 from transformers.tokenization_utils import PreTrainedTokenizer
@@ -62,7 +63,7 @@ class RnaTokenizer(PreTrainedTokenizer):
         unk_token: str = "<unk>",
         mask_token: str = "<mask>",
         additional_special_tokens: List | Tuple | None = None,
-        convert_to_uppercase: bool = True,
+        do_upper_case: bool = True,
         convert_T_to_U: bool = True,
         nmers: int = 1,
         strameline: bool | None = None,
@@ -78,7 +79,7 @@ class RnaTokenizer(PreTrainedTokenizer):
             additional_special_tokens = list(additional_special_tokens)
             additional_special_tokens.append("<null>")
         self._token_to_id = {tok: ind for ind, tok in enumerate(self.all_tokens)}
-        self.convert_to_uppercase = convert_to_uppercase
+        self.do_upper_case = do_upper_case
         self.convert_T_to_U = convert_T_to_U
         super().__init__(
             bos_token=bos_token,
@@ -92,11 +93,23 @@ class RnaTokenizer(PreTrainedTokenizer):
             **kwargs,
         )
 
-        # TODO, all the tokens are added? But they are also part of the vocab... bit strange.
-        # none of them are special, but they all need special splitting.
+        self._update_pattern()
 
-        # self.unique_no_split_tokens = self.all_tokens
-        # self._update_trie(self.unique_no_split_tokens)
+    def _add_tokens(self, new_tokens: List, special_tokens: bool = False) -> int:
+        ret = super()._add_tokens(new_tokens, special_tokens=special_tokens)
+        self._update_pattern()
+        return ret
+
+    def _update_pattern(self):
+        escaped_special_toks = [re.escape(s_tok) for s_tok in self.all_special_tokens]
+        escaped_special_toks += [
+            re.escape(s_tok.content)
+            for s_tok in self._added_tokens_decoder.values()
+            if not s_tok.special and s_tok.normalized
+        ]
+        self.pattern = re.compile(
+            "(" + "|".join(escaped_special_toks) + "|.{" + str(self.nmers) + "})", flags=re.DOTALL
+        )
 
     def _convert_id_to_token(self, index: int) -> str:
         return self._id_to_token.get(index, self.unk_token)
@@ -105,13 +118,35 @@ class RnaTokenizer(PreTrainedTokenizer):
         return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))  # type: ignore[arg-type]
 
     def _tokenize(self, text: str, **kwargs):
-        if self.convert_to_uppercase:
-            text = text.upper()
         if self.convert_T_to_U:
             text = text.replace("T", "U")
-        if self.nmers > 1:
-            return [text[i : i + self.nmers] for i in range(len(text) - self.nmers + 1)]  # noqa: E203
-        return list(text)
+
+        if self.do_upper_case:
+            text = text.upper()
+
+        tokens = []
+        special_tokens_set = set(self.all_special_tokens)
+
+        # Define a function to process matched tokens
+        def process_token(token):
+            if token not in special_tokens_set:
+                tokens.append(token)
+
+        # Tokenize using regular expression pattern
+        re_pattern = self.pattern.pattern
+        start_index = 0
+        for match in re.finditer(re_pattern, text):
+            start, end = match.span()
+            if start > start_index:
+                process_token(text[start_index:start])
+            process_token(text[start:end])
+            start_index = end
+
+        # Process any remaining text
+        if start_index < len(text):
+            process_token(text[start_index:])
+
+        return tokens
 
     def get_vocab(self):
         base_vocab = self._token_to_id.copy()
