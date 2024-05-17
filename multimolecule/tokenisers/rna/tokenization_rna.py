@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 import os
-from typing import List
+from typing import List, Tuple
 
 from transformers.tokenization_utils import PreTrainedTokenizer
 from transformers.utils import logging
@@ -30,6 +30,24 @@ logger = logging.get_logger(__name__)
 class RnaTokenizer(PreTrainedTokenizer):
     """
     Constructs an RnaBert tokenizer.
+
+    Examples:
+        >>> from multimolecule import RnaTokenizer
+        >>> tokenizer = RnaTokenizer()
+        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGUNXVHDBMRWSYK.*-')["input_ids"]
+        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 2]
+        >>> tokenizer('acgu')["input_ids"]
+        [1, 6, 7, 8, 9, 2]
+        >>> tokenizer('acgt')["input_ids"]
+        [1, 6, 7, 8, 9, 2]
+        >>> tokenizer = RnaTokenizer(convert_T_to_U=False)
+        >>> tokenizer('acgt')["input_ids"]
+        [1, 6, 7, 8, 3, 2]
+        >>> tokenizer = RnaTokenizer(convert_to_uppercase=False)
+        >>> tokenizer('acgu')["input_ids"]
+        [1, 3, 3, 3, 3, 2]
+        >>> tokenizer('ACGU')["input_ids"]
+        [1, 6, 7, 8, 9, 2]
     """
 
     model_input_names = ["input_ids", "attention_mask"]
@@ -43,6 +61,7 @@ class RnaTokenizer(PreTrainedTokenizer):
         sep_token: str = "<eos>",
         unk_token: str = "<unk>",
         mask_token: str = "<mask>",
+        additional_special_tokens: List | Tuple | None = None,
         convert_to_uppercase: bool = True,
         convert_T_to_U: bool = True,
         nmers: int = 1,
@@ -53,6 +72,11 @@ class RnaTokenizer(PreTrainedTokenizer):
         self.strameline = strameline if strameline is not None else nmers > 1
         self.all_tokens = get_vocab_list(nmers, self.strameline)
         self._id_to_token = dict(enumerate(self.all_tokens))
+        if additional_special_tokens is None:
+            additional_special_tokens = []
+        if "<null>" in self.all_tokens and "<null>" not in additional_special_tokens:
+            additional_special_tokens = list(additional_special_tokens)
+            additional_special_tokens.append("<null>")
         self._token_to_id = {tok: ind for ind, tok in enumerate(self.all_tokens)}
         self.convert_to_uppercase = convert_to_uppercase
         self.convert_T_to_U = convert_T_to_U
@@ -64,6 +88,7 @@ class RnaTokenizer(PreTrainedTokenizer):
             sep_token=sep_token,
             unk_token=unk_token,
             mask_token=mask_token,
+            additional_special_tokens=additional_special_tokens,
             **kwargs,
         )
 
