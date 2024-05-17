@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from transformers import (
+    AutoBackbone,
     AutoConfig,
     AutoModel,
     AutoModelForMaskedLM,
@@ -51,6 +52,7 @@ __all__ = [
 ]
 
 AutoConfig.register("splicebert", SpliceBertConfig)
+AutoBackbone.register(SpliceBertConfig, SpliceBertModel)
 AutoModel.register(SpliceBertConfig, SpliceBertModel)
 AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
 AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPreTraining)

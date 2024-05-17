@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from transformers import (
+    AutoBackbone,
     AutoConfig,
     AutoModel,
     AutoModelForMaskedLM,
@@ -51,6 +52,7 @@ __all__ = [
 ]
 
 AutoConfig.register("utrlm", UtrLmConfig)
+AutoBackbone.register(UtrLmConfig, UtrLmModel)
 AutoModel.register(UtrLmConfig, UtrLmModel)
 AutoModelForMaskedLM.register(UtrLmConfig, UtrLmForMaskedLM)
 AutoModelForPreTraining.register(UtrLmConfig, UtrLmForPreTraining)
