@@ -17,23 +17,16 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 
 import chanfig
 import torch
 
 from multimolecule.models import SpliceBertConfig as Config
 from multimolecule.models import SpliceBertForPreTraining as Model
-from multimolecule.tokenisers.rna.utils import (
-    convert_word_embeddings,
-    get_special_tokens_map,
-    get_tokenizer_config,
-    get_vocab_list,
-)
-
-try:
-    from huggingface_hub import HfApi
-except ImportError:
-    HfApi = None
+from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
+from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_vocab_list
 
 torch.manual_seed(1013)
 
@@ -95,43 +88,14 @@ def convert_checkpoint(convert_config):
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)
-    model.save_pretrained(convert_config.output_path, safe_serialization=True)
-    model.save_pretrained(convert_config.output_path, safe_serialization=False)
-    chanfig.NestedDict(get_special_tokens_map()).json(
-        os.path.join(convert_config.output_path, "special_tokens_map.json")
-    )
-    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["model_max_length"] = config.max_position_embeddings
-    tokenizer_config.json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
 
-    if convert_config.push_to_hub:
-        if HfApi is None:
-            raise ImportError("Please install huggingface_hub to push to the hub.")
-        api = HfApi()
-        if convert_config.delete_existing:
-            api.delete_repo(
-                convert_config.repo_id,
-                token=convert_config.token,
-                missing_ok=True,
-            )
-        api.create_repo(
-            convert_config.repo_id,
-            token=convert_config.token,
-            exist_ok=True,
-        )
-        api.upload_folder(
-            repo_id=convert_config.repo_id, folder_path=convert_config.output_path, token=convert_config.token
-        )
+    save_checkpoint(convert_config, model)
 
 
-@chanfig.configclass
-class ConvertConfig:
-    checkpoint_path: str
-    output_path: str | None = None
-    push_to_hub: bool = False
-    delete_existing: bool = False
-    repo_id: str | None = None
-    token: str | None = None
+@dataclass
+class ConvertConfig(ConvertConfig_):
+    root: str = os.path.dirname(__file__)
+    output_path: str | None = None  # type: ignore[assignment]
 
     def post(self):
         if self.output_path is None:
