@@ -114,8 +114,8 @@ class UtrLmConfig(PreTrainedConfig):
         token_dropout=True,
         head=None,
         lm_head=None,
-        structure_head=None,
-        supervised_head=None,
+        ss_head=None,
+        mfe_head=None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -137,5 +137,5 @@ class UtrLmConfig(PreTrainedConfig):
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})
-        self.structure_head = HeadConfig(**structure_head) if structure_head is not None else None
-        self.supervised_head = HeadConfig(**supervised_head) if supervised_head is not None else None
+        self.ss_head = HeadConfig(**ss_head) if ss_head is not None else None
+        self.mfe_head = HeadConfig(**mfe_head) if mfe_head is not None else None
