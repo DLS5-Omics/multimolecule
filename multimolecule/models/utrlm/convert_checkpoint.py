@@ -17,18 +17,16 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 
 import chanfig
 import torch
 
 from multimolecule.models import UtrLmConfig as Config
 from multimolecule.models import UtrLmForPreTraining as Model
-from multimolecule.tokenisers.rna.utils import (
-    convert_word_embeddings,
-    get_special_tokens_map,
-    get_tokenizer_config,
-    get_vocab_list,
-)
+from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
+from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_tokenizer_config, get_vocab_list
 
 try:
     from huggingface_hub import HfApi
@@ -67,8 +65,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("predictions.layer_norm", "predictions.transform.layer_norm")
         key = key.replace("predictions.weight", "predictions.decoder.weight")
         key = key.replace("utrlm.contact_head", "pretrain_head.contact")
-        key = key.replace("utrlm.structure_linear", "pretrain_head.structure.decoder")
-        key = key.replace("utrlm.supervised_linear", "pretrain_head.supervised.decoder")
+        key = key.replace("utrlm.structure_linear", "pretrain_head.ss_head.decoder")
+        key = key.replace("utrlm.supervised_linear", "pretrain_head.mfe_head.decoder")
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
@@ -87,9 +85,9 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
 
 def convert_checkpoint(convert_config):
     config = chanfig.FlatDict(num_labels=1)
-    config.supervised_head = {"num_labels": 1}
+    config.mfe_head = {"num_labels": 1}
     if "4.1" in convert_config.checkpoint_path:
-        config.structure_head = {"num_labels": 3}
+        config.ss_head = {"num_labels": 3}
     vocab_list = get_vocab_list()
     original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
     config = Config.from_dict(config)
@@ -101,47 +99,19 @@ def convert_checkpoint(convert_config):
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)
-    model.save_pretrained(convert_config.output_path, safe_serialization=True)
-    model.save_pretrained(convert_config.output_path, safe_serialization=False)
-    chanfig.NestedDict(get_special_tokens_map()).json(
-        os.path.join(convert_config.output_path, "special_tokens_map.json")
-    )
+
+    model.lm_head = model.pretrain_head.predictions
+
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["model_max_length"] = config.max_position_embeddings
-    tokenizer_config.json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
+    tokenizer_config["model_max_length"] = 1022
 
-    if convert_config.push_to_hub:
-        if HfApi is None:
-            raise ImportError("Please install huggingface_hub to push to the hub.")
-        api = HfApi()
-        if convert_config.delete_existing:
-            api.delete_repo(
-                convert_config.repo_id,
-                token=convert_config.token,
-                missing_ok=True,
-            )
-        api.create_repo(
-            convert_config.repo_id,
-            token=convert_config.token,
-            exist_ok=True,
-        )
-        api.upload_folder(
-            repo_id=convert_config.repo_id, folder_path=convert_config.output_path, token=convert_config.token
-        )
+    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 
 
-@chanfig.configclass
-class ConvertConfig:
-    checkpoint_path: str
+@dataclass
+class ConvertConfig(ConvertConfig_):
+    root: str = os.path.dirname(__file__)
     output_path: str = Config.model_type
-    push_to_hub: bool = False
-    delete_existing: bool = False
-    repo_id: str | None = None
-    token: str | None = None
-
-    def post(self):
-        if self.repo_id is None:
-            self.repo_id = f"multimolecule/{self.output_path}"
 
 
 if __name__ == "__main__":

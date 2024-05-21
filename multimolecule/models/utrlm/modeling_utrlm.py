@@ -364,8 +364,8 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         labels_contact: Tensor | None = None,
-        labels_structure: Tensor | None = None,
-        labels_supervised: Tensor | None = None,
+        labels_ss: Tensor | None = None,
+        labels_mfe: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
@@ -391,23 +391,23 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        logits, contact_map, structure, supervised = self.pretrain_head(outputs)
+        logits, contact_map, ss, mfe = self.pretrain_head(outputs)
 
         loss = None
-        if any(x is not None for x in [labels, labels_contact, labels_structure, labels_supervised]):
-            loss_mlm = loss_contact = loss_structure = loss_supervised = 0
+        if any(x is not None for x in [labels, labels_contact, labels_ss, labels_mfe]):
+            loss_mlm = loss_contact = loss_ss = loss_mfe = 0
             if labels is not None:
                 loss_mlm = F.cross_entropy(logits.view(-1, self.config.vocab_size), labels.view(-1))
             if labels_contact is not None:
                 loss_contact = F.mse_loss(contact_map.view(-1), labels_contact.view(-1))
-            if labels_structure is not None:
-                loss_structure = F.cross_entropy(
-                    structure.view(-1, self.pretrain_head.structure.num_labels),  # type: ignore[union-attr]
-                    labels_structure.view(-1),
+            if labels_ss is not None:
+                loss_ss = F.cross_entropy(
+                    ss.view(-1, self.pretrain_head.ss.num_labels),  # type: ignore[union-attr]
+                    labels_ss.view(-1),
                 )
-            if labels_supervised is not None:
-                loss_supervised = F.mse_loss(supervised.view(-1), labels_supervised.view(-1))
-            loss = loss_mlm + loss_contact + loss_structure + loss_supervised
+            if labels_mfe is not None:
+                loss_mfe = F.mse_loss(mfe.view(-1), labels_mfe.view(-1))
+            loss = loss_mlm + loss_contact + loss_ss + loss_mfe
 
         if not return_dict:
             output = (logits,) + outputs[2:]
@@ -417,8 +417,8 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             loss=loss,
             logits=logits,
             contact_map=contact_map,
-            structure=structure,
-            supervised=supervised,
+            secondary_structure=ss,
+            minimum_free_energy=mfe,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
@@ -1162,12 +1162,12 @@ class UtrLmPreTrainingHeads(nn.Module):
         super().__init__()
         self.contact = ContactPredictionHead(config)
         self.predictions = MaskedLMHead(config)
-        self.structure = None
-        if config.structure_head is not None:
-            self.structure = TokenClassificationHead(config, config.structure_head)
-        self.supervised = None
-        if config.supervised_head is not None:
-            self.supervised = SequenceClassificationHead(config, config.supervised_head)
+        self.ss_head = None
+        if config.ss_head is not None:
+            self.ss_head = TokenClassificationHead(config, config.ss_head)
+        self.mfe_head = None
+        if config.mfe_head is not None:
+            self.mfe_head = SequenceClassificationHead(config, config.mfe_head)
 
     def forward(
         self,
@@ -1177,9 +1177,9 @@ class UtrLmPreTrainingHeads(nn.Module):
     ) -> Tuple[Tensor, Tensor, Tensor | None, Tensor | None]:
         logits = self.predictions(outputs)
         contact_map = self.contact(torch.stack(outputs[-1], 1), attention_mask, input_ids)
-        structure = self.structure(outputs) if self.structure else None
-        supervised = self.supervised(outputs) if self.supervised else None
-        return logits, contact_map, supervised, structure
+        ss = self.ss_head(outputs) if self.ss_head else None
+        mfe = self.mfe_head(outputs) if self.mfe_head else None
+        return logits, contact_map, ss, mfe
 
 
 @dataclass
@@ -1187,8 +1187,8 @@ class UtrLmForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     contact_map: torch.FloatTensor | None = None
-    structure: torch.FloatTensor | None = None
-    supervised: torch.FloatTensor | None = None
+    secondary_structure: torch.FloatTensor | None = None
+    minimum_free_energy: torch.FloatTensor | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
 
