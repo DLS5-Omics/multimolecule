@@ -19,85 +19,59 @@ from __future__ import annotations
 from typing import List, Sequence
 
 import torch
-from torch import Tensor
 
-from ..utils import generate_kmer_vocabulary
+from ..alphabet import Alphabet
+from ..utils import convert_word_embeddings as convert_word_embeddings_
 
 torch.manual_seed(1013)
 
 
-def get_vocab_list(nmers: int = 1, strameline: bool = False):
-    vocab_list = STRAMELINE_VOCAB_LIST if strameline else VOCAB_LIST
-    if nmers > 1:
-        return generate_kmer_vocabulary(vocab_list, nmers)
-    return vocab_list
+def get_vocab_list(tokens: List[str] | None = None, nmers: int = 1):
+    if tokens is None:
+        tokens = VOCAB_LIST if nmers <= 1 else STRAMELINE_VOCAB_LIST
+    return Alphabet(tokens, nmers=nmers).vocablulary
 
 
 def get_vocab_mapping():
     return VOCAB_MAPPING
 
 
+def get_special_tokens_map():
+    return SPECIAL_TOKENS_MAP
+
+
+def get_tokenizer_config(add_special_tokens: bool = False):
+    config = TOKENIZER_CONFIG
+    if add_special_tokens:
+        config.setdefault("added_tokens_decoder", {})
+        for i, v in enumerate(SPECIAL_TOKENS_MAP.values()):
+            config["added_tokens_decoder"][str(i)] = v  # type: ignore[index]
+    return config
+
+
 def convert_word_embeddings(
-    *old_embeddings: Tensor,
+    *old_embeddings: torch.Tensor,
     old_vocab: List[str],
     new_vocab: List[str],
     mean: float = 0.0,
     std: float = 0.02,
     vocab_mapping: dict[str, str] | None = None,
-) -> Sequence[Tensor]:
-    if old_vocab == new_vocab:
-        return old_embeddings
+    seed: int | None = 1013,
+) -> Sequence[torch.Tensor]:
     if vocab_mapping is None:
         vocab_mapping = get_vocab_mapping()
-
-    new_embeddings = []
-    # Initialize the new embeddings
-    for embeddings in old_embeddings:
-        shape = embeddings.shape
-        if shape[0] != len(old_vocab):
-            raise ValueError("The first dimension of the embeddings must match the size of the vocabulary.")
-        if embeddings.ndim == 1:  # Bias
-            new_embeddings.append(torch.zeros(len(new_vocab)))
-        else:
-            new_embeddings.append(torch.normal(size=(len(new_vocab), *shape[1:]), mean=mean, std=std))
-
-    # First Pass, copy the embeddings for the tokens that are in both vocabularies
-    for old_index, old_token in enumerate(old_vocab):
-        new_index = new_vocab.index(old_token)
-        for new_embed, old_embed in zip(new_embeddings, old_embeddings):
-            new_embed[new_index] = old_embed[old_index]
-
-    # Second Pass, average the embeddings for the tokens that are in the new vocabulary but not in the old
-    for token, tokens in vocab_mapping.items():
-        if token not in new_vocab or token in old_vocab or len(tokens) == 1:
-            continue
-        index = new_vocab.index(token)
-        indexes = [new_vocab.index(t) for t in tokens]
-        for embed in new_embeddings:
-            embed[index] = embed[indexes].mean(dim=0)
-
-    return new_embeddings
-
-
-def get_special_tokens_map():
-    return SPECIAL_TOKENS_MAP
-
-
-def get_tokenizer_config():
-    config = TOKENIZER_CONFIG
-    config.setdefault("added_tokens_decoder", {})
-    for i, v in enumerate(SPECIAL_TOKENS_MAP.values()):
-        config["added_tokens_decoder"][str(i)] = v
-    return config
+    return convert_word_embeddings_(
+        *old_embeddings,
+        old_vocab=old_vocab,
+        new_vocab=new_vocab,
+        mean=mean,
+        std=std,
+        vocab_mapping=vocab_mapping,
+        seed=seed,
+    )
 
 
 STRAMELINE_VOCAB_LIST = [
-    "<pad>",
-    "<cls>",
-    "<eos>",
-    "<unk>",
-    "<mask>",
-    "<null>",
     "A",
     "C",
     "G",
@@ -107,12 +81,6 @@ STRAMELINE_VOCAB_LIST = [
 
 
 VOCAB_LIST = [
-    "<pad>",
-    "<cls>",
-    "<eos>",
-    "<unk>",
-    "<mask>",
-    "<null>",
     "A",
     "C",
     "G",
@@ -163,7 +131,6 @@ SPECIAL_TOKENS_MAP = {
         "normalized": False,
         "rstrip": False,
         "single_word": False,
-        "special": True,
     },
     "cls_token": {
         "content": "<cls>",
@@ -171,7 +138,6 @@ SPECIAL_TOKENS_MAP = {
         "normalized": False,
         "rstrip": False,
         "single_word": False,
-        "special": True,
     },
     "eos_token": {
         "content": "<eos>",
@@ -179,7 +145,6 @@ SPECIAL_TOKENS_MAP = {
         "normalized": False,
         "rstrip": False,
         "single_word": False,
-        "special": True,
     },
     "unk_token": {
         "content": "<unk>",
@@ -187,7 +152,6 @@ SPECIAL_TOKENS_MAP = {
         "normalized": False,
         "rstrip": False,
         "single_word": False,
-        "special": True,
     },
     "mask_token": {
         "content": "<mask>",
@@ -195,7 +159,13 @@ SPECIAL_TOKENS_MAP = {
         "normalized": False,
         "rstrip": False,
         "single_word": False,
-        "special": True,
+    },
+    "null_token": {
+        "content": "<null>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
     },
 }
 
