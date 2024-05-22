@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "HelveticaNowDisplay";
+  src: "../fonts/HelveticaNowDisplay.otf";
+}
+
+@font-face {
+  font-family: "HelveticaWorld";
+  src: "../fonts/HelveticaWorld.ttf";
+}
+
+@font-face {
+  font-family: "HYQiHei";
+  src: "../fonts/HYQiHei.ttf";
+}
+
+@font-face {
+  font-family: "CascadiaCode";
+  src: "../fonts/CascadiaCodePL.woff2";
+}
+
+:root {
+  --md-text-font: "HYQiHei", "HelveticaNowDisplay", "HelveticaWorld";
+  --md-code-font: "CascadiaCode";
+}
