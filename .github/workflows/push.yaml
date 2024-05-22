@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
       - name: Install dependencies for testing
-        run: pip install pytest pytest-cov torch torchvision torcheval torchmetrics accelerate
+        run: pip install pytest pytest-cov torch torchvision
       - name: Install module
         run: pip install -e .
       - name: pytest
@@ -43,6 +43,43 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.xml
+  pages:
+    if: startsWith(github.event.ref, 'refs/tags/v') || contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
+    needs: [test]
+    environment: github-pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Get pip cache dir
+        id: pip-cache
+        run: echo "::set-output name=dir::$(pip cache dir)"
+      - uses: actions/cache@v3
+        with:
+          key: ${{ github.ref }}
+          path: .cache
+      - run: pip install -r docs/requirements.txt
+      - run: pip install -e .
+      - name: Download coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage
+          path: htmlcov
+      - run: mkdocs build -v -f docs/mkdocs.yml
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/master' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/site
   release:
     if: startsWith(github.event.ref, 'refs/tags/v')
     needs: [lint, test]

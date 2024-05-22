@@ -1,0 +1,11 @@
+jieba
+markdown-exec
+mkdocs
+mkdocs-git-committers-plugin
+mkdocs-git-revision-date-localized-plugin
+mkdocs-material
+mkdocs-rss-plugin
+mkdocs-static-i18n
+mkdocstrings
+mkdocstrings[python]
+python-markdown-math

@@ -44,8 +44,10 @@ dynamic = [
   "version",
 ]
 dependencies = [
+  "accelerate",
   "chanfig>=0.0.99",
-  "danling",
+  "danling>=0.3.6",
+  "torch",
   "transformers",
 ]
 [project.urls]
