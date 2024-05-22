@@ -375,7 +375,7 @@ class UtrBertForCrisprOffTarget(UtrBertPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertForCrisprOffTarget, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=6, strameline=True)
+        >>> tokenizer = RnaTokenizer(nmers=6)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
         >>> model = UtrBertForCrisprOffTarget(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")

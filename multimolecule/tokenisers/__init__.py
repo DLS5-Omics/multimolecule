@@ -15,5 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .rna import RnaTokenizer
+from .tokenization_utils import Tokenizer
 
-__all__ = ["RnaTokenizer"]
+__all__ = ["RnaTokenizer", "Tokenizer"]
