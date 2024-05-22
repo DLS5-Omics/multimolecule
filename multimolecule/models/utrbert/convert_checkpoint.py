@@ -65,7 +65,7 @@ def convert_checkpoint(convert_config):
     config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
     config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
     config.nmers = int(convert_config.checkpoint_path.split("/")[-1][0])
-    vocab_list = get_vocab_list(config.nmers, strameline=True)
+    vocab_list = get_vocab_list(nmers=config.nmers)
     config = Config.from_dict(config)
     del config._name_or_path
     config.architectures = ["UtrBertModel"]
@@ -91,7 +91,6 @@ def convert_checkpoint(convert_config):
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["nmers"] = config.nmers
-    tokenizer_config["strameline"] = True
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
 
     save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
