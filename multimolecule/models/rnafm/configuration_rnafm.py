@@ -33,9 +33,11 @@ class RnaFmConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size (`int`, *optional*, defaults to 25 if `codon=False` else 131):
             Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaFmModel`].
+        codon (`bool`, *optional*, defaults to `False`):
+            Whether to use codon tokenization.
         hidden_size (`int`, *optional*, defaults to 640):
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers (`int`, *optional*, defaults to 12):
@@ -88,7 +90,8 @@ class RnaFmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
+        vocab_size=None,
+        codon=False,
         hidden_size=640,
         num_hidden_layers=12,
         num_attention_heads=20,
@@ -108,8 +111,10 @@ class RnaFmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-
+        if vocab_size is None:
+            vocab_size = 131 if codon else 25
         self.vocab_size = vocab_size
+        self.codon = codon
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
         self.num_attention_heads = num_attention_heads
