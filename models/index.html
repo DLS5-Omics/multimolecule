@@ -95,6 +95,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#models" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -589,6 +594,100 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#direct-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct Access
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-with-transformersautomodels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build with transformers.AutoModels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-with-multimoleculeautomodels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build with multimolecule.AutoModels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimoleculeautomodelfornucleotideclassification" class="md-nav__link">
+    <span class="md-ellipsis">
+      multimolecule.AutoModelForNucleotideClassification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initialize-a-vanilla-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initialize a vanilla model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Available Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rna" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNA
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -619,9 +718,55 @@
   
 
 
-  <h1>index</h1>
-
-
+<ul>
+<li>Zhiyuan Chen
+date: 2024-05-04</li>
+</ul>
+<hr />
+<h1 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h1>
+<p><code>models</code> provide a collection of pre-trained models.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<h3 id="direct-access">Direct Access<a class="headerlink" href="#direct-access" title="Permanent link">&para;</a></h3>
+<p>All models can be directly loaded with the <code>from_pretrained</code> method.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>
+</code></pre></div></td></tr></table></div>
+<h3 id="build-with-transformersautomodels">Build with <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s<a class="headerlink" href="#build-with-transformersautomodels" title="Permanent link">&para;</a></h3>
+<p>All models have been registered with <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s, and can be directly loaded using corresponding <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s classes.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>
+</code></pre></div></td></tr></table></div>
+<div class="admonition danger">
+<p class="admonition-title"><code>import multimolecule</code> before use</p>
+<p>Note that you must <code>import multimolecule</code> before building the model using <code>transformers.AutoModel</code>.
+The registration of models is done in the <code>multimolecule</code> package, and the models are not available in the <code>transformers</code> package.</p>
+<p>The following error will be raised if you do not <code>import multimolecule</code> before using <code>transformers.AutoModel</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="ne">ValueError</span><span class="p">:</span> <span class="n">The</span> <span class="n">checkpoint</span> <span class="n">you</span> <span class="n">are</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">load</span> <span class="n">has</span> <span class="n">model</span> <span class="nb">type</span> <span class="err">`</span><span class="n">rnafm</span><span class="err">`</span> <span class="n">but</span> <span class="n">Transformers</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">recognize</span> <span class="n">this</span> <span class="n">architecture</span><span class="o">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">be</span> <span class="n">because</span> <span class="n">of</span> <span class="n">an</span> <span class="n">issue</span> <span class="k">with</span> <span class="n">the</span> <span class="n">checkpoint</span><span class="p">,</span> <span class="ow">or</span> <span class="n">because</span> <span class="n">your</span> <span class="n">version</span> <span class="n">of</span> <span class="n">Transformers</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">date</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<h3 id="build-with-multimoleculeautomodels">Build with <code>multimolecule.AutoModel</code>s<a class="headerlink" href="#build-with-multimoleculeautomodels" title="Permanent link">&para;</a></h3>
+<p>Similar to <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s, MultiMolecule provides a set of <code>multimolecule.AutoModel</code>s for direct access to models.</p>
+<p>This includes:</p>
+<h3 id="multimoleculeautomodelfornucleotideclassification"><code>multimolecule.AutoModelForNucleotideClassification</code><a class="headerlink" href="#multimoleculeautomodelfornucleotideclassification" title="Permanent link">&para;</a></h3>
+<p>Similar to <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModelForTokenClassification"><code>transformers.AutoModelForTokenClassification</code></a>, but removes the <code>&lt;bos&gt;</code> token and the <code>&lt;eos&gt;</code> token if they are defined in the model config.</p>
+<div class="admonition note">
+<p class="admonition-title"><code>&lt;bos&gt;</code> and <code>&lt;eos&gt;</code> tokens</p>
+<p>In tokenizers provided by MultiMolecule, <code>&lt;bos&gt;</code> token is pointed to <code>&lt;cls&gt;</code> token, and <code>&lt;sep&gt;</code> token is pointed to <code>&lt;eos&gt;</code> token.</p>
+</div>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>
+</code></pre></div></td></tr></table></div>
+<h3 id="initialize-a-vanilla-model">Initialize a vanilla model<a class="headerlink" href="#initialize-a-vanilla-model" title="Permanent link">&para;</a></h3>
+<p>You can also initialize a vanilla model using the model class.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>
+</code></pre></div></td></tr></table></div>
+<h2 id="available-models">Available Models<a class="headerlink" href="#available-models" title="Permanent link">&para;</a></h2>
+<h3 id="rna">RNA<a class="headerlink" href="#rna" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="./rnabert">RNABERT</a></li>
+<li><a href="./rnafm">RNA-FM</a></li>
+<li><a href="./rnamsm">RNA-MSM</a></li>
+<li><a href="./splicebert">SpliceBERT</a></li>
+<li><a href="./utrbert">3UTRBERT</a></li>
+<li><a href="./utrlm">UTR-LM</a></li>
+</ul>
 
 
 

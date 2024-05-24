@@ -97,6 +97,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#models" class="md-skip">
+          跳转至
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -591,6 +596,100 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      直接访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformersautomodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 transformers.AutoModel 构建
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimoleculeautomodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 multimolecule.AutoModel 构建
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimoleculeautomodelfornucleotideclassification" class="md-nav__link">
+    <span class="md-ellipsis">
+      multimolecule.AutoModelForNucleotideClassification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      初始化一个香草模型
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      可用模型
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="可用模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      核糖核酸
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -621,9 +720,55 @@
   
 
 
-  <h1>index</h1>
-
-
+<ul>
+<li>Zhiyuan Chen
+date: 2024-05-04</li>
+</ul>
+<hr />
+<h1 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h1>
+<p><code>models</code> 提供了一系列预训练模型。</p>
+<h2 id="_1">使用<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">直接访问<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>所有模型可以通过 from_pretrained 方法直接加载。</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>
+</code></pre></div></td></tr></table></div>
+<h3 id="transformersautomodel">使用 <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a> 构建<a class="headerlink" href="#transformersautomodel" title="Permanent link">&para;</a></h3>
+<p>所有模型都已注册到 <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel">transformers.AutoModel</a>, 并可以使用相应的 <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel">transformers.AutoModel</a> 类直接加载。</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>
+</code></pre></div></td></tr></table></div>
+<div class="admonition danger">
+<p class="admonition-title"><code>import multimolecule</code> before use</p>
+<p>请注意，在使用 <code>transformers.AutoModel</code> 构建模型之前，必须先 <code>import multimolecule</code>。
+模型的注册在 <code>multimolecule</code> 包中完成，模型在 <code>transformers</code> 包中不可用。</p>
+<p>如果在使用 <code>transformers.AutoModel</code> 之前未 <code>import multimolecule</code>，将会引发以下错误：</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="ne">ValueError</span><span class="p">:</span> <span class="n">The</span> <span class="n">checkpoint</span> <span class="n">you</span> <span class="n">are</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">load</span> <span class="n">has</span> <span class="n">model</span> <span class="nb">type</span> <span class="err">`</span><span class="n">rnafm</span><span class="err">`</span> <span class="n">but</span> <span class="n">Transformers</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">recognize</span> <span class="n">this</span> <span class="n">architecture</span><span class="o">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">be</span> <span class="n">because</span> <span class="n">of</span> <span class="n">an</span> <span class="n">issue</span> <span class="k">with</span> <span class="n">the</span> <span class="n">checkpoint</span><span class="p">,</span> <span class="ow">or</span> <span class="n">because</span> <span class="n">your</span> <span class="n">version</span> <span class="n">of</span> <span class="n">Transformers</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">date</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<h3 id="multimoleculeautomodel">使用 multimolecule.AutoModel 构建<a class="headerlink" href="#multimoleculeautomodel" title="Permanent link">&para;</a></h3>
+<p>类似于 <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel">transformers.AutoModel</a>, MultiMolecule 提供了一系列 multimolecule.AutoModel 以直接访问模型。</p>
+<p>这包括：</p>
+<h3 id="multimoleculeautomodelfornucleotideclassification"><code>multimolecule.AutoModelForNucleotideClassification</code><a class="headerlink" href="#multimoleculeautomodelfornucleotideclassification" title="Permanent link">&para;</a></h3>
+<p>类似于 <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModelForTokenClassification">transformers.AutoModelForTokenClassification</a>, 但如果模型配置中定义了 <code>&lt;bos&gt;</code> 或者 <code>&lt;eos&gt;</code> 令牌，将其移除。</p>
+<div class="admonition note">
+<p class="admonition-title"><code>&lt;bos&gt;</code> 和 <code>&lt;eos&gt;</code> 令牌</p>
+<p>在 MultiMolecule 提供的分词器中，<code>&lt;bos&gt;</code> 令牌指向 <code>&lt;cls&gt;</code> 令牌，<code>&lt;sep&gt;</code> 令牌指向 <code>&lt;eos&gt;</code> 令牌。</p>
+</div>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>
+</code></pre></div></td></tr></table></div>
+<h3 id="_3">初始化一个香草模型<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>你也可以使用模型类初始化一个基础模型。</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>
+</code></pre></div></td></tr></table></div>
+<h2 id="_4">可用模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">核糖核酸<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="./rnabert">RNABERT</a></li>
+<li><a href="./rnafm">RNA-FM</a></li>
+<li><a href="./rnamsm">RNA-MSM</a></li>
+<li><a href="./splicebert">SpliceBERT</a></li>
+<li><a href="./utrbert">3UTRBERT</a></li>
+<li><a href="./utrlm">UTR-LM</a></li>
+</ul>
 
 
 
