@@ -10,12 +10,14 @@ repo_url: https://github.com/DLS5-Omics/multimolecule
 nav:
   - MultiMolecule: index.md
   - models:
-      - RNABERT: models/rnabert.md
-      - RNA-FM: models/rnafm.md
-      - RNA-MSM: models/rnamsm.md
-      - SpliceBERT: models/splicebert.md
-      - 3UTRBERT: models/utrbert.md
-      - UTR-LM: models/utrlm.md
+      - models: models.md
+      - RNA:
+          - RNABERT: models/rnabert.md
+          - RNA-FM: models/rnafm.md
+          - RNA-MSM: models/rnamsm.md
+          - SpliceBERT: models/splicebert.md
+          - 3UTRBERT: models/utrbert.md
+          - UTR-LM: models/utrlm.md
 
 theme:
   name: material
@@ -50,7 +52,9 @@ theme:
     - navigation.expand
     - navigation.footer
     - navigation.indexes
-    # - navigation.instant
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
     - navigation.prune
     - navigation.sections
     - navigation.tabs
@@ -61,7 +65,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
+    # - toc.integrate
   font: false
 
 extra:

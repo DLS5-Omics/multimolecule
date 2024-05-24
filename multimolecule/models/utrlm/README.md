@@ -6,6 +6,7 @@ tags:
 license: agpl-3.0
 datasets:
   - multimolecule/ensembl-genome-browser
+library_name: multimolecule
 ---
 
 # UTR-LM
@@ -36,7 +37,7 @@ The OFFICIAL repository of UTR-LM is at [a96123155/UTR-LM](https://github.com/a9
 
 ## Model Details
 
-UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of 5’ untranslated regions (5’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
+UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of 5’ untranslated regions (5’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Variations
 
@@ -194,7 +195,7 @@ output = model(**input, labels=label)
 
 UTR-LM used a mixed training strategy with one self-supervised task and two supervised tasks, where the labels of both supervised tasks are calculated using [ViennaRNA](https://viennarna.readthedocs.io).
 
-1. **Masked Language Modeling (MLM)**: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
+1. **Masked Language Modeling (MLM)**: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
 2. **Secondary Structure (SS)**: predicting the secondary structure of the `<mask>` token in the MLM task.
 3. **Minimum Free Energy (MFE)**: predicting the minimum free energy of the 5’ UTR sequence.
 
@@ -204,7 +205,7 @@ The UTR-LM model was pre-trained on 5’ UTR sequences from three sources:
 
 - **[Ensembl Genome Browser](https://ensembl.org)**: Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation. UTR-LM used 5’ UTR sequences from 5 species: human, rat, mouse, chicken, and zebrafish, since these species have high-quality and manual gene annotations.
 - **[Human 5′ UTR design and variant effect prediction from a massively parallel translation assay](https://doi.org/10.1038/s41587-019-0164-5)**: Sample et al. proposed 8 distinct 5' UTR libraries, each containing random 50 nucleotide sequences, to evaluate translation rules using mean ribosome loading (MRL) measurements.
-- **[High-Throughput 5’ UTR Engineering for Enhanced Protein Production in Non-Viral Gene Therapies](https://doi.org/10.1101/2021.10.14.464013)**: Cao et al. analyzed endogenous human 5’ UTRs, including data from 3 distinct cell lines/tissues: human embryonic kidney 293T (HEK), human prostate cancer cell (PC3), and human muscle tissue (Muscle).
+- **[High-Throughput 5’ UTR Engineering for Enhanced Protein Production in Non-Viral Gene Therapies](https://doi.org/10.1038/s41467-021-24436-7)**: Cao et al. analyzed endogenous human 5’ UTRs, including data from 3 distinct cell lines/tissues: human embryonic kidney 293T (HEK), human prostate cancer cell (PC3), and human muscle tissue (Muscle).
 
 UTR-LM preprocessed the 5’ UTR sequences in a 4-step pipeline:
 
@@ -213,7 +214,7 @@ UTR-LM preprocessed the 5’ UTR sequences in a 4-step pipeline:
 3. truncated the sequences to fit within a range of 30 to 1022 bp
 4. filtered out incorrect and low-quality sequences
 
-Note `RnaTokenizer` of `multimolecule` will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
+Note [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
 
 ### Training Procedure
 

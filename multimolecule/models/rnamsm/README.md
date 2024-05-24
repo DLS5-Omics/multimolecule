@@ -6,6 +6,7 @@ tags:
 license: agpl-3.0
 datasets:
   - multimolecule/rfam
+library_name: multimolecule
 ---
 
 # RNA-MSM
@@ -22,7 +23,7 @@ The OFFICIAL repository of RNA-MSM is at [yikunpku/RNA-MSM](https://github.com/y
 
 ## Model Details
 
-RNA-MSM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
+RNA-MSM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Model Specification
 
@@ -143,7 +144,7 @@ output = model(**input, labels=label)
 
 ## Training Details
 
-RNA-MSM used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
+RNA-MSM used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
 
 ### Training Data
 
@@ -155,7 +156,7 @@ To increase the number of homologous sequences, RNA-MSM used an automatic pipeli
 
 RNA-MSM preprocessed all tokens by replacing "T"s with "U"s and substituting "R", "Y", "K", "M", "S", "W", "B", "D", "H", "V", "N" with "X".
 
-Note that `RnaTokenizer` of `multimolecule` will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`. `RnaTokenizer` does not perform other substitutions.
+Note that [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`. `RnaTokenizer` does not perform other substitutions.
 
 ### Training Procedure
 

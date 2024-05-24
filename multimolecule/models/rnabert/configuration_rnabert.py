@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 from transformers.utils import logging
 
 from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
@@ -33,27 +35,27 @@ class RnaBertConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size:
             Vocabulary size of the RnaBert model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaBertModel`].
-        hidden_size (`int`, *optional*, defaults to 120):
+        hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
-        num_hidden_layers (`int`, *optional*, defaults to 12):
+        num_hidden_layers:
             Number of hidden layers in the Transformer encoder.
-        num_attention_heads (`int`, *optional*, defaults to 6):
+        num_attention_heads:
             Number of attention heads for each attention layer in the Transformer encoder.
-        intermediate_size (`int`, *optional*, defaults to 40):
+        intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
-        hidden_dropout (`float`, *optional*, defaults to 0.0):
+        hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
-        attention_dropout (`float`, *optional*, defaults to 0.0):
+        attention_dropout:
             The dropout ratio for the attention probabilities.
-        max_position_embeddings (`int`, *optional*, defaults to 440):
+        max_position_embeddings:
             The maximum sequence length that this model might ever be used with. Typically set this to something large
             just in case (e.g., 512 or 1024 or 2048).
-        initializer_range (`float`, *optional*, defaults to 0.02):
+        initializer_range:
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
-        layer_norm_eps (`float`, *optional*, defaults to 1e-12):
+        layer_norm_eps:
             The epsilon used by the layer normalization layers.
 
     Examples:
@@ -73,23 +75,23 @@ class RnaBertConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
-        ss_vocab_size=8,
-        hidden_size=None,
-        multiple=None,
-        num_hidden_layers=6,
-        num_attention_heads=12,
-        intermediate_size=40,
-        hidden_act="gelu",
-        hidden_dropout=0.0,
-        attention_dropout=0.0,
-        max_position_embeddings=440,
-        initializer_range=0.02,
-        layer_norm_eps=1e-12,
-        position_embedding_type="absolute",
-        use_cache=True,
-        head=None,
-        lm_head=None,
+        vocab_size: int = 25,
+        ss_vocab_size: int = 8,
+        hidden_size: int | None = None,
+        multiple: int | None = None,
+        num_hidden_layers: int = 6,
+        num_attention_heads: int = 12,
+        intermediate_size: int = 40,
+        hidden_act: str = "gelu",
+        hidden_dropout: float = 0.0,
+        attention_dropout: float = 0.0,
+        max_position_embeddings: int = 440,
+        initializer_range: float = 0.02,
+        layer_norm_eps: float = 1e-12,
+        position_embedding_type: str = "absolute",
+        use_cache: bool = True,
+        head: HeadConfig | None = None,
+        lm_head: MaskedLMHeadConfig | None = None,
         **kwargs,
     ):
         if hidden_size is None:

@@ -6,6 +6,7 @@ tags:
 license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
+library_name: multimolecule
 ---
 
 # RNA-FM
@@ -22,7 +23,7 @@ The OFFICIAL repository of RNA-FM is at [ml4bio/RNA-FM](https://github.com/ml4bi
 
 ## Model Details
 
-RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
+RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Variations
 
@@ -94,26 +95,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnafm')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.3830885887145996,
+[{'score': 0.3237496316432953,
+  'token': 24,
+  'token_str': '-',
+  'sequence': 'U A G C - U A U C A G A C U G A U G U U G A'},
+ {'score': 0.28286001086235046,
+  'token': 11,
+  'token_str': 'X',
+  'sequence': 'U A G C X U A U C A G A C U G A U G U U G A'},
+ {'score': 0.11762786656618118,
   'token': 23,
   'token_str': '*',
   'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
- {'score': 0.16808930039405823,
-  'token': 22,
-  'token_str': '.',
-  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.14214453101158142,
+ {'score': 0.07875438779592514,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.11032014340162277,
+ {'score': 0.06866674870252609,
   'token': 9,
   'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.09523089975118637,
-  'token': 7,
-  'token_str': 'C',
-  'sequence': 'U A G C C U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use
@@ -179,17 +180,17 @@ output = model(**input, labels=label)
 
 ## Training Details
 
-RNA-FM used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
+RNA-FM used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
 
 ### Training Data
 
 The RNA-FM model was pre-trained on [RNAcentral](https://rnacentral.org). RNAcentral is a comprehensive database of non-coding RNA sequences from a wide range of species. It combines 47 different databases, adding up to around 27 million RNA sequences in total.
 
-RNA-FM applied [CD-HIT (CD-HIT-EST)](cd-hit.org) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.
+RNA-FM applied [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.
 
 RNA-FM preprocessed all tokens by replacing "U"s with "T"s.
 
-Note that during model conversions, "T" is replaced with "U". `RnaTokenizer` of `multimolecule` will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
+Note that during model conversions, "T" is replaced with "U". [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
 
 ### Training Procedure
 
