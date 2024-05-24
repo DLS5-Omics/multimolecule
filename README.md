@@ -12,12 +12,12 @@ Welcome to MultiMolecule (浦原), a foundational library designed to accelerate
 
 We understand that AI4Science is a broad field, with researchers from different disciplines employing various practices. Therefore, MultiMolecule is designed with low coupling in mind, meaning that while it offers a full suite of functionalities, each module can be used independently. This allows you to integrate only the components you need into your existing workflows without adding unnecessary complexity. The key functionalities that MultiMolecule provides include:
 
-- [data][`multimolecule.data`]: Efficient data handling and preprocessing capabilities to streamline the ingestion and transformation of scientific datasets.
-- [modules][`multimolecule.modules`]: Modular components designed to provide flexibility and reusability across various machine learning tasks.
-- [models][`multimolecule.models`]: State-of-the-art model architectures optimized for scientific research applications, ensuring high performance and accuracy.
-- [tokenisers][`multimolecule.tokenisers`]: Advanced tokenization methods to effectively handle complex scientific text and data representations.
-- [downstream][`multimolecule.downstream`]: Tools and utilities for the seamless integration of machine learning results into practical scientific workflows and applications.
-- [utils][`multimolecule.utils`]: A collection of utility functions and tools to simplify common tasks and enhance the overall user experience.
+- [`data`][multimolecule.data]: Efficient data handling and preprocessing capabilities to streamline the ingestion and transformation of scientific datasets.
+- [`modules`][multimolecule.modules]: Modular components designed to provide flexibility and reusability across various machine learning tasks.
+- [`models`](models.md): State-of-the-art model architectures optimized for scientific research applications, ensuring high performance and accuracy.
+- [`tokenisers`][multimolecule.tokenisers]: Advanced tokenization methods to effectively handle complex scientific text and data representations.
+- [`downstream`][multimolecule.downstream]: Tools and utilities for the seamless integration of machine learning results into practical scientific workflows and applications.
+- [`utils`][multimolecule.utils]: A collection of utility functions and tools to simplify common tasks and enhance the overall user experience.
 
 ## Installation
 

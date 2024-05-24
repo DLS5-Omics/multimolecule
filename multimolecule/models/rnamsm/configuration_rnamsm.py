@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 from transformers.utils import logging
 
 from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
@@ -33,27 +35,27 @@ class RnaMsmConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size:
             Vocabulary size of the RnaMsm model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaMsmModel`].
-        hidden_size (`int`, *optional*, defaults to 768):
+        hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
-        num_hidden_layers (`int`, *optional*, defaults to 10):
+        num_hidden_layers:
             Number of hidden layers in the Transformer encoder.
-        num_attention_heads (`int`, *optional*, defaults to 12):
+        num_attention_heads:
             Number of attention heads for each attention layer in the Transformer encoder.
-        intermediate_size (`int`, *optional*, defaults to 3072):
+        intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
-        hidden_dropout (`float`, *optional*, defaults to 0.1):
+        hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
-        attention_dropout (`float`, *optional*, defaults to 0.1):
+        attention_dropout:
             The dropout ratio for the attention probabilities.
-        max_position_embeddings (`int`, *optional*, defaults to 1024):
+        max_position_embeddings:
             The maximum sequence length that this model might ever be used with. Typically set this to something large
             just in case (e.g., 512 or 1024 or 2048).
-        initializer_range (`float`, *optional*, defaults to 0.02):
+        initializer_range:
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
-        layer_norm_eps (`float`, *optional*, defaults to 1e-12):
+        layer_norm_eps:
             The epsilon used by the layer normalization layers.
 
     Examples:
@@ -73,26 +75,26 @@ class RnaMsmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
-        hidden_size=768,
-        num_hidden_layers=10,
-        num_attention_heads=12,
-        intermediate_size=3072,
-        hidden_act="gelu",
-        hidden_dropout=0.1,
-        attention_dropout=0.1,
-        max_position_embeddings=1024,
-        initializer_range=0.02,
-        layer_norm_eps=1e-12,
-        position_embedding_type="absolute",
-        use_cache=True,
-        max_tokens_per_msa=2**14,
-        layer_type="standard",
-        attention_type="standard",
-        embed_positions_msa=True,
-        attention_bias=True,
-        head=None,
-        lm_head=None,
+        vocab_size: int = 25,
+        hidden_size: int = 768,
+        num_hidden_layers: int = 10,
+        num_attention_heads: int = 12,
+        intermediate_size: int = 3072,
+        hidden_act: str = "gelu",
+        hidden_dropout: float = 0.1,
+        attention_dropout: float = 0.1,
+        max_position_embeddings: int = 1024,
+        initializer_range: float = 0.02,
+        layer_norm_eps: float = 1e-12,
+        position_embedding_type: str = "absolute",
+        use_cache: bool = True,
+        max_tokens_per_msa: int = 2**14,
+        layer_type: str = "standard",
+        attention_type: str = "standard",
+        embed_positions_msa: bool = True,
+        attention_bias: bool = True,
+        head: HeadConfig | None = None,
+        lm_head: MaskedLMHeadConfig | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)

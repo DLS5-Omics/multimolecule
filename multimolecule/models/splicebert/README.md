@@ -6,6 +6,7 @@ tags:
 license: agpl-3.0
 datasets:
   - multimolecule/ucsc-genome-browser
+library_name: multimolecule
 ---
 
 # SpliceBERT
@@ -22,7 +23,7 @@ The OFFICIAL repository of SpliceBERT is at [chenkenbio/SpliceBERT](https://gith
 
 ## Model Details
 
-SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of messenger RNA precursor sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
+SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of messenger RNA precursor sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Variations
 
@@ -181,7 +182,7 @@ output = model(**input, labels=label)
 
 ## Training Details
 
-SpliceBERT used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
+SpliceBERT used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
 
 ### Training Data
 
@@ -189,7 +190,7 @@ The SpliceBERT model was pre-trained on messenger RNA precursor sequences from [
 
 SpliceBERT collected reference genomes and gene annotations from the UCSC Genome Browser for 72 vertebrate species. It applied [bedtools getfasta](https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html) to extract pre-mRNA sequences from the reference genomes based on the gene annotations. The pre-mRNA sequences are then used to pre-train SpliceBERT. The pre-training data contains 2 million pre-mRNA sequences with a total length of 65 billion nucleotides.
 
-Note `RnaTokenizer` of `multimolecule` will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
+Note [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
 
 ### Training Procedure
 

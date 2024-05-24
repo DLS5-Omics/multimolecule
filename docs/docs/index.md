@@ -5,4 +5,6 @@ authors:
 date: 2022-05-04
 ---
 
---8<-- "README.md"
+# MultiMolecule
+
+--8<-- "README.md:8:"

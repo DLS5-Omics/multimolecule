@@ -6,6 +6,7 @@ tags:
 license: agpl-3.0
 datasets:
   - multimolecule/gencode
+library_name: multimolecule
 ---
 
 # 3UTRBERT
@@ -22,7 +23,7 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 
 ## Model Details
 
-3UTRBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of 3’ untranslated regions (3’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
+3UTRBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of 3’ untranslated regions (3’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Variations
 
@@ -188,7 +189,7 @@ output = model(**input, labels=label)
 
 ## Training Details
 
-3UTRBERT used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
+3UTRBERT used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
 
 ### Training Data
 
@@ -196,7 +197,7 @@ The 3UTRBERT model was pre-trained on human mRNA transcript sequences from [GENC
 
 3UTRBERT collected the human mRNA transcript sequences from GENCODE, including 108,573 unique mRNA transcripts. Only the longest transcript of each gene was used in the pre-training process. 3UTRBERT only used the 3’ untranslated regions (3’UTRs) of the mRNA transcripts for pre-training to avoid codon constrains in the CDS region, and to reduce increased complexity of the entire mRNA transcripts. The average length of the 3’UTRs was 1,227 nucleotides, while the median length was 631 nucleotides. Each 3’UTR sequence was cut to non-overlapping patches of 510 nucleotides. The remaining sequences were padded to the same length.
 
-Note `RnaTokenizer` of `multimolecule` will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
+Note [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
 
 ### Training Procedure
 

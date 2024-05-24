@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 from transformers.utils import logging
 
 from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
@@ -33,51 +35,51 @@ class UtrLmConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size:
             Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`UtrLmModel`].
-        hidden_size (`int`, *optional*, defaults to 512):
+        hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
-        num_hidden_layers (`int`, *optional*, defaults to 6):
+        num_hidden_layers:
             Number of hidden layers in the Transformer encoder.
-        num_attention_heads (`int`, *optional*, defaults to 12):
+        num_attention_heads:
             Number of attention heads for each attention layer in the Transformer encoder.
-        intermediate_size (`int`, *optional*, defaults to 2048):
+        intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
-        hidden_dropout (`float`, *optional*, defaults to 0.1):
+        hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
-        attention_dropout (`float`, *optional*, defaults to 0.1):
+        attention_dropout:
             The dropout ratio for the attention probabilities.
-        max_position_embeddings (`int`, *optional*, defaults to 1026):
+        max_position_embeddings:
             The maximum sequence length that this model might ever be used with. Typically set this to something large
             just in case (e.g., 512 or 1024 or 2048).
-        initializer_range (`float`, *optional*, defaults to 0.02):
+        initializer_range:
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
-        layer_norm_eps (`float`, *optional*, defaults to 1e-12):
+        layer_norm_eps:
             The epsilon used by the layer normalization layers.
-        pad_token_id (`int`, *optional*, defaults to 0):
+        pad_token_id:
             The index of the padding token in the vocabulary. This must be included in the config because certain parts
             of the RnaBert code use this instead of the attention mask.
-        bos_token_id (`int`, *optional*, defaults to 1):
+        bos_token_id:
             The index of the bos token in the vocabulary. This must be included in the config because of the
             contact and other prediction heads removes the bos and padding token when predicting outputs.
-        mask_token_id (`int`, *optional*, defaults to 4):
+        mask_token_id:
             The index of the mask token in the vocabulary. This must be included in the config because of the
             "mask-dropout" scaling trick, which will scale the inputs depending on the number of masked tokens.
-        position_embedding_type (`str`, *optional*, defaults to `"absolute"`):
+        position_embedding_type:
             Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query", "rotary"`.
             For positional embeddings use `"absolute"`. For more information on `"relative_key"`, please refer to
             [Self-Attention with Relative Position Representations (Shaw et al.)](https://arxiv.org/abs/1803.02155).
             For more information on `"relative_key_query"`, please refer to *Method 4* in [Improve Transformer Models
             with Better Relative Position Embeddings (Huang et al.)](https://arxiv.org/abs/2009.13658).
-        is_decoder (`bool`, *optional*, defaults to `False`):
+        is_decoder:
             Whether the model is used as a decoder or not. If `False`, the model is used as an encoder.
-        use_cache (`bool`, *optional*, defaults to `True`):
+        use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
-        emb_layer_norm_before (`bool`, *optional*):
+        emb_layer_norm_before:
             Whether to apply layer normalization after embeddings but before the main stem of the network.
-        token_dropout (`bool`, defaults to `False`):
+        token_dropout:
             When this is enabled, masked tokens are treated as if they had been dropped out by input dropout.
 
     Examples:
@@ -97,25 +99,25 @@ class UtrLmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
-        hidden_size=128,
-        num_hidden_layers=6,
-        num_attention_heads=16,
-        intermediate_size=512,
-        hidden_act="gelu",
-        hidden_dropout=0.1,
-        attention_dropout=0.1,
-        max_position_embeddings=1026,
-        initializer_range=0.02,
-        layer_norm_eps=1e-12,
-        position_embedding_type="rotary",
-        use_cache=True,
-        emb_layer_norm_before=None,
-        token_dropout=True,
-        head=None,
-        lm_head=None,
-        ss_head=None,
-        mfe_head=None,
+        vocab_size: int = 25,
+        hidden_size: int = 128,
+        num_hidden_layers: int = 6,
+        num_attention_heads: int = 16,
+        intermediate_size: int = 512,
+        hidden_act: str = "gelu",
+        hidden_dropout: float = 0.1,
+        attention_dropout: float = 0.1,
+        max_position_embeddings: int = 1026,
+        initializer_range: float = 0.02,
+        layer_norm_eps: float = 1e-12,
+        position_embedding_type: str = "rotary",
+        use_cache: bool = True,
+        emb_layer_norm_before: bool = False,
+        token_dropout: bool = False,
+        head: HeadConfig | None = None,
+        lm_head: MaskedLMHeadConfig | None = None,
+        ss_head: HeadConfig | None = None,
+        mfe_head: HeadConfig | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)

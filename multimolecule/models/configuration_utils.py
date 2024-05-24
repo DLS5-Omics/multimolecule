@@ -76,24 +76,24 @@ class HeadConfig(BaseHeadConfig):
 
 
     Args:
-        num_labels (`int`, *optional*):
+        num_labels:
             Number of labels to use in the last layer added to the model, typically for a classification task.
-        problem_type (`str`, *optional*):
+        problem_type:
             Problem type for `XxxForSequenceClassification` models. Can be one of `"regression"`,
             `"single_label_classification"` or `"multi_label_classification"`.
-        hidden_size (`int`, *optional*, defaults to 768):
+        hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
-        dropout (`float`, *optional*, defaults to 0.0):
+        dropout:
             The dropout ratio for the hidden states.
-        transform (`str`, *optional*, defaults to None):
+        transform:
             The transform operation applied to hidden states.
-        transform_act (`str`, *optional*, defaults to "gelu"):
+        transform_act:
             The activation function of transform applied to hidden states.
-        bias (`bool`, *optional*, defaults to True):
+        bias:
             Whether to apply bias to the final prediction layer.
-        act (`str`, *optional*, defaults to None):
+        act:
             The activation function of the final prediction output.
-        layer_norm_eps (`float`, *optional*, defaults to 1e-12):
+        layer_norm_eps:
             The epsilon used by the layer normalization layers.
     """
 
@@ -119,19 +119,19 @@ class MaskedLMHeadConfig(BaseHeadConfig):
 
 
     Args:
-        hidden_size (`int`, *optional*, defaults to 768):
+        hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
-        dropout (`float`, *optional*, defaults to 0.0):
+        dropout:
             The dropout ratio for the hidden states.
-        transform (`str`, *optional*, defaults to "nonlinear"):
+        transform:
             The transform operation applied to hidden states.
-        transform_act (`str`, *optional*, defaults to "gelu"):
+        transform_act:
             The activation function of transform applied to hidden states.
-        bias (`bool`, *optional*, defaults to True):
+        bias:
             Whether to apply bias to the final prediction layer.
-        act (`str`, *optional*, defaults to None):
+        act:
             The activation function of the final prediction output.
-        layer_norm_eps (`float`, *optional*, defaults to 1e-12):
+        layer_norm_eps:
             The epsilon used by the layer normalization layers.
     """
 
