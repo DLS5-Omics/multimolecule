@@ -286,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../rnabert/" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
     
@@ -325,9 +325,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="MultiMolecule" class="md-nav__button md-logo" aria-label="MultiMolecule" data-md-component="logo">
       
@@ -383,6 +381,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -414,16 +416,24 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
   
   <span class="md-ellipsis">
     models
   </span>
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
@@ -431,6 +441,8 @@
             models
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -707,16 +719,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#api-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      API Reference
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="API Reference">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#multimolecule.models.rnafm" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;rnafm
@@ -901,11 +903,6 @@
     </nav>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
     </ul>
   
@@ -1014,6 +1011,419 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#disclaimer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disclaimer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Variations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Specification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Links
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#direct-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct Use
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downstream-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      Downstream Use
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Downstream Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extract-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extract Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequence-classification-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sequence Classification / Regression
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nucleotide-classification-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nucleotide Classification / Regression
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Training Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Procedure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Training Procedure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Preprocessing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pretraining" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pretraining
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Citation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contact" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contact
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;rnafm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" rnafm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaTokenizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaTokenizer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmConfig
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForMaskedLM" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmForMaskedLM
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" RnaFmForMaskedLM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForMaskedLM.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForNucleotideClassification" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmForNucleotideClassification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" RnaFmForNucleotideClassification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForNucleotideClassification.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForPretraining" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmForPretraining
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" RnaFmForPretraining">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForPretraining.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForSequenceClassification" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmForSequenceClassification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" RnaFmForSequenceClassification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForSequenceClassification.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForTokenClassification" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmForTokenClassification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" RnaFmForTokenClassification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmForTokenClassification.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmModel
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" RnaFmModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmModel.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multimolecule.models.rnafm.RnaFmPreTrainedModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RnaFmPreTrainedModel
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -1022,6 +1432,19 @@
                   
 
   
+    <a href="https://github.com/DLS5-Omics/multimolecule/edit/master/docs/models/rnafm.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/DLS5-Omics/multimolecule/raw/master/docs/models/rnafm.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.15 8.15 0 0 1-1.23-2Z"/></svg>
+    </a>
   
 
 
@@ -1262,18 +1685,17 @@
 <p>This model is licensed under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0 License</a>.</p>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>SPDX-License-Identifier: AGPL-3.0-or-later
 </code></pre></div></td></tr></table></div>
-<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
 
 
 <div class="doc doc-object doc-module">
 
 
 
-<h3 id="multimolecule.models.rnafm" class="doc doc-heading">
+<h2 id="multimolecule.models.rnafm" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <code>multimolecule.models.rnafm</code>
 
 
-<a href="#multimolecule.models.rnafm" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#multimolecule.models.rnafm" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents first">
 
@@ -1292,11 +1714,11 @@
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaTokenizer" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaTokenizer" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaTokenizer</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaTokenizer" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaTokenizer" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1520,11 +1942,11 @@
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmConfig" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmConfig" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmConfig</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmConfig" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmConfig" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2027,11 +2449,11 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmForMaskedLM" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmForMaskedLM" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmForMaskedLM</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmForMaskedLM" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmForMaskedLM" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2217,10 +2639,10 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="multimolecule.models.rnafm.RnaFmForMaskedLM.forward" class="doc doc-heading">
+<h4 id="multimolecule.models.rnafm.RnaFmForMaskedLM.forward" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">head_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs_embeds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#multimolecule.models.rnafm.RnaFmForMaskedLM.forward" class="headerlink" title="Permanent link">&para;</a></h5>
+<a href="#multimolecule.models.rnafm.RnaFmForMaskedLM.forward" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -2345,11 +2767,11 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmForNucleotideClassification" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmForNucleotideClassification" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmForNucleotideClassification</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmForNucleotideClassification" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmForNucleotideClassification" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2529,10 +2951,10 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="multimolecule.models.rnafm.RnaFmForNucleotideClassification.forward" class="doc doc-heading">
+<h4 id="multimolecule.models.rnafm.RnaFmForNucleotideClassification.forward" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">head_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs_embeds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
-<a href="#multimolecule.models.rnafm.RnaFmForNucleotideClassification.forward" class="headerlink" title="Permanent link">&para;</a></h5>
+<a href="#multimolecule.models.rnafm.RnaFmForNucleotideClassification.forward" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -2661,11 +3083,11 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmForPretraining" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmForPretraining" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmForPretraining</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmForPretraining" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmForPretraining" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2883,10 +3305,10 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="multimolecule.models.rnafm.RnaFmForPretraining.forward" class="doc doc-heading">
+<h4 id="multimolecule.models.rnafm.RnaFmForPretraining.forward" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">head_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs_embeds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels_contact</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#multimolecule.models.rnafm.RnaFmForPretraining.forward" class="headerlink" title="Permanent link">&para;</a></h5>
+<a href="#multimolecule.models.rnafm.RnaFmForPretraining.forward" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -3031,11 +3453,11 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmForSequenceClassification" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmForSequenceClassification" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmForSequenceClassification</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmForSequenceClassification" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmForSequenceClassification" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3201,10 +3623,10 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="multimolecule.models.rnafm.RnaFmForSequenceClassification.forward" class="doc doc-heading">
+<h4 id="multimolecule.models.rnafm.RnaFmForSequenceClassification.forward" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">head_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs_embeds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#multimolecule.models.rnafm.RnaFmForSequenceClassification.forward" class="headerlink" title="Permanent link">&para;</a></h5>
+<a href="#multimolecule.models.rnafm.RnaFmForSequenceClassification.forward" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -3319,11 +3741,11 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmForTokenClassification" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmForTokenClassification" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmForTokenClassification</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmForTokenClassification" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmForTokenClassification" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3485,10 +3907,10 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="multimolecule.models.rnafm.RnaFmForTokenClassification.forward" class="doc doc-heading">
+<h4 id="multimolecule.models.rnafm.RnaFmForTokenClassification.forward" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">head_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs_embeds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#multimolecule.models.rnafm.RnaFmForTokenClassification.forward" class="headerlink" title="Permanent link">&para;</a></h5>
+<a href="#multimolecule.models.rnafm.RnaFmForTokenClassification.forward" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -3597,11 +4019,11 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmModel" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmModel" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmModel</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmModel" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmModel" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3963,10 +4385,10 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <div class="doc doc-object doc-function">
 
 
-<h5 id="multimolecule.models.rnafm.RnaFmModel.forward" class="doc doc-heading">
+<h4 id="multimolecule.models.rnafm.RnaFmModel.forward" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">head_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs_embeds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">past_key_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_attentions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_hidden_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
-<a href="#multimolecule.models.rnafm.RnaFmModel.forward" class="headerlink" title="Permanent link">&para;</a></h5>
+<a href="#multimolecule.models.rnafm.RnaFmModel.forward" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -4267,11 +4689,11 @@ don&#39;t have their past key value states given to this model) of shape `(batch
 
 
 
-<h4 id="multimolecule.models.rnafm.RnaFmPreTrainedModel" class="doc doc-heading">
+<h3 id="multimolecule.models.rnafm.RnaFmPreTrainedModel" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>RnaFmPreTrainedModel</code>
 
 
-<a href="#multimolecule.models.rnafm.RnaFmPreTrainedModel" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#multimolecule.models.rnafm.RnaFmPreTrainedModel" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -4388,7 +4810,7 @@ models.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2024-05-22 12:14:47</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2024-05-24 13:20:47</span>
   </span>
 
     
@@ -4529,6 +4951,8 @@ models.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
     
       <div class="md-consent" data-md-component="consent" id="__consent" hidden>
         <div class="md-consent__overlay"></div>
@@ -4587,7 +5011,7 @@ models.</p>
       </div>
       <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout(function(){document.querySelector("[data-md-component=consent]").hidden=!1},250);var action,form=document.forms.consent;for(action of["submit","reset"])form.addEventListener(action,function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map(function(e){return[e,!0]}))),location.hash="",location.reload()})</script>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.081f42fc.min.js"></script>
