@@ -10,7 +10,7 @@ datasets:
 
 # RNA-FM
 
-Pre-trained model on non-coding RNA (ncRNA) using a masked language modeling (MLM) objective.
+Pre-trained model on non-coding RNA (ncRNA) and mRNA CoDing Sequence (CDS) using a masked language modeling (MLM) objective.
 
 ## Disclaimer
 
@@ -24,16 +24,52 @@ The OFFICIAL repository of RNA-FM is at [ml4bio/RNA-FM](https://github.com/ml4bi
 
 RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
 
+### Variations
+
+- **[`multimolecule/rnafm`](https://huggingface.co/multimolecule/rnafm)**: The RNA-FM model pre-trained on non-coding RNA sequences.
+- **[`multimolecule/mrnafm`](https://huggingface.co/multimolecule/mrnafm)**: The RNA-FM model pre-trained on mRNA coding sequences.
+
 ### Model Specification
 
-| Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
-| ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 12         | 640         | 20        | 5120              | 99.52              | 25.68     | 12.83    | 1024           |
+<table>
+<thead>
+  <tr>
+    <th>Variants</th>
+    <th>Num Layers</th>
+    <th>Hidden Size</th>
+    <th>Num Heads</th>
+    <th>Intermediate Size</th>
+    <th>Num Parameters (M)</th>
+    <th>FLOPs (G)</th>
+    <th>MACs (G)</th>
+    <th>Max Num Tokens</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>RNA-FM</td>
+    <td rowspan="2">12</td>
+    <td>640</td>
+    <td rowspan="2">20</td>
+    <td rowspan="2">5120</td>
+    <td>99.52</td>
+    <td>25.68</td>
+    <td>12.83</td>
+    <td rowspan="2">1024</td>
+  </tr>
+  <tr>
+    <td>mRNA-FM</td>
+    <td>1280</td>
+    <td>239.25</td>
+    <td>61.43</td>
+    <td>30.7</td>
+  </tr>
+</tbody>
+</table>
 
 ### Links
 
 - **Code**: [multimolecule.rnafm](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnafm)
-- **Weights**: [multimolecule/rnafm](https://huggingface.co/multimolecule/rnafm)
 - **Data**: [RNAcentral](https://rnacentral.org)
 - **Paper**: [Interpretable RNA Foundation Model from Unannotated Data for Highly Accurate RNA Structure and Function Predictions](https://doi.org/10.1101/2022.08.06.503062)
 - **Developed by**: Jiayang Chen, Zhihang Hu, Siqi Sun, Qingxiong Tan, Yixuan Wang, Qinze Yu, Licheng Zong, Liang Hong, Jin Xiao, Tao Shen, Irwin King, Yu Li

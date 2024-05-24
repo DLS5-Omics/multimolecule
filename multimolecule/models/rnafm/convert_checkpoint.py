@@ -78,9 +78,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-def convert_checkpoint(convert_config):
-    vocab_list = get_vocab_list()
-    original_vocab_list = [
+original_vocabs = {
+    "single": [
         "<cls>",
         "<pad>",
         "<eos>",
@@ -106,10 +105,98 @@ def convert_checkpoint(convert_config):
         "<null>",
         "<null>",
         "<mask>",
-    ]
-    config = Config(num_labels=1)
-    config.architectures = ["RnaFmModel"]
+    ],
+    "3mer": [
+        "<cls>",
+        "<pad>",
+        "<eos>",
+        "<unk>",
+        "GAG",
+        "AAG",
+        "GAA",
+        "CUG",
+        "CAG",
+        "GAU",
+        "AAA",
+        "GUG",
+        "GAC",
+        "AUG",
+        "GCC",
+        "AAC",
+        "GCU",
+        "AAU",
+        "AUC",
+        "UUC",
+        "GGA",
+        "AUU",
+        "GGC",
+        "UUU",
+        "CCA",
+        "AGC",
+        "GCA",
+        "UCU",
+        "CUC",
+        "ACC",
+        "CAA",
+        "CCU",
+        "UCC",
+        "ACA",
+        "UUG",
+        "GUU",
+        "CUU",
+        "UAC",
+        "ACU",
+        "CCC",
+        "UCA",
+        "GUC",
+        "GGU",
+        "CAC",
+        "AGU",
+        "UAU",
+        "AGA",
+        "CAU",
+        "GGG",
+        "UGG",
+        "UGC",
+        "AGG",
+        "UGU",
+        "AUA",
+        "CGC",
+        "UUA",
+        "GCG",
+        "CGG",
+        "CCG",
+        "GUA",
+        "CUA",
+        "ACG",
+        "UCG",
+        "CGA",
+        "CGU",
+        "UGA",
+        "UAA",
+        "UAG",
+        "<null>",
+        "<null>",
+        "<null>",
+        "<null>",
+        "<mask>",
+    ],
+}
+
+
+def convert_checkpoint(convert_config):
+    mranfm = not convert_config.output_path.lower().startswith("rnafm")
+    if mranfm:
+        config = Config(num_labels=1, hidden_size=1280, emb_layer_norm_before=False)
+        vocab_list = get_vocab_list(nmers=3)
+        original_vocab_list = original_vocabs["3mer"]
+    else:
+        config = Config(num_labels=1)
+        config.codon = True
+        vocab_list = get_vocab_list()
+        original_vocab_list = original_vocabs["single"]
     config.vocab_size = len(vocab_list)
+    config.architectures = ["RnaFmModel"]
 
     model = Model(config)
 
@@ -123,6 +210,8 @@ def convert_checkpoint(convert_config):
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
+    if mranfm:
+        tokenizer_config["codon"] = True
 
     save_checkpoint(
         convert_config, model, tokenizer_config=tokenizer_config, special_tokens_map=get_special_tokens_map()
