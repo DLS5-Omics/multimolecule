@@ -6,6 +6,7 @@ tags:
 license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
+library_name: multimolecule
 ---
 
 # RNABERT
@@ -22,7 +23,7 @@ The OFFICIAL repository of RNABERT is at [mana438/RNABERT](https://github.com/ma
 
 ## Model Details
 
-RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details][#training-details] section for more information on the training process.
+RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Model Specification
 
@@ -145,7 +146,7 @@ output = model(**input, labels=label)
 
 RNABERT has two pre-training objectives: masked language modeling (MLM) and structural alignment learning (SAL).
 
-- **Masked Language Modeling (MLM)**: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
+- **Masked Language Modeling (MLM)**: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
 - **Structural Alignment Learning (SAL)**: the model learns to predict the structural alignment of two RNA sequences. The model is trained to predict the alignment score of two RNA sequences using the Needleman-Wunsch algorithm.
 
 ### Training Data
@@ -154,7 +155,7 @@ The RNABERT model was pre-trained on [RNAcentral](https://rnacentral.org). RNAce
 
 RNABERT preprocessed all tokens by replacing "U"s with "T"s.
 
-Note that during model conversions, "T" is replaced with "U". `RnaTokenizer` of `multimolecule` will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
+Note that during model conversions, "T" is replaced with "U". [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
 
 ### Training Procedure
 

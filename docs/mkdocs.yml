@@ -10,6 +10,7 @@ repo_url: https://github.com/DLS5-Omics/multimolecule
 nav:
   - MultiMolecule: index.md
   - models:
+      - models: models.md
       - RNABERT: models/rnabert.md
       - RNA-FM: models/rnafm.md
       - RNA-MSM: models/rnamsm.md
@@ -40,8 +41,8 @@ theme:
   favicon: "assets/images/logo.ico"
   features:
     - announce.dismiss
-    # - content.action.edit
-    # - content.action.view
+    - content.action.edit
+    - content.action.view
     - content.code.annotate
     - content.code.copy
     - content.tabs.link
@@ -50,7 +51,9 @@ theme:
     - navigation.expand
     - navigation.footer
     - navigation.indexes
-    # - navigation.instant
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
     - navigation.prune
     - navigation.sections
     - navigation.tabs
@@ -61,7 +64,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
+    # - toc.integrate
   font: false
 
 extra:
@@ -138,8 +141,14 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          rendering:
+          options:
             members_order: source
+            parameter_headings: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+          import:
+            - https://huggingface.co/docs/transformers/master/en/objects.inv
   - i18n:
       docs_structure: suffix
       fallback_to_default: true
