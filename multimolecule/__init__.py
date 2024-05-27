@@ -90,7 +90,7 @@ from .module import (
     TokenHeads,
     TokenKMerHead,
 )
-from .tokenisers import RnaTokenizer
+from .tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 from .utils import count_parameters
 
 __all__ = [
@@ -99,7 +99,9 @@ __all__ = [
     "BaseHeadConfig",
     "MaskedLMHeadConfig",
     "tokenisers",
+    "DnaTokenizer",
     "RnaTokenizer",
+    "ProteinTokenizer",
     "models",
     "AutoModelForNucleotideClassification",
     "RnaBertConfig",

@@ -26,9 +26,9 @@ from .utils import get_vocab_list
 logger = logging.get_logger(__name__)
 
 
-class RnaTokenizer(Tokenizer):
+class DnaTokenizer(Tokenizer):
     """
-    Constructs an RNA tokenizer.
+    Constructs a DNA tokenizer.
 
     Args:
         alphabet (List[str] | None, optional): List of tokens to use.
@@ -37,30 +37,30 @@ class RnaTokenizer(Tokenizer):
             Defaults to 1.
         codon (bool, optional): Whether to tokenize into codons.
             Defaults to False.
-        replace_T_with_U (bool, optional): Whether to replace T with U.
+        replace_U_with_T (bool, optional): Whether to replace U with T.
             Defaults to True.
         do_upper_case (bool, optional): Whether to convert input to uppercase.
             Defaults to True.
 
     Examples:
-        >>> from multimolecule import RnaTokenizer
-        >>> tokenizer = RnaTokenizer()
-        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGUNXVHDBMRWSYK.*-')["input_ids"]
+        >>> from multimolecule import DnaTokenizer
+        >>> tokenizer = DnaTokenizer()
+        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGTNXVHDBMRWSYK.*-')["input_ids"]
         [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 2]
+        >>> tokenizer('acgt')["input_ids"]
+        [1, 6, 7, 8, 9, 2]
         >>> tokenizer('acgu')["input_ids"]
         [1, 6, 7, 8, 9, 2]
-        >>> tokenizer('acgt')["input_ids"]
-        [1, 6, 7, 8, 9, 2]
-        >>> tokenizer = RnaTokenizer(replace_T_with_U=False)
-        >>> tokenizer('acgt')["input_ids"]
+        >>> tokenizer = DnaTokenizer(replace_U_with_T=False)
+        >>> tokenizer('acgu')["input_ids"]
         [1, 6, 7, 8, 3, 2]
-        >>> tokenizer = RnaTokenizer(nmers=3)
-        >>> tokenizer('uagcuuauc')["input_ids"]
-        [1, 83, 17, 64, 49, 96, 84, 22, 2]
-        >>> tokenizer = RnaTokenizer(codon=True)
-        >>> tokenizer('uagcuuauc')["input_ids"]
-        [1, 83, 49, 22, 2]
-        >>> tokenizer('uagcuuauca')["input_ids"]
+        >>> tokenizer = DnaTokenizer(nmers=3)
+        >>> tokenizer('tataaagta')["input_ids"]
+        [1, 84, 21, 81, 6, 8, 19, 71, 2]
+        >>> tokenizer = DnaTokenizer(codon=True)
+        >>> tokenizer('tataaagta')["input_ids"]
+        [1, 84, 6, 71, 2]
+        >>> tokenizer('tataaagtaa')["input_ids"]
         Traceback (most recent call last):
         ValueError: length of input sequence  must be a multiple of 3 for codon tokenization, but got 10
     """
@@ -72,7 +72,6 @@ class RnaTokenizer(Tokenizer):
         alphabet: List[str] | None = None,
         nmers: int = 1,
         codon: bool = False,
-        replace_T_with_U: bool = True,
         bos_token: str = "<cls>",
         cls_token: str = "<cls>",
         pad_token: str = "<pad>",
@@ -81,6 +80,7 @@ class RnaTokenizer(Tokenizer):
         unk_token: str = "<unk>",
         mask_token: str = "<mask>",
         additional_special_tokens: List | Tuple | None = None,
+        replace_U_with_T: bool = True,
         do_upper_case: bool = True,
         **kwargs,
     ):
@@ -101,15 +101,15 @@ class RnaTokenizer(Tokenizer):
             do_upper_case=do_upper_case,
             **kwargs,
         )
-        self.replace_T_with_U = replace_T_with_U
+        self.replace_U_with_T = replace_U_with_T
         self.nmers = nmers
         self.condon = codon
 
     def _tokenize(self, text: str, **kwargs):
         if self.do_upper_case:
             text = text.upper()
-        if self.replace_T_with_U:
-            text = text.replace("T", "U")
+        if self.replace_U_with_T:
+            text = text.replace("U", "T")
         if self.condon:
             if len(text) % 3 != 0:
                 raise ValueError(

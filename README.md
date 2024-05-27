@@ -15,7 +15,7 @@ We understand that AI4Science is a broad field, with researchers from different 
 - [`data`][multimolecule.data]: Efficient data handling and preprocessing capabilities to streamline the ingestion and transformation of scientific datasets.
 - [`modules`][multimolecule.modules]: Modular components designed to provide flexibility and reusability across various machine learning tasks.
 - [`models`](models.md): State-of-the-art model architectures optimized for scientific research applications, ensuring high performance and accuracy.
-- [`tokenisers`][multimolecule.tokenisers]: Advanced tokenization methods to effectively handle complex scientific text and data representations.
+- [`tokenisers`](tokenisers.md): Advanced tokenization methods to effectively handle complex scientific text and data representations.
 - [`downstream`][multimolecule.downstream]: Tools and utilities for the seamless integration of machine learning results into practical scientific workflows and applications.
 - [`utils`][multimolecule.utils]: A collection of utility functions and tools to simplify common tasks and enhance the overall user experience.
 

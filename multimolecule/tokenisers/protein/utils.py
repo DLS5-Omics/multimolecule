@@ -27,10 +27,10 @@ from ..utils import convert_word_embeddings as convert_word_embeddings_
 torch.manual_seed(1013)
 
 
-def get_vocab_list(tokens: List[str] | None = None, nmers: int = 1):
+def get_vocab_list(tokens: List[str] | None = None):
     if tokens is None:
-        tokens = VOCAB_LIST if nmers <= 1 else STRAMELINE_VOCAB_LIST
-    return Alphabet(tokens, nmers=nmers).vocablulary
+        tokens = VOCAB_LIST
+    return Alphabet(tokens).vocablulary
 
 
 def get_vocab_mapping():
@@ -72,49 +72,43 @@ def convert_word_embeddings(
     )
 
 
-STRAMELINE_VOCAB_LIST = [
-    "A",
-    "C",
-    "G",
-    "U",
-    "N",
-]
-
-
 VOCAB_LIST = [
     "A",
     "C",
-    "G",
-    "U",
-    "N",
-    "X",
-    "V",
-    "H",
     "D",
-    "B",
-    "M",
-    "R",
-    "W",
-    "S",
-    "Y",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
     "K",
+    "L",
+    "M",
+    "N",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "V",
+    "W",
+    "Y",
+    "X",
+    "B",
+    "Z",
+    "J",
+    "U",
+    "O",
     ".",
     "*",
     "-",
 ]
 
 VOCAB_MAPPING = {
-    "X": "ACGU",
-    "V": "ACG",
-    "H": "ACU",
-    "D": "AGU",
-    "B": "CGU",
-    "M": "AC",
-    "R": "AG",
-    "W": "AU",
-    "S": "CG",
-    "Y": "CU",
-    "K": "GU",
+    "X": "ACDEFGHIKLMNPQRSTVWY",
+    "B": "DN",
+    "Z": "EQ",
+    "J": "IL",
 }
 
 TOKENIZER_CONFIG = {

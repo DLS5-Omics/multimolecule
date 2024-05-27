@@ -68,3 +68,49 @@ def convert_word_embeddings(
             embed[index] = embed[indexes].mean(dim=0)
 
     return new_embeddings
+
+
+SPECIAL_TOKENS_MAP = {
+    "pad_token": {
+        "content": "<pad>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+    },
+    "cls_token": {
+        "content": "<cls>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+    },
+    "eos_token": {
+        "content": "<eos>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+    },
+    "unk_token": {
+        "content": "<unk>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+    },
+    "mask_token": {
+        "content": "<mask>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+    },
+    "null_token": {
+        "content": "<null>",
+        "lstrip": False,
+        "normalized": False,
+        "rstrip": False,
+        "single_word": False,
+    },
+}
