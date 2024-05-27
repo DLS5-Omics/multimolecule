@@ -11,6 +11,8 @@ nav:
   - MultiMolecule: index.md
   - models:
       - models: models.md
+      - DNA:
+          - CaLM: models/calm.md
       - RNA:
           - RNABERT: models/rnabert.md
           - RNA-FM: models/rnafm.md
