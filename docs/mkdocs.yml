@@ -11,12 +11,15 @@ nav:
   - MultiMolecule: index.md
   - models:
       - models: models.md
-      - RNABERT: models/rnabert.md
-      - RNA-FM: models/rnafm.md
-      - RNA-MSM: models/rnamsm.md
-      - SpliceBERT: models/splicebert.md
-      - 3UTRBERT: models/utrbert.md
-      - UTR-LM: models/utrlm.md
+      - DNA:
+          - CaLM: models/calm.md
+      - RNA:
+          - RNABERT: models/rnabert.md
+          - RNA-FM: models/rnafm.md
+          - RNA-MSM: models/rnamsm.md
+          - SpliceBERT: models/splicebert.md
+          - 3UTRBERT: models/utrbert.md
+          - UTR-LM: models/utrlm.md
   - tokenisers:
       - tokenisers: tokenisers.md
       - RnaTokenizer: tokenisers/rna.md

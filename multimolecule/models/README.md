@@ -65,7 +65,11 @@ You can also initialize a vanilla model using the model class.
 
 ## Available Models
 
-### RNA
+### DeoxyriboNucleic Acid (DNA)
+
+- [CaLM](models/calm.md)
+
+### RiboNucleic acid (RNA)
 
 - [RNABERT](models/rnabert.md)
 - [RNA-FM](models/rnafm.md)
