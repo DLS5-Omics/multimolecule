@@ -15,6 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ..tokenisers.rna import RnaTokenizer
+from .calm import (
+    CaLmConfig,
+    CaLmForMaskedLM,
+    CaLmForNucleotideClassification,
+    CaLmForPreTraining,
+    CaLmForSequenceClassification,
+    CaLmForTokenClassification,
+    CaLmModel,
+)
 from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 from .modeling_auto import AutoModelForNucleotideClassification
 from .rnabert import (
@@ -79,6 +88,13 @@ __all__ = [
     "MaskedLMHeadConfig",
     "RnaTokenizer",
     "AutoModelForNucleotideClassification",
+    "CaLmConfig",
+    "CaLmModel",
+    "CaLmForMaskedLM",
+    "CaLmForPreTraining",
+    "CaLmForSequenceClassification",
+    "CaLmForTokenClassification",
+    "CaLmForNucleotideClassification",
     "RnaBertConfig",
     "RnaBertModel",
     "RnaBertForMaskedLM",

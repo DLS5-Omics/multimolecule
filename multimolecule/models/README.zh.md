@@ -65,7 +65,11 @@ date: 2024-05-04
 
 ## 可用模型
 
-### 核糖核酸
+### 脱氧核糖核酸（DNA）
+
+- [CaLM](models/calm.md)
+
+### 核糖核酸（RNA）
 
 - [RNABERT](models/rnabert.md)
 - [RNA-FM](models/rnafm.md)
