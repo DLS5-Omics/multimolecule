@@ -76,7 +76,7 @@ STRAMELINE_VOCAB_LIST = [
     "A",
     "C",
     "G",
-    "U",
+    "T",
     "N",
 ]
 
@@ -85,7 +85,7 @@ VOCAB_LIST = [
     "A",
     "C",
     "G",
-    "U",
+    "T",
     "N",
     "X",
     "V",
@@ -104,20 +104,20 @@ VOCAB_LIST = [
 ]
 
 VOCAB_MAPPING = {
-    "X": "ACGU",
+    "X": "ACGT",
     "V": "ACG",
-    "H": "ACU",
-    "D": "AGU",
-    "B": "CGU",
+    "H": "ACT",
+    "D": "AGT",
+    "B": "CGT",
     "M": "AC",
     "R": "AG",
-    "W": "AU",
+    "W": "AT",
     "S": "CG",
-    "Y": "CU",
-    "K": "GU",
+    "Y": "CT",
+    "K": "GT",
 }
 
 TOKENIZER_CONFIG = {
-    "tokenizer_class": "RnaTokenizer",
+    "tokenizer_class": "DnaTokenizer",
     "clean_up_tokenization_spaces": True,
 }
