@@ -27,9 +27,11 @@ from transformers.modeling_outputs import ModelOutput
 from multimolecule.models.configuration_utils import MaskedLMHeadConfig, PreTrainedConfig
 
 from .output import HeadOutput
-from .transform import HeadTransforms
+from .registry import HeadRegistry
+from .transform import HeadTransformRegistryHF
 
 
+@HeadRegistry.register("masked_lm")
 class MaskedLMHead(nn.Module):
     """Head for masked language modeling."""
 
@@ -44,7 +46,7 @@ class MaskedLMHead(nn.Module):
             self.config.hidden_size = config.hidden_size
         self.num_labels = config.vocab_size
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransforms.build(self.config)
+        self.transform = HeadTransformRegistryHF.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=False)
         if weight is not None:
             self.decoder.weight = weight
