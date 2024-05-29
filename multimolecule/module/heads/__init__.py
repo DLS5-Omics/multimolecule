@@ -16,24 +16,33 @@
 
 from .contact import ContactPredictionHead
 from .generic import ClassificationHead
-from .nuleotide import NucleotideClassificationHead, NucleotideHeads, NucleotideKMerHead
+from .nuleotide import NucleotideClassificationHead, NucleotideHeadRegistryHF, NucleotideKMerHead
 from .pretrain import MaskedLMHead
+from .registry import HeadRegistry
 from .sequence import SequenceClassificationHead
-from .token import TokenClassificationHead, TokenHeads, TokenKMerHead
-from .transform import HeadTransforms, IdentityTransform, LinearTransform, NonLinearTransform
+from .token import TokenClassificationHead, TokenHeadRegistryHF, TokenKMerHead
+from .transform import (
+    HeadTransformRegistry,
+    HeadTransformRegistryHF,
+    IdentityTransform,
+    LinearTransform,
+    NonLinearTransform,
+)
 
 __all__ = [
+    "HeadRegistry",
     "ClassificationHead",
     "SequenceClassificationHead",
-    "TokenHeads",
+    "TokenHeadRegistryHF",
     "TokenClassificationHead",
     "TokenKMerHead",
-    "NucleotideHeads",
+    "NucleotideHeadRegistryHF",
     "NucleotideClassificationHead",
     "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
-    "HeadTransforms",
+    "HeadTransformRegistry",
+    "HeadTransformRegistryHF",
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",

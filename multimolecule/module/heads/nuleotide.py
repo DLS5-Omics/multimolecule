@@ -28,12 +28,14 @@ from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfi
 
 from .generic import ClassificationHead
 from .output import HeadOutput
+from .registry import HeadRegistry
 from .utils import unfold_kmer_embeddings
 
-NucleotideHeads = ConfigRegistry(key="tokenizer_type")
+NucleotideHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
 
-@NucleotideHeads.register("single", default=True)
+@HeadRegistry.register("nucleotide.single")
+@NucleotideHeadRegistryHF.register("single", default=True)
 class NucleotideClassificationHead(ClassificationHead):
     """Head for nucleotide-level tasks."""
 
@@ -84,7 +86,8 @@ class NucleotideClassificationHead(ClassificationHead):
         return super().forward(output, labels)
 
 
-@NucleotideHeads.register("kmer")
+@HeadRegistry.register("nucleotide.kmer")
+@NucleotideHeadRegistryHF.register("kmer")
 class NucleotideKMerHead(ClassificationHead):
     """Head for nucleotide-level tasks."""
 

@@ -21,7 +21,11 @@ from typing import Tuple
 import torch
 from torch import Tensor, nn
 
+from .registry import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF
 
+
+@PositionEmbeddingRegistry.register("rotary")
+@PositionEmbeddingRegistryHF.register("rotary")
 class RotaryEmbedding(nn.Module):
     """
     Rotary position embeddings based on those in
