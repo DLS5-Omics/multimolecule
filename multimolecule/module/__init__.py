@@ -15,38 +15,45 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .criterions import Criterion
-from .embeddings import RotaryEmbedding
+from .embeddings import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF, RotaryEmbedding, SinusoidalEmbedding
 from .heads import (
     ClassificationHead,
     ContactPredictionHead,
-    HeadTransforms,
+    HeadRegistry,
+    HeadTransformRegistry,
+    HeadTransformRegistryHF,
     IdentityTransform,
     LinearTransform,
     MaskedLMHead,
     NonLinearTransform,
     NucleotideClassificationHead,
-    NucleotideHeads,
+    NucleotideHeadRegistryHF,
     NucleotideKMerHead,
     SequenceClassificationHead,
     TokenClassificationHead,
-    TokenHeads,
+    TokenHeadRegistryHF,
     TokenKMerHead,
 )
 
 __all__ = [
     "Criterion",
+    "PositionEmbeddingRegistry",
+    "PositionEmbeddingRegistryHF",
     "RotaryEmbedding",
+    "SinusoidalEmbedding",
     "ClassificationHead",
+    "HeadRegistry",
     "SequenceClassificationHead",
-    "TokenHeads",
+    "TokenHeadRegistryHF",
     "TokenClassificationHead",
     "TokenKMerHead",
-    "NucleotideHeads",
+    "NucleotideHeadRegistryHF",
     "NucleotideClassificationHead",
     "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
-    "HeadTransforms",
+    "HeadTransformRegistry",
+    "HeadTransformRegistryHF",
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",

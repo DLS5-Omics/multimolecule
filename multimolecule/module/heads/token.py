@@ -27,12 +27,14 @@ from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfi
 
 from .generic import ClassificationHead
 from .output import HeadOutput
+from .registry import HeadRegistry
 from .utils import unfold_kmer_embeddings
 
-TokenHeads = ConfigRegistry(key="tokenizer_type")
+TokenHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
 
-@TokenHeads.register("single", default=True)
+@HeadRegistry.register("token.single")
+@TokenHeadRegistryHF.register("single", default=True)
 class TokenClassificationHead(ClassificationHead):
     """Head for token-level tasks."""
 
@@ -64,7 +66,8 @@ class TokenClassificationHead(ClassificationHead):
         return super().forward(output, labels)
 
 
-@TokenHeads.register("kmer")
+@HeadRegistry.register("token.kmer")
+@TokenHeadRegistryHF.register("kmer")
 class TokenKMerHead(ClassificationHead):
     """Head for token-level tasks."""
 

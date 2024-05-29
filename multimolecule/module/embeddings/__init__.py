@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .registry import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF
 from .rotary import RotaryEmbedding
+from .sinusoidal import SinusoidalEmbedding
 
-__all__ = ["RotaryEmbedding"]
+__all__ = ["RotaryEmbedding", "SinusoidalEmbedding", "PositionEmbeddingRegistry", "PositionEmbeddingRegistryHF"]

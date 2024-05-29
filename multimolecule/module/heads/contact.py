@@ -24,10 +24,12 @@ from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfi
 
 from ..criterions import Criterion
 from .output import HeadOutput
-from .transform import HeadTransforms
+from .registry import HeadRegistry
+from .transform import HeadTransformRegistryHF
 from .utils import average_product_correct, symmetrize
 
 
+@HeadRegistry.register("contact")
 class ContactPredictionHead(nn.Module):
     """
     Head for contact-map-level tasks.
@@ -50,7 +52,7 @@ class ContactPredictionHead(nn.Module):
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransforms.build(self.config)
+        self.transform = HeadTransformRegistryHF.build(self.config)
         self.decoder = nn.Linear(
             config.num_hidden_layers * config.num_attention_heads, self.num_labels, bias=self.config.bias
         )

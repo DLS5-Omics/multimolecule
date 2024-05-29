@@ -16,16 +16,18 @@
 
 from __future__ import annotations
 
-from chanfig import ConfigRegistry
+from chanfig import ConfigRegistry, Registry
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
 from multimolecule.models.configuration_utils import HeadConfig
 
-HeadTransforms = ConfigRegistry(key="transform")
+HeadTransformRegistry = Registry()
+HeadTransformRegistryHF = ConfigRegistry(key="transform")
 
 
-@HeadTransforms.register("nonlinear")
+@HeadTransformRegistry.register("nonlinear")
+@HeadTransformRegistryHF.register("nonlinear")
 class NonLinearTransform(nn.Module):
     def __init__(self, config: HeadConfig):
         super().__init__()
@@ -43,7 +45,8 @@ class NonLinearTransform(nn.Module):
         return hidden_states
 
 
-@HeadTransforms.register("linear")
+@HeadTransformRegistry.register("linear")
+@HeadTransformRegistryHF.register("linear")
 class LinearTransform(nn.Module):
     def __init__(self, config: HeadConfig):
         super().__init__()
@@ -56,7 +59,8 @@ class LinearTransform(nn.Module):
         return hidden_states
 
 
-@HeadTransforms.register(None)
+@HeadTransformRegistry.register(None)
+@HeadTransformRegistryHF.register(None)
 class IdentityTransform(nn.Identity):
     def __init__(self, config: HeadConfig):  # pylint: disable=unused-argument
         super().__init__()

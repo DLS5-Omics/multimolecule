@@ -14,23 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import annotations
+from chanfig import ConfigRegistry, Registry
 
-from typing import Tuple
-
-from torch import Tensor
-from transformers.modeling_outputs import ModelOutput
-
-from .generic import ClassificationHead
-from .output import HeadOutput
-from .registry import HeadRegistry
-
-
-@HeadRegistry.register("sequence")
-class SequenceClassificationHead(ClassificationHead):
-    """Head for sequence-level tasks."""
-
-    def forward(
-        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None
-    ) -> HeadOutput:  # pylint: disable=arguments-renamed
-        return super().forward(outputs[1], labels)
+PositionEmbeddingRegistry = Registry()
+PositionEmbeddingRegistryHF = ConfigRegistry("position_embedding_type")
