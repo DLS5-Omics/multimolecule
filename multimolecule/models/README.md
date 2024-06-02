@@ -71,6 +71,7 @@ You can also initialize a vanilla model using the model class.
 
 ### RiboNucleic acid (RNA)
 
+- [RiNALMo](models/rinalmo.md)
 - [RNABERT](models/rnabert.md)
 - [RNA-FM](models/rnafm.md)
 - [RNA-MSM](models/rnamsm.md)
