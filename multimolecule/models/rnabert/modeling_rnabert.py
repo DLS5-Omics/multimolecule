@@ -313,13 +313,21 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         >>> model = RnaBertForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<AddBackward0>)
+        >>> output["logits_mlm"].shape
+        torch.Size([1, 7, 26])
+        >>> output["logits_ss"].shape
+        torch.Size([1, 7, 8])
+        >>> output["logits_sal"].shape
+        torch.Size([1, 2])
     """
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
         self.rnabert = RnaBertModel(config, add_pooling_layer=True)
-        self.pretrain_head = RnaBertPreTrainingHeads(config)
+        self.pretrain = RnaBertPreTrainingHeads(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -328,9 +336,9 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        labels: Tensor | None = None,
+        labels_mlm: Tensor | None = None,
         labels_ss: Tensor | None = None,
-        next_sentence_label: Tensor | None = None,
+        labels_sal: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -345,27 +353,19 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        logits, logits_ss, seq_relationship_score = self.pretrain_head(outputs)
-
-        loss = None
-        if any(x is not None for x in (labels, labels_ss, next_sentence_label)):
-            loss_mlm = loss_ss = loss_nsp = 0
-            if labels is not None:
-                loss_mlm = F.cross_entropy(logits.view(-1, self.config.vocab_size), labels.view(-1))
-            if labels_ss is not None:
-                loss_ss = F.cross_entropy(logits_ss.view(-1, self.config.ss_vocab_size), labels_ss.view(-1))
-            if next_sentence_label is not None:
-                loss_nsp = F.cross_entropy(seq_relationship_score.view(-1, 2), next_sentence_label.view(-1))
-            loss = loss_mlm + loss_ss + loss_nsp
+        total_loss, logits_mlm, logits_ss, logits_sal = self.pretrain(
+            outputs, labels_mlm=labels_mlm, labels_ss=labels_ss, labels_sal=labels_sal
+        )
 
         if not return_dict:
-            output = (logits, logits_ss) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
+            output = (logits_mlm, logits_ss, logits_sal) + outputs[2:]
+            return ((total_loss,) + output) if total_loss is not None else output
 
         return RnaBertForPreTrainingOutput(
-            loss=loss,
-            logits=logits,
+            loss=total_loss,
+            logits_mlm=logits_mlm,
             logits_ss=logits_ss,
+            logits_sal=logits_sal,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
@@ -1036,20 +1036,31 @@ class RnaBertPreTrainingHeads(nn.Module):
         vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
         self.predictions_ss = MaskedLMHead(config)
         config.vocab_size = vocab_size
-        self.seq_relationship = nn.Linear(config.hidden_size, 2)
+        self.seq_relationship = SequencePredictionHead(config)
 
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tuple[Tensor, Tensor, Tensor]:
-        logits = self.predictions(outputs)
-        logits_ss = self.predictions_ss(outputs)
-        seq_relationship_score = self.seq_relationship(outputs[1])
-        return logits, logits_ss, seq_relationship_score
+    def forward(
+        self,
+        outputs: ModelOutput | Tuple[Tensor, ...],
+        labels_mlm: Tensor | None = None,
+        labels_ss: Tensor | None = None,
+        labels_sal: Tensor | None = None,
+    ) -> Tuple[Tensor | None, Tensor, Tensor, Tensor]:
+        output_mlm = self.predictions(outputs, labels_mlm)
+        output_ss = self.predictions_ss(outputs, labels_ss)
+        output_sal = self.seq_relationship(outputs, labels_sal)
+
+        losses = [output.loss for output in (output_mlm, output_ss, output_sal) if output.loss is not None]
+        total_loss = sum(losses) if losses else None
+
+        return total_loss, output_mlm.logits, output_ss.logits, output_sal.logits
 
 
 @dataclass
 class RnaBertForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None  # type: ignore[assignment]
+    logits_mlm: torch.FloatTensor = None  # type: ignore[assignment]
     logits_ss: torch.FloatTensor = None  # type: ignore[assignment]
+    logits_sal: torch.FloatTensor = None  # type: ignore[assignment]
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
 
