@@ -26,6 +26,15 @@ from .calm import (
 )
 from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 from .modeling_auto import AutoModelForNucleotideClassification
+from .rinalmo import (
+    RiNALMoConfig,
+    RiNALMoForMaskedLM,
+    RiNALMoForNucleotideClassification,
+    RiNALMoForPreTraining,
+    RiNALMoForSequenceClassification,
+    RiNALMoForTokenClassification,
+    RiNALMoModel,
+)
 from .rnabert import (
     RnaBertConfig,
     RnaBertForMaskedLM,
@@ -95,6 +104,13 @@ __all__ = [
     "CaLmForSequenceClassification",
     "CaLmForTokenClassification",
     "CaLmForNucleotideClassification",
+    "RiNALMoConfig",
+    "RiNALMoModel",
+    "RiNALMoForMaskedLM",
+    "RiNALMoForPreTraining",
+    "RiNALMoForSequenceClassification",
+    "RiNALMoForTokenClassification",
+    "RiNALMoForNucleotideClassification",
     "RnaBertConfig",
     "RnaBertModel",
     "RnaBertForMaskedLM",
