@@ -718,8 +718,10 @@
 <p>RnaTokenizer is smart, it tokenizes raw RNA nucleotides into tokens, no matter if the input is in uppercase or lowercase, uses U (Uracil) or T (Thymine), and with or without special tokens.
 It also supports tokenization into nmers and codons, so you don&rsquo;t have to write complex code to preprocess your data.</p>
 <p>By default, RnaTokenizer uses an extended version of the <a href="https://www.bioinformatics.org/sms2/iupac.html">IUPAC nucleotide code</a>.
-This extension includes two additional tokens, <code>X</code> and <code>*</code>.</p>
+This extension includes three additional tokens, <code>I</code>, <code>X</code> and <code>*</code>.</p>
 <ul>
+<li><code>I</code> represent Inosine, which is a naturally occurring purine nucleoside that is not a standard RNA base.
+  Inosine is often found in tRNAs and is used to represent a mismatched base pair.</li>
 <li><code>X</code>: represents Any base, it is slightly different from <code>N</code> which represents Unknown base.
   In automatic word embedding conversion, the <code>X</code> will be initialized as the mean of <code>A</code>, <code>C</code>, <code>G</code>, and <code>U</code>, while <code>N</code> will not be further processed.</li>
 <li><code>*</code>: is not used in MultiMolecule and is reserved for future use.</li>
