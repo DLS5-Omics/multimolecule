@@ -22,13 +22,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/calm/</loc>
-        <lastmod>2024-06-02</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/models/rnabert/</loc>
         <lastmod>2024-06-02</lastmod>
         <changefreq>daily</changefreq>
@@ -111,13 +104,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/models/calm/</loc>
-        <lastmod>2024-06-02</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/rnabert/</loc>
