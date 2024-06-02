@@ -71,6 +71,7 @@ date: 2024-05-04
 
 ### 核糖核酸（RNA）
 
+- [ERNIE-RNA](models/ernierna.md)
 - [RiNALMo](models/rinalmo.md)
 - [RNABERT](models/rnabert.md)
 - [RNA-FM](models/rnafm.md)
