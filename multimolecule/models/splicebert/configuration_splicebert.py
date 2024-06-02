@@ -33,7 +33,7 @@ class SpliceBertConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size (`int`, *optional*, defaults to 26):
             Vocabulary size of the SpliceBert model. Defines the number of different tokens that can be represented by
             the `inputs_ids` passed when calling [`SpliceBertModel`].
         hidden_size (`int`, *optional*, defaults to 512):
@@ -73,7 +73,7 @@ class SpliceBertConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
+        vocab_size=26,
         hidden_size=512,
         num_hidden_layers=6,
         num_attention_heads=16,

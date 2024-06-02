@@ -33,7 +33,7 @@ class RnaMsmConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size (`int`, *optional*, defaults to 26):
             Vocabulary size of the RnaMsm model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaMsmModel`].
         hidden_size (`int`, *optional*, defaults to 768):
@@ -73,7 +73,7 @@ class RnaMsmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
+        vocab_size=26,
         hidden_size=768,
         num_hidden_layers=10,
         num_attention_heads=12,

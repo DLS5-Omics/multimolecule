@@ -33,7 +33,7 @@ class RnaFmConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25 if `codon=False` else 131):
+        vocab_size (`int`, *optional*, defaults to 26 if `codon=False` else 131):
             Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaFmModel`].
         codon (`bool`, *optional*, defaults to `False`):
@@ -112,7 +112,7 @@ class RnaFmConfig(PreTrainedConfig):
     ):
         super().__init__(**kwargs)
         if vocab_size is None:
-            vocab_size = 131 if codon else 25
+            vocab_size = 131 if codon else 26
         self.vocab_size = vocab_size
         self.codon = codon
         self.hidden_size = hidden_size

@@ -78,7 +78,7 @@ class UtrBertConfig(PreTrainedConfig):
         >>> from multimolecule import UtrBertConfig, UtrBertModel
 
         >>> # Initializing a UtrBERT multimolecule/utrbert style configuration
-        >>> configuration = UtrBertConfig(vocab_size=25, nmers=1)
+        >>> configuration = UtrBertConfig(vocab_size=26, nmers=1)
 
         >>> # Initializing a model (with random weights) from the multimolecule/utrbert style configuration
         >>> model = UtrBertModel(configuration)

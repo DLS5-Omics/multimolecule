@@ -33,7 +33,7 @@ class UtrLmConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size (`int`, *optional*, defaults to 26):
             Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`UtrLmModel`].
         hidden_size (`int`, *optional*, defaults to 512):
@@ -97,7 +97,7 @@ class UtrLmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
+        vocab_size=26,
         hidden_size=128,
         num_hidden_layers=6,
         num_attention_heads=16,

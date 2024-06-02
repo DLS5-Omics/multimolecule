@@ -95,26 +95,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnafm')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.3830885887145996,
-  'token': 23,
+[{'score': 0.32435303926467896,
+  'token': 24,
   'token_str': '*',
   'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
- {'score': 0.16808930039405823,
-  'token': 22,
+ {'score': 0.28287413716316223,
+  'token': 11,
+  'token_str': 'I',
+  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
+ {'score': 0.11811278015375137,
+  'token': 23,
   'token_str': '.',
   'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.14214453101158142,
+ {'score': 0.08698639273643494,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.11032014340162277,
+ {'score': 0.06751123070716858,
   'token': 9,
   'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.09523089975118637,
-  'token': 7,
-  'token_str': 'C',
-  'sequence': 'U A G C C U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

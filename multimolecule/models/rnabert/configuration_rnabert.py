@@ -33,7 +33,7 @@ class RnaBertConfig(PreTrainedConfig):
 
 
     Args:
-        vocab_size (`int`, *optional*, defaults to 25):
+        vocab_size (`int`, *optional*, defaults to 26):
             Vocabulary size of the RnaBert model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaBertModel`].
         hidden_size (`int`, *optional*, defaults to 120):
@@ -73,7 +73,7 @@ class RnaBertConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size=25,
+        vocab_size=26,
         ss_vocab_size=8,
         hidden_size=None,
         multiple=None,

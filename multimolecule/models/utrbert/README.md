@@ -104,23 +104,23 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/utrbert-3mer')
 >>> unmasker("uagc<mask><mask><mask>ucagacugauguuga")[1]
 
-[{'score': 0.5108312964439392,
+[{'score': 0.510771632194519,
   'token': 49,
   'token_str': 'CUU',
   'sequence': '<cls> UAG AGC <mask> CUU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.3299442529678345,
+ {'score': 0.3299057185649872,
   'token': 39,
   'token_str': 'CCU',
   'sequence': '<cls> UAG AGC <mask> CCU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.09744979441165924,
+ {'score': 0.09743840992450714,
   'token': 34,
   'token_str': 'CAU',
   'sequence': '<cls> UAG AGC <mask> CAU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.01074671559035778,
+ {'score': 0.010745460167527199,
   'token': 64,
   'token_str': 'GCU',
   'sequence': '<cls> UAG AGC <mask> GCU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.010300246998667717,
+ {'score': 0.010299043729901314,
   'token': 24,
   'token_str': 'AUU',
   'sequence': '<cls> UAG AGC <mask> AUU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'}]
