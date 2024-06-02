@@ -285,6 +285,14 @@
   
     
     
+      
+  
+  
+    
+  
+  
+    
+    
       <li class="md-tabs__item md-tabs__item--active">
         <a href="../" class="md-tabs__link">
           
@@ -295,6 +303,9 @@
 
         </a>
       </li>
+    
+  
+
     
   
 
@@ -404,18 +415,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
     
     
       
@@ -458,6 +457,71 @@
                 
   
   
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    RNA
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            RNA
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
@@ -466,6 +530,27 @@
   
   <span class="md-ellipsis">
     models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rinalmo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RiNALMo
   </span>
   
 
@@ -1028,6 +1113,65 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    DNA
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            DNA
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -1044,6 +1188,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1755,7 +1907,7 @@
 <a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <h2 id="training-details">Training Details<a class="headerlink" href="#training-details" title="Permanent link">&para;</a></h2>
-<p>3UTRBERT used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then run the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.</p>
+<p>3UTRBERT used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.</p>
 <h3 id="training-data">Training Data<a class="headerlink" href="#training-data" title="Permanent link">&para;</a></h3>
 <p>The 3UTRBERT model was pre-trained on human mRNA transcript sequences from <a href="https://gencodegenes.org">GENCODE</a>. GENCODE aims to identify all gene features in the human genome using a combination of computational analysis, manual annotation, and experimental validation. The GENCODE release 40 used by this work contains 61,544 genes, and 246,624 transcripts.</p>
 <p>3UTRBERT collected the human mRNA transcript sequences from GENCODE, including 108,573 unique mRNA transcripts. Only the longest transcript of each gene was used in the pre-training process. 3UTRBERT only used the 3’ untranslated regions (3’UTRs) of the mRNA transcripts for pre-training to avoid codon constrains in the CDS region, and to reduce increased complexity of the entire mRNA transcripts. The average length of the 3’UTRs was 1,227 nucleotides, while the median length was 631 nucleotides. Each 3’UTR sequence was cut to non-overlapping patches of 510 nucleotides. The remaining sequences were padded to the same length.</p>
