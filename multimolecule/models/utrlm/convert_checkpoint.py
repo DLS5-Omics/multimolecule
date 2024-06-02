@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from dataclasses import dataclass
 
 import chanfig
@@ -100,7 +101,7 @@ def convert_checkpoint(convert_config):
 
     model.load_state_dict(state_dict)
 
-    model.lm_head = model.pretrain_head.predictions
+    model.lm_head = deepcopy(model.pretrain_head.predictions)
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["model_max_length"] = 1022
