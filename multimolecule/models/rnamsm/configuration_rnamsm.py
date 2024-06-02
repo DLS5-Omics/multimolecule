@@ -75,7 +75,7 @@ class RnaMsmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size: int = 25,
+        vocab_size: int = 26,
         hidden_size: int = 768,
         num_hidden_layers: int = 10,
         num_attention_heads: int = 12,

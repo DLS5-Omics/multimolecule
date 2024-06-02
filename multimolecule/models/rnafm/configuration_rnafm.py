@@ -115,7 +115,7 @@ class RnaFmConfig(PreTrainedConfig):
     ):
         super().__init__(**kwargs)
         if vocab_size is None:
-            vocab_size = 131 if codon else 25
+            vocab_size = 131 if codon else 26
         self.vocab_size = vocab_size
         self.codon = codon
         self.hidden_size = hidden_size

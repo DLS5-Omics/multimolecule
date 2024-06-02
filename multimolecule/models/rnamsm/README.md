@@ -59,24 +59,24 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnamsm')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.28509262204170227,
+[{'score': 0.28535839915275574,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.2530057430267334,
-  'token': 21,
+ {'score': 0.2532415986061096,
+  'token': 22,
   'token_str': 'K',
   'sequence': 'U A G C K U A U C A G A C U G A U G U U G A'},
- {'score': 0.22453057765960693,
+ {'score': 0.2247398942708969,
   'token': 8,
   'token_str': 'G',
   'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.0683528482913971,
-  'token': 14,
+ {'score': 0.06841657310724258,
+  'token': 15,
   'token_str': 'D',
   'sequence': 'U A G C D U A U C A G A C U G A U G U U G A'},
- {'score': 0.037713583558797836,
-  'token': 18,
+ {'score': 0.03774874284863472,
+  'token': 19,
   'token_str': 'W',
   'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
 ```
