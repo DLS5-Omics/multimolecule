@@ -59,26 +59,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnabert')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.04004698991775513,
-  'token': 2,
-  'token_str': '<eos>',
-  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.04004558548331261,
-  'token': 22,
-  'token_str': '.',
-  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.040029074996709824,
-  'token': 10,
-  'token_str': 'N',
-  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'},
- {'score': 0.0400208942592144,
+[{'score': 0.038491372019052505,
   'token': 5,
   'token_str': '<null>',
   'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.04000627622008324,
-  'token': 3,
-  'token_str': '<unk>',
-  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'}]
+ {'score': 0.03848646208643913,
+  'token': 23,
+  'token_str': '.',
+  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03846566751599312,
+  'token': 0,
+  'token_str': '<pad>',
+  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03846472129225731,
+  'token': 9,
+  'token_str': 'U',
+  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03846454620361328,
+  'token': 19,
+  'token_str': 'W',
+  'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

@@ -108,26 +108,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/utrlm.te_el')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.062397848814725876,
-  'token': 12,
-  'token_str': 'V',
-  'sequence': 'U A G C V U A U C A G A C U G A U G U U G A'},
- {'score': 0.059949371963739395,
-  'token': 3,
-  'token_str': '<unk>',
-  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.05202353373169899,
-  'token': 19,
-  'token_str': 'S',
-  'sequence': 'U A G C S U A U C A G A C U G A U G U U G A'},
- {'score': 0.05004888400435448,
-  'token': 4,
-  'token_str': '<mask>',
-  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.04615812376141548,
-  'token': 23,
+[{'score': 0.07525687664747238,
+  'token': 11,
+  'token_str': 'I',
+  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
+ {'score': 0.07319962233304977,
+  'token': 6,
+  'token_str': 'A',
+  'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
+ {'score': 0.07106836140155792,
+  'token': 24,
   'token_str': '*',
-  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
+ {'score': 0.06967106461524963,
+  'token': 10,
+  'token_str': 'N',
+  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'},
+ {'score': 0.06574146449565887,
+  'token': 19,
+  'token_str': 'W',
+  'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

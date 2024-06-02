@@ -45,8 +45,8 @@ class RnaTokenizer(Tokenizer):
     Examples:
         >>> from multimolecule import RnaTokenizer
         >>> tokenizer = RnaTokenizer()
-        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGUNXVHDBMRWSYK.*-')["input_ids"]
-        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 2]
+        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGUNIXVHDBMRWSYK.*-')["input_ids"]
+        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 2]
         >>> tokenizer('acgu')["input_ids"]
         [1, 6, 7, 8, 9, 2]
         >>> tokenizer('acgt')["input_ids"]

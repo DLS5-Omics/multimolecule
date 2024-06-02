@@ -97,24 +97,24 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/splicebert')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.10049360245466232,
+[{'score': 0.09628374129533768,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.09413677453994751,
-  'token': 18,
+ {'score': 0.09019321203231812,
+  'token': 19,
   'token_str': 'W',
   'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'},
- {'score': 0.0881819948554039,
+ {'score': 0.08448788523674011,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.07516232132911682,
-  'token': 13,
+ {'score': 0.07201363891363144,
+  'token': 14,
   'token_str': 'H',
   'sequence': 'U A G C H U A U C A G A C U G A U G U U G A'},
- {'score': 0.0693921446800232,
-  'token': 16,
+ {'score': 0.06648518145084381,
+  'token': 17,
   'token_str': 'M',
   'sequence': 'U A G C M U A U C A G A C U G A U G U U G A'}]
 ```
