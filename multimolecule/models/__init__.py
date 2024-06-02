@@ -25,6 +25,16 @@ from .calm import (
     CaLmModel,
 )
 from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from .ernierna import (
+    ErnieRnaConfig,
+    ErnieRnaForContactClassification,
+    ErnieRnaForMaskedLM,
+    ErnieRnaForNucleotideClassification,
+    ErnieRnaForPreTraining,
+    ErnieRnaForSequenceClassification,
+    ErnieRnaForTokenClassification,
+    ErnieRnaModel,
+)
 from .modeling_auto import AutoModelForNucleotideClassification
 from .rinalmo import (
     RiNALMoConfig,
@@ -104,6 +114,14 @@ __all__ = [
     "CaLmForSequenceClassification",
     "CaLmForTokenClassification",
     "CaLmForNucleotideClassification",
+    "ErnieRnaConfig",
+    "ErnieRnaModel",
+    "ErnieRnaForMaskedLM",
+    "ErnieRnaForPreTraining",
+    "ErnieRnaForNucleotideClassification",
+    "ErnieRnaForSequenceClassification",
+    "ErnieRnaForTokenClassification",
+    "ErnieRnaForContactClassification",
     "RiNALMoConfig",
     "RiNALMoModel",
     "RiNALMoForMaskedLM",
