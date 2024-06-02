@@ -1898,8 +1898,8 @@ Defaults to True.</p>
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><span class="filename">Python Console Session</span><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">multimolecule</span> <span class="kn">import</span> <span class="n">RnaTokenizer</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="p">()</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">&#39;&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGUNXVHDBMRWSYK.*-&#39;</span><span class="p">)[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">[1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 2]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">&#39;&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGUNIXVHDBMRWSYK.*-&#39;</span><span class="p">)[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">[1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 2]</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">&#39;acgu&#39;</span><span class="p">)[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">[1, 6, 7, 8, 9, 2]</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">&#39;acgt&#39;</span><span class="p">)[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
@@ -2031,8 +2031,8 @@ Defaults to True.</p>
 <a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    Examples:</span>
 <a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">        &gt;&gt;&gt; from multimolecule import RnaTokenizer</span>
 <a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">        &gt;&gt;&gt; tokenizer = RnaTokenizer()</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        &gt;&gt;&gt; tokenizer(&#39;&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGUNXVHDBMRWSYK.*-&#39;)[&quot;input_ids&quot;]</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 2]</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        &gt;&gt;&gt; tokenizer(&#39;&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGUNIXVHDBMRWSYK.*-&#39;)[&quot;input_ids&quot;]</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 2]</span>
 <a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">        &gt;&gt;&gt; tokenizer(&#39;acgu&#39;)[&quot;input_ids&quot;]</span>
 <a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">        [1, 6, 7, 8, 9, 2]</span>
 <a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        &gt;&gt;&gt; tokenizer(&#39;acgt&#39;)[&quot;input_ids&quot;]</span>
