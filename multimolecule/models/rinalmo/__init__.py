@@ -27,7 +27,11 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import AutoModelForNucleotideClassification
+from ..modeling_auto import (
+    AutoModelForNucleotidePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_rinalmo import RiNALMoConfig
 from .modeling_rinalmo import (
     RiNALMoForMaskedLM,
@@ -46,9 +50,9 @@ __all__ = [
     "RiNALMoPreTrainedModel",
     "RiNALMoForMaskedLM",
     "RiNALMoForPreTraining",
+    "RiNALMoForNucleotidePrediction",
     "RiNALMoForSequencePrediction",
     "RiNALMoForTokenPrediction",
-    "RiNALMoForNucleotidePrediction",
 ]
 
 AutoConfig.register("rinalmo", RiNALMoConfig)
@@ -56,7 +60,9 @@ AutoBackbone.register(RiNALMoConfig, RiNALMoModel)
 AutoModel.register(RiNALMoConfig, RiNALMoModel)
 AutoModelForMaskedLM.register(RiNALMoConfig, RiNALMoForMaskedLM)
 AutoModelForPreTraining.register(RiNALMoConfig, RiNALMoForPreTraining)
+AutoModelForNucleotidePrediction.register(RiNALMoConfig, RiNALMoForNucleotidePrediction)
+AutoModelForSequencePrediction.register(RiNALMoConfig, RiNALMoForSequencePrediction)
 AutoModelForSequenceClassification.register(RiNALMoConfig, RiNALMoForSequencePrediction)
+AutoModelForTokenPrediction.register(RiNALMoConfig, RiNALMoForTokenPrediction)
 AutoModelForTokenClassification.register(RiNALMoConfig, RiNALMoForTokenPrediction)
-AutoModelForNucleotideClassification.register(RiNALMoConfig, RiNALMoForNucleotidePrediction)
 AutoTokenizer.register(RiNALMoConfig, RnaTokenizer)
