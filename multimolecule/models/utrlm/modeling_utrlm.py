@@ -381,6 +381,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
     ) -> Tuple[Tensor, ...] | UtrLmForPreTrainingOutput:
         if output_attentions is False:
             warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
@@ -1171,7 +1172,7 @@ class UtrLmPreTrainingHeads(nn.Module):
         input_ids: Tensor | NestedTensor | None = None,
     ) -> Tuple[Tensor, Tensor, Tensor | None, Tensor | None]:
         logits = self.predictions(outputs)
-        contact_map = self.contact(torch.stack(outputs[-1], 1), attention_mask, input_ids)
+        contact_map = self.contact(outputs, attention_mask, input_ids)
         ss = self.ss_head(outputs) if self.ss_head else None
         mfe = self.mfe_head(outputs) if self.mfe_head else None
         return logits, contact_map, ss, mfe

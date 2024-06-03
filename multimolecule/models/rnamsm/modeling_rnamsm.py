@@ -267,6 +267,7 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
     ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
         if output_attentions is False:
             warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
@@ -1319,9 +1320,8 @@ class RnaMsmPreTrainingHeads(nn.Module):
         attention_mask: Tensor | None = None,
         input_ids: Tensor | NestedTensor | None = None,
     ) -> Tuple[Tensor, Tensor]:
-        sequence_output, row_attentions = outputs[0], torch.stack(outputs[-1], 1)
-        prediction_scores = self.predictions(sequence_output)
-        contact_map = self.contact(row_attentions, attention_mask, input_ids)
+        prediction_scores = self.predictions(outputs)
+        contact_map = self.contact(outputs, attention_mask, input_ids)
         return prediction_scores, contact_map
 
 

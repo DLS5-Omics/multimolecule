@@ -16,56 +16,44 @@
 
 from __future__ import annotations
 
+from typing import Tuple
+
 import torch
 from torch import Tensor, nn
-from transformers.activations import ACT2FN
+from transformers.modeling_outputs import ModelOutput
 
 from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
 
-from ..criterions import Criterion
+from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
-from .transform import HeadTransformRegistryHF
 from .utils import average_product_correct, symmetrize
 
 
 @HeadRegistry.register("contact")
-class ContactPredictionHead(nn.Module):
+class ContactPredictionHead(PredictionHead):
     """
     Head for contact-map-level tasks.
     Performs symmetrization, and average product correct.
     """
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
-        super().__init__()
-        if head_config is None:
-            head_config = config.head
-        self.config = head_config
-        if self.config.hidden_size is None:
-            self.config.hidden_size = config.hidden_size
-        if self.config.num_labels is None:
-            self.config.num_labels = config.num_labels
-        if self.config.problem_type is None:
-            self.config.problem_type = config.problem_type
-        self.num_labels = self.config.num_labels
+        super().__init__(config, head_config)
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
-        self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
         self.decoder = nn.Linear(
             config.num_hidden_layers * config.num_attention_heads, self.num_labels, bias=self.config.bias
         )
-        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        self.criterion = Criterion(self.config)
 
-    def forward(
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        attentions: Tensor,
+        outputs: ModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
+        attentions = torch.stack(outputs[-1], 1)
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
@@ -107,11 +95,6 @@ class ContactPredictionHead(nn.Module):
         attentions = attentions.view(batch_size, layers * heads, seqlen, seqlen)
         attentions = attentions.to(self.decoder.weight.device)
         attentions = average_product_correct(symmetrize(attentions))
-        attentions = attentions.permute(0, 2, 3, 1)
-        output = self.dropout(attentions)
-        output = self.decoder(output).squeeze(3)
-        if self.activation is not None:
-            output = self.activation(output)
-        if labels is not None:
-            return HeadOutput(output, self.criterion(output, labels))
-        return HeadOutput(output)
+        attentions = attentions.permute(0, 2, 3, 1).squeeze(3)
+
+        return super().forward(attentions, labels)
