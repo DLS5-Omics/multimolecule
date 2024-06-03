@@ -25,7 +25,7 @@ from transformers.modeling_outputs import ModelOutput
 
 from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
 
-from .generic import ClassificationHead
+from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .utils import unfold_kmer_embeddings
@@ -35,7 +35,7 @@ TokenHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
 @HeadRegistry.register("token.single")
 @TokenHeadRegistryHF.register("single", default=True)
-class TokenClassificationHead(ClassificationHead):
+class TokenPredictionHead(PredictionHead):
     """Head for token-level tasks."""
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
@@ -53,12 +53,10 @@ class TokenClassificationHead(ClassificationHead):
     ) -> HeadOutput:
         if attention_mask is None:
             if input_ids is None:
-                raise ValueError(
-                    "Either attention_mask or input_ids must be provided for TokenClassificationHead to work."
-                )
+                raise ValueError("Either attention_mask or input_ids must be provided for TokenPredictionHead to work.")
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to TokenClassificationHead."
+                    "pad_token_id must be provided when attention_mask is not passed to TokenPredictionHead."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
 
@@ -68,7 +66,7 @@ class TokenClassificationHead(ClassificationHead):
 
 @HeadRegistry.register("token.kmer")
 @TokenHeadRegistryHF.register("kmer")
-class TokenKMerHead(ClassificationHead):
+class TokenKMerHead(PredictionHead):
     """Head for token-level tasks."""
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):

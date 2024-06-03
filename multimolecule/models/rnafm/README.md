@@ -144,11 +144,11 @@ Here is how to use this model as backbone to fine-tune for a sequence-level task
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, RnaFmForSequenceClassification
+from multimolecule import RnaTokenizer, RnaFmForSequencePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnafm')
-model = RnaFmForSequenceClassification.from_pretrained('multimolecule/rnafm')
+model = RnaFmForSequencePrediction.from_pretrained('multimolecule/rnafm')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')
@@ -165,11 +165,11 @@ Here is how to use this model as backbone to fine-tune for a nucleotide-level ta
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, RnaFmForNucleotideClassification
+from multimolecule import RnaTokenizer, RnaFmForNucleotidePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnafm')
-model = RnaFmForNucleotideClassification.from_pretrained('multimolecule/rnafm')
+model = RnaFmForNucleotidePrediction.from_pretrained('multimolecule/rnafm')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')

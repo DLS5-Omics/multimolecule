@@ -31,10 +31,10 @@ from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
     RnaMsmForMaskedLM,
-    RnaMsmForNucleotideClassification,
+    RnaMsmForNucleotidePrediction,
     RnaMsmForPreTraining,
-    RnaMsmForSequenceClassification,
-    RnaMsmForTokenClassification,
+    RnaMsmForSequencePrediction,
+    RnaMsmForTokenPrediction,
     RnaMsmModel,
     RnaMsmPreTrainedModel,
 )
@@ -46,9 +46,9 @@ __all__ = [
     "RnaMsmPreTrainedModel",
     "RnaMsmForPreTraining",
     "RnaMsmForMaskedLM",
-    "RnaMsmForSequenceClassification",
-    "RnaMsmForTokenClassification",
-    "RnaMsmForNucleotideClassification",
+    "RnaMsmForSequencePrediction",
+    "RnaMsmForTokenPrediction",
+    "RnaMsmForNucleotidePrediction",
 ]
 
 AutoConfig.register("rnamsm", RnaMsmConfig)
@@ -56,7 +56,7 @@ AutoBackbone.register(RnaMsmConfig, RnaMsmModel)
 AutoModel.register(RnaMsmConfig, RnaMsmModel)
 AutoModelForMaskedLM.register(RnaMsmConfig, RnaMsmForMaskedLM)
 AutoModelForPreTraining.register(RnaMsmConfig, RnaMsmForPreTraining)
-AutoModelForSequenceClassification.register(RnaMsmConfig, RnaMsmForSequenceClassification)
-AutoModelForTokenClassification.register(RnaMsmConfig, RnaMsmForTokenClassification)
-AutoModelForNucleotideClassification.register(RnaMsmConfig, RnaMsmForNucleotideClassification)
+AutoModelForSequenceClassification.register(RnaMsmConfig, RnaMsmForSequencePrediction)
+AutoModelForTokenClassification.register(RnaMsmConfig, RnaMsmForTokenPrediction)
+AutoModelForNucleotideClassification.register(RnaMsmConfig, RnaMsmForNucleotidePrediction)
 AutoTokenizer.register(RnaMsmConfig, RnaTokenizer)

@@ -153,11 +153,11 @@ Here is how to use this model as backbone to fine-tune for a sequence-level task
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, UtrBertForSequenceClassification
+from multimolecule import RnaTokenizer, UtrBertForSequencePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert-3mer')
-model = UtrBertForSequenceClassification.from_pretrained('multimolecule/utrbert-3mer')
+model = UtrBertForSequencePrediction.from_pretrained('multimolecule/utrbert-3mer')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')
@@ -174,11 +174,11 @@ Here is how to use this model as backbone to fine-tune for a nucleotide-level ta
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, UtrBertForNucleotideClassification
+from multimolecule import RnaTokenizer, UtrBertForNucleotidePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert-3mer')
-model = UtrBertForNucleotideClassification.from_pretrained('multimolecule/utrbert-3mer')
+model = UtrBertForNucleotidePrediction.from_pretrained('multimolecule/utrbert-3mer')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')

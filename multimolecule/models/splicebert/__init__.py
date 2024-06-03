@@ -31,10 +31,10 @@ from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
     SpliceBertForMaskedLM,
-    SpliceBertForNucleotideClassification,
+    SpliceBertForNucleotidePrediction,
     SpliceBertForPreTraining,
-    SpliceBertForSequenceClassification,
-    SpliceBertForTokenClassification,
+    SpliceBertForSequencePrediction,
+    SpliceBertForTokenPrediction,
     SpliceBertModel,
     SpliceBertPreTrainedModel,
 )
@@ -46,9 +46,9 @@ __all__ = [
     "SpliceBertPreTrainedModel",
     "SpliceBertForMaskedLM",
     "SpliceBertForPreTraining",
-    "SpliceBertForSequenceClassification",
-    "SpliceBertForTokenClassification",
-    "SpliceBertForNucleotideClassification",
+    "SpliceBertForSequencePrediction",
+    "SpliceBertForTokenPrediction",
+    "SpliceBertForNucleotidePrediction",
 ]
 
 AutoConfig.register("splicebert", SpliceBertConfig)
@@ -56,7 +56,7 @@ AutoBackbone.register(SpliceBertConfig, SpliceBertModel)
 AutoModel.register(SpliceBertConfig, SpliceBertModel)
 AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
 AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPreTraining)
-AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequenceClassification)
-AutoModelForTokenClassification.register(SpliceBertConfig, SpliceBertForTokenClassification)
-AutoModelForNucleotideClassification.register(SpliceBertConfig, SpliceBertForNucleotideClassification)
+AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequencePrediction)
+AutoModelForTokenClassification.register(SpliceBertConfig, SpliceBertForTokenPrediction)
+AutoModelForNucleotideClassification.register(SpliceBertConfig, SpliceBertForNucleotidePrediction)
 AutoTokenizer.register(SpliceBertConfig, RnaTokenizer)
