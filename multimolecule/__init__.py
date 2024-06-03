@@ -15,15 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from . import models, tokenisers
-from .downstream.crispr_off_target import (
-    AutoModelForCrisprOffTarget,
-    RnaBertForCrisprOffTarget,
-    RnaFmForCrisprOffTarget,
-    RnaMsmForCrisprOffTarget,
-    SpliceBertForCrisprOffTarget,
-    UtrBertForCrisprOffTarget,
-    UtrLmForCrisprOffTarget,
-)
 from .models import (
     AutoModelForNucleotideClassification,
     BaseHeadConfig,
@@ -194,13 +185,6 @@ __all__ = [
     "UtrLmForSequenceClassification",
     "UtrLmForTokenClassification",
     "UtrLmForNucleotideClassification",
-    "AutoModelForCrisprOffTarget",
-    "RnaBertForCrisprOffTarget",
-    "RnaFmForCrisprOffTarget",
-    "RnaMsmForCrisprOffTarget",
-    "SpliceBertForCrisprOffTarget",
-    "UtrBertForCrisprOffTarget",
-    "UtrLmForCrisprOffTarget",
     "HeadRegistry",
     "ClassificationHead",
     "SequenceClassificationHead",
