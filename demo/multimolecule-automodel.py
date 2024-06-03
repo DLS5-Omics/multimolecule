@@ -16,9 +16,9 @@
 
 from transformers import AutoTokenizer
 
-from multimolecule import AutoModelForNucleotideClassification
+from multimolecule import AutoModelForSequencePrediction
 
-model = AutoModelForNucleotideClassification.from_pretrained("multimolecule/rnafm")
+model = AutoModelForSequencePrediction.from_pretrained("multimolecule/rnafm")
 tokenizer = AutoTokenizer.from_pretrained("multimolecule/rnafm")
 
 sequence = "UAGCGUAUCAGACUGAUGUUG"

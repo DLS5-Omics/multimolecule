@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from multimolecule.models import RnaFmConfig, RnaFmModel, RnaTokenizer
+from multimolecule.models import RnaFmConfig, RnaFmForNucleotidePrediction, RnaTokenizer
 
 config = RnaFmConfig()
-model = RnaFmModel(config)
+model = RnaFmForNucleotidePrediction(config)
 tokenizer = RnaTokenizer()
 
 sequence = "UAGCGUAUCAGACUGAUGUUG"
