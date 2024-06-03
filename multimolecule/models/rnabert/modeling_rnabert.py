@@ -1039,10 +1039,9 @@ class RnaBertPreTrainingHeads(nn.Module):
         self.seq_relationship = nn.Linear(config.hidden_size, 2)
 
     def forward(self, outputs: ModelOutput | Tuple[Tensor, ...]) -> Tuple[Tensor, Tensor, Tensor]:
-        sequence_output, pooled_output = outputs[:2]
-        logits = self.predictions(sequence_output)
-        logits_ss = self.predictions_ss(sequence_output)
-        seq_relationship_score = self.seq_relationship(pooled_output)
+        logits = self.predictions(outputs)
+        logits_ss = self.predictions_ss(outputs)
+        seq_relationship_score = self.seq_relationship(outputs[1])
         return logits, logits_ss, seq_relationship_score
 
 
