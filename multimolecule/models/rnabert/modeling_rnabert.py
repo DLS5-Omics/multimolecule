@@ -39,12 +39,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from multimolecule.module import (
-    MaskedLMHead,
-    NucleotideClassificationHead,
-    SequenceClassificationHead,
-    TokenClassificationHead,
-)
+from multimolecule.module import MaskedLMHead, NucleotidePredictionHead, SequencePredictionHead, TokenPredictionHead
 
 from .configuration_rnabert import RnaBertConfig
 
@@ -356,12 +351,12 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         )
 
 
-class RnaBertForSequenceClassification(RnaBertPreTrainedModel):
+class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaBertConfig, RnaBertForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import RnaBertConfig, RnaBertForSequencePrediction, RnaTokenizer
         >>> config = RnaBertConfig()
-        >>> model = RnaBertForSequenceClassification(config)
+        >>> model = RnaBertForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -371,7 +366,7 @@ class RnaBertForSequenceClassification(RnaBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnabert = RnaBertModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -422,12 +417,12 @@ class RnaBertForSequenceClassification(RnaBertPreTrainedModel):
         )
 
 
-class RnaBertForTokenClassification(RnaBertPreTrainedModel):
+class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaBertConfig, RnaBertForTokenClassification, RnaTokenizer
+        >>> from multimolecule import RnaBertConfig, RnaBertForTokenPrediction, RnaTokenizer
         >>> config = RnaBertConfig()
-        >>> model = RnaBertForTokenClassification(config)
+        >>> model = RnaBertForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -437,7 +432,7 @@ class RnaBertForTokenClassification(RnaBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnabert = RnaBertModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -488,12 +483,12 @@ class RnaBertForTokenClassification(RnaBertPreTrainedModel):
         )
 
 
-class RnaBertForNucleotideClassification(RnaBertPreTrainedModel):
+class RnaBertForNucleotidePrediction(RnaBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaBertConfig, RnaBertForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import RnaBertConfig, RnaBertForNucleotidePrediction, RnaTokenizer
         >>> config = RnaBertConfig()
-        >>> model = RnaBertForNucleotideClassification(config)
+        >>> model = RnaBertForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -503,7 +498,7 @@ class RnaBertForNucleotideClassification(RnaBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnabert = RnaBertModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing

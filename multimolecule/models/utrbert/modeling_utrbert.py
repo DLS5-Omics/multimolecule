@@ -37,7 +37,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from multimolecule.module import MaskedLMHead, NucleotideKMerHead, SequenceClassificationHead, TokenKMerHead
+from multimolecule.module import MaskedLMHead, NucleotideKMerHead, SequencePredictionHead, TokenKMerHead
 
 from .configuration_utrbert import UtrBertConfig
 
@@ -389,13 +389,13 @@ class UtrBertForPreTraining(UtrBertPreTrainedModel):
         )
 
 
-class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
+class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import UtrBertConfig, UtrBertForSequencePrediction, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=4)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
-        >>> model = UtrBertForSequenceClassification(config)
+        >>> model = UtrBertForSequencePrediction(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
     """
@@ -404,7 +404,7 @@ class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -455,13 +455,13 @@ class UtrBertForSequenceClassification(UtrBertPreTrainedModel):
         )
 
 
-class UtrBertForTokenClassification(UtrBertPreTrainedModel):
+class UtrBertForTokenPrediction(UtrBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForTokenClassification, RnaTokenizer
+        >>> from multimolecule import UtrBertConfig, UtrBertForTokenPrediction, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=2)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size, nmers=2)
-        >>> model = UtrBertForTokenClassification(config)
+        >>> model = UtrBertForTokenPrediction(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
     """
@@ -519,13 +519,13 @@ class UtrBertForTokenClassification(UtrBertPreTrainedModel):
         )
 
 
-class UtrBertForNucleotideClassification(UtrBertPreTrainedModel):
+class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import UtrBertConfig, UtrBertForNucleotidePrediction, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=2)
         >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size, nmers=2)
-        >>> model = UtrBertForTokenClassification(config)
+        >>> model = UtrBertForTokenPrediction(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
     """

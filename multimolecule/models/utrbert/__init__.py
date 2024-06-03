@@ -31,10 +31,10 @@ from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_utrbert import UtrBertConfig
 from .modeling_utrbert import (
     UtrBertForMaskedLM,
-    UtrBertForNucleotideClassification,
+    UtrBertForNucleotidePrediction,
     UtrBertForPreTraining,
-    UtrBertForSequenceClassification,
-    UtrBertForTokenClassification,
+    UtrBertForSequencePrediction,
+    UtrBertForTokenPrediction,
     UtrBertModel,
     UtrBertPreTrainedModel,
 )
@@ -46,9 +46,9 @@ __all__ = [
     "UtrBertPreTrainedModel",
     "UtrBertForMaskedLM",
     "UtrBertForPreTraining",
-    "UtrBertForSequenceClassification",
-    "UtrBertForTokenClassification",
-    "UtrBertForNucleotideClassification",
+    "UtrBertForSequencePrediction",
+    "UtrBertForTokenPrediction",
+    "UtrBertForNucleotidePrediction",
 ]
 
 AutoConfig.register("utrbert", UtrBertConfig)
@@ -56,7 +56,7 @@ AutoBackbone.register(UtrBertConfig, UtrBertModel)
 AutoModel.register(UtrBertConfig, UtrBertModel)
 AutoModelForMaskedLM.register(UtrBertConfig, UtrBertForMaskedLM)
 AutoModelForPreTraining.register(UtrBertConfig, UtrBertForPreTraining)
-AutoModelForSequenceClassification.register(UtrBertConfig, UtrBertForSequenceClassification)
-AutoModelForTokenClassification.register(UtrBertConfig, UtrBertForTokenClassification)
-AutoModelForNucleotideClassification.register(UtrBertConfig, UtrBertForNucleotideClassification)
+AutoModelForSequenceClassification.register(UtrBertConfig, UtrBertForSequencePrediction)
+AutoModelForTokenClassification.register(UtrBertConfig, UtrBertForTokenPrediction)
+AutoModelForNucleotideClassification.register(UtrBertConfig, UtrBertForNucleotidePrediction)
 AutoTokenizer.register(UtrBertConfig, RnaTokenizer)

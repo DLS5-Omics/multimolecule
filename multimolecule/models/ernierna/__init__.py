@@ -32,10 +32,10 @@ from .configuration_ernierna import ErnieRnaConfig
 from .modeling_ernierna import (
     ErnieRnaForContactClassification,
     ErnieRnaForMaskedLM,
-    ErnieRnaForNucleotideClassification,
+    ErnieRnaForNucleotidePrediction,
     ErnieRnaForPreTraining,
-    ErnieRnaForSequenceClassification,
-    ErnieRnaForTokenClassification,
+    ErnieRnaForSequencePrediction,
+    ErnieRnaForTokenPrediction,
     ErnieRnaModel,
     ErnieRnaPreTrainedModel,
 )
@@ -47,9 +47,9 @@ __all__ = [
     "ErnieRnaPreTrainedModel",
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
-    "ErnieRnaForNucleotideClassification",
-    "ErnieRnaForSequenceClassification",
-    "ErnieRnaForTokenClassification",
+    "ErnieRnaForNucleotidePrediction",
+    "ErnieRnaForSequencePrediction",
+    "ErnieRnaForTokenPrediction",
     "ErnieRnaForContactClassification",
 ]
 
@@ -58,7 +58,7 @@ AutoBackbone.register(ErnieRnaConfig, ErnieRnaModel)
 AutoModel.register(ErnieRnaConfig, ErnieRnaModel)
 AutoModelForMaskedLM.register(ErnieRnaConfig, ErnieRnaForMaskedLM)
 AutoModelForPreTraining.register(ErnieRnaConfig, ErnieRnaForPreTraining)
-AutoModelForSequenceClassification.register(ErnieRnaConfig, ErnieRnaForSequenceClassification)
-AutoModelForTokenClassification.register(ErnieRnaConfig, ErnieRnaForTokenClassification)
-AutoModelForNucleotideClassification.register(ErnieRnaConfig, ErnieRnaForNucleotideClassification)
+AutoModelForSequenceClassification.register(ErnieRnaConfig, ErnieRnaForSequencePrediction)
+AutoModelForTokenClassification.register(ErnieRnaConfig, ErnieRnaForTokenPrediction)
+AutoModelForNucleotideClassification.register(ErnieRnaConfig, ErnieRnaForNucleotidePrediction)
 AutoTokenizer.register(ErnieRnaConfig, RnaTokenizer)

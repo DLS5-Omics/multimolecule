@@ -17,7 +17,6 @@
 from .criterions import Criterion
 from .embeddings import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF, RotaryEmbedding, SinusoidalEmbedding
 from .heads import (
-    ClassificationHead,
     ContactPredictionHead,
     HeadRegistry,
     HeadTransformRegistry,
@@ -26,13 +25,14 @@ from .heads import (
     LinearTransform,
     MaskedLMHead,
     NonLinearTransform,
-    NucleotideClassificationHead,
     NucleotideHeadRegistryHF,
     NucleotideKMerHead,
-    SequenceClassificationHead,
-    TokenClassificationHead,
+    NucleotidePredictionHead,
+    PredictionHead,
+    SequencePredictionHead,
     TokenHeadRegistryHF,
     TokenKMerHead,
+    TokenPredictionHead,
 )
 
 __all__ = [
@@ -41,14 +41,14 @@ __all__ = [
     "PositionEmbeddingRegistryHF",
     "RotaryEmbedding",
     "SinusoidalEmbedding",
-    "ClassificationHead",
+    "PredictionHead",
     "HeadRegistry",
-    "SequenceClassificationHead",
+    "SequencePredictionHead",
     "TokenHeadRegistryHF",
-    "TokenClassificationHead",
+    "TokenPredictionHead",
     "TokenKMerHead",
     "NucleotideHeadRegistryHF",
-    "NucleotideClassificationHead",
+    "NucleotidePredictionHead",
     "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",

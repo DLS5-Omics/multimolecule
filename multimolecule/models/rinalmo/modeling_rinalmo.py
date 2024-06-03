@@ -37,10 +37,10 @@ from transformers.utils import logging
 
 from multimolecule.module import (
     MaskedLMHead,
-    NucleotideClassificationHead,
+    NucleotidePredictionHead,
     RotaryEmbedding,
-    SequenceClassificationHead,
-    TokenClassificationHead,
+    SequencePredictionHead,
+    TokenPredictionHead,
 )
 
 from .configuration_rinalmo import RiNALMoConfig
@@ -321,12 +321,12 @@ class RiNALMoForPreTraining(RiNALMoForMaskedLM):
     pass
 
 
-class RiNALMoForSequenceClassification(RiNALMoPreTrainedModel):
+class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RiNALMoConfig, RiNALMoForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import RiNALMoConfig, RiNALMoForSequencePrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
-        >>> model = RiNALMoForSequenceClassification(config)
+        >>> model = RiNALMoForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -336,7 +336,7 @@ class RiNALMoForSequenceClassification(RiNALMoPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -387,12 +387,12 @@ class RiNALMoForSequenceClassification(RiNALMoPreTrainedModel):
         )
 
 
-class RiNALMoForTokenClassification(RiNALMoPreTrainedModel):
+class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RiNALMoConfig, RiNALMoForTokenClassification, RnaTokenizer
+        >>> from multimolecule import RiNALMoConfig, RiNALMoForTokenPrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
-        >>> model = RiNALMoForTokenClassification(config)
+        >>> model = RiNALMoForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -402,7 +402,7 @@ class RiNALMoForTokenClassification(RiNALMoPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -451,12 +451,12 @@ class RiNALMoForTokenClassification(RiNALMoPreTrainedModel):
         )
 
 
-class RiNALMoForNucleotideClassification(RiNALMoPreTrainedModel):
+class RiNALMoForNucleotidePrediction(RiNALMoPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RiNALMoConfig, RiNALMoForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import RiNALMoConfig, RiNALMoForNucleotidePrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
-        >>> model = RiNALMoForNucleotideClassification(config)
+        >>> model = RiNALMoForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -466,7 +466,7 @@ class RiNALMoForNucleotideClassification(RiNALMoPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing

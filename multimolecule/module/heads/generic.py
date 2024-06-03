@@ -26,7 +26,7 @@ from .output import HeadOutput
 from .transform import HeadTransformRegistryHF
 
 
-class ClassificationHead(nn.Module):
+class PredictionHead(nn.Module):
     """Head for all-level of tasks."""
 
     num_labels: int
