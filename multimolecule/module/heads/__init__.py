@@ -15,12 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .contact import ContactPredictionHead
-from .generic import ClassificationHead
-from .nuleotide import NucleotideClassificationHead, NucleotideHeadRegistryHF, NucleotideKMerHead
+from .generic import PredictionHead
+from .nuleotide import NucleotideHeadRegistryHF, NucleotideKMerHead, NucleotidePredictionHead
 from .pretrain import MaskedLMHead
 from .registry import HeadRegistry
-from .sequence import SequenceClassificationHead
-from .token import TokenClassificationHead, TokenHeadRegistryHF, TokenKMerHead
+from .sequence import SequencePredictionHead
+from .token import TokenHeadRegistryHF, TokenKMerHead, TokenPredictionHead
 from .transform import (
     HeadTransformRegistry,
     HeadTransformRegistryHF,
@@ -31,13 +31,13 @@ from .transform import (
 
 __all__ = [
     "HeadRegistry",
-    "ClassificationHead",
-    "SequenceClassificationHead",
+    "PredictionHead",
+    "SequencePredictionHead",
     "TokenHeadRegistryHF",
-    "TokenClassificationHead",
+    "TokenPredictionHead",
     "TokenKMerHead",
     "NucleotideHeadRegistryHF",
-    "NucleotideClassificationHead",
+    "NucleotidePredictionHead",
     "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",

@@ -26,7 +26,7 @@ from transformers.modeling_outputs import ModelOutput
 
 from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
 
-from .generic import ClassificationHead
+from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .utils import unfold_kmer_embeddings
@@ -36,7 +36,7 @@ NucleotideHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
 @HeadRegistry.register("nucleotide.single")
 @NucleotideHeadRegistryHF.register("single", default=True)
-class NucleotideClassificationHead(ClassificationHead):
+class NucleotidePredictionHead(PredictionHead):
     """Head for nucleotide-level tasks."""
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
@@ -55,11 +55,11 @@ class NucleotideClassificationHead(ClassificationHead):
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
-                    "Either attention_mask or input_ids must be provided for NucleotideClassificationHead to work."
+                    "Either attention_mask or input_ids must be provided for NucleotidePredictionHead to work."
                 )
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to NucleotideClassificationHead."
+                    "pad_token_id must be provided when attention_mask is not passed to NucleotidePredictionHead."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
 
@@ -88,7 +88,7 @@ class NucleotideClassificationHead(ClassificationHead):
 
 @HeadRegistry.register("nucleotide.kmer")
 @NucleotideHeadRegistryHF.register("kmer")
-class NucleotideKMerHead(ClassificationHead):
+class NucleotideKMerHead(PredictionHead):
     """Head for nucleotide-level tasks."""
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):

@@ -31,10 +31,10 @@ from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_calm import CaLmConfig
 from .modeling_calm import (
     CaLmForMaskedLM,
-    CaLmForNucleotideClassification,
+    CaLmForNucleotidePrediction,
     CaLmForPreTraining,
-    CaLmForSequenceClassification,
-    CaLmForTokenClassification,
+    CaLmForSequencePrediction,
+    CaLmForTokenPrediction,
     CaLmModel,
     CaLmPreTrainedModel,
 )
@@ -46,9 +46,9 @@ __all__ = [
     "CaLmPreTrainedModel",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
-    "CaLmForSequenceClassification",
-    "CaLmForTokenClassification",
-    "CaLmForNucleotideClassification",
+    "CaLmForSequencePrediction",
+    "CaLmForTokenPrediction",
+    "CaLmForNucleotidePrediction",
 ]
 
 AutoConfig.register("calm", CaLmConfig)
@@ -56,7 +56,7 @@ AutoBackbone.register(CaLmConfig, CaLmModel)
 AutoModel.register(CaLmConfig, CaLmModel)
 AutoModelForMaskedLM.register(CaLmConfig, CaLmForMaskedLM)
 AutoModelForPreTraining.register(CaLmConfig, CaLmForPreTraining)
-AutoModelForSequenceClassification.register(CaLmConfig, CaLmForSequenceClassification)
-AutoModelForTokenClassification.register(CaLmConfig, CaLmForTokenClassification)
-AutoModelForNucleotideClassification.register(CaLmConfig, CaLmForNucleotideClassification)
+AutoModelForSequenceClassification.register(CaLmConfig, CaLmForSequencePrediction)
+AutoModelForTokenClassification.register(CaLmConfig, CaLmForTokenPrediction)
+AutoModelForNucleotideClassification.register(CaLmConfig, CaLmForNucleotidePrediction)
 AutoTokenizer.register(CaLmConfig, RnaTokenizer)

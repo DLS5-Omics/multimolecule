@@ -122,11 +122,11 @@ Here is how to use this model as backbone to fine-tune for a sequence-level task
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, CaLmForSequenceClassification
+from multimolecule import RnaTokenizer, CaLmForSequencePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/calm')
-model = CaLmForSequenceClassification.from_pretrained('multimolecule/calm')
+model = CaLmForSequencePrediction.from_pretrained('multimolecule/calm')
 
 text = "GCCAGTCGCTGACAGCCGCGG"
 input = tokenizer(text, return_tensors='pt')
@@ -143,11 +143,11 @@ Here is how to use this model as backbone to fine-tune for a nucleotide-level ta
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, CaLmForNucleotideClassification
+from multimolecule import RnaTokenizer, CaLmForNucleotidePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/calm')
-model = CaLmForNucleotideClassification.from_pretrained('multimolecule/calm')
+model = CaLmForNucleotidePrediction.from_pretrained('multimolecule/calm')
 
 text = "GCCAGTCGCTGACAGCCGCGG"
 input = tokenizer(text, return_tensors='pt')

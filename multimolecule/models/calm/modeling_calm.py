@@ -38,10 +38,10 @@ from transformers.utils import logging
 
 from multimolecule.module import (
     MaskedLMHead,
-    NucleotideClassificationHead,
+    NucleotidePredictionHead,
     RotaryEmbedding,
-    SequenceClassificationHead,
-    TokenClassificationHead,
+    SequencePredictionHead,
+    TokenPredictionHead,
 )
 
 from .configuration_calm import CaLmConfig
@@ -322,12 +322,12 @@ class CaLmForPreTraining(CaLmForMaskedLM):
     pass
 
 
-class CaLmForSequenceClassification(CaLmPreTrainedModel):
+class CaLmForSequencePrediction(CaLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import CaLmConfig, CaLmForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForSequencePrediction, RnaTokenizer
         >>> config = CaLmConfig()
-        >>> model = CaLmForSequenceClassification(config)
+        >>> model = CaLmForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -337,7 +337,7 @@ class CaLmForSequenceClassification(CaLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -388,12 +388,12 @@ class CaLmForSequenceClassification(CaLmPreTrainedModel):
         )
 
 
-class CaLmForTokenClassification(CaLmPreTrainedModel):
+class CaLmForTokenPrediction(CaLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import CaLmConfig, CaLmForTokenClassification, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForTokenPrediction, RnaTokenizer
         >>> config = CaLmConfig()
-        >>> model = CaLmForTokenClassification(config)
+        >>> model = CaLmForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -403,7 +403,7 @@ class CaLmForTokenClassification(CaLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -452,12 +452,12 @@ class CaLmForTokenClassification(CaLmPreTrainedModel):
         )
 
 
-class CaLmForNucleotideClassification(CaLmPreTrainedModel):
+class CaLmForNucleotidePrediction(CaLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import CaLmConfig, CaLmForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForNucleotidePrediction, RnaTokenizer
         >>> config = CaLmConfig()
-        >>> model = CaLmForNucleotideClassification(config)
+        >>> model = CaLmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -467,7 +467,7 @@ class CaLmForNucleotideClassification(CaLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing

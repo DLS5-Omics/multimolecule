@@ -34,9 +34,9 @@ from transformers.modeling_outputs import ModelOutput
 from multimolecule.module import (
     ContactPredictionHead,
     MaskedLMHead,
-    NucleotideClassificationHead,
-    SequenceClassificationHead,
-    TokenClassificationHead,
+    NucleotidePredictionHead,
+    SequencePredictionHead,
+    TokenPredictionHead,
 )
 
 from .configuration_rnamsm import RnaMsmConfig
@@ -280,12 +280,12 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
+class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForSequencePrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForSequenceClassification(config)
+        >>> model = RnaMsmForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -295,7 +295,7 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -345,12 +345,12 @@ class RnaMsmForSequenceClassification(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
+class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForTokenClassification, RnaTokenizer
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForTokenPrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForTokenClassification(config)
+        >>> model = RnaMsmForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -360,7 +360,7 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -410,12 +410,12 @@ class RnaMsmForTokenClassification(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
+class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForNucleotidePrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForNucleotideClassification(config)
+        >>> model = RnaMsmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -425,7 +425,7 @@ class RnaMsmForNucleotideClassification(RnaMsmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing

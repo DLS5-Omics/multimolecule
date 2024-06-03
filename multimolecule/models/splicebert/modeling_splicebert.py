@@ -37,12 +37,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from multimolecule.module import (
-    MaskedLMHead,
-    NucleotideClassificationHead,
-    SequenceClassificationHead,
-    TokenClassificationHead,
-)
+from multimolecule.module import MaskedLMHead, NucleotidePredictionHead, SequencePredictionHead, TokenPredictionHead
 
 from .configuration_splicebert import SpliceBertConfig
 
@@ -409,12 +404,12 @@ class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForSequenceClassification(SpliceBertPreTrainedModel):
+class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForSequencePrediction, RnaTokenizer
         >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForSequenceClassification(config)
+        >>> model = SpliceBertForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -424,7 +419,7 @@ class SpliceBertForSequenceClassification(SpliceBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -475,12 +470,12 @@ class SpliceBertForSequenceClassification(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForTokenClassification(SpliceBertPreTrainedModel):
+class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForTokenClassification, RnaTokenizer
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForTokenPrediction, RnaTokenizer
         >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForTokenClassification(config)
+        >>> model = SpliceBertForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -490,7 +485,7 @@ class SpliceBertForTokenClassification(SpliceBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -539,12 +534,12 @@ class SpliceBertForTokenClassification(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForNucleotideClassification(SpliceBertPreTrainedModel):
+class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForNucleotidePrediction, RnaTokenizer
         >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForNucleotideClassification(config)
+        >>> model = SpliceBertForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -554,7 +549,7 @@ class SpliceBertForNucleotideClassification(SpliceBertPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
