@@ -41,10 +41,10 @@ from transformers.utils import logging
 from multimolecule.module import (
     ContactPredictionHead,
     MaskedLMHead,
-    NucleotideClassificationHead,
+    NucleotidePredictionHead,
     RotaryEmbedding,
-    SequenceClassificationHead,
-    TokenClassificationHead,
+    SequencePredictionHead,
+    TokenPredictionHead,
 )
 
 from .configuration_rnafm import RnaFmConfig
@@ -413,12 +413,12 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForSequenceClassification(RnaFmPreTrainedModel):
+class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import RnaFmConfig, RnaFmForSequencePrediction, RnaTokenizer
         >>> config = RnaFmConfig()
-        >>> model = RnaFmForSequenceClassification(config)
+        >>> model = RnaFmForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -428,7 +428,7 @@ class RnaFmForSequenceClassification(RnaFmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnafm = RnaFmModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -479,12 +479,12 @@ class RnaFmForSequenceClassification(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForTokenClassification(RnaFmPreTrainedModel):
+class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForTokenClassification, RnaTokenizer
+        >>> from multimolecule import RnaFmConfig, RnaFmForTokenPrediction, RnaTokenizer
         >>> config = RnaFmConfig()
-        >>> model = RnaFmForTokenClassification(config)
+        >>> model = RnaFmForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -494,7 +494,7 @@ class RnaFmForTokenClassification(RnaFmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnafm = RnaFmModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -543,12 +543,12 @@ class RnaFmForTokenClassification(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForNucleotideClassification(RnaFmPreTrainedModel):
+class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import RnaFmConfig, RnaFmForNucleotidePrediction, RnaTokenizer
         >>> config = RnaFmConfig()
-        >>> model = RnaFmForNucleotideClassification(config)
+        >>> model = RnaFmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -558,7 +558,7 @@ class RnaFmForNucleotideClassification(RnaFmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.rnafm = RnaFmModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing

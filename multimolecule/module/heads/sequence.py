@@ -21,13 +21,13 @@ from typing import Tuple
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
-from .generic import ClassificationHead
+from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 
 
 @HeadRegistry.register("sequence")
-class SequenceClassificationHead(ClassificationHead):
+class SequencePredictionHead(PredictionHead):
     """Head for sequence-level tasks."""
 
     def forward(

@@ -31,10 +31,10 @@ from ..modeling_auto import AutoModelForNucleotideClassification
 from .configuration_rinalmo import RiNALMoConfig
 from .modeling_rinalmo import (
     RiNALMoForMaskedLM,
-    RiNALMoForNucleotideClassification,
+    RiNALMoForNucleotidePrediction,
     RiNALMoForPreTraining,
-    RiNALMoForSequenceClassification,
-    RiNALMoForTokenClassification,
+    RiNALMoForSequencePrediction,
+    RiNALMoForTokenPrediction,
     RiNALMoModel,
     RiNALMoPreTrainedModel,
 )
@@ -46,9 +46,9 @@ __all__ = [
     "RiNALMoPreTrainedModel",
     "RiNALMoForMaskedLM",
     "RiNALMoForPreTraining",
-    "RiNALMoForSequenceClassification",
-    "RiNALMoForTokenClassification",
-    "RiNALMoForNucleotideClassification",
+    "RiNALMoForSequencePrediction",
+    "RiNALMoForTokenPrediction",
+    "RiNALMoForNucleotidePrediction",
 ]
 
 AutoConfig.register("rinalmo", RiNALMoConfig)
@@ -56,7 +56,7 @@ AutoBackbone.register(RiNALMoConfig, RiNALMoModel)
 AutoModel.register(RiNALMoConfig, RiNALMoModel)
 AutoModelForMaskedLM.register(RiNALMoConfig, RiNALMoForMaskedLM)
 AutoModelForPreTraining.register(RiNALMoConfig, RiNALMoForPreTraining)
-AutoModelForSequenceClassification.register(RiNALMoConfig, RiNALMoForSequenceClassification)
-AutoModelForTokenClassification.register(RiNALMoConfig, RiNALMoForTokenClassification)
-AutoModelForNucleotideClassification.register(RiNALMoConfig, RiNALMoForNucleotideClassification)
+AutoModelForSequenceClassification.register(RiNALMoConfig, RiNALMoForSequencePrediction)
+AutoModelForTokenClassification.register(RiNALMoConfig, RiNALMoForTokenPrediction)
+AutoModelForNucleotideClassification.register(RiNALMoConfig, RiNALMoForNucleotidePrediction)
 AutoTokenizer.register(RiNALMoConfig, RnaTokenizer)

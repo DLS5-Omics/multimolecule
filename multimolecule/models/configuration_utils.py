@@ -79,7 +79,7 @@ class HeadConfig(BaseHeadConfig):
         num_labels (`int`, *optional*):
             Number of labels to use in the last layer added to the model, typically for a classification task.
         problem_type (`str`, *optional*):
-            Problem type for `XxxForSequenceClassification` models. Can be one of `"regression"`,
+            Problem type for `XxxForSequencePrediction` models. Can be one of `"regression"`,
             `"single_label_classification"` or `"multi_label_classification"`.
         hidden_size (`int`, *optional*, defaults to 768):
             Dimensionality of the encoder layers and the pooler layer.

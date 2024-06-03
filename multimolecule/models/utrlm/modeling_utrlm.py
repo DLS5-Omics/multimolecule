@@ -41,10 +41,10 @@ from transformers.utils import logging
 from multimolecule.module import (
     ContactPredictionHead,
     MaskedLMHead,
-    NucleotideClassificationHead,
+    NucleotidePredictionHead,
     RotaryEmbedding,
-    SequenceClassificationHead,
-    TokenClassificationHead,
+    SequencePredictionHead,
+    TokenPredictionHead,
 )
 
 from .configuration_utrlm import UtrLmConfig
@@ -424,7 +424,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         )
 
 
-class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
+class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
@@ -439,7 +439,7 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=True)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -490,7 +490,7 @@ class UtrLmForSequenceClassification(UtrLmPreTrainedModel):
         )
 
 
-class UtrLmForTokenClassification(UtrLmPreTrainedModel):
+class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
     """
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
@@ -505,7 +505,7 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -554,12 +554,12 @@ class UtrLmForTokenClassification(UtrLmPreTrainedModel):
         )
 
 
-class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
+class UtrLmForNucleotidePrediction(UtrLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrLmConfig, UtrLmForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import UtrLmConfig, UtrLmForNucleotidePrediction, RnaTokenizer
         >>> config = UtrLmConfig()
-        >>> model = UtrLmForNucleotideClassification(config)
+        >>> model = UtrLmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -569,7 +569,7 @@ class UtrLmForNucleotideClassification(UtrLmPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
@@ -1164,10 +1164,10 @@ class UtrLmPreTrainingHeads(nn.Module):
         self.predictions = MaskedLMHead(config)
         self.ss_head = None
         if config.ss_head is not None:
-            self.ss_head = TokenClassificationHead(config, config.ss_head)
+            self.ss_head = TokenPredictionHead(config, config.ss_head)
         self.mfe_head = None
         if config.mfe_head is not None:
-            self.mfe_head = SequenceClassificationHead(config, config.mfe_head)
+            self.mfe_head = SequencePredictionHead(config, config.mfe_head)
 
     def forward(
         self,

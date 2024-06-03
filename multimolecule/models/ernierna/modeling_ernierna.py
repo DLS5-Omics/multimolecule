@@ -36,10 +36,10 @@ from transformers.utils import logging
 
 from multimolecule.module import (
     MaskedLMHead,
-    NucleotideClassificationHead,
-    SequenceClassificationHead,
+    NucleotidePredictionHead,
+    SequencePredictionHead,
     SinusoidalEmbedding,
-    TokenClassificationHead,
+    TokenPredictionHead,
 )
 
 from ...module.criterions import Criterion
@@ -399,7 +399,7 @@ class ErnieRnaForContactClassification(ErnieRnaPreTrainedModel):
         self.num_labels = config.head.num_labels
         self.ernierna = ErnieRnaModel(config)
         self.lm_head = MaskedLMHead(config)
-        self.ss_head = ErnieRnaContactPredictionHead(config)
+        self.ss_head = ErnieRnaContactClassificationHead(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -471,12 +471,12 @@ class ErnieRnaForContactClassification(ErnieRnaPreTrainedModel):
         )
 
 
-class ErnieRnaForSequenceClassification(ErnieRnaPreTrainedModel):
+class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForSequenceClassification, RnaTokenizer
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForSequencePrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForSequenceClassification(config)
+        >>> model = ErnieRnaForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer()
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -486,7 +486,7 @@ class ErnieRnaForSequenceClassification(ErnieRnaPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.ernierna = ErnieRnaModel(config)
-        self.sequence_head = SequenceClassificationHead(config)
+        self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
         # Initialize weights and apply final processing
@@ -539,12 +539,12 @@ class ErnieRnaForSequenceClassification(ErnieRnaPreTrainedModel):
         )
 
 
-class ErnieRnaForTokenClassification(ErnieRnaPreTrainedModel):
+class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForTokenClassification, RnaTokenizer
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForTokenPrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForTokenClassification(config)
+        >>> model = ErnieRnaForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer()
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -554,7 +554,7 @@ class ErnieRnaForTokenClassification(ErnieRnaPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.num_labels
         self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
-        self.token_head = TokenClassificationHead(config)
+        self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
         # Initialize weights and apply final processing
@@ -605,12 +605,12 @@ class ErnieRnaForTokenClassification(ErnieRnaPreTrainedModel):
         )
 
 
-class ErnieRnaForNucleotideClassification(ErnieRnaPreTrainedModel):
+class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForNucleotideClassification, RnaTokenizer
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForNucleotidePrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForNucleotideClassification(config)
+        >>> model = ErnieRnaForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer()
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -620,7 +620,7 @@ class ErnieRnaForNucleotideClassification(ErnieRnaPreTrainedModel):
         super().__init__(config)
         self.num_labels = config.head.num_labels
         self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideClassificationHead(config)
+        self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
@@ -1167,7 +1167,7 @@ class ErnieRnaPooler(nn.Module):
         return pooled_output
 
 
-class ErnieRnaContactPredictionHead(nn.Module):
+class ErnieRnaContactClassificationHead(nn.Module):
 
     def __init__(self, config: ErnieRnaConfig, head_config: HeadConfig | None = None):
         super().__init__()
@@ -1194,11 +1194,11 @@ class ErnieRnaContactPredictionHead(nn.Module):
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
-                    "Either attention_mask or input_ids must be provided for ContactPredictionHead to work."
+                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
                 )
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to ContactPredictionHead."
+                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
         # In the original model, attention for padding tokens are completely zeroed out.

@@ -112,11 +112,11 @@ Here is how to use this model as backbone to fine-tune for a sequence-level task
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, ErnieRnaForSequenceClassification
+from multimolecule import RnaTokenizer, ErnieRnaForSequencePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/ernierna')
-model = ErnieRnaForSequenceClassification.from_pretrained('multimolecule/ernierna')
+model = ErnieRnaForSequencePrediction.from_pretrained('multimolecule/ernierna')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')
@@ -133,11 +133,11 @@ Here is how to use this model as backbone to fine-tune for a nucleotide-level ta
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, ErnieRnaForNucleotideClassification
+from multimolecule import RnaTokenizer, ErnieRnaForNucleotidePrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/ernierna')
-model = ErnieRnaForNucleotideClassification.from_pretrained('multimolecule/ernierna')
+model = ErnieRnaForNucleotidePrediction.from_pretrained('multimolecule/ernierna')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')
