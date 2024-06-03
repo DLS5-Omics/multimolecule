@@ -379,6 +379,7 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
     ) -> Tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
         if output_attentions is False:
             warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnafm(
             input_ids,
             attention_mask=attention_mask,
@@ -1154,7 +1155,7 @@ class RnaFmPreTrainingHeads(nn.Module):
         input_ids: Tensor | NestedTensor | None = None,
     ) -> Tuple[Tensor, Tensor]:
         logits = self.predictions(outputs)
-        contact_map = self.contact(torch.stack(outputs[-1], 1), attention_mask, input_ids)
+        contact_map = self.contact(outputs, attention_mask, input_ids)
         return logits, contact_map
 
 
