@@ -27,7 +27,11 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import AutoModelForNucleotideClassification
+from ..modeling_auto import (
+    AutoModelForNucleotidePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_rnabert import RnaBertConfig
 from .modeling_rnabert import (
     RnaBertForMaskedLM,
@@ -46,9 +50,9 @@ __all__ = [
     "RnaBertPreTrainedModel",
     "RnaBertForMaskedLM",
     "RnaBertForPreTraining",
+    "RnaBertForNucleotidePrediction",
     "RnaBertForSequencePrediction",
     "RnaBertForTokenPrediction",
-    "RnaBertForNucleotidePrediction",
 ]
 
 AutoConfig.register("rnabert", RnaBertConfig)
@@ -56,7 +60,9 @@ AutoBackbone.register(RnaBertConfig, RnaBertModel)
 AutoModel.register(RnaBertConfig, RnaBertModel)
 AutoModelForMaskedLM.register(RnaBertConfig, RnaBertForMaskedLM)
 AutoModelForPreTraining.register(RnaBertConfig, RnaBertForPreTraining)
+AutoModelForNucleotidePrediction.register(RnaBertConfig, RnaBertForNucleotidePrediction)
+AutoModelForSequencePrediction.register(RnaBertConfig, RnaBertForSequencePrediction)
 AutoModelForSequenceClassification.register(RnaBertConfig, RnaBertForSequencePrediction)
+AutoModelForTokenPrediction.register(RnaBertConfig, RnaBertForTokenPrediction)
 AutoModelForTokenClassification.register(RnaBertConfig, RnaBertForTokenPrediction)
-AutoModelForNucleotideClassification.register(RnaBertConfig, RnaBertForNucleotidePrediction)
 AutoTokenizer.register(RnaBertConfig, RnaTokenizer)

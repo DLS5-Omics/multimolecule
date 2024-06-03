@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 import multimolecule  # noqa: F401
 
-model = AutoModel.from_pretrained("multimolecule/mrnafm")
+model = AutoModelForSequenceClassification.from_pretrained("multimolecule/mrnafm")
 tokenizer = AutoTokenizer.from_pretrained("multimolecule/mrnafm")
 
 sequence = "UAGCGUAUCAGACUGAUGUUG"

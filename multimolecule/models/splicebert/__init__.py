@@ -27,7 +27,11 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import AutoModelForNucleotideClassification
+from ..modeling_auto import (
+    AutoModelForNucleotidePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
     SpliceBertForMaskedLM,
@@ -46,9 +50,9 @@ __all__ = [
     "SpliceBertPreTrainedModel",
     "SpliceBertForMaskedLM",
     "SpliceBertForPreTraining",
+    "SpliceBertForNucleotidePrediction",
     "SpliceBertForSequencePrediction",
     "SpliceBertForTokenPrediction",
-    "SpliceBertForNucleotidePrediction",
 ]
 
 AutoConfig.register("splicebert", SpliceBertConfig)
@@ -56,7 +60,9 @@ AutoBackbone.register(SpliceBertConfig, SpliceBertModel)
 AutoModel.register(SpliceBertConfig, SpliceBertModel)
 AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
 AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPreTraining)
+AutoModelForNucleotidePrediction.register(SpliceBertConfig, SpliceBertForNucleotidePrediction)
+AutoModelForSequencePrediction.register(SpliceBertConfig, SpliceBertForSequencePrediction)
 AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequencePrediction)
+AutoModelForTokenPrediction.register(SpliceBertConfig, SpliceBertForTokenPrediction)
 AutoModelForTokenClassification.register(SpliceBertConfig, SpliceBertForTokenPrediction)
-AutoModelForNucleotideClassification.register(SpliceBertConfig, SpliceBertForNucleotidePrediction)
 AutoTokenizer.register(SpliceBertConfig, RnaTokenizer)

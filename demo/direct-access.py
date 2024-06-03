@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from multimolecule.models import RnaFmModel, RnaTokenizer
+from multimolecule.models import RnaFmForNucleotidePrediction, RnaTokenizer
 
-model = RnaFmModel.from_pretrained("multimolecule/rnafm")
+model = RnaFmForNucleotidePrediction.from_pretrained("multimolecule/rnafm")
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 
 sequence = "UAGCGUAUCAGACUGAUGUUG"

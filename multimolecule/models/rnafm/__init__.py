@@ -27,7 +27,11 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import AutoModelForNucleotideClassification
+from ..modeling_auto import (
+    AutoModelForNucleotidePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_rnafm import RnaFmConfig
 from .modeling_rnafm import (
     RnaFmForMaskedLM,
@@ -46,9 +50,9 @@ __all__ = [
     "RnaFmPreTrainedModel",
     "RnaFmForMaskedLM",
     "RnaFmForPreTraining",
+    "RnaFmForNucleotidePrediction",
     "RnaFmForSequencePrediction",
     "RnaFmForTokenPrediction",
-    "RnaFmForNucleotidePrediction",
 ]
 
 AutoConfig.register("rnafm", RnaFmConfig)
@@ -56,7 +60,9 @@ AutoBackbone.register(RnaFmConfig, RnaFmModel)
 AutoModel.register(RnaFmConfig, RnaFmModel)
 AutoModelForMaskedLM.register(RnaFmConfig, RnaFmForMaskedLM)
 AutoModelForPreTraining.register(RnaFmConfig, RnaFmForPreTraining)
+AutoModelForNucleotidePrediction.register(RnaFmConfig, RnaFmForNucleotidePrediction)
+AutoModelForSequencePrediction.register(RnaFmConfig, RnaFmForSequencePrediction)
 AutoModelForSequenceClassification.register(RnaFmConfig, RnaFmForSequencePrediction)
+AutoModelForTokenPrediction.register(RnaFmConfig, RnaFmForTokenPrediction)
 AutoModelForTokenClassification.register(RnaFmConfig, RnaFmForTokenPrediction)
-AutoModelForNucleotideClassification.register(RnaFmConfig, RnaFmForNucleotidePrediction)
 AutoTokenizer.register(RnaFmConfig, RnaTokenizer)
