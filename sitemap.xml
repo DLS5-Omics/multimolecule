@@ -29,6 +29,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/models/ernierna/</loc>
+        <lastmod>2024-06-03</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/models/rinalmo/</loc>
         <lastmod>2024-06-03</lastmod>
         <changefreq>daily</changefreq>
@@ -125,6 +132,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/models/ernierna/</loc>
+        <lastmod>2024-06-03</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/rinalmo/</loc>

@@ -497,6 +497,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#model-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Class
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nucleotide-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nucleotide Prediction
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       Usage
@@ -505,6 +529,15 @@
   
     <nav class="md-nav" aria-label="Usage">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-with-multimoleculeautomodels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build with multimolecule.AutoModels
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#direct-access" class="md-nav__link">
@@ -519,24 +552,6 @@
   <a href="#build-with-transformersautomodels" class="md-nav__link">
     <span class="md-ellipsis">
       Build with transformers.AutoModels
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#build-with-multimoleculeautomodels" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build with multimolecule.AutoModels
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#multimoleculeautomodelfornucleotideclassification" class="md-nav__link">
-    <span class="md-ellipsis">
-      multimolecule.AutoModelForNucleotideClassification
     </span>
   </a>
   
@@ -701,6 +716,8 @@
       
         
       
+        
+      
     
     
       
@@ -740,6 +757,27 @@
             RNA
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ernierna/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ERNIE-RNA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -984,6 +1022,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#model-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Class
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nucleotide-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nucleotide Prediction
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       Usage
@@ -992,6 +1054,15 @@
   
     <nav class="md-nav" aria-label="Usage">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-with-multimoleculeautomodels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build with multimolecule.AutoModels
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#direct-access" class="md-nav__link">
@@ -1006,24 +1077,6 @@
   <a href="#build-with-transformersautomodels" class="md-nav__link">
     <span class="md-ellipsis">
       Build with transformers.AutoModels
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#build-with-multimoleculeautomodels" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build with multimolecule.AutoModels
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#multimoleculeautomodelfornucleotideclassification" class="md-nav__link">
-    <span class="md-ellipsis">
-      multimolecule.AutoModelForNucleotideClassification
     </span>
   </a>
   
@@ -1114,78 +1167,87 @@ date: 2024-05-04</li>
 <hr />
 <h1 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h1>
 <p><code>models</code> provide a collection of pre-trained models.</p>
+<h2 id="model-class">Model Class<a class="headerlink" href="#model-class" title="Permanent link">&para;</a></h2>
+<p>In the <a href="https://huggingface.co/docs/transformers/en/tasks/sequence_classification"><code>transformers</code></a> library, the names of model classes can sometimes be misleading.
+While these classes support both regression and classification tasks, their names often include <code>xxxForSequenceClassification</code>, which may imply they are only for classification.</p>
+<p>To avoid this ambiguity, MultiMolecule provides a set of model classes with clear, intuitive names that reflect their intended use:</p>
+<ul>
+<li><code>multimolecule.AutoModelForContactPrediction</code>: Contact Prediction</li>
+<li><code>multimolecule.AutoModelForNucleotidePrediction</code>: Nucleotide Prediction</li>
+<li><code>multimolecule.AutoModelForSequencePrediction</code>: Sequence Prediction</li>
+<li><code>multimolecule.AutoModelForTokenPrediction</code>: Token Prediction</li>
+</ul>
+<p>Each of these models supports both regression and classification tasks, offering flexibility and precision for a wide range of applications.</p>
+<h3 id="nucleotide-prediction">Nucleotide Prediction<a class="headerlink" href="#nucleotide-prediction" title="Permanent link">&para;</a></h3>
+<p>Similar to <a href="https://huggingface.co/docs/transformers/en/tasks/token_classification">Token Classification</a>, but removes the <code>&lt;bos&gt;</code> token and the <code>&lt;eos&gt;</code> token if they are defined in the model config.</p>
+<div class="admonition note">
+<p class="admonition-title"><code>&lt;bos&gt;</code> and <code>&lt;eos&gt;</code> tokens</p>
+<p>In tokenizers provided by MultiMolecule, <code>&lt;bos&gt;</code> token is pointed to <code>&lt;cls&gt;</code> token, and <code>&lt;sep&gt;</code> token is pointed to <code>&lt;eos&gt;</code> token.</p>
+</div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<h3 id="direct-access">Direct Access<a class="headerlink" href="#direct-access" title="Permanent link">&para;</a></h3>
-<p>All models can be directly loaded with the <code>from_pretrained</code> method.</p>
+<h3 id="build-with-multimoleculeautomodels">Build with <code>multimolecule.AutoModel</code>s<a class="headerlink" href="#build-with-multimoleculeautomodels" title="Permanent link">&para;</a></h3>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
 <span class="normal"><a href="#__codelineno-0-4">4</a></span>
 <span class="normal"><a href="#__codelineno-0-5">5</a></span>
 <span class="normal"><a href="#__codelineno-0-6">6</a></span>
-<span class="normal"><a href="#__codelineno-0-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">multimolecule.models</span> <span class="kn">import</span> <span class="n">RnaFmModel</span><span class="p">,</span> <span class="n">RnaTokenizer</span>
+<span class="normal"><a href="#__codelineno-0-7">7</a></span>
+<span class="normal"><a href="#__codelineno-0-8">8</a></span>
+<span class="normal"><a href="#__codelineno-0-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="n">model</span> <span class="o">=</span> <span class="n">RnaFmModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">multimolecule</span> <span class="kn">import</span> <span class="n">AutoModelForSequencePrediction</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForSequencePrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="build-with-transformersautomodels">Build with <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s<a class="headerlink" href="#build-with-transformersautomodels" title="Permanent link">&para;</a></h3>
-<p>All models have been registered with <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s, and can be directly loaded using corresponding <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s classes.</p>
+<h3 id="direct-access">Direct Access<a class="headerlink" href="#direct-access" title="Permanent link">&para;</a></h3>
+<p>All models can be directly loaded with the <code>from_pretrained</code> method.</p>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
 <span class="normal"><a href="#__codelineno-1-4">4</a></span>
 <span class="normal"><a href="#__codelineno-1-5">5</a></span>
 <span class="normal"><a href="#__codelineno-1-6">6</a></span>
-<span class="normal"><a href="#__codelineno-1-7">7</a></span>
-<span class="normal"><a href="#__codelineno-1-8">8</a></span>
-<span class="normal"><a href="#__codelineno-1-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModel</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+<span class="normal"><a href="#__codelineno-1-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">multimolecule.models</span> <span class="kn">import</span> <span class="n">RnaFmForNucleotidePrediction</span><span class="p">,</span> <span class="n">RnaTokenizer</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kn">import</span> <span class="nn">multimolecule</span>  <span class="c1"># noqa: F401</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/mrnafm&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/mrnafm&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="n">model</span> <span class="o">=</span> <span class="n">RnaFmForNucleotidePrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="build-with-transformersautomodels">Build with <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s<a class="headerlink" href="#build-with-transformersautomodels" title="Permanent link">&para;</a></h3>
+<p>While we use a different naming convention for model classes, the models are still registered to corresponding <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span>
+<span class="normal"><a href="#__codelineno-2-8">8</a></span>
+<span class="normal"><a href="#__codelineno-2-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForSequenceClassification</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kn">import</span> <span class="nn">multimolecule</span>  <span class="c1"># noqa: F401</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/mrnafm&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/mrnafm&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
 <div class="admonition danger">
 <p class="admonition-title"><code>import multimolecule</code> before use</p>
 <p>Note that you must <code>import multimolecule</code> before building the model using <code>transformers.AutoModel</code>.
 The registration of models is done in the <code>multimolecule</code> package, and the models are not available in the <code>transformers</code> package.</p>
 <p>The following error will be raised if you do not <code>import multimolecule</code> before using <code>transformers.AutoModel</code>:</p>
-<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="ne">ValueError</span><span class="p">:</span> <span class="n">The</span> <span class="n">checkpoint</span> <span class="n">you</span> <span class="n">are</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">load</span> <span class="n">has</span> <span class="n">model</span> <span class="nb">type</span> <span class="err">`</span><span class="n">rnafm</span><span class="err">`</span> <span class="n">but</span> <span class="n">Transformers</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">recognize</span> <span class="n">this</span> <span class="n">architecture</span><span class="o">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">be</span> <span class="n">because</span> <span class="n">of</span> <span class="n">an</span> <span class="n">issue</span> <span class="k">with</span> <span class="n">the</span> <span class="n">checkpoint</span><span class="p">,</span> <span class="ow">or</span> <span class="n">because</span> <span class="n">your</span> <span class="n">version</span> <span class="n">of</span> <span class="n">Transformers</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">date</span><span class="o">.</span>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="ne">ValueError</span><span class="p">:</span> <span class="n">The</span> <span class="n">checkpoint</span> <span class="n">you</span> <span class="n">are</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">load</span> <span class="n">has</span> <span class="n">model</span> <span class="nb">type</span> <span class="err">`</span><span class="n">rnafm</span><span class="err">`</span> <span class="n">but</span> <span class="n">Transformers</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">recognize</span> <span class="n">this</span> <span class="n">architecture</span><span class="o">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">be</span> <span class="n">because</span> <span class="n">of</span> <span class="n">an</span> <span class="n">issue</span> <span class="k">with</span> <span class="n">the</span> <span class="n">checkpoint</span><span class="p">,</span> <span class="ow">or</span> <span class="n">because</span> <span class="n">your</span> <span class="n">version</span> <span class="n">of</span> <span class="n">Transformers</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">date</span><span class="o">.</span>
 </code></pre></div></td></tr></table></div>
 </div>
-<h3 id="build-with-multimoleculeautomodels">Build with <code>multimolecule.AutoModel</code>s<a class="headerlink" href="#build-with-multimoleculeautomodels" title="Permanent link">&para;</a></h3>
-<p>Similar to <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModel"><code>transformers.AutoModel</code></a>s, MultiMolecule provides a set of <code>multimolecule.AutoModel</code>s for direct access to models.</p>
-<p>These include:</p>
-<h3 id="multimoleculeautomodelfornucleotideclassification"><code>multimolecule.AutoModelForNucleotideClassification</code><a class="headerlink" href="#multimoleculeautomodelfornucleotideclassification" title="Permanent link">&para;</a></h3>
-<p>Similar to <a class="autorefs autorefs-external" href="https://huggingface.co/docs/transformers/master/en/model_doc/auto#transformers.AutoModelForTokenClassification"><code>transformers.AutoModelForTokenClassification</code></a>, but removes the <code>&lt;bos&gt;</code> token and the <code>&lt;eos&gt;</code> token if they are defined in the model config.</p>
-<div class="admonition note">
-<p class="admonition-title"><code>&lt;bos&gt;</code> and <code>&lt;eos&gt;</code> tokens</p>
-<p>In tokenizers provided by MultiMolecule, <code>&lt;bos&gt;</code> token is pointed to <code>&lt;cls&gt;</code> token, and <code>&lt;sep&gt;</code> token is pointed to <code>&lt;eos&gt;</code> token.</p>
-</div>
-<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span>
-<span class="normal"><a href="#__codelineno-3-4">4</a></span>
-<span class="normal"><a href="#__codelineno-3-5">5</a></span>
-<span class="normal"><a href="#__codelineno-3-6">6</a></span>
-<span class="normal"><a href="#__codelineno-3-7">7</a></span>
-<span class="normal"><a href="#__codelineno-3-8">8</a></span>
-<span class="normal"><a href="#__codelineno-3-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kn">from</span> <span class="nn">multimolecule</span> <span class="kn">import</span> <span class="n">AutoModelForNucleotideClassification</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForNucleotideClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/rnafm&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7"></a>
-<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
 <h3 id="initialize-a-vanilla-model">Initialize a vanilla model<a class="headerlink" href="#initialize-a-vanilla-model" title="Permanent link">&para;</a></h3>
 <p>You can also initialize a vanilla model using the model class.</p>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
@@ -1195,10 +1257,10 @@ The registration of models is done in the <code>multimolecule</code> package, an
 <span class="normal"><a href="#__codelineno-4-5">5</a></span>
 <span class="normal"><a href="#__codelineno-4-6">6</a></span>
 <span class="normal"><a href="#__codelineno-4-7">7</a></span>
-<span class="normal"><a href="#__codelineno-4-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">multimolecule.models</span> <span class="kn">import</span> <span class="n">RnaFmConfig</span><span class="p">,</span> <span class="n">RnaFmModel</span><span class="p">,</span> <span class="n">RnaTokenizer</span>
+<span class="normal"><a href="#__codelineno-4-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">multimolecule.models</span> <span class="kn">import</span> <span class="n">RnaFmConfig</span><span class="p">,</span> <span class="n">RnaFmForNucleotidePrediction</span><span class="p">,</span> <span class="n">RnaTokenizer</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2"></a>
 <a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">RnaFmConfig</span><span class="p">()</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="n">model</span> <span class="o">=</span> <span class="n">RnaFmModel</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="n">model</span> <span class="o">=</span> <span class="n">RnaFmForNucleotidePrediction</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="p">()</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6"></a>
 <a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
@@ -1211,6 +1273,7 @@ The registration of models is done in the <code>multimolecule</code> package, an
 </ul>
 <h3 id="ribonucleic-acid-rna">RiboNucleic acid (RNA)<a class="headerlink" href="#ribonucleic-acid-rna" title="Permanent link">&para;</a></h3>
 <ul>
+<li><a href="ernierna/">ERNIE-RNA</a></li>
 <li><a href="rinalmo/">RiNALMo</a></li>
 <li><a href="rnabert/">RNABERT</a></li>
 <li><a href="rnafm/">RNA-FM</a></li>
