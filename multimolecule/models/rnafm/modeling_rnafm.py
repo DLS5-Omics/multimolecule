@@ -255,32 +255,27 @@ class RnaFmModel(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForMaskedLM(RnaFmPreTrainedModel):
+class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForMaskedLM, RnaTokenizer
+        >>> from multimolecule import RnaFmConfig, RnaFmForNucleotidePrediction, RnaTokenizer
         >>> config = RnaFmConfig()
-        >>> model = RnaFmForMaskedLM(config)
+        >>> model = RnaFmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=input["input_ids"])
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
-
-    _tied_weights_keys = ["lm_head.decoder.weight"]
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `RnaFmForMaskedLM` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config)
+        self.num_labels = config.head.num_labels
+        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.nucleotide_head = NucleotidePredictionHead(config)
+        self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -292,14 +287,12 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnafm(
             input_ids,
@@ -307,110 +300,21 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return MaskedLMOutput(
+        return NucleotidePredictorOutput(
             loss=loss,
             logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class RnaFmForPreTraining(RnaFmPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForPreTraining, RnaTokenizer
-        >>> config = RnaFmConfig()
-        >>> model = RnaFmForPreTraining(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels_mlm=input["input_ids"])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<AddBackward0>)
-        >>> output["logits"].shape
-        torch.Size([1, 7, 26])
-        >>> output["contact_map"].shape
-        torch.Size([1, 5, 5, 2])
-    """
-
-    _tied_weights_keys = ["head.predictions.decoder.weight"]
-
-    def __init__(self, config: RnaFmConfig):
-        super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `RnaFmForPreTraining` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
-        self.pretrain = RnaFmPreTrainingHeads(config)
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def get_output_embeddings(self):
-        return self.pretrain.predictions.decoder
-
-    def set_output_embeddings(self, embeddings):
-        self.pretrain.predictions.decoder = embeddings
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
-        labels_mlm: Tensor | None = None,
-        labels_contact: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnafm(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
-            output_attentions=True,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        total_loss, logits, contact_map = self.pretrain(
-            outputs, attention_mask, input_ids, labels_mlm=labels_mlm, labels_contact=labels_contact
-        )
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((total_loss,) + output) if total_loss is not None else output
-
-        return RnaFmForPreTrainingOutput(
-            loss=total_loss,
-            logits=logits,
-            contact_map=contact_map,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
@@ -546,27 +450,32 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
+class RnaFmForMaskedLM(RnaFmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaFmConfig, RnaFmForNucleotidePrediction, RnaTokenizer
+        >>> from multimolecule import RnaFmConfig, RnaFmForMaskedLM, RnaTokenizer
         >>> config = RnaFmConfig()
-        >>> model = RnaFmForNucleotidePrediction(config)
+        >>> model = RnaFmForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 7, 26])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
+
+    _tied_weights_keys = ["lm_head.decoder.weight", "lm_head.decoder.bias"]
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
+        if config.is_decoder:
+            logger.warning(
+                "If you want to use `RnaFmForMaskedLM` make sure `config.is_decoder=False` for "
+                "bi-directional self-attention."
+            )
+        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -578,12 +487,14 @@ class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
+    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnafm(
             input_ids,
@@ -591,21 +502,117 @@ class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return NucleotidePredictorOutput(
+        return MaskedLMOutput(
             loss=loss,
             logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class RnaFmForPreTraining(RnaFmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import RnaFmConfig, RnaFmForPreTraining, RnaTokenizer
+        >>> config = RnaFmConfig()
+        >>> model = RnaFmForPreTraining(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<AddBackward0>)
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["contact_map"].shape
+        torch.Size([1, 5, 5, 2])
+    """
+
+    _tied_weights_keys = [
+        "lm_head.decoder.weight",
+        "lm_head.decoder.bias",
+        "pretrain.predictions.decoder.weight",
+        "pretrain.predictions.decoder.bias",
+        "pretrain.predictions_ss.decoder.weight",
+        "pretrain.predictions_ss.decoder.bias",
+    ]
+
+    def __init__(self, config: RnaFmConfig):
+        super().__init__(config)
+        if config.is_decoder:
+            logger.warning(
+                "If you want to use `RnaFmForPreTraining` make sure `config.is_decoder=False` for "
+                "bi-directional self-attention."
+            )
+        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.pretrain = RnaFmPreTrainingHeads(config)
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def get_output_embeddings(self):
+        return self.pretrain.predictions.decoder
+
+    def set_output_embeddings(self, embeddings):
+        self.pretrain.predictions.decoder = embeddings
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        labels_mlm: Tensor | None = None,
+        labels_contact: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.rnafm(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        total_loss, logits, contact_map = self.pretrain(
+            outputs, attention_mask, input_ids, labels_mlm=labels_mlm, labels_contact=labels_contact
+        )
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((total_loss,) + output) if total_loss is not None else output
+
+        return RnaFmForPreTrainingOutput(
+            loss=total_loss,
+            logits=logits,
+            contact_map=contact_map,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
