@@ -256,108 +256,27 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
+class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForMaskedLM, RnaTokenizer
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForNucleotidePrediction, RnaTokenizer
         >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForMaskedLM(config)
+        >>> model = SpliceBertForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=input["input_ids"])
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
-
-    _tied_weights_keys = ["lm_head.decoder.bias", "lm_head.decoder.weight"]
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `SpliceBertForMaskedLM` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config)
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def get_output_embeddings(self):
-        return self.lm_head.decoder
-
-    def set_output_embeddings(self, new_embeddings):
-        self.lm_head.decoder = new_embeddings
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.lm_head(outputs, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return MaskedLMOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForPreTraining, RnaTokenizer
-        >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForPreTraining(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
-    """
-
-    _tied_weights_keys = ["pretrain_head.decoder.bias", "pretrain_head.decoder.weight"]
-
-    def __init__(self, config: SpliceBertConfig):
-        super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `SpliceBertForPreTraining` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config)
+        self.num_labels = config.head.num_labels
+        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.nucleotide_head = NucleotidePredictionHead(config)
+        self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -369,14 +288,12 @@ class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.splicebert(
             input_ids,
@@ -384,21 +301,19 @@ class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return MaskedLMOutput(
+        return NucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -536,30 +451,41 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
+class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForNucleotidePrediction, RnaTokenizer
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForMaskedLM, RnaTokenizer
         >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForNucleotidePrediction(config)
+        >>> model = SpliceBertForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 7, 26])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
+
+    _tied_weights_keys = ["lm_head.decoder.bias", "lm_head.decoder.weight"]
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
+        if config.is_decoder:
+            logger.warning(
+                "If you want to use `SpliceBertForMaskedLM` make sure `config.is_decoder=False` for "
+                "bi-directional self-attention."
+            )
+        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
+        self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -568,12 +494,14 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
+    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.splicebert(
             input_ids,
@@ -581,24 +509,30 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return NucleotidePredictorOutput(
+        return MaskedLMOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+
+class SpliceBertForPreTraining(SpliceBertForMaskedLM):
+    pass
 
 
 class SpliceBertEmbeddings(nn.Module):
