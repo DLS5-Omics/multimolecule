@@ -58,24 +58,24 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
         key = key.replace("regression", "decoder")
-        key = key.replace("rnafm.encoder.lm_head", "pretrain_head.predictions")
+        key = key.replace("rnafm.encoder.lm_head", "pretrain.predictions")
         key = key.replace("predictions.dense", "predictions.transform.dense")
         key = key.replace("predictions.layer_norm", "predictions.transform.layer_norm")
         key = key.replace("predictions.weight", "predictions.decoder.weight")
-        key = key.replace("rnafm.encoder.contact_head", "pretrain_head.contact")
+        key = key.replace("rnafm.encoder.contact_head", "pretrain.contact_head")
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
         state_dict["rnafm.embeddings.word_embeddings.weight"],
-        state_dict["pretrain_head.predictions.decoder.weight"],
-        state_dict["pretrain_head.predictions.bias"],
+        state_dict["pretrain.predictions.decoder.weight"],
+        state_dict["pretrain.predictions.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
     state_dict["rnafm.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["pretrain_head.predictions.decoder.weight"] = decoder_weight
-    state_dict["pretrain_head.predictions.decoder.bias"] = state_dict["pretrain_head.predictions.bias"] = decoder_bias
+    state_dict["pretrain.predictions.decoder.weight"] = decoder_weight
+    state_dict["pretrain.predictions.decoder.bias"] = state_dict["pretrain.predictions.bias"] = decoder_bias
     return state_dict
 
 
@@ -207,7 +207,7 @@ def convert_checkpoint(convert_config):
 
     model.load_state_dict(state_dict)
 
-    model.lm_head = deepcopy(model.pretrain_head.predictions)
+    model.lm_head = deepcopy(model.pretrain.predictions)
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
