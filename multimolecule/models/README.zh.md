@@ -22,6 +22,12 @@ date: 2024-05-04
 
 每个模型都支持回归和分类任务，为广泛的应用提供了灵活性和精度。
 
+### 接触预测
+
+接触预测为序列中的每一对令牌分配一个标签。
+最常见的接触预测任务之一是蛋白质距离图预测。
+蛋白质距离图预测试图找到三维蛋白质结构中所有可能的氨基酸残基对之间的距离
+
 ### 核苷酸预测
 
 与 [Token Classification](https://huggingface.co/docs/transformers/en/tasks/token_classification) 类似，但如果模型配置中定义了 `<bos>` 或 `<eos>` 令牌，则将其移除。

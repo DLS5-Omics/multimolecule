@@ -171,6 +171,74 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         )
 
 
+class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForContactPrediction, RnaTokenizer
+        >>> config = RnaMsmConfig()
+        >>> model = RnaMsmForContactPrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
+    """
+
+    def __init__(self, config: RnaMsmConfig):
+        super().__init__(config)
+        self.num_labels = config.head.num_labels
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.contact_head = ContactPredictionHead(config)
+        self.head_config = self.contact_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.rnamsm(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return RnaMsmContactPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            col_attentions=outputs.col_attentions,
+            row_attentions=outputs.row_attentions,
+        )
+
+
 class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
@@ -1339,6 +1407,15 @@ class RnaMsmPreTrainingHeads(nn.Module):
         total_loss = sum(losses) if losses else None
 
         return total_loss, output_mlm.logits, output_contact.logits
+
+
+@dataclass
+class RnaMsmContactPredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass

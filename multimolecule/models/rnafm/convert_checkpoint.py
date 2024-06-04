@@ -208,6 +208,7 @@ def convert_checkpoint(convert_config):
     model.load_state_dict(state_dict)
 
     model.lm_head = deepcopy(model.pretrain.predictions)
+    model.contact_head = deepcopy(model.pretrain.contact_head)
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
