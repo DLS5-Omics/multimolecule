@@ -28,12 +28,14 @@ from transformers import (
 from multimolecule.tokenisers.rna import RnaTokenizer
 
 from ..modeling_auto import (
+    AutoModelForContactPrediction,
     AutoModelForNucleotidePrediction,
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
 from .configuration_calm import CaLmConfig
 from .modeling_calm import (
+    CaLmForContactPrediction,
     CaLmForMaskedLM,
     CaLmForNucleotidePrediction,
     CaLmForPreTraining,
@@ -48,6 +50,7 @@ __all__ = [
     "CaLmConfig",
     "CaLmModel",
     "CaLmPreTrainedModel",
+    "CaLmForContactPrediction",
     "CaLmForNucleotidePrediction",
     "CaLmForSequencePrediction",
     "CaLmForTokenPrediction",
@@ -58,6 +61,7 @@ __all__ = [
 AutoConfig.register("calm", CaLmConfig)
 AutoBackbone.register(CaLmConfig, CaLmModel)
 AutoModel.register(CaLmConfig, CaLmModel)
+AutoModelForContactPrediction.register(CaLmConfig, CaLmForContactPrediction)
 AutoModelForNucleotidePrediction.register(CaLmConfig, CaLmForNucleotidePrediction)
 AutoModelForSequencePrediction.register(CaLmConfig, CaLmForSequencePrediction)
 AutoModelForSequenceClassification.register(CaLmConfig, CaLmForSequencePrediction)

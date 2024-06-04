@@ -45,7 +45,12 @@ from multimolecule.module import (
     TokenPredictionHead,
 )
 
-from ..modeling_outputs import NucleotidePredictorOutput, SequencePredictorOutput, TokenPredictorOutput
+from ..modeling_outputs import (
+    ContactPredictorOutput,
+    NucleotidePredictorOutput,
+    SequencePredictorOutput,
+    TokenPredictorOutput,
+)
 from .configuration_rnafm import RnaFmConfig
 
 logger = logging.get_logger(__name__)
@@ -252,6 +257,73 @@ class RnaFmModel(RnaFmPreTrainedModel):
             hidden_states=encoder_outputs.hidden_states,
             attentions=encoder_outputs.attentions,
             cross_attentions=encoder_outputs.cross_attentions,
+        )
+
+
+class RnaFmForContactPrediction(RnaFmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import RnaFmConfig, RnaFmForContactPrediction, RnaTokenizer
+        >>> config = RnaFmConfig()
+        >>> model = RnaFmForContactPrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
+    """
+
+    def __init__(self, config: RnaFmConfig):
+        super().__init__(config)
+        self.num_labels = config.head.num_labels
+        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.contact_head = ContactPredictionHead(config)
+        self.head_config = self.contact_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.rnafm(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ContactPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
         )
 
 

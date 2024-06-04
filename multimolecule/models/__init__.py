@@ -17,6 +17,7 @@
 from ..tokenisers.rna import RnaTokenizer
 from .calm import (
     CaLmConfig,
+    CaLmForContactPrediction,
     CaLmForMaskedLM,
     CaLmForNucleotidePrediction,
     CaLmForPreTraining,
@@ -28,6 +29,7 @@ from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig,
 from .ernierna import (
     ErnieRnaConfig,
     ErnieRnaForContactClassification,
+    ErnieRnaForContactPrediction,
     ErnieRnaForMaskedLM,
     ErnieRnaForNucleotidePrediction,
     ErnieRnaForPreTraining,
@@ -43,6 +45,7 @@ from .modeling_auto import (
 )
 from .rinalmo import (
     RiNALMoConfig,
+    RiNALMoForContactPrediction,
     RiNALMoForMaskedLM,
     RiNALMoForNucleotidePrediction,
     RiNALMoForPreTraining,
@@ -52,6 +55,7 @@ from .rinalmo import (
 )
 from .rnabert import (
     RnaBertConfig,
+    RnaBertForContactPrediction,
     RnaBertForMaskedLM,
     RnaBertForNucleotidePrediction,
     RnaBertForPreTraining,
@@ -61,6 +65,7 @@ from .rnabert import (
 )
 from .rnafm import (
     RnaFmConfig,
+    RnaFmForContactPrediction,
     RnaFmForMaskedLM,
     RnaFmForNucleotidePrediction,
     RnaFmForPreTraining,
@@ -70,6 +75,7 @@ from .rnafm import (
 )
 from .rnamsm import (
     RnaMsmConfig,
+    RnaMsmForContactPrediction,
     RnaMsmForMaskedLM,
     RnaMsmForNucleotidePrediction,
     RnaMsmForPreTraining,
@@ -79,6 +85,7 @@ from .rnamsm import (
 )
 from .splicebert import (
     SpliceBertConfig,
+    SpliceBertForContactPrediction,
     SpliceBertForMaskedLM,
     SpliceBertForNucleotidePrediction,
     SpliceBertForPreTraining,
@@ -88,6 +95,7 @@ from .splicebert import (
 )
 from .utrbert import (
     UtrBertConfig,
+    UtrBertForContactPrediction,
     UtrBertForMaskedLM,
     UtrBertForNucleotidePrediction,
     UtrBertForPreTraining,
@@ -97,6 +105,7 @@ from .utrbert import (
 )
 from .utrlm import (
     UtrLmConfig,
+    UtrLmForContactPrediction,
     UtrLmForMaskedLM,
     UtrLmForNucleotidePrediction,
     UtrLmForPreTraining,
@@ -117,6 +126,7 @@ __all__ = [
     "AutoModelForTokenPrediction",
     "CaLmConfig",
     "CaLmModel",
+    "CaLmForContactPrediction",
     "CaLmForNucleotidePrediction",
     "CaLmForSequencePrediction",
     "CaLmForTokenPrediction",
@@ -124,6 +134,7 @@ __all__ = [
     "CaLmForPreTraining",
     "ErnieRnaConfig",
     "ErnieRnaModel",
+    "ErnieRnaForContactPrediction",
     "ErnieRnaForNucleotidePrediction",
     "ErnieRnaForSequencePrediction",
     "ErnieRnaForTokenPrediction",
@@ -131,6 +142,7 @@ __all__ = [
     "ErnieRnaForPreTraining",
     "RiNALMoConfig",
     "RiNALMoModel",
+    "RiNALMoForContactPrediction",
     "RiNALMoForNucleotidePrediction",
     "RiNALMoForSequencePrediction",
     "RiNALMoForTokenPrediction",
@@ -138,6 +150,7 @@ __all__ = [
     "RiNALMoForPreTraining",
     "RnaBertConfig",
     "RnaBertModel",
+    "RnaBertForContactPrediction",
     "RnaBertForNucleotidePrediction",
     "RnaBertForSequencePrediction",
     "RnaBertForTokenPrediction",
@@ -145,6 +158,7 @@ __all__ = [
     "RnaBertForPreTraining",
     "RnaFmConfig",
     "RnaFmModel",
+    "RnaFmForContactPrediction",
     "RnaFmForNucleotidePrediction",
     "RnaFmForSequencePrediction",
     "RnaFmForTokenPrediction",
@@ -152,6 +166,7 @@ __all__ = [
     "RnaFmForPreTraining",
     "RnaMsmConfig",
     "RnaMsmModel",
+    "RnaMsmForContactPrediction",
     "RnaMsmForNucleotidePrediction",
     "RnaMsmForSequencePrediction",
     "RnaMsmForTokenPrediction",
@@ -159,6 +174,7 @@ __all__ = [
     "RnaMsmForPreTraining",
     "SpliceBertConfig",
     "SpliceBertModel",
+    "SpliceBertForContactPrediction",
     "SpliceBertForNucleotidePrediction",
     "SpliceBertForSequencePrediction",
     "SpliceBertForTokenPrediction",
@@ -166,6 +182,7 @@ __all__ = [
     "SpliceBertForPreTraining",
     "UtrBertConfig",
     "UtrBertModel",
+    "UtrBertForContactPrediction",
     "UtrBertForNucleotidePrediction",
     "UtrBertForSequencePrediction",
     "UtrBertForTokenPrediction",
@@ -173,6 +190,7 @@ __all__ = [
     "UtrBertForPreTraining",
     "UtrLmConfig",
     "UtrLmModel",
+    "UtrLmForContactPrediction",
     "UtrLmForNucleotidePrediction",
     "UtrLmForSequencePrediction",
     "UtrLmForTokenPrediction",

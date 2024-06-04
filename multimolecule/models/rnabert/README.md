@@ -142,6 +142,27 @@ label = torch.randint(2, (len(text), ))
 output = model(**input, labels=label)
 ```
 
+#### Contact Classification / Regression
+
+**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+
+Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
+
+```python
+import torch
+from multimolecule import RnaTokenizer, RnaBertForContactPrediction
+
+
+tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnabert')
+model = RnaBertForContactPrediction.from_pretrained('multimolecule/rnabert')
+
+text = "UAGCUUAUCAGACUGAUGUUGA"
+input = tokenizer(text, return_tensors='pt')
+label = torch.randint(2, (len(text), len(text)))
+
+output = model(**input, labels=label)
+```
+
 ## Training Details
 
 RNABERT has two pre-training objectives: masked language modeling (MLM) and structural alignment learning (SAL).
