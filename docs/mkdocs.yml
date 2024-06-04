@@ -22,6 +22,8 @@ nav:
           - SpliceBERT: models/splicebert.md
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md
+      - utils:
+          - models/modeling_outputs.md
   - tokenisers:
       - tokenisers: tokenisers.md
       - RnaTokenizer: tokenisers/rna.md
