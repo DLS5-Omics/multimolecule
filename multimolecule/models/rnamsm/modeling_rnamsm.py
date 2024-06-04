@@ -311,13 +311,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaMsmForSequenceClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | RnaMsmSequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.rnamsm(
@@ -336,7 +330,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmForSequenceClassifierOutput(
+        return RnaMsmSequencePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -359,7 +353,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
         self.num_labels = config.head.num_labels
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -376,13 +370,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RnaMsmForTokenClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | RnaMsmTokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.rnamsm(
@@ -401,7 +389,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmForTokenClassifierOutput(
+        return RnaMsmTokenPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -424,7 +412,7 @@ class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
         self.num_labels = config.head.num_labels
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
@@ -442,13 +430,7 @@ class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
         output_hidden_states: bool = False,
         return_dict: bool = True,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaMsmForTokenClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | RnaMsmNucleotidePredictorOutput:
         if kwargs:
             warn(
                 f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
@@ -473,7 +455,7 @@ class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmForTokenClassifierOutput(
+        return RnaMsmNucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -1314,10 +1296,27 @@ class RnaMsmPreTrainingHeads(nn.Module):
 
 
 @dataclass
-class RnaMsmForPreTrainingOutput(ModelOutput):
+class RnaMsmNucleotidePredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    contact_map: torch.FloatTensor | None = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class RnaMsmSequencePredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class RnaMsmTokenPredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     col_attentions: Tuple[torch.FloatTensor, ...] | None = None
     row_attentions: Tuple[torch.FloatTensor, ...] | None = None
@@ -1333,18 +1332,10 @@ class RnaMsmForMaskedLMOutput(ModelOutput):
 
 
 @dataclass
-class RnaMsmForSequenceClassifierOutput(ModelOutput):
+class RnaMsmForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class RnaMsmForTokenClassifierOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
+    contact_map: torch.FloatTensor | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     col_attentions: Tuple[torch.FloatTensor, ...] | None = None
     row_attentions: Tuple[torch.FloatTensor, ...] | None = None

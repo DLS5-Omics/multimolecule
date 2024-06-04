@@ -48,21 +48,21 @@ __all__ = [
     "RiNALMoConfig",
     "RiNALMoModel",
     "RiNALMoPreTrainedModel",
-    "RiNALMoForMaskedLM",
-    "RiNALMoForPreTraining",
     "RiNALMoForNucleotidePrediction",
     "RiNALMoForSequencePrediction",
     "RiNALMoForTokenPrediction",
+    "RiNALMoForMaskedLM",
+    "RiNALMoForPreTraining",
 ]
 
 AutoConfig.register("rinalmo", RiNALMoConfig)
 AutoBackbone.register(RiNALMoConfig, RiNALMoModel)
 AutoModel.register(RiNALMoConfig, RiNALMoModel)
-AutoModelForMaskedLM.register(RiNALMoConfig, RiNALMoForMaskedLM)
-AutoModelForPreTraining.register(RiNALMoConfig, RiNALMoForPreTraining)
 AutoModelForNucleotidePrediction.register(RiNALMoConfig, RiNALMoForNucleotidePrediction)
 AutoModelForSequencePrediction.register(RiNALMoConfig, RiNALMoForSequencePrediction)
 AutoModelForSequenceClassification.register(RiNALMoConfig, RiNALMoForSequencePrediction)
 AutoModelForTokenPrediction.register(RiNALMoConfig, RiNALMoForTokenPrediction)
 AutoModelForTokenClassification.register(RiNALMoConfig, RiNALMoForTokenPrediction)
+AutoModelForMaskedLM.register(RiNALMoConfig, RiNALMoForMaskedLM)
+AutoModelForPreTraining.register(RiNALMoConfig, RiNALMoForPreTraining)
 AutoTokenizer.register(RiNALMoConfig, RnaTokenizer)

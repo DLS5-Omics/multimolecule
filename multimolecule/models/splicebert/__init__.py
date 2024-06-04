@@ -48,21 +48,21 @@ __all__ = [
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertPreTrainedModel",
-    "SpliceBertForMaskedLM",
-    "SpliceBertForPreTraining",
     "SpliceBertForNucleotidePrediction",
     "SpliceBertForSequencePrediction",
     "SpliceBertForTokenPrediction",
+    "SpliceBertForMaskedLM",
+    "SpliceBertForPreTraining",
 ]
 
 AutoConfig.register("splicebert", SpliceBertConfig)
 AutoBackbone.register(SpliceBertConfig, SpliceBertModel)
 AutoModel.register(SpliceBertConfig, SpliceBertModel)
-AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
-AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPreTraining)
 AutoModelForNucleotidePrediction.register(SpliceBertConfig, SpliceBertForNucleotidePrediction)
 AutoModelForSequencePrediction.register(SpliceBertConfig, SpliceBertForSequencePrediction)
 AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequencePrediction)
 AutoModelForTokenPrediction.register(SpliceBertConfig, SpliceBertForTokenPrediction)
 AutoModelForTokenClassification.register(SpliceBertConfig, SpliceBertForTokenPrediction)
+AutoModelForMaskedLM.register(SpliceBertConfig, SpliceBertForMaskedLM)
+AutoModelForPreTraining.register(SpliceBertConfig, SpliceBertForPreTraining)
 AutoTokenizer.register(SpliceBertConfig, RnaTokenizer)
