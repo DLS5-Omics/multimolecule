@@ -48,21 +48,21 @@ __all__ = [
     "RnaMsmConfig",
     "RnaMsmModel",
     "RnaMsmPreTrainedModel",
-    "RnaMsmForMaskedLM",
-    "RnaMsmForPreTraining",
     "RnaMsmForNucleotidePrediction",
     "RnaMsmForSequencePrediction",
     "RnaMsmForTokenPrediction",
+    "RnaMsmForMaskedLM",
+    "RnaMsmForPreTraining",
 ]
 
 AutoConfig.register("rnamsm", RnaMsmConfig)
 AutoBackbone.register(RnaMsmConfig, RnaMsmModel)
 AutoModel.register(RnaMsmConfig, RnaMsmModel)
-AutoModelForMaskedLM.register(RnaMsmConfig, RnaMsmForMaskedLM)
-AutoModelForPreTraining.register(RnaMsmConfig, RnaMsmForPreTraining)
 AutoModelForNucleotidePrediction.register(RnaMsmConfig, RnaMsmForNucleotidePrediction)
 AutoModelForSequencePrediction.register(RnaMsmConfig, RnaMsmForSequencePrediction)
 AutoModelForSequenceClassification.register(RnaMsmConfig, RnaMsmForSequencePrediction)
 AutoModelForTokenPrediction.register(RnaMsmConfig, RnaMsmForTokenPrediction)
 AutoModelForTokenClassification.register(RnaMsmConfig, RnaMsmForTokenPrediction)
+AutoModelForMaskedLM.register(RnaMsmConfig, RnaMsmForMaskedLM)
+AutoModelForPreTraining.register(RnaMsmConfig, RnaMsmForPreTraining)
 AutoTokenizer.register(RnaMsmConfig, RnaTokenizer)

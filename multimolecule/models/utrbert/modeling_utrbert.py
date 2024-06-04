@@ -30,8 +30,6 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
     BaseModelOutputWithPoolingAndCrossAttentions,
     MaskedLMOutput,
-    SequenceClassifierOutput,
-    TokenClassifierOutput,
 )
 from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
@@ -39,6 +37,7 @@ from transformers.utils import logging
 
 from multimolecule.module import MaskedLMHead, NucleotideKMerHead, SequencePredictionHead, TokenKMerHead
 
+from ..modeling_outputs import NucleotidePredictorOutput, SequencePredictorOutput, TokenPredictorOutput
 from .configuration_utrbert import UtrBertConfig
 
 logger = logging.get_logger(__name__)
@@ -421,13 +420,7 @@ class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | SequenceClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.utrbert(
@@ -447,7 +440,7 @@ class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return SequenceClassifierOutput(
+        return SequencePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -487,7 +480,7 @@ class UtrBertForTokenPrediction(UtrBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
+    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the token classification loss. Indices should be in `[0, ..., config.num_labels - 1]`.
@@ -511,7 +504,7 @@ class UtrBertForTokenPrediction(UtrBertPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return TokenClassifierOutput(
+        return TokenPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -552,13 +545,7 @@ class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
         if kwargs:
             warn(
                 f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
@@ -584,7 +571,7 @@ class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return TokenClassifierOutput(
+        return NucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
