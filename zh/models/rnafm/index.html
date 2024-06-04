@@ -3227,16 +3227,16 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <a id="__codelineno-0-356" name="__codelineno-0-356"></a>                <span class="s2">&quot;bi-directional self-attention.&quot;</span>
 <a id="__codelineno-0-357" name="__codelineno-0-357"></a>            <span class="p">)</span>
 <a id="__codelineno-0-358" name="__codelineno-0-358"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rnafm</span> <span class="o">=</span> <span class="n">RnaFmModel</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">add_pooling_layer</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">pretrain_head</span> <span class="o">=</span> <span class="n">RnaFmPreTrainingHeads</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">pretrain</span> <span class="o">=</span> <span class="n">RnaFmPreTrainingHeads</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <a id="__codelineno-0-360" name="__codelineno-0-360"></a>
 <a id="__codelineno-0-361" name="__codelineno-0-361"></a>        <span class="c1"># Initialize weights and apply final processing</span>
 <a id="__codelineno-0-362" name="__codelineno-0-362"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">post_init</span><span class="p">()</span>
 <a id="__codelineno-0-363" name="__codelineno-0-363"></a>
 <a id="__codelineno-0-364" name="__codelineno-0-364"></a>    <span class="k">def</span> <span class="nf">get_output_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretrain_head</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">decoder</span>
+<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretrain</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">decoder</span>
 <a id="__codelineno-0-366" name="__codelineno-0-366"></a>
 <a id="__codelineno-0-367" name="__codelineno-0-367"></a>    <span class="k">def</span> <span class="nf">set_output_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">pretrain_head</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">embeddings</span>
+<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">pretrain</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">embeddings</span>
 <a id="__codelineno-0-369" name="__codelineno-0-369"></a>
 <a id="__codelineno-0-370" name="__codelineno-0-370"></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span>
 <a id="__codelineno-0-371" name="__codelineno-0-371"></a>        <span class="bp">self</span><span class="p">,</span>
@@ -3270,7 +3270,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <a id="__codelineno-0-399" name="__codelineno-0-399"></a>            <span class="n">return_dict</span><span class="o">=</span><span class="n">return_dict</span><span class="p">,</span>
 <a id="__codelineno-0-400" name="__codelineno-0-400"></a>            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <a id="__codelineno-0-401" name="__codelineno-0-401"></a>        <span class="p">)</span>
-<a id="__codelineno-0-402" name="__codelineno-0-402"></a>        <span class="n">total_loss</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">contact_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretrain_head</span><span class="p">(</span>
+<a id="__codelineno-0-402" name="__codelineno-0-402"></a>        <span class="n">total_loss</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">contact_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span>
 <a id="__codelineno-0-403" name="__codelineno-0-403"></a>            <span class="n">outputs</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">labels_mlm</span><span class="o">=</span><span class="n">labels_mlm</span><span class="p">,</span> <span class="n">labels_contact</span><span class="o">=</span><span class="n">labels_contact</span>
 <a id="__codelineno-0-404" name="__codelineno-0-404"></a>        <span class="p">)</span>
 <a id="__codelineno-0-405" name="__codelineno-0-405"></a>
