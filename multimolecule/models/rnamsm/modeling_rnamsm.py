@@ -241,13 +241,19 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         >>> model = RnaMsmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<AddBackward0>)
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["contact_map"].shape
+        torch.Size([1, 5, 5, 2])
     """
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.pretrain_head = RnaMsmPreTrainingHeads(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+        self.pretrain = RnaMsmPreTrainingHeads(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -258,7 +264,7 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
+        labels_mlm: Tensor | None = None,
         labels_contact: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
@@ -278,23 +284,16 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        logits, contact_map = self.pretrain_head(outputs, attention_mask, input_ids)
-
-        loss = None
-        if any(x is not None for x in [labels, labels_contact]):
-            loss_mlm = loss_contact = 0
-            if labels is not None:
-                loss_mlm = F.cross_entropy(logits.view(-1, self.config.vocab_size), labels.view(-1))
-            if labels_contact is not None:
-                loss_contact = F.mse_loss(contact_map.view(-1), labels_contact.view(-1))
-            loss = loss_mlm + loss_contact
+        total_loss, logits, contact_map = self.pretrain(
+            outputs, attention_mask, input_ids, labels_mlm=labels_mlm, labels_contact=labels_contact
+        )
 
         if not return_dict:
             output = (logits, contact_map) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
+            return ((total_loss,) + output) if total_loss is not None else output
 
         return RnaMsmForPreTrainingOutput(
-            loss=loss,
+            loss=total_loss,
             logits=logits,
             contact_map=contact_map,
             hidden_states=outputs.hidden_states,
@@ -1312,17 +1311,23 @@ class RnaMsmPreTrainingHeads(nn.Module):
     def __init__(self, config: RnaMsmConfig, weight: Tensor | None = None):
         super().__init__()
         self.predictions = MaskedLMHead(config, weight=weight)
-        self.contact = ContactPredictionHead(config)
+        self.contact_head = ContactPredictionHead(config)
 
     def forward(
         self,
         outputs: RnaMsmModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | NestedTensor | None = None,
-    ) -> Tuple[Tensor, Tensor]:
-        prediction_scores = self.predictions(outputs)
-        contact_map = self.contact(outputs, attention_mask, input_ids)
-        return prediction_scores, contact_map
+        labels_mlm: Tensor | None = None,
+        labels_contact: Tensor | None = None,
+    ) -> Tuple[Tensor | None, Tensor, Tensor]:
+        output_mlm = self.predictions(outputs, labels=labels_mlm)
+        output_contact = self.contact_head(outputs, attention_mask, input_ids, labels=labels_contact)
+
+        losses = [output.loss for output in (output_mlm, output_contact) if output.loss is not None]
+        total_loss = sum(losses) if losses else None
+
+        return total_loss, output_mlm.logits, output_contact.logits
 
 
 @dataclass
