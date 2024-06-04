@@ -246,108 +246,27 @@ class UtrBertModel(UtrBertPreTrainedModel):
         )
 
 
-class UtrBertForMaskedLM(UtrBertPreTrainedModel):
+class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForMaskedLM, RnaTokenizer
+        >>> from multimolecule import UtrBertConfig, UtrBertForNucleotidePrediction, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=2)
-        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
-        >>> model = UtrBertForMaskedLM(config)
+        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size, nmers=2)
+        >>> model = UtrBertForNucleotidePrediction(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=input["input_ids"])
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
         >>> output["logits"].shape
-        torch.Size([1, 6, 31])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
-
-    _tied_weights_keys = ["predictions.decoder.bias", "cls.predictions.decoder.weight"]
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `BertForMaskedLM` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
+        self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config)
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def get_output_embeddings(self):
-        return self.lm_head.decoder
-
-    def set_output_embeddings(self, new_embeddings):
-        self.lm_head.decoder = new_embeddings
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrbert(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.lm_head(outputs, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return MaskedLMOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class UtrBertForPreTraining(UtrBertPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForPreTraining, RnaTokenizer
-        >>> tokenizer = RnaTokenizer(nmers=3)
-        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
-        >>> model = UtrBertForPreTraining(config)
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
-    """
-
-    _tied_weights_keys = ["lm_head.decoder.bias", "lm_head.decoder.weight"]
-
-    def __init__(self, config: UtrBertConfig):
-        super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `UtrBertForPreTraining` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.utrbert = UtrBertModel(config, add_pooling_layer=True)
-        self.lm_head = MaskedLMHead(config)
+        self.nucleotide_head = NucleotideKMerHead(config)
+        self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -364,7 +283,7 @@ class UtrBertForPreTraining(UtrBertPreTrainedModel):
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.utrbert(
             input_ids,
@@ -377,14 +296,14 @@ class UtrBertForPreTraining(UtrBertPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return MaskedLMOutput(
+        return NucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -522,30 +441,41 @@ class UtrBertForTokenPrediction(UtrBertPreTrainedModel):
         )
 
 
-class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
+class UtrBertForMaskedLM(UtrBertPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrBertConfig, UtrBertForNucleotidePrediction, RnaTokenizer
+        >>> from multimolecule import UtrBertConfig, UtrBertForMaskedLM, RnaTokenizer
         >>> tokenizer = RnaTokenizer(nmers=2)
-        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size, nmers=2)
-        >>> model = UtrBertForNucleotidePrediction(config)
+        >>> config = UtrBertConfig(vocab_size=tokenizer.vocab_size)
+        >>> model = UtrBertForMaskedLM(config)
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 6, 31])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
+
+    _tied_weights_keys = ["lm_head.decoder.weight", "lm_head.decoder.bias"]
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
+        if config.is_decoder:
+            logger.warning(
+                "If you want to use `BertForMaskedLM` make sure `config.is_decoder=False` for "
+                "bi-directional self-attention."
+            )
         self.utrbert = UtrBertModel(config, add_pooling_layer=False)
-        self.nucleotide_head = NucleotideKMerHead(config)
-        self.head_config = self.nucleotide_head.config
+        self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -554,12 +484,14 @@ class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
+    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.utrbert(
             input_ids,
@@ -567,24 +499,36 @@ class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return NucleotidePredictorOutput(
+        return MaskedLMOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+
+class UtrBertForPreTraining(UtrBertForMaskedLM):
+
+    def __init__(self, config: UtrBertConfig):
+        super().__init__(config)
+        self.utrbert = UtrBertModel(config, add_pooling_layer=True)
+
+        # Initialize weights and apply final processing
+        self.post_init()
 
 
 class UtrBertEmbeddings(nn.Module):
