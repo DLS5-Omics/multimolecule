@@ -28,12 +28,14 @@ from transformers import (
 from multimolecule.tokenisers.rna import RnaTokenizer
 
 from ..modeling_auto import (
+    AutoModelForContactPrediction,
     AutoModelForNucleotidePrediction,
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
 from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
+    SpliceBertForContactPrediction,
     SpliceBertForMaskedLM,
     SpliceBertForNucleotidePrediction,
     SpliceBertForPreTraining,
@@ -48,6 +50,7 @@ __all__ = [
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertPreTrainedModel",
+    "SpliceBertForContactPrediction",
     "SpliceBertForNucleotidePrediction",
     "SpliceBertForSequencePrediction",
     "SpliceBertForTokenPrediction",
@@ -58,6 +61,7 @@ __all__ = [
 AutoConfig.register("splicebert", SpliceBertConfig)
 AutoBackbone.register(SpliceBertConfig, SpliceBertModel)
 AutoModel.register(SpliceBertConfig, SpliceBertModel)
+AutoModelForContactPrediction.register(SpliceBertConfig, SpliceBertForContactPrediction)
 AutoModelForNucleotidePrediction.register(SpliceBertConfig, SpliceBertForNucleotidePrediction)
 AutoModelForSequencePrediction.register(SpliceBertConfig, SpliceBertForSequencePrediction)
 AutoModelForSequenceClassification.register(SpliceBertConfig, SpliceBertForSequencePrediction)

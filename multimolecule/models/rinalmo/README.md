@@ -164,6 +164,27 @@ label = torch.randint(2, (len(text), ))
 output = model(**input, labels=label)
 ```
 
+#### Contact Classification / Regression
+
+**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+
+Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
+
+```python
+import torch
+from multimolecule import RnaTokenizer, RiNALMoForContactPrediction
+
+
+tokenizer = RnaTokenizer.from_pretrained('multimolecule/rinalmo')
+model = RiNALMoForContactPrediction.from_pretrained('multimolecule/rinalmo')
+
+text = "UAGCUUAUCAGACUGAUGUUGA"
+input = tokenizer(text, return_tensors='pt')
+label = torch.randint(2, (len(text), len(text)))
+
+output = model(**input, labels=label)
+```
+
 ## Training Details
 
 RiNALMo used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.
