@@ -83,6 +83,10 @@ class RnaBertModel(RnaBertPreTrainedModel):
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
+        >>> output["last_hidden_state"].shape
+        torch.Size([1, 7, 120])
+        >>> output["pooler_output"].shape
+        torch.Size([1, 120])
     """
 
     def __init__(self, config: RnaBertConfig, add_pooling_layer: bool = True):
@@ -123,6 +127,7 @@ class RnaBertModel(RnaBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         encoder_hidden_states  (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`, *optional*):
@@ -145,6 +150,12 @@ class RnaBertModel(RnaBertPreTrainedModel):
             If set to `True`, `past_key_values` key value states are returned and can be used to speed up decoding (see
             `past_key_values`).
         """
+        if kwargs:
+            warn(
+                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
+                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
+                "This is provided for backward compatibility and may lead to unexpected behavior."
+            )
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
@@ -245,7 +256,11 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         >>> model = RnaBertForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=input["input_ids"])
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -264,13 +279,16 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnabert(
             input_ids,
             attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -316,13 +334,16 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | RnaBertForPreTrainingOutput:
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnabert(
             input_ids,
             attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         logits, logits_ss, seq_relationship_score = self.pretrain_head(outputs)
 
@@ -358,7 +379,11 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
         >>> model = RnaBertForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.tensor([[1]]))
+        >>> output["logits"].shape
+        torch.Size([1, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -382,9 +407,9 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.rnabert(
             input_ids,
             attention_mask=attention_mask,
@@ -394,6 +419,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -418,7 +444,11 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
         >>> model = RnaBertForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output["logits"].shape
+        torch.Size([1, 7, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -442,9 +472,9 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.rnabert(
             input_ids,
             attention_mask=attention_mask,
@@ -454,6 +484,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
@@ -478,7 +509,11 @@ class RnaBertForNucleotidePrediction(RnaBertPreTrainedModel):
         >>> model = RnaBertForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: RnaBertConfig):
@@ -504,14 +539,7 @@ class RnaBertForNucleotidePrediction(RnaBertPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
-        if kwargs:
-            warn(
-                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
-                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
-                "This is provided for backward compatibility and may lead to unexpected behavior."
-            )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.rnabert(
             input_ids,
             attention_mask=attention_mask,
@@ -521,6 +549,7 @@ class RnaBertForNucleotidePrediction(RnaBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
