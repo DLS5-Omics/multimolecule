@@ -49,22 +49,22 @@ __all__ = [
     "ErnieRnaConfig",
     "ErnieRnaModel",
     "ErnieRnaPreTrainedModel",
-    "ErnieRnaForMaskedLM",
-    "ErnieRnaForPreTraining",
     "ErnieRnaForNucleotidePrediction",
     "ErnieRnaForSequencePrediction",
     "ErnieRnaForTokenPrediction",
+    "ErnieRnaForMaskedLM",
+    "ErnieRnaForPreTraining",
     "ErnieRnaForContactClassification",
 ]
 
 AutoConfig.register("ernierna", ErnieRnaConfig)
 AutoBackbone.register(ErnieRnaConfig, ErnieRnaModel)
 AutoModel.register(ErnieRnaConfig, ErnieRnaModel)
-AutoModelForMaskedLM.register(ErnieRnaConfig, ErnieRnaForMaskedLM)
-AutoModelForPreTraining.register(ErnieRnaConfig, ErnieRnaForPreTraining)
 AutoModelForNucleotidePrediction.register(ErnieRnaConfig, ErnieRnaForNucleotidePrediction)
 AutoModelForSequencePrediction.register(ErnieRnaConfig, ErnieRnaForSequencePrediction)
 AutoModelForSequenceClassification.register(ErnieRnaConfig, ErnieRnaForSequencePrediction)
 AutoModelForTokenPrediction.register(ErnieRnaConfig, ErnieRnaForTokenPrediction)
 AutoModelForTokenClassification.register(ErnieRnaConfig, ErnieRnaForTokenPrediction)
+AutoModelForMaskedLM.register(ErnieRnaConfig, ErnieRnaForMaskedLM)
+AutoModelForPreTraining.register(ErnieRnaConfig, ErnieRnaForPreTraining)
 AutoTokenizer.register(ErnieRnaConfig, RnaTokenizer)

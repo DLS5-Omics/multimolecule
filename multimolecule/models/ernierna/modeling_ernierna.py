@@ -418,12 +418,6 @@ class ErnieRnaForContactClassification(ErnieRnaPreTrainedModel):
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
     ) -> Tuple[Tensor, ...] | ErnieRnaForContactClassificationOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
         if output_attentions is False:
             warn("output_attentions must be True for contact classification and will be ignored.")
 
@@ -504,13 +498,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         output_attention_biases: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | ErnieRnaForSequenceClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.ernierna(
@@ -531,7 +519,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return ErnieRnaForSequenceClassifierOutput(
+        return ErnieRnaSequencePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -553,7 +541,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -572,7 +560,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         output_attention_biases: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | ErnieRnaForTokenClassifierOutput:
+    ) -> Tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the token classification loss. Indices should be in `[0, ..., config.num_labels - 1]`.
@@ -597,7 +585,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return ErnieRnaForTokenClassifierOutput(
+        return ErnieRnaTokenPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -619,7 +607,7 @@ class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.head.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
@@ -639,13 +627,7 @@ class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaForTokenClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | ErnieRnaNucleotidePredictorOutput:
         if kwargs:
             warn(
                 f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
@@ -672,7 +654,7 @@ class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return ErnieRnaForTokenClassifierOutput(
+        return ErnieRnaNucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -1304,7 +1286,34 @@ class ErnieRnaBasicResBlock(nn.Module):
 
 
 @dataclass
+class ErnieRnaNucleotidePredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaSequencePredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
 class ErnieRnaForMaskedLMOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaTokenPredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
@@ -1319,24 +1328,6 @@ class ErnieRnaForContactClassificationOutput(ModelOutput):
     loss_lm: torch.FloatTensor = None
     logits_ss: torch.FloatTensor = None
     loss_ss: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaForSequenceClassifierOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaForTokenClassifierOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
     attention_biases: Tuple[torch.FloatTensor, ...] | None = None

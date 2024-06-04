@@ -31,8 +31,6 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPoolingAndCrossAttentions,
     MaskedLMOutput,
     ModelOutput,
-    SequenceClassifierOutput,
-    TokenClassifierOutput,
 )
 from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
@@ -47,6 +45,7 @@ from multimolecule.module import (
     TokenPredictionHead,
 )
 
+from ..modeling_outputs import NucleotidePredictorOutput, SequencePredictorOutput, TokenPredictorOutput
 from .configuration_rnafm import RnaFmConfig
 
 logger = logging.get_logger(__name__)
@@ -445,13 +444,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | SequenceClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         outputs = self.rnafm(
@@ -471,7 +464,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return SequenceClassifierOutput(
+        return SequencePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -493,7 +486,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
         self.num_labels = config.head.num_labels
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -511,7 +504,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
-    ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
+    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
             Labels for computing the token classification loss. Indices should be in `[0, ..., config.num_labels - 1]`.
@@ -535,7 +528,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return TokenClassifierOutput(
+        return TokenPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
@@ -557,7 +550,7 @@ class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
         self.num_labels = config.head.num_labels
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
 
@@ -576,13 +569,7 @@ class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | TokenClassifierOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
-            Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,
-            config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
-            `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
-        """
+    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
         if kwargs:
             warn(
                 f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
@@ -608,7 +595,7 @@ class RnaFmForNucleotidePrediction(RnaFmPreTrainedModel):
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return TokenClassifierOutput(
+        return NucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
