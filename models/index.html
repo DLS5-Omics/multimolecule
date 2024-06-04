@@ -507,6 +507,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#contact-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contact Prediction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#nucleotide-prediction" class="md-nav__link">
     <span class="md-ellipsis">
       Nucleotide Prediction
@@ -1032,6 +1041,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#contact-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contact Prediction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#nucleotide-prediction" class="md-nav__link">
     <span class="md-ellipsis">
       Nucleotide Prediction
@@ -1178,6 +1196,10 @@ While these classes support both regression and classification tasks, their name
 <li><code>multimolecule.AutoModelForTokenPrediction</code>: Token Prediction</li>
 </ul>
 <p>Each of these models supports both regression and classification tasks, offering flexibility and precision for a wide range of applications.</p>
+<h3 id="contact-prediction">Contact Prediction<a class="headerlink" href="#contact-prediction" title="Permanent link">&para;</a></h3>
+<p>Contact prediction assign a label to each pair of token in a sentence.
+One of the most common contact prediction tasks is protein distance map prediction.
+Protein distance map prediction attempts to find the distance between all possible amino acid residue pairs of a three-dimensional protein structure</p>
 <h3 id="nucleotide-prediction">Nucleotide Prediction<a class="headerlink" href="#nucleotide-prediction" title="Permanent link">&para;</a></h3>
 <p>Similar to <a href="https://huggingface.co/docs/transformers/en/tasks/token_classification">Token Classification</a>, but removes the <code>&lt;bos&gt;</code> token and the <code>&lt;eos&gt;</code> token if they are defined in the model config.</p>
 <div class="admonition note">

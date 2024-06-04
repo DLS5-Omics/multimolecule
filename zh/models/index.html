@@ -511,6 +511,15 @@
           <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
+      接触预测
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
       核苷酸预测
     </span>
   </a>
@@ -523,7 +532,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       使用
     </span>
@@ -542,7 +551,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       直接访问
     </span>
@@ -560,7 +569,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       初始化一个香草模型
     </span>
@@ -574,7 +583,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       可用模型
     </span>
@@ -1036,6 +1045,15 @@
           <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
+      接触预测
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
       核苷酸预测
     </span>
   </a>
@@ -1048,7 +1066,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       使用
     </span>
@@ -1067,7 +1085,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       直接访问
     </span>
@@ -1085,7 +1103,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       初始化一个香草模型
     </span>
@@ -1099,7 +1117,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       可用模型
     </span>
@@ -1180,13 +1198,17 @@ date: 2024-05-04</li>
 <li><code>multimolecule.AutoModelForTokenPrediction</code>: 令牌预测</li>
 </ul>
 <p>每个模型都支持回归和分类任务，为广泛的应用提供了灵活性和精度。</p>
-<h3 id="_3">核苷酸预测<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<h3 id="_3">接触预测<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>接触预测为序列中的每一对令牌分配一个标签。
+最常见的接触预测任务之一是蛋白质距离图预测。
+蛋白质距离图预测试图找到三维蛋白质结构中所有可能的氨基酸残基对之间的距离</p>
+<h3 id="_4">核苷酸预测<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p>与 <a href="https://huggingface.co/docs/transformers/en/tasks/token_classification">Token Classification</a> 类似，但如果模型配置中定义了 <code>&lt;bos&gt;</code> 或 <code>&lt;eos&gt;</code> 令牌，则将其移除。</p>
 <div class="admonition note">
 <p class="admonition-title"><code>&lt;bos&gt;</code> 和 <code>&lt;eos&gt;</code> 令牌</p>
 <p>在 MultiMolecule 提供的分词器中，<code>&lt;bos&gt;</code> 令牌指向 <code>&lt;cls&gt;</code> 令牌，<code>&lt;sep&gt;</code> 令牌指向 <code>&lt;eos&gt;</code> 令牌。</p>
 </div>
-<h2 id="_4">使用<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_5">使用<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <h3 id="multimoleculeautomodel">使用 <code>multimolecule.AutoModel</code> 构建<a class="headerlink" href="#multimoleculeautomodel" title="Permanent link">&para;</a></h3>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
@@ -1206,7 +1228,7 @@ date: 2024-05-04</li>
 <a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="_5">直接访问<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<h3 id="_6">直接访问<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>所有模型可以通过 <code>from_pretrained</code> 方法直接加载。</p>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
@@ -1250,7 +1272,7 @@ date: 2024-05-04</li>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="ne">ValueError</span><span class="p">:</span> <span class="n">The</span> <span class="n">checkpoint</span> <span class="n">you</span> <span class="n">are</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">load</span> <span class="n">has</span> <span class="n">model</span> <span class="nb">type</span> <span class="err">`</span><span class="n">rnafm</span><span class="err">`</span> <span class="n">but</span> <span class="n">Transformers</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">recognize</span> <span class="n">this</span> <span class="n">architecture</span><span class="o">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">be</span> <span class="n">because</span> <span class="n">of</span> <span class="n">an</span> <span class="n">issue</span> <span class="k">with</span> <span class="n">the</span> <span class="n">checkpoint</span><span class="p">,</span> <span class="ow">or</span> <span class="n">because</span> <span class="n">your</span> <span class="n">version</span> <span class="n">of</span> <span class="n">Transformers</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">date</span><span class="o">.</span>
 </code></pre></div></td></tr></table></div>
 </div>
-<h3 id="_6">初始化一个香草模型<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<h3 id="_7">初始化一个香草模型<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <p>你也可以使用模型类初始化一个基础模型。</p>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
 <span class="normal"><a href="#__codelineno-4-2">2</a></span>
@@ -1268,7 +1290,7 @@ date: 2024-05-04</li>
 <a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;UAGCGUAUCAGACUGAUGUUG&quot;</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-<h2 id="_7">可用模型<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h2 id="_8">可用模型<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
 <h3 id="dna">脱氧核糖核酸（DNA）<a class="headerlink" href="#dna" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="calm/">CaLM</a></li>
