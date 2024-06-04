@@ -337,7 +337,13 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         >>> model = UtrLmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<AddBackward0>)
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["contact_map"].shape
+        torch.Size([1, 5, 5, 2])
     """
 
     _tied_weights_keys = ["head.predictions.decoder.weight"]
@@ -350,16 +356,16 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
                 "bi-directional self-attention."
             )
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.pretrain_head = UtrLmPreTrainingHeads(config)
+        self.pretrain = UtrLmPreTrainingHeads(config)
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def get_output_embeddings(self):
-        return self.pretrain_head.predictions.decoder
+        return self.pretrain.predictions.decoder
 
     def set_output_embeddings(self, embeddings):
-        self.pretrain_head.predictions.decoder = embeddings
+        self.pretrain.predictions.decoder = embeddings
 
     def forward(
         self,
@@ -370,7 +376,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         encoder_hidden_states: Tensor | None = None,
         encoder_attention_mask: Tensor | None = None,
-        labels: Tensor | None = None,
+        labels_mlm: Tensor | None = None,
         labels_contact: Tensor | None = None,
         labels_ss: Tensor | None = None,
         labels_mfe: Tensor | None = None,
@@ -395,34 +401,26 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        logits, contact_map, ss, mfe = self.pretrain_head(outputs, attention_mask, input_ids)
-
-        loss = None
-        if any(x is not None for x in [labels, labels_contact, labels_ss, labels_mfe]):
-            loss_mlm = loss_contact = loss_ss = loss_mfe = 0
-            if labels is not None:
-                loss_mlm = F.cross_entropy(logits.view(-1, self.config.vocab_size), labels.view(-1))
-            if labels_contact is not None:
-                loss_contact = F.mse_loss(contact_map.view(-1), labels_contact.view(-1))
-            if labels_ss is not None:
-                loss_ss = F.cross_entropy(
-                    ss.view(-1, self.pretrain_head.ss.num_labels),  # type: ignore[union-attr]
-                    labels_ss.view(-1),
-                )
-            if labels_mfe is not None:
-                loss_mfe = F.mse_loss(mfe.view(-1), labels_mfe.view(-1))
-            loss = loss_mlm + loss_contact + loss_ss + loss_mfe
+        total_loss, logits, contact_map, secondary_structure, minimum_free_energy = self.pretrain(
+            outputs,
+            attention_mask,
+            input_ids,
+            labels_mlm=labels_mlm,
+            labels_contact=labels_contact,
+            labels_ss=labels_ss,
+            labels_mfe=labels_mfe,
+        )
 
         if not return_dict:
             output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
+            return ((total_loss,) + output) if total_loss is not None else output
 
         return UtrLmForPreTrainingOutput(
-            loss=loss,
+            loss=total_loss,
             logits=logits,
             contact_map=contact_map,
-            secondary_structure=ss,
-            minimum_free_energy=mfe,
+            secondary_structure=secondary_structure,
+            minimum_free_energy=minimum_free_energy,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
@@ -1156,8 +1154,8 @@ class UtrLmPooler(nn.Module):
 class UtrLmPreTrainingHeads(nn.Module):
     def __init__(self, config: UtrLmConfig):
         super().__init__()
-        self.contact = ContactPredictionHead(config)
         self.predictions = MaskedLMHead(config)
+        self.contact_head = ContactPredictionHead(config)
         self.ss_head = None
         if config.ss_head is not None:
             self.ss_head = TokenPredictionHead(config, config.ss_head)
@@ -1170,12 +1168,26 @@ class UtrLmPreTrainingHeads(nn.Module):
         outputs: BaseModelOutputWithPastAndCrossAttentions | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | NestedTensor | None = None,
-    ) -> Tuple[Tensor, Tensor, Tensor | None, Tensor | None]:
-        logits = self.predictions(outputs)
-        contact_map = self.contact(outputs, attention_mask, input_ids)
-        ss = self.ss_head(outputs) if self.ss_head else None
-        mfe = self.mfe_head(outputs) if self.mfe_head else None
-        return logits, contact_map, ss, mfe
+        labels_mlm: Tensor | None = None,
+        labels_contact: Tensor | None = None,
+        labels_ss: Tensor | None = None,
+        labels_mfe: Tensor | None = None,
+    ) -> Tuple[Tensor | None, Tensor, Tensor, Tensor | None, Tensor | None]:
+        output_mlm = self.predictions(outputs, labels=labels_mlm)
+        output_contact = self.contact_head(outputs, attention_mask, input_ids, labels=labels_contact)
+        output_ss = self.ss_head(outputs, labels=labels_ss) if self.ss_head is not None else None
+        output_mfe = self.mfe_head(outputs, labels=labels_mfe) if self.mfe_head is not None else None
+
+        losses = [output.loss for output in (output_mlm, output_contact) if output.loss is not None]
+        if output_ss is not None and output_ss.loss is not None:
+            losses.append(output_ss.loss)
+        ss_logits = output_ss.logits if output_ss is not None else None
+        if output_mfe is not None and output_mfe.loss is not None:
+            losses.append(output_mfe.loss)
+        mfe_logits = output_ss.logits if output_mfe is not None else None
+        total_loss = sum(losses) if losses else None
+
+        return total_loss, output_mlm.logits, output_contact.logits, ss_logits, mfe_logits
 
 
 @dataclass
