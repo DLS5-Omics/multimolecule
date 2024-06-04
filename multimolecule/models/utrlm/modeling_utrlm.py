@@ -89,6 +89,10 @@ class UtrLmModel(UtrLmPreTrainedModel):
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
+        >>> output["last_hidden_state"].shape
+        torch.Size([1, 7, 128])
+        >>> output["pooler_output"].shape
+        torch.Size([1, 128])
     """
 
     def __init__(self, config: UtrLmConfig, add_pooling_layer: bool = True):
@@ -129,6 +133,7 @@ class UtrLmModel(UtrLmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         encoder_hidden_states  (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`, *optional*):
@@ -151,6 +156,12 @@ class UtrLmModel(UtrLmPreTrainedModel):
             If set to `True`, `past_key_values` key value states are returned and can be used to speed up decoding (see
             `past_key_values`).
         """
+        if kwargs:
+            warn(
+                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
+                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
+                "This is provided for backward compatibility and may lead to unexpected behavior."
+            )
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
@@ -249,10 +260,14 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
         >>> config = UtrLmConfig()
-        >>> model = UtrLmModel(config)
+        >>> model = UtrLmForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=input["input_ids"])
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     _tied_weights_keys = ["lm_head.decoder.weight"]
@@ -283,16 +298,9 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
-            Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
-            config.vocab_size]` (see `input_ids` docstring) Tokens with indices set to `-100` are ignored (masked), the
-            loss is only computed for the tokens with labels in `[0, ..., config.vocab_size]`
-        """
-
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
@@ -304,6 +312,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -325,7 +334,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
         >>> config = UtrLmConfig()
-        >>> model = UtrLmModel(config)
+        >>> model = UtrLmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -368,16 +377,10 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | UtrLmForPreTrainingOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
-            Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
-            config.vocab_size]` (see `input_ids` docstring) Tokens with indices set to `-100` are ignored (masked), the
-            loss is only computed for the tokens with labels in `[0, ..., config.vocab_size]`
-        """
-
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
@@ -386,11 +389,12 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             inputs_embeds=inputs_embeds,
             encoder_hidden_states=encoder_hidden_states,
             encoder_attention_mask=encoder_attention_mask,
-            output_attentions=output_attentions,
+            output_attentions=True,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
-        logits, contact_map, ss, mfe = self.pretrain_head(outputs)
+        logits, contact_map, ss, mfe = self.pretrain_head(outputs, attention_mask, input_ids)
 
         loss = None
         if any(x is not None for x in [labels, labels_contact, labels_ss, labels_mfe]):
@@ -428,10 +432,14 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
         >>> config = UtrLmConfig()
-        >>> model = UtrLmModel(config)
+        >>> model = UtrLmForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.tensor([[1]]))
+        >>> output["logits"].shape
+        torch.Size([1, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: UtrLmConfig):
@@ -455,9 +463,9 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
@@ -467,6 +475,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -488,10 +497,14 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
     Examples:
         >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
         >>> config = UtrLmConfig()
-        >>> model = UtrLmModel(config)
+        >>> model = UtrLmForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output["logits"].shape
+        torch.Size([1, 7, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: UtrLmConfig):
@@ -515,13 +528,9 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
-            Labels for computing the token classification loss. Indices should be in `[0, ..., config.num_labels - 1]`.
-        """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
@@ -531,6 +540,7 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
@@ -555,7 +565,11 @@ class UtrLmForNucleotidePrediction(UtrLmPreTrainedModel):
         >>> model = UtrLmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: UtrLmConfig):
@@ -581,14 +595,7 @@ class UtrLmForNucleotidePrediction(UtrLmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
-        if kwargs:
-            warn(
-                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
-                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
-                "This is provided for backward compatibility and may lead to unexpected behavior."
-            )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.utrlm(
             input_ids,
             attention_mask=attention_mask,
@@ -598,6 +605,7 @@ class UtrLmForNucleotidePrediction(UtrLmPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss

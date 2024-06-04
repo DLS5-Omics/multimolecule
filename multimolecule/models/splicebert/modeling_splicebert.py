@@ -91,6 +91,10 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
+        >>> output["last_hidden_state"].shape
+        torch.Size([1, 7, 512])
+        >>> output["pooler_output"].shape
+        torch.Size([1, 512])
     """
 
     def __init__(self, config: SpliceBertConfig, add_pooling_layer: bool = True):
@@ -131,6 +135,7 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         encoder_hidden_states  (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`, *optional*):
@@ -153,6 +158,12 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
             If set to `True`, `past_key_values` key value states are returned and can be used to speed up decoding (see
             `past_key_values`).
         """
+        if kwargs:
+            warn(
+                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
+                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
+                "This is provided for backward compatibility and may lead to unexpected behavior."
+            )
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
@@ -253,7 +264,11 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
         >>> model = SpliceBertForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=input["input_ids"])
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     _tied_weights_keys = ["lm_head.decoder.bias", "lm_head.decoder.weight"]
@@ -290,16 +305,9 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
-            Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
-            config.vocab_size]` (see `input_ids` docstring) Tokens with indices set to `-100` are ignored (masked), the
-            loss is only computed for the tokens with labels in `[0, ..., config.vocab_size]`
-        """
-
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.splicebert(
             input_ids,
             attention_mask=attention_mask,
@@ -311,6 +319,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -366,16 +375,9 @@ class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
-            Labels for computing the masked language modeling loss. Indices should be in `[-100, 0, ...,
-            config.vocab_size]` (see `input_ids` docstring) Tokens with indices set to `-100` are ignored (masked), the
-            loss is only computed for the tokens with labels in `[0, ..., config.vocab_size]`
-        """
-
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.splicebert(
             input_ids,
             attention_mask=attention_mask,
@@ -387,6 +389,7 @@ class SpliceBertForPreTraining(SpliceBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -411,7 +414,11 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
         >>> model = SpliceBertForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.tensor([[1]]))
+        >>> output["logits"].shape
+        torch.Size([1, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):
@@ -435,9 +442,9 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.splicebert(
             input_ids,
             attention_mask=attention_mask,
@@ -447,6 +454,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
@@ -471,7 +479,11 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         >>> model = SpliceBertForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output["logits"].shape
+        torch.Size([1, 7, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):
@@ -495,13 +507,9 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
+        **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        r"""
-        labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
-            Labels for computing the token classification loss. Indices should be in `[0, ..., config.num_labels - 1]`.
-        """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.splicebert(
             input_ids,
             attention_mask=attention_mask,
@@ -511,6 +519,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
@@ -535,7 +544,11 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
         >>> model = SpliceBertForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: SpliceBertConfig):
@@ -561,14 +574,7 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
-        if kwargs:
-            warn(
-                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
-                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
-                "This is provided for backward compatibility and may lead to unexpected behavior."
-            )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         outputs = self.splicebert(
             input_ids,
             attention_mask=attention_mask,
@@ -578,6 +584,7 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            **kwargs,
         )
         output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
