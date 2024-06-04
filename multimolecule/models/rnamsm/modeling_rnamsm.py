@@ -539,12 +539,12 @@ class RnaMsmEmbeddings(nn.Module):
             else:
                 raise ValueError("attention_mask is not passed and can not be inferred from input_ids or inputs_embeds")
 
+        if inputs_embeds is None:
+            inputs_embeds = self.word_embeddings(input_ids.long())
+
         if position_ids is None:
             position_ids = self.position_ids[:, :seq_length] * attention_mask.long()
         position_embeddings = self.position_embeddings(position_ids)
-
-        if inputs_embeds is None:
-            inputs_embeds = self.word_embeddings(input_ids.long())
 
         embeddings = inputs_embeds + position_embeddings
 

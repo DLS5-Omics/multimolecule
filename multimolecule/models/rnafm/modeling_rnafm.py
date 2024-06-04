@@ -337,7 +337,13 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
         >>> model = RnaFmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
+        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<AddBackward0>)
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["contact_map"].shape
+        torch.Size([1, 5, 5, 2])
     """
 
     _tied_weights_keys = ["head.predictions.decoder.weight"]
@@ -350,16 +356,16 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
                 "bi-directional self-attention."
             )
         self.rnafm = RnaFmModel(config, add_pooling_layer=False)
-        self.pretrain_head = RnaFmPreTrainingHeads(config)
+        self.pretrain = RnaFmPreTrainingHeads(config)
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def get_output_embeddings(self):
-        return self.pretrain_head.predictions.decoder
+        return self.pretrain.predictions.decoder
 
     def set_output_embeddings(self, embeddings):
-        self.pretrain_head.predictions.decoder = embeddings
+        self.pretrain.predictions.decoder = embeddings
 
     def forward(
         self,
@@ -370,7 +376,7 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         encoder_hidden_states: Tensor | None = None,
         encoder_attention_mask: Tensor | None = None,
-        labels: Tensor | None = None,
+        labels_mlm: Tensor | None = None,
         labels_contact: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
@@ -393,23 +399,16 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        logits, contact_map = self.pretrain_head(outputs, attention_mask, input_ids)
-
-        loss = None
-        if any(x is not None for x in [labels, labels_contact]):
-            loss_mlm = loss_contact = 0
-            if labels is not None:
-                loss_mlm = F.cross_entropy(logits.view(-1, self.config.vocab_size), labels.view(-1))
-            if labels_contact is not None:
-                loss_contact = F.mse_loss(contact_map.view(-1), labels_contact.view(-1))
-            loss = loss_mlm + loss_contact
+        total_loss, logits, contact_map = self.pretrain(
+            outputs, attention_mask, input_ids, labels_mlm=labels_mlm, labels_contact=labels_contact
+        )
 
         if not return_dict:
             output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
+            return ((total_loss,) + output) if total_loss is not None else output
 
         return RnaFmForPreTrainingOutput(
-            loss=loss,
+            loss=total_loss,
             logits=logits,
             contact_map=contact_map,
             hidden_states=outputs.hidden_states,
@@ -1145,18 +1144,24 @@ class RnaFmPooler(nn.Module):
 class RnaFmPreTrainingHeads(nn.Module):
     def __init__(self, config: RnaFmConfig):
         super().__init__()
-        self.contact = ContactPredictionHead(config)
         self.predictions = MaskedLMHead(config)
+        self.contact_head = ContactPredictionHead(config)
 
     def forward(
         self,
         outputs: BaseModelOutputWithPastAndCrossAttentions | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | NestedTensor | None = None,
-    ) -> Tuple[Tensor, Tensor]:
-        logits = self.predictions(outputs)
-        contact_map = self.contact(outputs, attention_mask, input_ids)
-        return logits, contact_map
+        labels_mlm: Tensor | None = None,
+        labels_contact: Tensor | None = None,
+    ) -> Tuple[Tensor | None, Tensor, Tensor]:
+        output_mlm = self.predictions(outputs, labels=labels_mlm)
+        output_contact = self.contact_head(outputs, attention_mask, input_ids, labels=labels_contact)
+
+        losses = [output.loss for output in (output_mlm, output_contact) if output.loss is not None]
+        total_loss = sum(losses) if losses else None
+
+        return total_loss, output_mlm.logits, output_contact.logits
 
 
 @dataclass
