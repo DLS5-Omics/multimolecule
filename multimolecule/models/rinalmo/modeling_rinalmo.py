@@ -251,32 +251,27 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
         )
 
 
-class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
+class RiNALMoForNucleotidePrediction(RiNALMoPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RiNALMoConfig, RiNALMoForMaskedLM, RnaTokenizer
+        >>> from multimolecule import RiNALMoConfig, RiNALMoForNucleotidePrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
-        >>> model = RiNALMoForMaskedLM(config)
+        >>> model = RiNALMoForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=input["input_ids"])
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
-
-    _tied_weights_keys = ["lm_head.decoder.weight"]
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        if config.is_decoder:
-            logger.warning(
-                "If you want to use `RiNALMoForMaskedLM` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config)
+        self.num_labels = config.head.num_labels
+        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.nucleotide_head = NucleotidePredictionHead(config)
+        self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -288,14 +283,12 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rinalmo(
             input_ids,
@@ -303,30 +296,24 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return MaskedLMOutput(
+        return NucleotidePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
-
-
-class RiNALMoForPreTraining(RiNALMoForMaskedLM):
-    pass
 
 
 class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
@@ -459,27 +446,32 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
         )
 
 
-class RiNALMoForNucleotidePrediction(RiNALMoPreTrainedModel):
+class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RiNALMoConfig, RiNALMoForNucleotidePrediction, RnaTokenizer
+        >>> from multimolecule import RiNALMoConfig, RiNALMoForMaskedLM, RnaTokenizer
         >>> config = RiNALMoConfig()
-        >>> model = RiNALMoForNucleotidePrediction(config)
+        >>> model = RiNALMoForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 7, 26])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
+
+    _tied_weights_keys = ["lm_head.decoder.weight"]
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
+        if config.is_decoder:
+            logger.warning(
+                "If you want to use `RiNALMoForMaskedLM` make sure `config.is_decoder=False` for "
+                "bi-directional self-attention."
+            )
+        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
+        self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -491,12 +483,14 @@ class RiNALMoForNucleotidePrediction(RiNALMoPreTrainedModel):
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
+    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rinalmo(
             input_ids,
@@ -504,24 +498,30 @@ class RiNALMoForNucleotidePrediction(RiNALMoPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return NucleotidePredictorOutput(
+        return MaskedLMOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+
+class RiNALMoForPreTraining(RiNALMoForMaskedLM):
+    pass
 
 
 class RiNALMoEmbeddings(nn.Module):

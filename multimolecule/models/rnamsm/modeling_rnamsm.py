@@ -171,25 +171,27 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
+class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForMaskedLM, RnaTokenizer
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForNucleotidePrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForMaskedLM(config)
+        >>> model = RnaMsmForNucleotidePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=input["input_ids"])
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+        self.num_labels = config.head.num_labels
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.nucleotide_head = NucleotidePredictionHead(config)
+        self.head_config = self.nucleotide_head.config
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -201,11 +203,11 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
+        output_attentions: bool = False,
+        output_hidden_states: bool = False,
+        return_dict: bool = True,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
+    ) -> Tuple[Tensor, ...] | RnaMsmNucleotidePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
@@ -217,85 +219,16 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmForMaskedLMOutput(
+        return RnaMsmNucleotidePredictorOutput(
             loss=loss,
             logits=logits,
-            hidden_states=outputs.hidden_states,
-            col_attentions=outputs.col_attentions,
-            row_attentions=outputs.row_attentions,
-        )
-
-
-class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForPreTraining, RnaTokenizer
-        >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForPreTraining(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels_mlm=input["input_ids"])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<AddBackward0>)
-        >>> output["logits"].shape
-        torch.Size([1, 7, 26])
-        >>> output["contact_map"].shape
-        torch.Size([1, 5, 5, 2])
-    """
-
-    def __init__(self, config: RnaMsmConfig):
-        super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.pretrain = RnaMsmPreTrainingHeads(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels_mlm: Tensor | None = None,
-        labels_contact: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnamsm(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            inputs_embeds=inputs_embeds,
-            output_attentions=True,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        total_loss, logits, contact_map = self.pretrain(
-            outputs, attention_mask, input_ids, labels_mlm=labels_mlm, labels_contact=labels_contact
-        )
-
-        if not return_dict:
-            output = (logits, contact_map) + outputs[2:]
-            return ((total_loss,) + output) if total_loss is not None else output
-
-        return RnaMsmForPreTrainingOutput(
-            loss=total_loss,
-            logits=logits,
-            contact_map=contact_map,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
@@ -430,27 +363,25 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
+class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForNucleotidePrediction, RnaTokenizer
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForMaskedLM, RnaTokenizer
         >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForNucleotidePrediction(config)
+        >>> model = RnaMsmForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 7, 26])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+        tensor(..., grad_fn=<NllLossBackward0>)
     """
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.lm_head = MaskedLMHead(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -462,11 +393,11 @@ class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaMsmNucleotidePredictorOutput:
+    ) -> Tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
@@ -478,16 +409,85 @@ class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
-        return RnaMsmNucleotidePredictorOutput(
+        return RnaMsmForMaskedLMOutput(
             loss=loss,
             logits=logits,
+            hidden_states=outputs.hidden_states,
+            col_attentions=outputs.col_attentions,
+            row_attentions=outputs.row_attentions,
+        )
+
+
+class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForPreTraining, RnaTokenizer
+        >>> config = RnaMsmConfig()
+        >>> model = RnaMsmForPreTraining(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<AddBackward0>)
+        >>> output["logits"].shape
+        torch.Size([1, 7, 26])
+        >>> output["contact_map"].shape
+        torch.Size([1, 5, 5, 2])
+    """
+
+    def __init__(self, config: RnaMsmConfig):
+        super().__init__(config)
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.pretrain = RnaMsmPreTrainingHeads(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels_mlm: Tensor | None = None,
+        labels_contact: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.rnamsm(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            inputs_embeds=inputs_embeds,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        total_loss, logits, contact_map = self.pretrain(
+            outputs, attention_mask, input_ids, labels_mlm=labels_mlm, labels_contact=labels_contact
+        )
+
+        if not return_dict:
+            output = (logits, contact_map) + outputs[2:]
+            return ((total_loss,) + output) if total_loss is not None else output
+
+        return RnaMsmForPreTrainingOutput(
+            loss=total_loss,
+            logits=logits,
+            contact_map=contact_map,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,

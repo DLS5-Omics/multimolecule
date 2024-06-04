@@ -303,6 +303,205 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         )
 
 
+class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForNucleotidePrediction, RnaTokenizer
+        >>> config = ErnieRnaConfig()
+        >>> model = ErnieRnaForNucleotidePrediction(config)
+        >>> tokenizer = RnaTokenizer()
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randn(1, 5, 2))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
+    """
+
+    def __init__(self, config: ErnieRnaConfig):
+        super().__init__(config)
+        self.num_labels = config.head.num_labels
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.nucleotide_head = NucleotidePredictionHead(config)
+        self.head_config = self.nucleotide_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_attention_biases: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ErnieRnaNucleotidePredictorOutput:
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.ernierna(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_attention_biases=output_attention_biases,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ErnieRnaNucleotidePredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForSequencePrediction, RnaTokenizer
+        >>> config = ErnieRnaConfig()
+        >>> model = ErnieRnaForSequencePrediction(config)
+        >>> tokenizer = RnaTokenizer()
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input)
+        >>> output["logits"].shape
+        torch.Size([1, 2])
+    """
+
+    def __init__(self, config: ErnieRnaConfig):
+        super().__init__(config)
+        self.num_labels = config.head.num_labels
+        self.ernierna = ErnieRnaModel(config)
+        self.sequence_head = SequencePredictionHead(config)
+        self.head_config = self.sequence_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_attention_biases: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.ernierna(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_attention_biases=output_attention_biases,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.sequence_head(outputs, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ErnieRnaSequencePredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForTokenPrediction, RnaTokenizer
+        >>> config = ErnieRnaConfig()
+        >>> model = ErnieRnaForTokenPrediction(config)
+        >>> tokenizer = RnaTokenizer()
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output["logits"].shape
+        torch.Size([1, 7, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
+    """
+
+    def __init__(self, config: ErnieRnaConfig):
+        super().__init__(config)
+        self.num_labels = config.num_labels
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.token_head = TokenPredictionHead(config)
+        self.head_config = self.token_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_attention_biases: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.ernierna(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=output_attentions,
+            output_attention_biases=output_attention_biases,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.token_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ErnieRnaTokenPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
 class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
     """
     Examples:
@@ -470,205 +669,6 @@ class ErnieRnaForContactClassification(ErnieRnaPreTrainedModel):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
             attention_biases=outputs.attention_biases,
-        )
-
-
-class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForSequencePrediction, RnaTokenizer
-        >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForSequencePrediction(config)
-        >>> tokenizer = RnaTokenizer()
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input)
-        >>> output["logits"].shape
-        torch.Size([1, 2])
-    """
-
-    def __init__(self, config: ErnieRnaConfig):
-        super().__init__(config)
-        self.num_labels = config.head.num_labels
-        self.ernierna = ErnieRnaModel(config)
-        self.sequence_head = SequencePredictionHead(config)
-        self.head_config = self.sequence_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_attention_biases: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_attention_biases=output_attention_biases,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.sequence_head(outputs, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaSequencePredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForTokenPrediction, RnaTokenizer
-        >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForTokenPrediction(config)
-        >>> tokenizer = RnaTokenizer()
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
-        >>> output["logits"].shape
-        torch.Size([1, 7, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
-    """
-
-    def __init__(self, config: ErnieRnaConfig):
-        super().__init__(config)
-        self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
-        self.token_head = TokenPredictionHead(config)
-        self.head_config = self.token_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_attention_biases: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_attention_biases=output_attention_biases,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.token_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaTokenPredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForNucleotidePrediction, RnaTokenizer
-        >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForNucleotidePrediction(config)
-        >>> tokenizer = RnaTokenizer()
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
-    """
-
-    def __init__(self, config: ErnieRnaConfig):
-        super().__init__(config)
-        self.num_labels = config.head.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_attention_biases: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaNucleotidePredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_attention_biases=output_attention_biases,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaNucleotidePredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
         )
 
 
