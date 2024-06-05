@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Mapping, Tuple
 
 import torch
 from chanfig import ConfigRegistry
@@ -48,11 +48,16 @@ class NucleotidePredictionHead(PredictionHead):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "last_hidden_state"
+    r"""The default output to use for the head."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -60,6 +65,7 @@ class NucleotidePredictionHead(PredictionHead):
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
+        output_name: str | None = None,
     ) -> HeadOutput:
         r"""
         Forward pass of the NucleotidePredictionHead.
@@ -69,22 +75,30 @@ class NucleotidePredictionHead(PredictionHead):
             attention_mask: The attention mask for the inputs.
             input_ids: The input ids for the inputs.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
-                    "Either attention_mask or input_ids must be provided for NucleotidePredictionHead to work."
+                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
                 )
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to NucleotidePredictionHead."
+                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
 
-        output = outputs[0] * attention_mask.unsqueeze(-1)
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[0]
+        output *= attention_mask.unsqueeze(-1)
+
         # remove cls token embeddings
         if self.bos_token_id is not None:
             output = output[..., 1:, :]
+            # process attention_mask and input_ids to make removal of eos token happy
             attention_mask = attention_mask[..., 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
@@ -92,14 +106,12 @@ class NucleotidePredictionHead(PredictionHead):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output)
-                input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
             output *= eos_mask[:, :, None]
             output = output[..., :-1, :]
-            attention_mask = attention_mask[..., 1:]
 
         return super().forward(output, labels)
 
@@ -116,12 +128,17 @@ class NucleotideKMerHead(PredictionHead):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "last_hidden_state"
+    r"""The default output to use for the head."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.nmers = config.nmers
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
         # Do not pass bos_token_id and eos_token_id to unfold_kmer_embeddings
         # As they will be removed in preprocess
         self.unfold_kmer_embeddings = partial(unfold_kmer_embeddings, nmers=self.nmers)
@@ -132,6 +149,7 @@ class NucleotideKMerHead(PredictionHead):
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
+        output_name: str | None = None,
     ) -> HeadOutput:
         r"""
         Forward pass of the NucleotideKMerHead.
@@ -141,17 +159,26 @@ class NucleotideKMerHead(PredictionHead):
             attention_mask: The attention mask for the inputs.
             input_ids: The input ids for the inputs.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
         if attention_mask is None:
             if input_ids is None:
-                raise ValueError("Either attention_mask or input_ids must be provided for NucleotideKMerHead to work.")
+                raise ValueError(
+                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                )
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to NucleotideKMerHead."
+                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
 
-        output = outputs[0]
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[0]
+        output = output * attention_mask.unsqueeze(-1)
+
         # remove cls token embeddings
         if self.bos_token_id is not None:
             output = output[..., 1:, :]

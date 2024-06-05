@@ -274,7 +274,6 @@ class UtrBertForContactPrediction(UtrBertPreTrainedModel):
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config, add_pooling_layer=True)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
@@ -341,7 +340,6 @@ class UtrBertForNucleotidePrediction(UtrBertPreTrainedModel):
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config, add_pooling_layer=False)
         self.nucleotide_head = NucleotideKMerHead(config)
         self.head_config = self.nucleotide_head.config
@@ -406,7 +404,6 @@ class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.utrbert = UtrBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config

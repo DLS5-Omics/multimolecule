@@ -56,7 +56,7 @@ class PredictionHead(nn.Module):
         self.num_labels = self.config.num_labels
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = HeadTransformRegistryHF.build(self.config)
-        self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
+        self.decoder = nn.Linear(config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
         self.criterion = Criterion(self.config)
 
