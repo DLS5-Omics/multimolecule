@@ -274,7 +274,6 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
@@ -341,7 +340,6 @@ class RiNALMoForNucleotidePrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
@@ -406,7 +404,6 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
@@ -471,7 +468,6 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config

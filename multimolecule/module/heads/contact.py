@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Mapping, Tuple
 
 import torch
 from torch import Tensor, nn
@@ -46,6 +46,9 @@ class ContactPredictionHead(PredictionHead):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "attentions"
+    r"""The default output to use for the head."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.bos_token_id = config.bos_token_id
@@ -54,13 +57,16 @@ class ContactPredictionHead(PredictionHead):
         self.decoder = nn.Linear(
             config.num_hidden_layers * config.num_attention_heads, self.num_labels, bias=self.config.bias
         )
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
+        output_name: str | None = None,
     ) -> HeadOutput:
         r"""
         Forward pass of the ContactPredictionHead.
@@ -70,35 +76,44 @@ class ContactPredictionHead(PredictionHead):
             attention_mask: The attention mask for the inputs.
             input_ids: The input ids for the inputs.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
-        attentions = torch.stack(outputs[-1], 1)
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
-                    "Either attention_mask or input_ids must be provided for ContactPredictionHead to work."
+                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
                 )
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to ContactPredictionHead."
+                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
+
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[-1]
+        attentions = torch.stack(output, 1)
+
         # In the original model, attentions for padding tokens are completely zeroed out.
         # This makes no difference most of the time because the other tokens won't attend to them,
         # but it does for the contact prediction task, which takes attentions as input,
         # so we have to mimic that here.
         attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
         attentions *= attention_mask[:, None, None, :, :]
+
         # remove cls token attentions
         if self.bos_token_id is not None:
             attentions = attentions[..., 1:, 1:]
-            attention_mask = attention_mask[..., 1:, 1:]
+            # process attention_mask and input_ids to make removal of eos token happy
+            attention_mask = attention_mask[..., 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
         # remove eos token attentions
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
-                input_ids = input_ids[..., 1:]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
@@ -106,7 +121,6 @@ class ContactPredictionHead(PredictionHead):
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
             attentions *= eos_mask[:, None, None, :, :]
             attentions = attentions[..., :-1, :-1]
-            attention_mask = attention_mask[..., 1:, 1:]
 
         # features: batch x channels x input_ids x input_ids (symmetric)
         batch_size, layers, heads, seqlen, _ = attentions.size()
