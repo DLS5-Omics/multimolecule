@@ -24,7 +24,14 @@ from transformers.modeling_outputs import ModelOutput
 
 @dataclass
 class HeadOutput(ModelOutput):
-    """Output of a head."""
+    r"""
+    Output of a prediction head.
+
+    Args:
+        logits: The prediction logits from the head.
+        loss: The loss from the head.
+            Defaults to None.
+    """
 
     logits: FloatTensor
     loss: FloatTensor | None = None

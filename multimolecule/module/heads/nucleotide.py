@@ -17,19 +17,21 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 import torch
 from chanfig import ConfigRegistry
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
-
+from .config import HeadConfig
 from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .utils import unfold_kmer_embeddings
+
+if TYPE_CHECKING:
+    from multimolecule.models import PreTrainedConfig
 
 NucleotideHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
@@ -37,7 +39,14 @@ NucleotideHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 @HeadRegistry.register("nucleotide.single")
 @NucleotideHeadRegistryHF.register("single", default=True)
 class NucleotidePredictionHead(PredictionHead):
-    """Head for nucleotide-level tasks."""
+    r"""
+    Head for tasks in nucleotide-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -52,6 +61,15 @@ class NucleotidePredictionHead(PredictionHead):
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
+        r"""
+        Forward pass of the NucleotidePredictionHead.
+
+        Args:
+            outputs: The outputs of the model.
+            attention_mask: The attention mask for the inputs.
+            input_ids: The input ids for the inputs.
+            labels: The labels for the head.
+        """
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError(
@@ -89,7 +107,14 @@ class NucleotidePredictionHead(PredictionHead):
 @HeadRegistry.register("nucleotide.kmer")
 @NucleotideHeadRegistryHF.register("kmer")
 class NucleotideKMerHead(PredictionHead):
-    """Head for nucleotide-level tasks."""
+    r"""
+    Head for tasks in nucleotide-level with kmer inputs.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -108,6 +133,15 @@ class NucleotideKMerHead(PredictionHead):
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
+        r"""
+        Forward pass of the NucleotideKMerHead.
+
+        Args:
+            outputs: The outputs of the model.
+            attention_mask: The attention mask for the inputs.
+            input_ids: The input ids for the inputs.
+            labels: The labels for the head.
+        """
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError("Either attention_mask or input_ids must be provided for NucleotideKMerHead to work.")

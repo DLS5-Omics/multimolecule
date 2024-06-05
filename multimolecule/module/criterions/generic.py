@@ -16,12 +16,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 
-from multimolecule.models.configuration_utils import HeadConfig
+if TYPE_CHECKING:
+    from ..heads.config import HeadConfig
 
 
 class Criterion(nn.Module):
