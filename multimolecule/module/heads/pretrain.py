@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 import torch
 from torch import Tensor, nn
@@ -24,16 +24,25 @@ from torch.nn import functional as F
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.models.configuration_utils import MaskedLMHeadConfig, PreTrainedConfig
-
+from .config import MaskedLMHeadConfig
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .transform import HeadTransformRegistryHF
 
+if TYPE_CHECKING:
+    from multimolecule.models import PreTrainedConfig
+
 
 @HeadRegistry.register("masked_lm")
 class MaskedLMHead(nn.Module):
-    """Head for masked language modeling."""
+    r"""
+    Head for masked language modeling.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     def __init__(
         self, config: PreTrainedConfig, weight: Tensor | None = None, head_config: MaskedLMHeadConfig | None = None
@@ -56,6 +65,13 @@ class MaskedLMHead(nn.Module):
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
 
     def forward(self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None) -> HeadOutput:
+        r"""
+        Forward pass of the MaskedLMHead.
+
+        Args:
+            outputs: The outputs of the model.
+            labels: The labels for the head.
+        """
         sequence_output = outputs[0]
         output = self.dropout(sequence_output)
         output = self.transform(output)

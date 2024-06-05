@@ -16,18 +16,29 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
-
 from ..criterions import Criterion
+from .config import HeadConfig
 from .output import HeadOutput
 from .transform import HeadTransformRegistryHF
 
+if TYPE_CHECKING:
+    from multimolecule.models import PreTrainedConfig
+
 
 class PredictionHead(nn.Module):
-    """Head for all-level of tasks."""
+    r"""
+    Head for all-level of tasks.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     num_labels: int
 
@@ -50,6 +61,13 @@ class PredictionHead(nn.Module):
         self.criterion = Criterion(self.config)
 
     def forward(self, embeddings: Tensor, labels: Tensor | None) -> HeadOutput:
+        r"""
+        Forward pass of the PredictionHead.
+
+        Args:
+            embeddings: The embeddings to be passed through the head.
+            labels: The labels for the head.
+        """
         output = self.dropout(embeddings)
         output = self.transform(output)
         output = self.decoder(output)
