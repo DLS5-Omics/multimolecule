@@ -147,6 +147,9 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - gen-files:
+      scripts:
+        - generate.py
   - git-committers
   - mkdocstrings:
       handlers:
