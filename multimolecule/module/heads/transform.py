@@ -20,7 +20,7 @@ from chanfig import ConfigRegistry, Registry
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from multimolecule.models.configuration_utils import HeadConfig
+from .config import HeadConfig
 
 HeadTransformRegistry = Registry()
 HeadTransformRegistryHF = ConfigRegistry(key="transform")

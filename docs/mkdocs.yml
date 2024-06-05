@@ -9,6 +9,10 @@ repo_url: https://github.com/DLS5-Omics/multimolecule
 
 nav:
   - MultiMolecule: index.md
+  - module:
+      - module: module.md
+      - heads: module/heads.md
+      - embeddings: module/embeddings.md
   - models:
       - models: models.md
       - DNA:
@@ -23,7 +27,8 @@ nav:
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md
       - utils:
-          - models/modeling_outputs.md
+          - configuration_utils: models/configuration_utils.md
+          - modeling_outputs: models/modeling_outputs.md
   - tokenisers:
       - tokenisers: tokenisers.md
       - RnaTokenizer: tokenisers/rna.md
@@ -57,6 +62,7 @@ theme:
     # - content.action.view
     - content.code.annotate
     - content.code.copy
+    - content.code.select
     - content.tabs.link
     - content.tooltips
     - header.autohide
@@ -121,10 +127,12 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_index: !!python/name:pymdownx.emoji.gemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
       auto_title: true
       linenums: true
   - pymdownx.inlinehilite
@@ -194,6 +202,7 @@ plugins:
   - search:
       separator: '[\s\u200b\-]'
   - tags
+  # - typeset
 
 watch:
   - ../multimolecule/

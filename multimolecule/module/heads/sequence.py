@@ -28,9 +28,23 @@ from .registry import HeadRegistry
 
 @HeadRegistry.register("sequence")
 class SequencePredictionHead(PredictionHead):
-    """Head for sequence-level tasks."""
+    r"""
+    Head for tasks in sequence-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     def forward(
         self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None
     ) -> HeadOutput:  # pylint: disable=arguments-renamed
+        r"""
+        Forward pass of the SequencePredictionHead.
+
+        Args:
+            outputs: The outputs of the model.
+            labels: The labels for the head.
+        """
         return super().forward(outputs[1], labels)

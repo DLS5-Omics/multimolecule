@@ -16,14 +16,23 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
-from dataclasses import asdict, dataclass, is_dataclass
+from dataclasses import asdict, is_dataclass
 
 from transformers.configuration_utils import PretrainedConfig
 
+from ..module import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
+
+__all__ = ["PreTrainedConfig", "BaseHeadConfig", "HeadConfig", "MaskedLMHeadConfig"]
+
 
 class PreTrainedConfig(PretrainedConfig):
+    r"""
+    Base class for all model configuration classes.
+    """
+
     head: HeadConfig
+
+    hidden_size: int
 
     pad_token_id: int = 0
     bos_token_id: int = 1
@@ -46,12 +55,6 @@ class PreTrainedConfig(PretrainedConfig):
         )
 
     def to_dict(self):
-        """
-        Serializes this instance to a Python dictionary. Override the default [`~PreTrainedConfig.to_dict`].
-
-        Returns:
-            `Dict[str, any]`: Dictionary of all the attributes that make up this configuration instance,
-        """
         output = super().to_dict()
         for k, v in output.items():
             if hasattr(v, "to_dict"):
@@ -59,86 +62,3 @@ class PreTrainedConfig(PretrainedConfig):
             if is_dataclass(v):
                 output[k] = asdict(v)
         return output
-
-
-class BaseHeadConfig(OrderedDict):
-    pass
-
-
-@dataclass
-class HeadConfig(BaseHeadConfig):
-    r"""
-    This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
-    prediction head according to the specified arguments, defining the head architecture.
-
-    Configuration objects inherit from [`BaseHeadConfig`] and can be used to control the model outputs. Read the
-    documentation from [`BaseHeadConfig`] for more information.
-
-
-    Args:
-        num_labels:
-            Number of labels to use in the last layer added to the model, typically for a classification task.
-        problem_type:
-            Problem type for `XxxForYyyPrediction` models. Can be one of `"regression"`,
-            `"single_label_classification"` or `"multi_label_classification"`.
-        hidden_size:
-            Dimensionality of the encoder layers and the pooler layer.
-        dropout:
-            The dropout ratio for the hidden states.
-        transform:
-            The transform operation applied to hidden states.
-        transform_act:
-            The activation function of transform applied to hidden states.
-        bias:
-            Whether to apply bias to the final prediction layer.
-        act:
-            The activation function of the final prediction output.
-        layer_norm_eps:
-            The epsilon used by the layer normalization layers.
-    """
-
-    num_labels: int = None  # type: ignore[assignment]
-    problem_type: str = None  # type: ignore[assignment]
-    hidden_size: int | None = None
-    dropout: float = 0.0
-    transform: str | None = None
-    transform_act: str | None = "gelu"
-    bias: bool = True
-    act: str | None = None
-    layer_norm_eps: float = 1e-12
-
-
-@dataclass
-class MaskedLMHeadConfig(BaseHeadConfig):
-    r"""
-    This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
-    prediction head according to the specified arguments, defining the head architecture.
-
-    Configuration objects inherit from [`BaseHeadConfig`] and can be used to control the model outputs. Read the
-    documentation from [`BaseHeadConfig`] for more information.
-
-
-    Args:
-        hidden_size:
-            Dimensionality of the encoder layers and the pooler layer.
-        dropout:
-            The dropout ratio for the hidden states.
-        transform:
-            The transform operation applied to hidden states.
-        transform_act:
-            The activation function of transform applied to hidden states.
-        bias:
-            Whether to apply bias to the final prediction layer.
-        act:
-            The activation function of the final prediction output.
-        layer_norm_eps:
-            The epsilon used by the layer normalization layers.
-    """
-
-    hidden_size: int | None = None
-    dropout: float = 0.0
-    transform: str | None = "nonlinear"
-    transform_act: str | None = "gelu"
-    bias: bool = True
-    act: str | None = None
-    layer_norm_eps: float = 1e-12

@@ -25,7 +25,7 @@ from .calm import (
     CaLmForTokenPrediction,
     CaLmModel,
 )
-from .configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from .configuration_utils import PreTrainedConfig
 from .ernierna import (
     ErnieRnaConfig,
     ErnieRnaForContactClassification,
@@ -116,9 +116,6 @@ from .utrlm import (
 
 __all__ = [
     "PreTrainedConfig",
-    "BaseHeadConfig",
-    "HeadConfig",
-    "MaskedLMHeadConfig",
     "RnaTokenizer",
     "AutoModelForContactPrediction",
     "AutoModelForNucleotidePrediction",

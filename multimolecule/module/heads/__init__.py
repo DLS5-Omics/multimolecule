@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .config import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 from .contact import ContactPredictionHead
 from .generic import PredictionHead
-from .nuleotide import NucleotideHeadRegistryHF, NucleotideKMerHead, NucleotidePredictionHead
+from .nucleotide import NucleotideHeadRegistryHF, NucleotideKMerHead, NucleotidePredictionHead
+from .output import HeadOutput
 from .pretrain import MaskedLMHead
 from .registry import HeadRegistry
 from .sequence import SequencePredictionHead
@@ -30,6 +32,9 @@ from .transform import (
 )
 
 __all__ = [
+    "BaseHeadConfig",
+    "HeadConfig",
+    "MaskedLMHeadConfig",
     "HeadRegistry",
     "PredictionHead",
     "SequencePredictionHead",
@@ -41,6 +46,7 @@ __all__ = [
     "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
+    "HeadOutput",
     "HeadTransformRegistry",
     "HeadTransformRegistryHF",
     "LinearTransform",

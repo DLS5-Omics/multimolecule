@@ -17,18 +17,20 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 from chanfig import ConfigRegistry
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
-
+from .config import HeadConfig
 from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .utils import unfold_kmer_embeddings
+
+if TYPE_CHECKING:
+    from multimolecule.models import PreTrainedConfig
 
 TokenHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
@@ -36,7 +38,14 @@ TokenHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 @HeadRegistry.register("token.single")
 @TokenHeadRegistryHF.register("single", default=True)
 class TokenPredictionHead(PredictionHead):
-    """Head for token-level tasks."""
+    r"""
+    Head for tasks in token-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -51,6 +60,15 @@ class TokenPredictionHead(PredictionHead):
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
+        r"""
+        Forward pass of the TokenPredictionHead.
+
+        Args:
+            outputs: The outputs of the model.
+            attention_mask: The attention mask for the inputs.
+            input_ids: The input ids for the inputs.
+            labels: The labels for the head.
+        """
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError("Either attention_mask or input_ids must be provided for TokenPredictionHead to work.")
@@ -67,7 +85,14 @@ class TokenPredictionHead(PredictionHead):
 @HeadRegistry.register("token.kmer")
 @TokenHeadRegistryHF.register("kmer")
 class TokenKMerHead(PredictionHead):
-    """Head for token-level tasks."""
+    r"""
+    Head for tasks in token-level with kmer inputs.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -86,6 +111,15 @@ class TokenKMerHead(PredictionHead):
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
+        r"""
+        Forward pass of the TokenKMerHead.
+
+        Args:
+            outputs: The outputs of the model.
+            attention_mask: The attention mask for the inputs.
+            input_ids: The input ids for the inputs.
+            labels: The labels for the head.
+        """
         if attention_mask is None:
             if input_ids is None:
                 raise ValueError("Either attention_mask or input_ids must be provided for TokenKMerHead to work.")

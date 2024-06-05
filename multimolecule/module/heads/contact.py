@@ -21,20 +21,29 @@ from typing import Tuple
 import torch
 from torch import Tensor, nn
 from transformers.modeling_outputs import ModelOutput
+from typing_extensions import TYPE_CHECKING
 
-from multimolecule.models.configuration_utils import HeadConfig, PreTrainedConfig
-
+from .config import HeadConfig
 from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .utils import average_product_correct, symmetrize
 
+if TYPE_CHECKING:
+    from multimolecule.models import PreTrainedConfig
+
 
 @HeadRegistry.register("contact")
 class ContactPredictionHead(PredictionHead):
-    """
-    Head for contact-map-level tasks.
+    r"""
+    Head for tasks in contact-level.
+
     Performs symmetrization, and average product correct.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
     """
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
@@ -53,6 +62,15 @@ class ContactPredictionHead(PredictionHead):
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
+        r"""
+        Forward pass of the ContactPredictionHead.
+
+        Args:
+            outputs: The outputs of the model.
+            attention_mask: The attention mask for the inputs.
+            input_ids: The input ids for the inputs.
+            labels: The labels for the head.
+        """
         attentions = torch.stack(outputs[-1], 1)
         if attention_mask is None:
             if input_ids is None:

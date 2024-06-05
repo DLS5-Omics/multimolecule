@@ -29,14 +29,22 @@ from .registry import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF
 class RotaryEmbedding(nn.Module):
     """
     Rotary position embeddings based on those in
-    [RoFormer](https://huggingface.co/docs/transformers/model_doc/roformer). Query and keys are transformed by rotation
+    [RoFormer](https://huggingface.co/docs/transformers/model_doc/roformer).
+
+    Query and keys are transformed by rotation
     matrices which depend on their relative positions.
+
+    Tip: **Cache**
+        The inverse frequency buffer is cached and updated only when the sequence length changes or the device changes.
+
+    Success: **Sequence Length**
+        Rotary Embedding is irrespective of the sequence length and can be used for any sequence length.
     """
 
-    def __init__(self, dim: int):
+    def __init__(self, embedding_dim: int):
         super().__init__()
         # Generate and save the inverse frequency buffer (non trainable)
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2, dtype=torch.int64).float() / dim))
+        inv_freq = 1.0 / (10000 ** (torch.arange(0, embedding_dim, 2, dtype=torch.int64).float() / embedding_dim))
         self.register_buffer("inv_freq", inv_freq)
 
         self._seq_len_cached = None
