@@ -39,6 +39,7 @@ from multimolecule.module import (
     TokenPredictionHead,
 )
 
+from ..configuration_utils import HeadConfig
 from .configuration_rnamsm import RnaMsmConfig
 
 LAYERS = ConfigRegistry()
@@ -188,9 +189,9 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
-        self.contact_head = ContactPredictionHead(config)
+        head_config = HeadConfig(output_name="row_attentions")
+        self.contact_head = ContactPredictionHead(config, head_config)
         self.head_config = self.contact_head.config
 
         # Initialize weights and apply final processing
@@ -256,7 +257,6 @@ class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
@@ -320,7 +320,6 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
@@ -384,7 +383,6 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
@@ -1390,7 +1388,8 @@ class RnaMsmPreTrainingHeads(nn.Module):
     def __init__(self, config: RnaMsmConfig, weight: Tensor | None = None):
         super().__init__()
         self.predictions = MaskedLMHead(config, weight=weight)
-        self.contact_head = ContactPredictionHead(config)
+        head_config = HeadConfig(output_name="row_attentions")
+        self.contact_head = ContactPredictionHead(config, head_config=head_config)
 
     def forward(
         self,

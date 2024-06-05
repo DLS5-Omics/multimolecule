@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Mapping, Tuple
 
 from chanfig import ConfigRegistry
 from torch import Tensor
@@ -47,11 +47,16 @@ class TokenPredictionHead(PredictionHead):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "last_hidden_state"
+    r"""The default output to use for the head."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -59,6 +64,7 @@ class TokenPredictionHead(PredictionHead):
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
+        output_name: str | None = None,
     ) -> HeadOutput:
         r"""
         Forward pass of the TokenPredictionHead.
@@ -68,17 +74,25 @@ class TokenPredictionHead(PredictionHead):
             attention_mask: The attention mask for the inputs.
             input_ids: The input ids for the inputs.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
         if attention_mask is None:
             if input_ids is None:
-                raise ValueError("Either attention_mask or input_ids must be provided for TokenPredictionHead to work.")
+                raise ValueError(
+                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                )
             if self.pad_token_id is None:
                 raise ValueError(
-                    "pad_token_id must be provided when attention_mask is not passed to TokenPredictionHead."
+                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
                 )
             attention_mask = input_ids.ne(self.pad_token_id)
 
-        output = outputs[0] * attention_mask.unsqueeze(-1)
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[0]
+        output = output * attention_mask.unsqueeze(-1)
         return super().forward(output, labels)
 
 
@@ -94,12 +108,17 @@ class TokenKMerHead(PredictionHead):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "last_hidden_state"
+    r"""The default output to use for the head."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.nmers = config.nmers
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
         self.unfold_kmer_embeddings = partial(
             unfold_kmer_embeddings, nmers=self.nmers, bos_token_id=self.bos_token_id, eos_token_id=self.eos_token_id
         )
@@ -110,6 +129,7 @@ class TokenKMerHead(PredictionHead):
         attention_mask: Tensor | None = None,
         input_ids: Tensor | None = None,
         labels: Tensor | None = None,
+        output_name: str | None = None,
     ) -> HeadOutput:
         r"""
         Forward pass of the TokenKMerHead.
@@ -119,13 +139,24 @@ class TokenKMerHead(PredictionHead):
             attention_mask: The attention mask for the inputs.
             input_ids: The input ids for the inputs.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
         if attention_mask is None:
             if input_ids is None:
-                raise ValueError("Either attention_mask or input_ids must be provided for TokenKMerHead to work.")
+                raise ValueError(
+                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                )
             if self.pad_token_id is None:
-                raise ValueError("pad_token_id must be provided when attention_mask is not passed to TokenKMerHead.")
+                raise ValueError(
+                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
+                )
             attention_mask = input_ids.ne(self.pad_token_id)
 
-        output = self.unfold_kmer_embeddings(outputs[0], attention_mask)
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[0]
+        output *= attention_mask.unsqueeze(-1)
+        output = self.unfold_kmer_embeddings(output, attention_mask)
         return super().forward(output, labels)

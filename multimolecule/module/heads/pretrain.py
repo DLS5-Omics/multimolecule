@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Mapping, Tuple
 
 import torch
 from torch import Tensor, nn
@@ -44,6 +44,9 @@ class MaskedLMHead(nn.Module):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "last_hidden_state"
+    r"""The default output to use for the head."""
+
     def __init__(
         self, config: PreTrainedConfig, weight: Tensor | None = None, head_config: MaskedLMHeadConfig | None = None
     ):
@@ -63,17 +66,26 @@ class MaskedLMHead(nn.Module):
             self.bias = nn.Parameter(torch.zeros(self.num_labels))
             self.decoder.bias = self.bias
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
 
-    def forward(self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None) -> HeadOutput:
+    def forward(
+        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None, output_name: str | None = None
+    ) -> HeadOutput:
         r"""
         Forward pass of the MaskedLMHead.
 
         Args:
             outputs: The outputs of the model.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
-        sequence_output = outputs[0]
-        output = self.dropout(sequence_output)
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[0]
+        output = self.dropout(output)
         output = self.transform(output)
         output = self.decoder(output)
         if self.activation is not None:

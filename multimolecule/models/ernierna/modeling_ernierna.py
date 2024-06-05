@@ -36,6 +36,8 @@ from transformers.utils import logging
 
 from multimolecule.module import (
     ContactPredictionHead,
+    Criterion,
+    HeadOutput,
     MaskedLMHead,
     NucleotidePredictionHead,
     SequencePredictionHead,
@@ -43,8 +45,6 @@ from multimolecule.module import (
     TokenPredictionHead,
 )
 
-from ...module.criterions import Criterion
-from ...module.heads.output import HeadOutput
 from ..configuration_utils import HeadConfig
 from .configuration_ernierna import ErnieRnaConfig
 
@@ -321,7 +321,6 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
@@ -388,7 +387,6 @@ class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
@@ -453,7 +451,6 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.ernierna = ErnieRnaModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config

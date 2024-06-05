@@ -275,7 +275,6 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=True)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
@@ -342,7 +341,6 @@ class CaLmForNucleotidePrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
@@ -407,7 +405,6 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=True)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
@@ -472,7 +469,6 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.calm = CaLmModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config

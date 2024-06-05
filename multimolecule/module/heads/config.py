@@ -55,6 +55,10 @@ class HeadConfig(BaseHeadConfig):
             The activation function of the final prediction output.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
+        output_name (`str`, *optional*):
+            The name of the tensor required in model outputs.
+
+            If is `None`, will use the default output name of the corresponding head.
     """
 
     num_labels: int = None  # type: ignore[assignment]
@@ -66,6 +70,7 @@ class HeadConfig(BaseHeadConfig):
     bias: bool = True
     act: str | None = None
     layer_norm_eps: float = 1e-12
+    output_name: str | None = None
 
 
 @dataclass
@@ -90,6 +95,10 @@ class MaskedLMHeadConfig(BaseHeadConfig):
             The activation function of the final prediction output.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
+        output_name (`str`, *optional*):
+            The name of the tensor required in model outputs.
+
+            If is `None`, will use the default output name of the corresponding head.
     """
 
     hidden_size: int | None = None
@@ -99,3 +108,4 @@ class MaskedLMHeadConfig(BaseHeadConfig):
     bias: bool = True
     act: str | None = None
     layer_norm_eps: float = 1e-12
+    output_name: str | None = None

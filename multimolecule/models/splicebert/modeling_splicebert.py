@@ -284,7 +284,6 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
@@ -351,7 +350,6 @@ class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
         self.nucleotide_head = NucleotidePredictionHead(config)
         self.head_config = self.nucleotide_head.config
@@ -416,7 +414,6 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
@@ -481,7 +478,6 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.num_labels = config.head.num_labels
         self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config

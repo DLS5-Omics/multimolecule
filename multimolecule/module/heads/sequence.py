@@ -16,14 +16,18 @@
 
 from __future__ import annotations
 
-from typing import Tuple
+from typing import TYPE_CHECKING, Mapping, Tuple
 
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
+from .config import HeadConfig
 from .generic import PredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
+
+if TYPE_CHECKING:
+    from multimolecule.models import PreTrainedConfig
 
 
 @HeadRegistry.register("sequence")
@@ -37,8 +41,16 @@ class SequencePredictionHead(PredictionHead):
             If None, will use configuration from the `config`.
     """
 
+    output_name: str = "pooler_output"
+    r"""The default output to use for the head."""
+
+    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
+        if head_config is not None and head_config.output_name is not None:
+            self.output_name = head_config.output_name
+
     def forward(
-        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None
+        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None, output_name: str | None = None
     ) -> HeadOutput:  # pylint: disable=arguments-renamed
         r"""
         Forward pass of the SequencePredictionHead.
@@ -46,5 +58,11 @@ class SequencePredictionHead(PredictionHead):
         Args:
             outputs: The outputs of the model.
             labels: The labels for the head.
+            output_name: The name of the output to use.
+                Defaults to `self.output_name`.
         """
-        return super().forward(outputs[1], labels)
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[output_name or self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[1]
+        return super().forward(output, labels)
