@@ -984,21 +984,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label=" PreTrainedConfig">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#multimolecule.models.configuration_utils.PreTrainedConfig.to_dict" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;to_dict
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1166,21 +1151,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label=" PreTrainedConfig">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#multimolecule.models.configuration_utils.PreTrainedConfig.to_dict" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;to_dict
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1266,6 +1236,8 @@
               Bases: <code><span title="transformers.configuration_utils.PretrainedConfig">PretrainedConfig</span></code></p>
 
 
+      <p>Base class for all model configuration classes.</p>
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/configuration_utils.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-25">25</a></span>
@@ -1305,35 +1277,35 @@
 <span class="normal"><a href="#__codelineno-0-59">59</a></span>
 <span class="normal"><a href="#__codelineno-0-60">60</a></span>
 <span class="normal"><a href="#__codelineno-0-61">61</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="k">class</span> <span class="nc">PreTrainedConfig</span><span class="p">(</span><span class="n">PretrainedConfig</span><span class="p">):</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">head</span><span class="p">:</span> <span class="n">HeadConfig</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">pad_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="n">bos_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="n">eos_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="n">unk_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">mask_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">null_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">pad_token_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bos_token_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">eos_token_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">unk_token_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mask_token_id</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">null_token_id</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="p">):</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>            <span class="n">pad_token_id</span><span class="o">=</span><span class="n">pad_token_id</span><span class="p">,</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>            <span class="n">bos_token_id</span><span class="o">=</span><span class="n">bos_token_id</span><span class="p">,</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>            <span class="n">eos_token_id</span><span class="o">=</span><span class="n">eos_token_id</span><span class="p">,</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>            <span class="n">unk_token_id</span><span class="o">=</span><span class="n">unk_token_id</span><span class="p">,</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>            <span class="n">mask_token_id</span><span class="o">=</span><span class="n">mask_token_id</span><span class="p">,</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>            <span class="n">null_token_id</span><span class="o">=</span><span class="n">null_token_id</span><span class="p">,</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>        <span class="p">)</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">        Serializes this instance to a Python dictionary. Override the default [`~PreTrainedConfig.to_dict`].</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">            `Dict[str, any]`: Dictionary of all the attributes that make up this configuration instance,</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    Base class for all model configuration classes.</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="n">head</span><span class="p">:</span> <span class="n">HeadConfig</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">pad_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">bos_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">eos_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">unk_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="n">mask_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="n">null_token_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">pad_token_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bos_token_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">eos_token_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">unk_token_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mask_token_id</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">null_token_id</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="p">):</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a>            <span class="n">pad_token_id</span><span class="o">=</span><span class="n">pad_token_id</span><span class="p">,</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a>            <span class="n">bos_token_id</span><span class="o">=</span><span class="n">bos_token_id</span><span class="p">,</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a>            <span class="n">eos_token_id</span><span class="o">=</span><span class="n">eos_token_id</span><span class="p">,</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a>            <span class="n">unk_token_id</span><span class="o">=</span><span class="n">unk_token_id</span><span class="p">,</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a>            <span class="n">mask_token_id</span><span class="o">=</span><span class="n">mask_token_id</span><span class="p">,</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>            <span class="n">null_token_id</span><span class="o">=</span><span class="n">null_token_id</span><span class="p">,</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a>        <span class="p">)</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 <a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 <a id="__codelineno-0-57" name="__codelineno-0-57"></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
@@ -1355,78 +1327,6 @@
 
 
 
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="multimolecule.models.configuration_utils.PreTrainedConfig.to_dict" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">to_dict</span>
-
-
-<a href="#multimolecule.models.configuration_utils.PreTrainedConfig.to_dict" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">to_dict</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-
-    <div class="doc doc-contents ">
-
-      <p>Serializes this instance to a Python dictionary. Override the default [<code>~PreTrainedConfig.to_dict</code>].</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p><code>Dict[str, any]</code>: Dictionary of all the attributes that make up this configuration instance,</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/models/configuration_utils.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">    Serializes this instance to a Python dictionary. Override the default [`~PreTrainedConfig.to_dict`].</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        `Dict[str, any]`: Dictionary of all the attributes that make up this configuration instance,</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>            <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a>        <span class="k">if</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a>            <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="k">return</span> <span class="n">output</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
 
 
 
@@ -1456,10 +1356,7 @@
               Bases: <code><span title="multimolecule.models.configuration_utils.BaseHeadConfig">BaseHeadConfig</span></code></p>
 
 
-      <p>This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
-prediction head according to the specified arguments, defining the head architecture.</p>
-<p>Configuration objects inherit from [<code>BaseHeadConfig</code>] and can be used to control the model outputs. Read the
-documentation from [<code>BaseHeadConfig</code>] for more information.</p>
+      <p>Configuration class for a prediction head.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1476,11 +1373,12 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>num_labels</code></td>
             <td>
-                  <code>`int`, *optional*</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Number of labels to use in the last layer added to the model, typically for a classification task.</p>
+                <p>Number of labels to use in the last layer added to the model, typically for a classification task.
+Defaults to <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.num_labels</code></a>.</p>
               </div>
             </td>
             <td>
@@ -1490,12 +1388,13 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>problem_type</code></td>
             <td>
-                  <code>`str`, *optional*</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Problem type for <code>XxxForSequencePrediction</code> models. Can be one of <code>"regression"</code>,
-<code>"single_label_classification"</code> or <code>"multi_label_classification"</code>.</p>
+<code>"single_label_classification"</code> or <code>"multi_label_classification"</code>.
+Defaults to <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.problem_type</code></a>.</p>
               </div>
             </td>
             <td>
@@ -1505,11 +1404,12 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>hidden_size</code></td>
             <td>
-                  <code>`int`, *optional*, defaults to 768</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Dimensionality of the encoder layers and the pooler layer.</p>
+                <p>Dimensionality of the encoder layers and the pooler layer.
+Defaults to <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a>.</p>
               </div>
             </td>
             <td>
@@ -1519,7 +1419,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>dropout</code></td>
             <td>
-                  <code>`float`, *optional*, defaults to 0.0</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1533,7 +1433,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>transform</code></td>
             <td>
-                  <code>`str`, *optional*, defaults to None</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1547,7 +1447,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>transform_act</code></td>
             <td>
-                  <code>`str`, *optional*, defaults to &#34;gelu&#34;</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1561,7 +1461,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>bias</code></td>
             <td>
-                  <code>`bool`, *optional*, defaults to True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1575,7 +1475,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>act</code></td>
             <td>
-                  <code>`str`, *optional*, defaults to None</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1589,7 +1489,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>layer_norm_eps</code></td>
             <td>
-                  <code>`float`, *optional*, defaults to 1e-12</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1603,7 +1503,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>output_name</code></td>
             <td>
-                  <code>`str`, *optional*</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1660,52 +1560,48 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
 <span class="normal"><a href="#__codelineno-0-106">106</a></span>
 <span class="normal"><a href="#__codelineno-0-107">107</a></span>
 <span class="normal"><a href="#__codelineno-0-108">108</a></span>
-<span class="normal"><a href="#__codelineno-0-109">109</a></span>
-<span class="normal"><a href="#__codelineno-0-110">110</a></span>
-<span class="normal"><a href="#__codelineno-0-111">111</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="nd">@dataclass</span>
+<span class="normal"><a href="#__codelineno-0-109">109</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="nd">@dataclass</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="k">class</span> <span class="nc">HeadConfig</span><span class="p">(</span><span class="n">BaseHeadConfig</span><span class="p">):</span>
 <a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    This is the configuration class to store the configuration of a prediction head. It is used to instantiate a</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">    prediction head according to the specified arguments, defining the head architecture.</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    Configuration objects inherit from [`BaseHeadConfig`] and can be used to control the model outputs. Read the</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    documentation from [`BaseHeadConfig`] for more information.</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">        num_labels (`int`, *optional*):</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">            Number of labels to use in the last layer added to the model, typically for a classification task.</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">        problem_type (`str`, *optional*):</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">            Problem type for `XxxForSequencePrediction` models. Can be one of `&quot;regression&quot;`,</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a><span class="sd">            `&quot;single_label_classification&quot;` or `&quot;multi_label_classification&quot;`.</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">        hidden_size (`int`, *optional*, defaults to 768):</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">            Dimensionality of the encoder layers and the pooler layer.</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="sd">        dropout (`float`, *optional*, defaults to 0.0):</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">            The dropout ratio for the hidden states.</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        transform (`str`, *optional*, defaults to None):</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">            The transform operation applied to hidden states.</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="sd">        transform_act (`str`, *optional*, defaults to &quot;gelu&quot;):</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">            The activation function of transform applied to hidden states.</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">        bias (`bool`, *optional*, defaults to True):</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a><span class="sd">            Whether to apply bias to the final prediction layer.</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">        act (`str`, *optional*, defaults to None):</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a><span class="sd">            The activation function of the final prediction output.</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="sd">        layer_norm_eps (`float`, *optional*, defaults to 1e-12):</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="sd">            The epsilon used by the layer normalization layers.</span>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="sd">        output_name (`str`, *optional*):</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="sd">            The name of the tensor required in model outputs.</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>    <span class="n">num_labels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="n">problem_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a>    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-<a id="__codelineno-0-106" name="__codelineno-0-106"></a>    <span class="n">transform</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-107" name="__codelineno-0-107"></a>    <span class="n">transform_act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;gelu&quot;</span>
-<a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-109" name="__codelineno-0-109"></a>    <span class="n">act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-110" name="__codelineno-0-110"></a>    <span class="n">layer_norm_eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    Configuration class for a prediction head.</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">        num_labels:</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">            Number of labels to use in the last layer added to the model, typically for a classification task.</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">            Defaults to [`Config.num_labels`][multimolecule.PreTrainedConfig].</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">        problem_type:</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">            Problem type for `XxxForSequencePrediction` models. Can be one of `&quot;regression&quot;`,</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">            `&quot;single_label_classification&quot;` or `&quot;multi_label_classification&quot;`.</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">            Defaults to [`Config.problem_type`][multimolecule.PreTrainedConfig].</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">        hidden_size:</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">            Dimensionality of the encoder layers and the pooler layer.</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a><span class="sd">            Defaults to [`Config.hidden_size`][multimolecule.PreTrainedConfig].</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">        dropout:</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">            The dropout ratio for the hidden states.</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="sd">        transform:</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">            The transform operation applied to hidden states.</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        transform_act:</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">            The activation function of transform applied to hidden states.</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="sd">        bias:</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">            Whether to apply bias to the final prediction layer.</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">        act:</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a><span class="sd">            The activation function of the final prediction output.</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">        layer_norm_eps:</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a><span class="sd">            The epsilon used by the layer normalization layers.</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="sd">        output_name:</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="sd">            The name of the tensor required in model outputs.</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a>    <span class="n">num_labels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a>    <span class="n">problem_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>    <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="n">transform</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105"></a>    <span class="n">transform_act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;gelu&quot;</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106"></a>    <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-107" name="__codelineno-0-107"></a>    <span class="n">act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">layer_norm_eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
+<a id="__codelineno-0-109" name="__codelineno-0-109"></a>    <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1749,10 +1645,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
               Bases: <code><span title="multimolecule.models.configuration_utils.BaseHeadConfig">BaseHeadConfig</span></code></p>
 
 
-      <p>This is the configuration class to store the configuration of a prediction head. It is used to instantiate a
-prediction head according to the specified arguments, defining the head architecture.</p>
-<p>Configuration objects inherit from [<code>BaseHeadConfig</code>] and can be used to control the model outputs. Read the
-documentation from [<code>BaseHeadConfig</code>] for more information.</p>
+      <p>Configuration class for a Masked Language Modeling head.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1769,11 +1662,12 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>hidden_size</code></td>
             <td>
-                  <code>`int`, *optional*, defaults to 768</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Dimensionality of the encoder layers and the pooler layer.</p>
+                <p>Dimensionality of the encoder layers and the pooler layer.
+Defaults to <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a>.</p>
               </div>
             </td>
             <td>
@@ -1783,7 +1677,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>dropout</code></td>
             <td>
-                  <code>`float`, *optional*, defaults to 0.0</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1797,7 +1691,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>transform</code></td>
             <td>
-                  <code>`str`, *optional*, defaults to &#34;nonlinear&#34;</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1811,7 +1705,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>transform_act</code></td>
             <td>
-                  <code>`str`, *optional*, defaults to &#34;gelu&#34;</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1825,7 +1719,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>bias</code></td>
             <td>
-                  <code>`bool`, *optional*, defaults to True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1839,7 +1733,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>act</code></td>
             <td>
-                  <code>`str`, *optional*, defaults to None</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1853,7 +1747,7 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
           <tr class="doc-section-item">
             <td><code>layer_norm_eps</code></td>
             <td>
-                  <code>`float`, *optional*, defaults to 1e-12</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1869,7 +1763,9 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
 
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/configuration_utils.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-114">114</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-112">112</a></span>
+<span class="normal"><a href="#__codelineno-0-113">113</a></span>
+<span class="normal"><a href="#__codelineno-0-114">114</a></span>
 <span class="normal"><a href="#__codelineno-0-115">115</a></span>
 <span class="normal"><a href="#__codelineno-0-116">116</a></span>
 <span class="normal"><a href="#__codelineno-0-117">117</a></span>
@@ -1897,47 +1793,37 @@ documentation from [<code>BaseHeadConfig</code>] for more information.</p>
 <span class="normal"><a href="#__codelineno-0-139">139</a></span>
 <span class="normal"><a href="#__codelineno-0-140">140</a></span>
 <span class="normal"><a href="#__codelineno-0-141">141</a></span>
-<span class="normal"><a href="#__codelineno-0-142">142</a></span>
-<span class="normal"><a href="#__codelineno-0-143">143</a></span>
-<span class="normal"><a href="#__codelineno-0-144">144</a></span>
-<span class="normal"><a href="#__codelineno-0-145">145</a></span>
-<span class="normal"><a href="#__codelineno-0-146">146</a></span>
-<span class="normal"><a href="#__codelineno-0-147">147</a></span>
-<span class="normal"><a href="#__codelineno-0-148">148</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="nd">@dataclass</span>
-<a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="k">class</span> <span class="nc">MaskedLMHeadConfig</span><span class="p">(</span><span class="n">BaseHeadConfig</span><span class="p">):</span>
-<a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">    This is the configuration class to store the configuration of a prediction head. It is used to instantiate a</span>
-<a id="__codelineno-0-118" name="__codelineno-0-118"></a><span class="sd">    prediction head according to the specified arguments, defining the head architecture.</span>
-<a id="__codelineno-0-119" name="__codelineno-0-119"></a>
-<a id="__codelineno-0-120" name="__codelineno-0-120"></a><span class="sd">    Configuration objects inherit from [`BaseHeadConfig`] and can be used to control the model outputs. Read the</span>
-<a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="sd">    documentation from [`BaseHeadConfig`] for more information.</span>
-<a id="__codelineno-0-122" name="__codelineno-0-122"></a>
-<a id="__codelineno-0-123" name="__codelineno-0-123"></a>
-<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="sd">        hidden_size (`int`, *optional*, defaults to 768):</span>
-<a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="sd">            Dimensionality of the encoder layers and the pooler layer.</span>
-<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        dropout (`float`, *optional*, defaults to 0.0):</span>
-<a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">            The dropout ratio for the hidden states.</span>
-<a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">        transform (`str`, *optional*, defaults to &quot;nonlinear&quot;):</span>
-<a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">            The transform operation applied to hidden states.</span>
-<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">        transform_act (`str`, *optional*, defaults to &quot;gelu&quot;):</span>
-<a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">            The activation function of transform applied to hidden states.</span>
-<a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">        bias (`bool`, *optional*, defaults to True):</span>
-<a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">            Whether to apply bias to the final prediction layer.</span>
-<a id="__codelineno-0-135" name="__codelineno-0-135"></a><span class="sd">        act (`str`, *optional*, defaults to None):</span>
-<a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">            The activation function of the final prediction output.</span>
-<a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">        layer_norm_eps (`float`, *optional*, defaults to 1e-12):</span>
-<a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">            The epsilon used by the layer normalization layers.</span>
-<a id="__codelineno-0-139" name="__codelineno-0-139"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-140" name="__codelineno-0-140"></a>
-<a id="__codelineno-0-141" name="__codelineno-0-141"></a>    <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-142" name="__codelineno-0-142"></a>    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-<a id="__codelineno-0-143" name="__codelineno-0-143"></a>    <span class="n">transform</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;nonlinear&quot;</span>
-<a id="__codelineno-0-144" name="__codelineno-0-144"></a>    <span class="n">transform_act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;gelu&quot;</span>
-<a id="__codelineno-0-145" name="__codelineno-0-145"></a>    <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-146" name="__codelineno-0-146"></a>    <span class="n">act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-147" name="__codelineno-0-147"></a>    <span class="n">layer_norm_eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
-<a id="__codelineno-0-148" name="__codelineno-0-148"></a>    <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="normal"><a href="#__codelineno-0-142">142</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="nd">@dataclass</span>
+<a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="k">class</span> <span class="nc">MaskedLMHeadConfig</span><span class="p">(</span><span class="n">BaseHeadConfig</span><span class="p">):</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">    Configuration class for a Masked Language Modeling head.</span>
+<a id="__codelineno-0-116" name="__codelineno-0-116"></a>
+<a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-118" name="__codelineno-0-118"></a><span class="sd">        hidden_size:</span>
+<a id="__codelineno-0-119" name="__codelineno-0-119"></a><span class="sd">            Dimensionality of the encoder layers and the pooler layer.</span>
+<a id="__codelineno-0-120" name="__codelineno-0-120"></a><span class="sd">            Defaults to [`Config.hidden_size`][multimolecule.PreTrainedConfig].</span>
+<a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="sd">        dropout:</span>
+<a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="sd">            The dropout ratio for the hidden states.</span>
+<a id="__codelineno-0-123" name="__codelineno-0-123"></a><span class="sd">        transform:</span>
+<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">            The transform operation applied to hidden states.</span>
+<a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="sd">        transform_act:</span>
+<a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="sd">            The activation function of transform applied to hidden states.</span>
+<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        bias:</span>
+<a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">            Whether to apply bias to the final prediction layer.</span>
+<a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">        act:</span>
+<a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">            The activation function of the final prediction output.</span>
+<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">        layer_norm_eps:</span>
+<a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">            The epsilon used by the layer normalization layers.</span>
+<a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-134" name="__codelineno-0-134"></a>
+<a id="__codelineno-0-135" name="__codelineno-0-135"></a>    <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-136" name="__codelineno-0-136"></a>    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<a id="__codelineno-0-137" name="__codelineno-0-137"></a>    <span class="n">transform</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;nonlinear&quot;</span>
+<a id="__codelineno-0-138" name="__codelineno-0-138"></a>    <span class="n">transform_act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;gelu&quot;</span>
+<a id="__codelineno-0-139" name="__codelineno-0-139"></a>    <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-140" name="__codelineno-0-140"></a>    <span class="n">act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-141" name="__codelineno-0-141"></a>    <span class="n">layer_norm_eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
+<a id="__codelineno-0-142" name="__codelineno-0-142"></a>    <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
