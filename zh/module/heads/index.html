@@ -903,16 +903,16 @@
 
 
 <h1 id="heads">heads<a class="headerlink" href="#heads" title="Permanent link">&para;</a></h1>
-<p><code>heads</code> provide a collection of pre-defined prediction heads.</p>
-<p><code>heads</code> take in either a <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a>, a <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>, or a <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a> as input.
-It automatically looks for the model output required for prediction and processes it accordingly.</p>
-<p>Some prediction heads may require additional information, such as the <code>attention_mask</code> or the <code>input_ids</code>, like <a class="autorefs autorefs-internal" href="../../../module/heads/#multimolecule.module.heads.ContactPredictionHead"><code>ContactPredictionHead</code></a>.
-These additional arguments can be passed in as arguments/keyword arguments.</p>
-<p>Note that <code>heads</code> use the same <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> conventions as the 🤗 Transformers.
-If the model output is a <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a>, we consider the first element as the <code>pooler_output</code>, the second element as the <code>last_hidden_state</code>, and the last element as the <code>attention_map</code>.
-It is the user&rsquo;s responsibility to ensure that the model output is correctly formatted.</p>
-<p>If the model output is a <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> or a <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>, the <code>heads</code> will look for the <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig"><code>HeadConfig.output_name</code></a> from the model output.
-You can specify the <code>output_name</code> in the <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig"><code>HeadConfig</code></a> to ensure that the <code>heads</code> can correctly locate the required tensor.</p>
+<p><code>heads</code> 提供了一系列的模型预测头，用于处理不同的任务。</p>
+<p><code>heads</code> 接受 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a>、<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a> 或 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a> 作为输入。
+它会自动查找预测所需的模型输出并相应地处理。</p>
+<p>一些预测头可能需要额外的信息，例如 <code>attention_mask</code> 或 <code>input_ids</code>，例如 <a class="autorefs autorefs-internal" href="../../../module/heads/#multimolecule.module.heads.ContactPredictionHead"><code>ContactPredictionHead</code></a>。
+这些额外的参数可以作为参数/关键字参数传入。</p>
+<p>请注意，<code>heads</code> 使用与 🤗 Transformers 相同的 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 约定。
+如果模型输出是一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a>，我们将第一个元素视为 <code>pooler_output</code>，第二个元素视为 <code>last_hidden_state</code>，最后一个元素视为 <code>attention_map</code>。
+用户有责任确保模型输出格式正确。</p>
+<p>如果模型输出是一个 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 或一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>，<code>heads</code> 将从模型输出中查找 <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig"><code>HeadConfig.output_name</code></a>。
+你可以在 <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig"><code>HeadConfig</code></a> 中指定 <code>output_name</code>，以确保 <code>heads</code> 可以正确定位所需的张量。</p>
 
 
 <div class="doc doc-object doc-module">
