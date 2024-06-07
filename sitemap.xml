@@ -36,11 +36,25 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/models/configuration_utils/</loc>
+        <lastmod>2024-06-07</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/configuration_utils/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/configuration_utils/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/models/ernierna/</loc>
         <lastmod>2024-06-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/models/modeling_outputs/</loc>
+        <lastmod>2024-06-07</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/modeling_outputs/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/modeling_outputs/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/models/rinalmo/</loc>
@@ -162,11 +176,25 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/zh/models/configuration_utils/</loc>
+        <lastmod>2024-06-07</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/configuration_utils/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/configuration_utils/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/zh/models/ernierna/</loc>
         <lastmod>2024-06-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/models/modeling_outputs/</loc>
+        <lastmod>2024-06-07</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/modeling_outputs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/modeling_outputs/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/rinalmo/</loc>
