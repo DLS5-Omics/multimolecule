@@ -22,6 +22,10 @@ This is an UNOFFICIAL implementation of the [RiNALMo: General-Purpose RNA Langua
 
 The OFFICIAL repository of RiNALMo is at [lbcb-sci/RiNALMo](https://github.com/lbcb-sci/RiNALMo).
 
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing RiNALMo did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details

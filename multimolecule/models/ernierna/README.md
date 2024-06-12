@@ -19,6 +19,10 @@ This is an UNOFFICIAL implementation of the [ERNIE-RNA: An RNA Language Model wi
 
 The OFFICIAL repository of ERNIE-RNA is at [Bruce-ywj/ERNIE-RNA](https://github.com/Bruce-ywj/ERNIE-RNA).
 
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing ERNIE-RNA did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details

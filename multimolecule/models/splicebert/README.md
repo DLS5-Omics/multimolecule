@@ -19,6 +19,10 @@ This is an UNOFFICIAL implementation of the [Self-supervised learning on million
 
 The OFFICIAL repository of SpliceBERT is at [chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT).
 
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing SpliceBERT did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details
