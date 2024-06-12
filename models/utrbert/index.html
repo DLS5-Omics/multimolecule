@@ -1752,13 +1752,13 @@
 
 <h1 id="3utrbert">3UTRBERT<a class="headerlink" href="#3utrbert" title="Permanent link">&para;</a></h1>
 <p>Pre-trained model on 3’ untranslated region (3’UTR) using a masked language modeling (MLM) objective.</p>
+<h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
+<p>This is an UNOFFICIAL implementation of the <a href="https://doi.org/10.1101/2023.09.08.556883">Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning</a> by Yuning Yang, Gen Li, et al.</p>
+<p>The OFFICIAL repository of 3UTRBERT is at <a href="https://github.com/yangyn533/3UTRBERT">yangyn533/3UTRBERT</a>.</p>
 <div class="admonition success">
 <p class="admonition-title">Reproducibility</p>
 <p>The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.</p>
 </div>
-<h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
-<p>This is an UNOFFICIAL implementation of the <a href="https://doi.org/10.1101/2023.09.08.556883">Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning</a> by Yuning Yang, Gen Li, et al.</p>
-<p>The OFFICIAL repository of 3UTRBERT is at <a href="https://github.com/yangyn533/3UTRBERT">yangyn533/3UTRBERT</a>.</p>
 <p><strong>The team releasing 3UTRBERT did not write this model card for this model so this model card has been written by the MultiMolecule team.</strong></p>
 <h2 id="model-details">Model Details<a class="headerlink" href="#model-details" title="Permanent link">&para;</a></h2>
 <p>3UTRBERT is a <a href="https://huggingface.co/google-bert/bert-base-uncased">bert</a>-style model pre-trained on a large corpus of 3’ untranslated regions (3’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the <a href="#training-details">Training Details</a> section for more information on the training process.</p>
