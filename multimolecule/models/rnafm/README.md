@@ -19,6 +19,10 @@ This is an UNOFFICIAL implementation of the [Interpretable RNA Foundation Model 
 
 The OFFICIAL repository of RNA-FM is at [ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM).
 
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing RNA-FM did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details
