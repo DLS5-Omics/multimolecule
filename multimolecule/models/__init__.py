@@ -63,6 +63,16 @@ from .rnabert import (
     RnaBertForTokenPrediction,
     RnaBertModel,
 )
+from .rnaernie import (
+    RnaErnieConfig,
+    RnaErnieForContactPrediction,
+    RnaErnieForMaskedLM,
+    RnaErnieForNucleotidePrediction,
+    RnaErnieForPreTraining,
+    RnaErnieForSequencePrediction,
+    RnaErnieForTokenPrediction,
+    RnaErnieModel,
+)
 from .rnafm import (
     RnaFmConfig,
     RnaFmForContactPrediction,
@@ -153,6 +163,14 @@ __all__ = [
     "RnaBertForTokenPrediction",
     "RnaBertForMaskedLM",
     "RnaBertForPreTraining",
+    "RnaErnieConfig",
+    "RnaErnieModel",
+    "RnaErnieForContactPrediction",
+    "RnaErnieForNucleotidePrediction",
+    "RnaErnieForSequencePrediction",
+    "RnaErnieForTokenPrediction",
+    "RnaErnieForMaskedLM",
+    "RnaErnieForPreTraining",
     "RnaFmConfig",
     "RnaFmModel",
     "RnaFmForContactPrediction",

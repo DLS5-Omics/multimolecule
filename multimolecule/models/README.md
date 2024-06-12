@@ -90,6 +90,7 @@ You can also initialize a vanilla model using the model class.
 - [ERNIE-RNA](models/ernierna.md)
 - [RiNALMo](models/rinalmo.md)
 - [RNABERT](models/rnabert.md)
+- [RNAErnie](models/rnaernie.md)
 - [RNA-FM](models/rnafm.md)
 - [RNA-MSM](models/rnamsm.md)
 - [SpliceBERT](models/splicebert.md)
