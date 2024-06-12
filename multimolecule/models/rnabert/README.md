@@ -19,6 +19,17 @@ This is an UNOFFICIAL implementation of the [Informative RNA-base embedding for 
 
 The OFFICIAL repository of RNABERT is at [mana438/RNABERT](https://github.com/mana438/RNABERT).
 
+!!! Bug "Reproducibility"
+
+    The MultiMolecule team is aware of a potential risk in reproducing the results of RNABERT.
+
+    The original implementation of RNABERT does not prepend `<cls>` and append `<sep>` tokens to the input sequence.
+    This may lead to unexpected results when using the model.
+
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing RNABERT did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details

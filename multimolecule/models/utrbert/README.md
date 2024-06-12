@@ -19,6 +19,10 @@ This is an UNOFFICIAL implementation of the [Deciphering 3’ UTR mediated gene 
 
 The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT).
 
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing 3UTRBERT did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details

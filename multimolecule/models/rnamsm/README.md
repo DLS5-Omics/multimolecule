@@ -19,6 +19,20 @@ This is an UNOFFICIAL implementation of the [Multiple sequence alignment-based R
 
 The OFFICIAL repository of RNA-MSM is at [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM).
 
+!!! Bug "Reproducibility"
+
+    The MultiMolecule team is aware of a potential risk in reproducing the results of RNA-MSM.
+
+    The original implementation of RNA-MSM used a custom tokenizer.
+    The custom tokenizer may not append `<eos>` token to the end of the input sequence.
+    This may lead to unexpected results when using the model.
+
+    This issue is been tracked at [issue #10](https://github.com/yikunpku/RNA-MSM/issues/10)
+
+!!! Success "Reproducibility"
+
+    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+
 **The team releasing RNA-MSM did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
 ## Model Details
