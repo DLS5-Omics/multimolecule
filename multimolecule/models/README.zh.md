@@ -90,6 +90,7 @@ date: 2024-05-04
 - [ERNIE-RNA](models/ernierna.md)
 - [RiNALMo](models/rinalmo.md)
 - [RNABERT](models/rnabert.md)
+- [RNAErnie](models/rnaernie.md)
 - [RNA-FM](models/rnafm.md)
 - [RNA-MSM](models/rnamsm.md)
 - [SpliceBERT](models/splicebert.md)
