@@ -20,27 +20,31 @@ from typing import List, Tuple
 
 from transformers.utils import logging
 
+from ..alphabet import Alphabet
 from ..tokenization_utils import Tokenizer
-from .utils import get_vocab_list
+from .utils import get_alphabet
 
 logger = logging.get_logger(__name__)
 
 
 class DnaTokenizer(Tokenizer):
     """
-    Constructs a DNA tokenizer.
+    Tokenizer for DNA sequences.
 
     Args:
-        alphabet (List[str] | None, optional): List of tokens to use.
-            Defaults to [IUPAC nucleotide code](https://www.bioinformatics.org/sms2/iupac.html).
-        nmers (int, optional): Size of nmers to tokenize.
-            Defaults to 1.
-        codon (bool, optional): Whether to tokenize into codons.
-            Defaults to False.
-        replace_U_with_T (bool, optional): Whether to replace U with T.
-            Defaults to True.
-        do_upper_case (bool, optional): Whether to convert input to uppercase.
-            Defaults to True.
+        alphabet: alphabet to use for tokenization.
+
+            - If is `None`, the standard RNA alphabet will be used.
+            - If is a `string`, it should correspond to the name of a predefined alphabet. The options include
+                + `standard`
+                + `iupac`
+                + `streamline`
+                + `nucleobase`
+            - If is an alphabet or a list of characters, that specific alphabet will be used.
+        nmers: Size of nmers to tokenize.
+        codon: Whether to tokenize into codons.
+        replace_U_with_T: Whether to replace U with T.
+        do_upper_case: Whether to convert input to uppercase.
 
     Examples:
         >>> from multimolecule import DnaTokenizer
@@ -69,18 +73,11 @@ class DnaTokenizer(Tokenizer):
 
     def __init__(
         self,
-        alphabet: List[str] | None = None,
+        alphabet: Alphabet | str | List[str] | None = None,
         nmers: int = 1,
         codon: bool = False,
-        bos_token: str = "<cls>",
-        cls_token: str = "<cls>",
-        pad_token: str = "<pad>",
-        eos_token: str = "<eos>",
-        sep_token: str = "<eos>",
-        unk_token: str = "<unk>",
-        mask_token: str = "<mask>",
-        additional_special_tokens: List | Tuple | None = None,
         replace_U_with_T: bool = True,
+        additional_special_tokens: List | Tuple | None = None,
         do_upper_case: bool = True,
         **kwargs,
     ):
@@ -88,15 +85,10 @@ class DnaTokenizer(Tokenizer):
             raise ValueError("Codon and nmers cannot be used together.")
         if codon:
             nmers = 3  # set to 3 to get correct vocab
+        if not isinstance(alphabet, Alphabet):
+            alphabet = get_alphabet(alphabet, nmers=nmers)
         super().__init__(
-            alphabet=get_vocab_list(alphabet, nmers),
-            bos_token=bos_token,
-            cls_token=cls_token,
-            pad_token=pad_token,
-            eos_token=eos_token,
-            sep_token=sep_token,
-            unk_token=unk_token,
-            mask_token=mask_token,
+            alphabet=alphabet,
             additional_special_tokens=additional_special_tokens,
             do_upper_case=do_upper_case,
             **kwargs,
