@@ -14,67 +14,121 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# mypy: disable-error-code="arg-type"
+
 from __future__ import annotations
 
 import os
+from collections import OrderedDict
+from pathlib import Path
 from typing import List, Tuple
 
 from transformers.tokenization_utils import PreTrainedTokenizer
 from transformers.utils import logging
 
+from .alphabet import Alphabet
+
 logger = logging.get_logger(__name__)
+
+VOCAB_FILES_NAMES = {"vocab_file": "vocab.txt"}
 
 
 class Tokenizer(PreTrainedTokenizer):
     """
     Constructs a Base tokenizer.
 
+    Args:
+        alphabet: List of tokens or an Alphabet object to use in tokenization.
+            Either alphabet or vocab_file must be specified.
+        bos_token: A special token representing the beginning of a sequence.
+        cls_token: A special token representing the classification token.
+        pad_token: A special token representing padding.
+        eos_token: A special token representing the end of a sequence.
+        sep_token: A special token representing the separator token.
+        unk_token: A special token representing unknown tokens.
+        mask_token: A special token representing the mask token.
+        null_token: A special token representing the null token.
+        additional_special_tokens: Additional special tokens to add to the vocabulary.
+        do_upper_case: Whether to convert input to uppercase.
+        vocab_file: Path to a vocabulary file.
+            Either alphabet or vocab_file must be specified.
+
     Examples:
         >>> from multimolecule.tokenisers import Tokenizer
-        >>> tokenizer = Tokenizer(["A", "C", "G", "T"])
+        >>> tokenizer = Tokenizer(["A", "C", "G", "T", "N"], unk_token="N")
         >>> tokenizer('ACGTN')["input_ids"]
-        [4, 0, 1, 2, 3, 6, 5]
+        [0, 1, 2, 3, 4]
         >>> tokenizer('acgtn')["input_ids"]
-        [4, 0, 1, 2, 3, 6, 5]
-        >>> tokenizer('ac<mask>gt')["input_ids"]
-        [4, 0, 1, 8, 2, 3, 5]
+        [0, 1, 2, 3, 4]
         >>> len(tokenizer)
-        9
-        >>> tokenizer.all_tokens
-        ['A', 'C', 'G', 'T', '<cls>', '<eos>', '<unk>', '<pad>', '<mask>']
-        >>> tokenizer = Tokenizer(["A", "C", "G", "T"], do_upper_case=False)
+        5
+        >>> tokenizer = Tokenizer(["A", "C", "G", "T", "N"], unk_token="N", do_upper_case=False)
         >>> tokenizer('ACGTN')["input_ids"]
-        [4, 0, 1, 2, 3, 6, 5]
+        [0, 1, 2, 3, 4]
         >>> tokenizer('acgtn')["input_ids"]
-        [4, 6, 6, 6, 6, 6, 5]
-        >>> tokenizer('AC<mask>gt')["input_ids"]
-        [4, 0, 1, 8, 6, 6, 5]
+        [4, 4, 4, 4, 4]
+        >>> tokenizer('ACgtN')["input_ids"]
+        [0, 1, 4, 4, 4]
+        >>> tokenizer = Tokenizer(["<pad>", "<cls>", "A", "C", "G", "T", "N", "<mask>", "<eos>"])
+        >>> tokenizer('ACGTN')["input_ids"]
+        [1, 2, 3, 4, 5, 6, 8]
+        >>> tokenizer('AC<mask>GTN')["input_ids"]
+        [1, 2, 3, 7, 4, 5, 6, 8]
+        >>> tokenizer(['TATATAT', 'ATCGN'], padding=True)["input_ids"]
+        [[1, 5, 2, 5, 2, 5, 2, 5, 8], [1, 2, 5, 3, 4, 6, 8, 0, 0]]
     """
 
     model_input_names = ["input_ids", "attention_mask"]
+    vocab_files_names = VOCAB_FILES_NAMES
     do_upper_case: bool = True
 
     def __init__(
         self,
-        alphabet: List[str],
-        bos_token: str = "<cls>",
-        cls_token: str = "<cls>",
-        pad_token: str = "<pad>",
-        eos_token: str = "<eos>",
-        sep_token: str = "<eos>",
-        unk_token: str = "<unk>",
-        mask_token: str = "<mask>",
+        alphabet: Alphabet | List[str] | None = None,
+        bos_token: str | None = None,
+        cls_token: str | None = None,
+        pad_token: str | None = None,
+        eos_token: str | None = None,
+        sep_token: str | None = None,
+        unk_token: str | None = None,
+        mask_token: str | None = None,
+        null_token: str | None = None,
         additional_special_tokens: List | Tuple | None = None,
         do_upper_case: bool = True,
+        vocab_file: str | None = None,
         **kwargs,
     ):
-        self._id_to_token = dict(enumerate(alphabet))
-        self._token_to_id = {tok: ind for ind, tok in enumerate(alphabet)}
+        if alphabet is None and vocab_file is None:
+            raise ValueError("You must specify either alphabet or vocab_file")
+
+        if vocab_file is not None:
+            alphabet = self.load_vocabulary(vocab_file)
+
+        self._id_to_token = OrderedDict(enumerate(alphabet))
+        self._token_to_id = OrderedDict({tok: ind for ind, tok in enumerate(alphabet)})
+
+        if bos_token is None:
+            bos_token = self.identify_special_token(alphabet, "cls")
+        if cls_token is None:
+            cls_token = self.identify_special_token(alphabet, "cls")
+        if pad_token is None:
+            pad_token = self.identify_special_token(alphabet, "pad")
+        if eos_token is None:
+            eos_token = self.identify_special_token(alphabet, "eos")
+        if sep_token is None:
+            sep_token = self.identify_special_token(alphabet, "sep") or self.identify_special_token(alphabet, "eos")
+        if unk_token is None:
+            unk_token = self.identify_special_token(alphabet, "unk")
+        if mask_token is None:
+            mask_token = self.identify_special_token(alphabet, "mask")
+        if null_token is None:
+            null_token = self.identify_special_token(alphabet, "null")
         if additional_special_tokens is None:
             additional_special_tokens = []
-        if "<null>" in alphabet and "<null>" not in additional_special_tokens:
+        if null_token in alphabet and null_token not in additional_special_tokens:  # type: ignore[operator]
             additional_special_tokens = list(additional_special_tokens)
-            additional_special_tokens.append("<null>")
+            additional_special_tokens.append(null_token)
+
         super().__init__(
             bos_token=bos_token,
             cls_token=cls_token,
@@ -96,39 +150,40 @@ class Tokenizer(PreTrainedTokenizer):
         # self.unique_no_split_tokens = self.all_tokens
         # self._update_trie(self.unique_no_split_tokens)
 
-    def _convert_id_to_token(self, index: int) -> str:
-        return self._id_to_token.get(index, self.unk_token)
-
-    def _convert_token_to_id(self, token: str) -> int:
-        return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))  # type: ignore[arg-type]
-
     def _tokenize(self, text: str, **kwargs):
         if self.do_upper_case:
             text = text.upper()
         return list(text)
 
-    def get_vocab(self):
-        return self._token_to_id.copy()
+    def _convert_token_to_id(self, token: str) -> int:
+        return self._token_to_id.get(token, self.unk_token_id)
+
+    def _convert_id_to_token(self, index: int) -> str:
+        return self._id_to_token.get(index, self.unk_token)
 
     def token_to_id(self, token: str) -> int:
-        return self._token_to_id.get(token, self._token_to_id.get(self.unk_token))  # type: ignore[arg-type]
+        return self._convert_token_to_id(token)
 
     def id_to_token(self, index: int) -> str:
-        return self._id_to_token.get(index, self.unk_token)
+        return self._convert_id_to_token(index)
 
     def build_inputs_with_special_tokens(
         self, token_ids_0: List[int], token_ids_1: List[int] | None = None
     ) -> List[int]:
-        cls = [self.cls_token_id]
-        sep = [self.sep_token_id]
-        eos = [self.eos_token_id]
+        bos = [self.bos_token_id]  # points to cls
+        sep = [self.sep_token_id]  # points to eos
+        eos = [self.eos_token_id]  # eos is eos
         if token_ids_1 is None:
+            if self.bos_token_id is None:
+                if self.eos_token_id is None:
+                    return token_ids_0
+                return token_ids_0 + eos
             if self.eos_token_id is None:
-                return cls + token_ids_0
-            return cls + token_ids_0 + eos
+                return bos + token_ids_0
+            return bos + token_ids_0 + eos
         if self.eos_token_id is None:
             raise ValueError("Cannot tokenize multiple sequences when EOS token is not set!")
-        return cls + token_ids_0 + sep + token_ids_1 + eos
+        return bos + token_ids_0 + sep + token_ids_1 + eos
 
     def get_special_tokens_mask(
         self, token_ids_0: List[int], token_ids_1: List[int] | None = None, already_has_special_tokens: bool = False
@@ -156,16 +211,44 @@ class Tokenizer(PreTrainedTokenizer):
                 )
 
             return [1 if token in self.all_special_ids else 0 for token in token_ids_0]
-        mask = [1] + ([0] * len(token_ids_0)) + [1]
+        mask = [0] * len(token_ids_0)
+        if self.bos_token_id is not None:
+            mask = [1] + mask
+        if self.sep_token_id is not None:
+            mask += [1]
         if token_ids_1 is not None:
-            mask += [0] * len(token_ids_1) + [1]
+            mask += [0] * len(token_ids_1)
+            if self.eos_token_id is not None:
+                mask += [1]
         return mask
+
+    @staticmethod
+    def load_vocabulary(vocab_file: str | Path) -> List[str]:
+        with open(vocab_file, encoding="utf-8") as reader:
+            vocabulary = reader.read().splitlines()
+        return vocabulary
 
     def save_vocabulary(self, save_directory: str, filename_prefix: str | None = None):
         vocab_file = os.path.join(save_directory, (filename_prefix + "-" if filename_prefix else "") + "vocab.txt")
         with open(vocab_file, "w") as f:
             f.write("\n".join(self.all_tokens))
         return (vocab_file,)
+
+    @staticmethod
+    def identify_special_token(alphabet: Alphabet | List[str], token) -> str | None:
+        tokens = [i for i in alphabet if token in i.lower()]
+        if len(tokens) == 1:
+            return tokens[0]
+        if len(tokens) == 0:
+            return None
+        raise ValueError(f"Token {token} is ambiguous, could be {tokens}")
+
+    def get_vocab(self):
+        return dict(self.vocab, **self.added_tokens_encoder)
+
+    @property
+    def vocab(self) -> OrderedDict[str, int]:
+        return self._token_to_id.copy()
 
     @property
     def all_tokens(self) -> List[str]:
