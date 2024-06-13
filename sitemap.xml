@@ -71,6 +71,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnabert/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/models/rnaernie/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnaernie/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnaernie/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/models/rnafm/</loc>
         <lastmod>2024-06-13</lastmod>
         <changefreq>daily</changefreq>
@@ -230,6 +237,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnabert/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnabert/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/models/rnaernie/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnaernie/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnaernie/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/rnafm/</loc>
