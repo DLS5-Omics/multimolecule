@@ -31,9 +31,15 @@ nav:
           - modeling_outputs: models/modeling_outputs.md
   - tokenisers:
       - tokenisers: tokenisers.md
-      - RnaTokenizer: tokenisers/rna.md
-      - DnaTokenizer: tokenisers/dna.md
-      - ProteinTokenizer: tokenisers/protein.md
+      - DNA:
+          - DnaTokenizer: tokenisers/dna.md
+          - DNA Alphabet: tokenisers/dna/alphabet.md
+      - RNA:
+          - RnaTokenizer: tokenisers/rna.md
+          - RNA Alphabet: tokenisers/rna/alphabet.md
+      - Protein:
+          - ProteinTokenizer: tokenisers/protein.md
+          - Protein Alphabet: tokenisers/protein/alphabet.md
 
 theme:
   name: material

@@ -26,7 +26,7 @@ from multimolecule.models import UtrBertConfig as Config
 from multimolecule.models import UtrBertForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_tokenizer_config, get_vocab_list
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1013)
 
@@ -65,7 +65,7 @@ def convert_checkpoint(convert_config):
     config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
     config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
     config.nmers = int(convert_config.checkpoint_path.split("/")[-1][0])
-    vocab_list = get_vocab_list(nmers=config.nmers)
+    vocab_list = get_alphabet(nmers=config.nmers).vocabulary
     config = Config.from_dict(config)
     del config._name_or_path
     config.architectures = ["UtrBertModel"]

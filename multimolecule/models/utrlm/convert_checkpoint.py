@@ -27,7 +27,7 @@ from multimolecule.models import UtrLmConfig as Config
 from multimolecule.models import UtrLmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_tokenizer_config, get_vocab_list
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 try:
     from huggingface_hub import HfApi
@@ -89,7 +89,7 @@ def convert_checkpoint(convert_config):
     config.mfe_head = {"num_labels": 1}
     if "4.1" in convert_config.checkpoint_path:
         config.ss_head = {"num_labels": 3}
-    vocab_list = get_vocab_list()
+    vocab_list = get_alphabet().vocabulary
     original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
     config = Config.from_dict(config)
     config.vocab_size = len(vocab_list)

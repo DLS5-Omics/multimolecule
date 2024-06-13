@@ -14,6 +14,6 @@ date: 2024-05-04
 
 ## 可用令牌器
 
-- [RnaTokenizer](tokenisers/rna.md)
 - [DnaTokenizer](tokenisers/dna.md)
+- [RnaTokenizer](tokenisers/rna.md)
 - [ProteinTokenizer](tokenisers/protein.md)

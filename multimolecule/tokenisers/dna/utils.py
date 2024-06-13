@@ -27,10 +27,12 @@ from ..utils import convert_word_embeddings as convert_word_embeddings_
 torch.manual_seed(1013)
 
 
-def get_vocab_list(tokens: List[str] | None = None, nmers: int = 1):
-    if tokens is None:
-        tokens = VOCAB_LIST if nmers <= 1 else STRAMELINE_VOCAB_LIST
-    return Alphabet(tokens, nmers=nmers).vocablulary
+def get_alphabet(alphabet: List[str] | str | None = None, nmers: int = 1) -> Alphabet:
+    if alphabet is None:
+        alphabet = STANDARD_ALPHABET if nmers <= 1 else STREAMLINE_ALPHABET
+    elif isinstance(alphabet, str):
+        alphabet = ALPHABETS[alphabet]
+    return Alphabet(alphabet, nmers=nmers)
 
 
 def get_vocab_mapping():
@@ -72,16 +74,7 @@ def convert_word_embeddings(
     )
 
 
-STRAMELINE_VOCAB_LIST = [
-    "A",
-    "C",
-    "G",
-    "T",
-    "N",
-]
-
-
-VOCAB_LIST = [
+STANDARD_ALPHABET = [
     "A",
     "C",
     "G",
@@ -102,6 +95,52 @@ VOCAB_LIST = [
     "*",
     "-",
 ]
+
+
+IUPAC_ALPHABET = [
+    "A",
+    "C",
+    "G",
+    "T",
+    "R",
+    "Y",
+    "S",
+    "W",
+    "K",
+    "M",
+    "B",
+    "D",
+    "H",
+    "V",
+    "N",
+    ".",
+]
+
+
+STREAMLINE_ALPHABET = [
+    "A",
+    "C",
+    "G",
+    "T",
+    "N",
+]
+
+
+NUCLEOBASE_ALPHABET = [
+    "A",
+    "C",
+    "G",
+    "T",
+]
+
+
+ALPHABETS = {
+    "standard": STANDARD_ALPHABET,
+    "iupac": IUPAC_ALPHABET,
+    "streamline": STREAMLINE_ALPHABET,
+    "nucleobase": NUCLEOBASE_ALPHABET,
+}
+
 
 VOCAB_MAPPING = {
     "X": "ACGT",

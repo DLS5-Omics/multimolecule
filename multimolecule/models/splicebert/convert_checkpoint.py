@@ -26,7 +26,7 @@ from multimolecule.models import SpliceBertConfig as Config
 from multimolecule.models import SpliceBertForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_vocab_list
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1013)
 
@@ -65,7 +65,7 @@ def convert_checkpoint(convert_config):
     config = chanfig.load(os.path.join(convert_config.checkpoint_path, "config.json"))
     config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
     config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
-    vocab_list = get_vocab_list()
+    vocab_list = get_alphabet().vocabulary
     config = Config.from_dict(config)
     del config._name_or_path
     config.architectures = ["SpliceBertModel"]

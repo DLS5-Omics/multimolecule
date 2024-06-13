@@ -14,9 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .alphabet import Alphabet
 from .dna import DnaTokenizer
 from .protein import ProteinTokenizer
 from .rna import RnaTokenizer
 from .tokenization_utils import Tokenizer
 
-__all__ = ["Tokenizer", "DnaTokenizer", "RnaTokenizer", "ProteinTokenizer"]
+__all__ = ["Tokenizer", "DnaTokenizer", "RnaTokenizer", "ProteinTokenizer", "Alphabet"]

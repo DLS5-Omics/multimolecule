@@ -14,6 +14,6 @@ Please refer to [Tokenizer](https://huggingface.co/docs/transformers/main/en/mai
 
 ## Available Tokenizers
 
-- [RnaTokenizer](tokenisers/rna.md)
 - [DnaTokenizer](tokenisers/dna.md)
+- [RnaTokenizer](tokenisers/rna.md)
 - [ProteinTokenizer](tokenisers/protein.md)

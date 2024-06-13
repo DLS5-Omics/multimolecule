@@ -27,10 +27,12 @@ from ..utils import convert_word_embeddings as convert_word_embeddings_
 torch.manual_seed(1013)
 
 
-def get_vocab_list(tokens: List[str] | None = None):
-    if tokens is None:
-        tokens = VOCAB_LIST
-    return Alphabet(tokens).vocablulary
+def get_alphabet(alphabet: List[str] | str | None = None) -> Alphabet:
+    if alphabet is None:
+        alphabet = STANDARD_ALPHABET
+    elif isinstance(alphabet, str):
+        alphabet = ALPHABETS[alphabet]
+    return Alphabet(alphabet)
 
 
 def get_vocab_mapping():
@@ -72,7 +74,7 @@ def convert_word_embeddings(
     )
 
 
-VOCAB_LIST = [
+STANDARD_ALPHABET = [
     "A",
     "C",
     "D",
@@ -103,6 +105,66 @@ VOCAB_LIST = [
     "*",
     "-",
 ]
+
+
+IUPAC_ALPHABET = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "K",
+    "L",
+    "M",
+    "N",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+]
+
+
+STREAMLINE_ALPHABET = [
+    "A",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "K",
+    "L",
+    "M",
+    "N",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "V",
+    "W",
+    "X",
+    "Y",
+]
+
+
+ALPHABETS = {
+    "standard": STANDARD_ALPHABET,
+    "iupac": IUPAC_ALPHABET,
+    "streamline": STREAMLINE_ALPHABET,
+}
+
 
 VOCAB_MAPPING = {
     "X": "ACDEFGHIKLMNPQRSTVWY",

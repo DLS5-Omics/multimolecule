@@ -27,7 +27,7 @@ from multimolecule.models import CaLmConfig as Config
 from multimolecule.models import CaLmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_tokenizer_config, get_vocab_list
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1013)
 
@@ -147,7 +147,7 @@ original_vocab = [
 
 def convert_checkpoint(convert_config):
     original_vocab_list = original_vocab
-    vocab_list = get_vocab_list(nmers=3)
+    vocab_list = get_alphabet(nmers=3).vocabulary
     config = Config()
     del config._name_or_path
     config.architectures = ["CaLmModel"]
