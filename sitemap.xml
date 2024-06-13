@@ -8,13 +8,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/mod/</loc>
-        <lastmod>2024-06-13</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/mod/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/mod/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/models/</loc>
         <lastmod>2024-06-13</lastmod>
         <changefreq>daily</changefreq>
@@ -148,18 +141,32 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/tokenisers/dna/alphabet/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dna/alphabet/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dna/alphabet/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/tokenisers/protein/alphabet/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/protein/alphabet/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/protein/alphabet/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/tokenisers/rna/alphabet/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna/alphabet/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna/alphabet/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/zh/</loc>
         <lastmod>2024-06-13</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/mod/</loc>
-        <lastmod>2024-06-13</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/mod/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/mod/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/</loc>
@@ -293,5 +300,26 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/dna/alphabet/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dna/alphabet/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dna/alphabet/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/protein/alphabet/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/protein/alphabet/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/protein/alphabet/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/rna/alphabet/</loc>
+        <lastmod>2024-06-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna/alphabet/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna/alphabet/"/>
     </url>
 </urlset>

@@ -1541,8 +1541,8 @@
 <p>请注意，<code>heads</code> 使用与 🤗 Transformers 相同的 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 约定。
 如果模型输出是一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a>，我们将第一个元素视为 <code>pooler_output</code>，第二个元素视为 <code>last_hidden_state</code>，最后一个元素视为 <code>attention_map</code>。
 用户有责任确保模型输出格式正确。</p>
-<p>如果模型输出是一个 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 或一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>，<code>heads</code> 将从模型输出中查找 <a class="autorefs autorefs-internal" href="../../mod/#multimolecule.module.HeadConfig"><code>HeadConfig.output_name</code></a>。
-你可以在 <a class="autorefs autorefs-internal" href="../../mod/#multimolecule.module.HeadConfig"><code>HeadConfig</code></a> 中指定 <code>output_name</code>，以确保 <code>heads</code> 可以正确定位所需的张量。</p>
+<p>如果模型输出是一个 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 或一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>，<code>heads</code> 将从模型输出中查找 <a class="autorefs autorefs-internal" href="../../../module/heads/#multimolecule.module.heads.config.HeadConfig"><code>HeadConfig.output_name</code></a>。
+你可以在 <a class="autorefs autorefs-internal" href="../../../module/heads/#multimolecule.module.heads.config.HeadConfig"><code>HeadConfig</code></a> 中指定 <code>output_name</code>，以确保 <code>heads</code> 可以正确定位所需的张量。</p>
 
 
 <div class="doc doc-object doc-module">
