@@ -16,36 +16,63 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
 from itertools import product
-from typing import List
+from typing import Sequence, Tuple
 
 
 class Alphabet:
-    prepend_tokens: List[str] = ["<pad>", "<cls>", "<eos>", "<unk>", "<mask>", "<null>"]
-    append_tokens: List[str] = []
-    tokens: List[str]
+    prepend_tokens: Tuple[str, ...] = ("<pad>", "<cls>", "<eos>", "<unk>", "<mask>", "<null>")
+    append_tokens: Tuple[str, ...] = ()
+    tokens: Tuple[str, ...]
     nmers: int
 
     def __init__(
         self,
-        tokens: List[str],
-        prepend_tokens: List[str] | None = None,
-        append_tokens: List[str] | None = None,
+        tokens: Sequence[str],
+        prepend_tokens: Tuple[str, ...] | None = None,
+        append_tokens: Tuple[str, ...] | None = None,
         nmers: int = 1,
     ):
-        self.tokens = tokens
+        if isinstance(tokens, Alphabet):
+            tokens = tokens.tokens
+        self.tokens = tuple(tokens)
         if prepend_tokens:
-            self.prepend_tokens = prepend_tokens
+            self.prepend_tokens = tuple(prepend_tokens)
         if append_tokens:
-            self.append_tokens = append_tokens
+            self.append_tokens = tuple(append_tokens)
         self.nmers = nmers
 
     @property
-    def vocablulary(self) -> List[str]:
-        return self.prepend_tokens + generate_kmer_vocabulary(self.tokens, self.nmers) + self.append_tokens
+    def vocabulary(self) -> Tuple[str, ...]:
+        return self._vocabulary(self.prepend_tokens, self.tokens, self.nmers, self.append_tokens)
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _vocabulary(
+        prepend_tokens: Tuple[str, ...], tokens: Tuple[str, ...], nmers: int, append_tokens: Tuple[str, ...]
+    ) -> Tuple[str, ...]:
+        return prepend_tokens + generate_kmer_vocabulary(tokens, nmers) + append_tokens
+
+    def __iter__(self):
+        return iter(self.vocabulary)
+
+    def __len__(self):
+        return len(self.vocabulary)
+
+    def __contains__(self, item: str):
+        return item in self.vocabulary
+
+    def __repr__(self) -> str:
+        repr_parts = [f"Alphabet(tokens={self.tokens}"]
+        if self.nmers > 1:
+            repr_parts.append(f"nmers={self.nmers}")
+        repr_parts.append(f"prepend_tokens={self.prepend_tokens}")
+        repr_parts.append(f"append_tokens={self.append_tokens})")
+        return ", ".join(repr_parts)
 
 
-def generate_kmer_vocabulary(vocabulary: List[str], nmers: int = 1) -> List[str]:
+def generate_kmer_vocabulary(vocabulary: Tuple[str, ...], nmers: int = 1) -> Tuple[str, ...]:
     """
     Generates a kmer vocabulary given an original vocabulary and the size of kmers.
 
@@ -67,6 +94,4 @@ def generate_kmer_vocabulary(vocabulary: List[str], nmers: int = 1) -> List[str]
         else:
             tokens.append(token)
 
-    tokens = ["".join(kmer) for kmer in product(tokens, repeat=nmers)]
-
-    return special_tokens + tokens
+    return tuple(special_tokens) + tuple("".join(kmer) for kmer in product(tokens, repeat=nmers))

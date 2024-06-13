@@ -29,9 +29,9 @@ from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig
 from multimolecule.models.conversion_utils import save_checkpoint
 from multimolecule.tokenisers.rna.utils import (
     convert_word_embeddings,
+    get_alphabet,
     get_special_tokens_map,
     get_tokenizer_config,
-    get_vocab_list,
 )
 
 torch.manual_seed(1013)
@@ -189,12 +189,12 @@ def convert_checkpoint(convert_config):
     mranfm = not convert_config.output_path.lower().startswith("rnafm")
     if mranfm:
         config = Config(num_labels=1, hidden_size=1280, emb_layer_norm_before=False)
-        vocab_list = get_vocab_list(nmers=3)
+        vocab_list = get_alphabet(nmers=3).vocabulary
         original_vocab_list = original_vocabs["3mer"]
     else:
         config = Config(num_labels=1)
         config.codon = True
-        vocab_list = get_vocab_list()
+        vocab_list = get_alphabet().vocabulary
         original_vocab_list = original_vocabs["single"]
     config.vocab_size = len(vocab_list)
     config.architectures = ["RnaFmModel"]
