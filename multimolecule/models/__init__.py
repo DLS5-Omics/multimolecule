@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..tokenisers.rna import RnaTokenizer
+from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
+
 from .calm import (
     CaLmConfig,
     CaLmForContactPrediction,
@@ -126,7 +127,9 @@ from .utrlm import (
 
 __all__ = [
     "PreTrainedConfig",
+    "DnaTokenizer",
     "RnaTokenizer",
+    "ProteinTokenizer",
     "AutoModelForContactPrediction",
     "AutoModelForNucleotidePrediction",
     "AutoModelForSequencePrediction",

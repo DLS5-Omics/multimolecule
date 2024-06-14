@@ -23,7 +23,7 @@ The OFFICIAL repository of RNABERT is at [mana438/RNABERT](https://github.com/ma
 
     The MultiMolecule team is aware of a potential risk in reproducing the results of RNABERT.
 
-    The original implementation of RNABERT does not prepend `<cls>` and append `<sep>` tokens to the input sequence.
+    The original implementation of RNABERT does not prepend `<cls>` and append `<eos>` tokens to the input sequence.
     This may lead to unexpected results when using the model.
 
 !!! Success "Reproducibility"
@@ -45,7 +45,7 @@ RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 ### Links
 
 - **Code**: [multimolecule.rnabert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnabert)
-- **Weights**: [multimolecule/rnabert](https://huggingface.**co**/multimolecule/rnabert)
+- **Weights**: [multimolecule/rnabert](https://huggingface.co/multimolecule/rnabert)
 - **Data**: [RNAcentral](https://rnacentral.org)
 - **Paper**: [Informative RNA-base embedding for functional RNA clustering and structural alignment](https://doi.org/10.1093/nargab/lqac012)
 - **Developed by**: JManato Akiyama and Yasubumi Sakakibara

@@ -11,19 +11,19 @@ library_name: multimolecule
 
 # RNAErnie
 
-Pre-trained model on non-coding RNA (ncRNA) using a masked language modeling (MLM) objective.
+Pre-trained model on non-coding RNA (ncRNA) using a multi-stage masked language modeling (MLM) objective.
 
 ## Statement
 
-_Multi-purpose RNA language modelling with motif-aware pretraining and type-guided fine-tuning_ is published in [Nature Machine Intelligence](https://doi.org/10.1038/s42256-024-00836-4), which is a Closed Access / Author-Fee Journal.
+_Multi-purpose RNA language modelling with motif-aware pretraining and type-guided fine-tuning_ is published in [Nature Machine Intelligence](https://doi.org/10.1038/s42256-024-00836-4), which is a Closed Access / Author-Fee journal.
 
 > Machine learning has been at the forefront of the movement for free and open access to research.
 >
 > We see no role for closed access or author-fee publication in the future of machine learning research and believe the adoption of these journals as an outlet of record for the machine learning community would be a retrograde step.
 
-The MoltiMolecule team is committed to the principles of open access and open science.
+The MultiMolecule team is committed to the principles of open access and open science.
 
-We do NOT endorse the publication of manuscripts on Closed Access / Author-Fee Journals and encourage the community to support Open Access Journals.
+We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals.
 
 Please consider signing the [Statement on Nature Machine Intelligence](https://openaccess.engineering.oregonstate.edu).
 
@@ -46,6 +46,8 @@ The OFFICIAL repository of RNAErnie is at [CatIIIIIIII/RNAErnie](https://github.
 ## Model Details
 
 RNAErnie is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
+
+Note that during the conversion process, additional tokens such as `[IND]` and ncRNA class symbols are removed.
 
 ### Model Specification
 
