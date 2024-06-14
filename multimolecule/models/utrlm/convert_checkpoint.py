@@ -29,11 +29,6 @@ from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig
 from multimolecule.models.conversion_utils import save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
-try:
-    from huggingface_hub import HfApi
-except ImportError:
-    HfApi = None
-
 torch.manual_seed(1013)
 
 
@@ -103,10 +98,7 @@ def convert_checkpoint(convert_config):
 
     model.lm_head = deepcopy(model.pretrain.predictions)
 
-    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["model_max_length"] = 1022
-
-    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
+    save_checkpoint(convert_config, model, tokenizer_config=get_tokenizer_config())
 
 
 @dataclass

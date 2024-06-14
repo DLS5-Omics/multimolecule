@@ -752,7 +752,7 @@ class RnaFmEmbeddings(nn.Module):
             if input_ids is None:
                 raise ValueError("Token dropout is only supported when input_ids are provided")
             embeddings = embeddings.masked_fill((input_ids == self.mask_token_id).unsqueeze(-1), 0.0)
-            mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RNAFM model training runs
+            mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RNA-FM model training runs
             src_lengths = attention_mask.sum(-1)
             mask_ratio_observed = (input_ids == self.mask_token_id).sum(-1).float() / src_lengths
             embeddings = (embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]).to(

@@ -88,6 +88,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         layer_norm_eps: float = 1e-12,
         position_embedding_type: str = "sinusoidal",
         pairwise_alpha: float = 0.8,
+        is_decoder: bool = False,
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
@@ -109,6 +110,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
         self.pairwise_alpha = pairwise_alpha
+        self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.head = HeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})

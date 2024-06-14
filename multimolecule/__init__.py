@@ -101,6 +101,8 @@ from .models import (
     UtrLmForSequencePrediction,
     UtrLmForTokenPrediction,
     UtrLmModel,
+    modeling_auto,
+    modeling_outputs,
 )
 from .module import (
     BaseHeadConfig,
@@ -132,6 +134,8 @@ from .tokenisers import Alphabet, DnaTokenizer, ProteinTokenizer, RnaTokenizer, 
 from .utils import count_parameters
 
 __all__ = [
+    "modeling_auto",
+    "modeling_outputs",
     "PreTrainedConfig",
     "HeadConfig",
     "BaseHeadConfig",

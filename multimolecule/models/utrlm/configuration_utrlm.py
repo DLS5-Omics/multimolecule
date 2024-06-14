@@ -57,15 +57,6 @@ class UtrLmConfig(PreTrainedConfig):
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
-        pad_token_id:
-            The index of the padding token in the vocabulary. This must be included in the config because certain parts
-            of the RnaBert code use this instead of the attention mask.
-        bos_token_id:
-            The index of the bos token in the vocabulary. This must be included in the config because of the
-            contact and other prediction heads removes the bos and padding token when predicting outputs.
-        mask_token_id:
-            The index of the mask token in the vocabulary. This must be included in the config because of the
-            "mask-dropout" scaling trick, which will scale the inputs depending on the number of masked tokens.
         position_embedding_type:
             Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query", "rotary"`.
             For positional embeddings use `"absolute"`. For more information on `"relative_key"`, please refer to
@@ -111,6 +102,7 @@ class UtrLmConfig(PreTrainedConfig):
         initializer_range: float = 0.02,
         layer_norm_eps: float = 1e-12,
         position_embedding_type: str = "rotary",
+        is_decoder: bool = False,
         use_cache: bool = True,
         emb_layer_norm_before: bool = False,
         token_dropout: bool = False,
@@ -134,6 +126,7 @@ class UtrLmConfig(PreTrainedConfig):
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
+        self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.emb_layer_norm_before = emb_layer_norm_before
         self.token_dropout = token_dropout

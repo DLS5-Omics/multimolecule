@@ -87,6 +87,7 @@ class RnaMsmConfig(PreTrainedConfig):
         initializer_range: float = 0.02,
         layer_norm_eps: float = 1e-12,
         position_embedding_type: str = "absolute",
+        is_decoder: bool = False,
         use_cache: bool = True,
         max_tokens_per_msa: int = 2**14,
         layer_type: str = "standard",
@@ -111,6 +112,7 @@ class RnaMsmConfig(PreTrainedConfig):
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
+        self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.max_tokens_per_msa = max_tokens_per_msa
         self.layer_type = layer_type

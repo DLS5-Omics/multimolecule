@@ -37,43 +37,33 @@ def save_checkpoint(
     tokenizer_config: Dict | None = None,
     special_tokens_map: Dict | None = None,
 ):
+    root, output_path = convert_config.root, convert_config.output_path
 
-    model.save_pretrained(convert_config.output_path, safe_serialization=True)
-    model.save_pretrained(convert_config.output_path, safe_serialization=False)
+    model.save_pretrained(output_path, safe_serialization=True)
+    model.save_pretrained(output_path, safe_serialization=False)
 
     if tokenizer_config is None:
         tokenizer_config = get_tokenizer_config()
         tokenizer_config["model_max_length"] = getattr(model.config, "max_position_embeddings", None)
-    NestedDict(tokenizer_config).json(os.path.join(convert_config.output_path, "tokenizer_config.json"))
+    NestedDict(tokenizer_config).json(os.path.join(output_path, "tokenizer_config.json"))
 
     if special_tokens_map is None:
         special_tokens_map = get_special_tokens_map()
-    NestedDict(special_tokens_map).json(os.path.join(convert_config.output_path, "special_tokens_map.json"))
+    NestedDict(special_tokens_map).json(os.path.join(output_path, "special_tokens_map.json"))
 
-    root = convert_config.root
-    if f"README.{convert_config.output_path}.md" in os.listdir(root):
-        shutil.copy2(os.path.join(root, f"README.{convert_config.output_path}.md"), convert_config.output_path)
+    if f"README.{output_path}.md" in os.listdir(root):
+        shutil.copy2(os.path.join(root, f"README.{output_path}.md"), output_path)
     else:
-        shutil.copy2(os.path.join(root, "README.md"), convert_config.output_path)
+        shutil.copy2(os.path.join(root, "README.md"), output_path)
 
     if convert_config.push_to_hub:
         if HfApi is None:
             raise ImportError("Please install huggingface_hub to push to the hub.")
         api = HfApi()
         if convert_config.delete_existing:
-            api.delete_repo(
-                convert_config.repo_id,
-                token=convert_config.token,
-                missing_ok=True,
-            )
-        api.create_repo(
-            convert_config.repo_id,
-            token=convert_config.token,
-            exist_ok=True,
-        )
-        api.upload_folder(
-            repo_id=convert_config.repo_id, folder_path=convert_config.output_path, token=convert_config.token
-        )
+            api.delete_repo(convert_config.repo_id, token=convert_config.token, missing_ok=True)
+        api.create_repo(convert_config.repo_id, token=convert_config.token, exist_ok=True)
+        api.upload_folder(repo_id=convert_config.repo_id, folder_path=output_path, token=convert_config.token)
 
 
 class ConvertConfig(Config):

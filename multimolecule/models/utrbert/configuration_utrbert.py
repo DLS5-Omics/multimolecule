@@ -58,8 +58,6 @@ class UtrBertConfig(PreTrainedConfig):
         max_position_embeddings:
             The maximum sequence length that this model might ever be used with. Typically set this to something large
             just in case (e.g., 512 or 1024 or 2048).
-        type_vocab_size:
-            The vocabulary size of the `token_type_ids` passed when calling [`BertModel`] or [`TFBertModel`].
         initializer_range:
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
         layer_norm_eps:
@@ -106,6 +104,7 @@ class UtrBertConfig(PreTrainedConfig):
         initializer_range: float = 0.02,
         layer_norm_eps: float = 1e-12,
         position_embedding_type: str = "absolute",
+        is_decoder: bool = False,
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
@@ -127,6 +126,7 @@ class UtrBertConfig(PreTrainedConfig):
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
+        self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.head = HeadConfig(**head if head is not None else {})
         self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})
