@@ -106,6 +106,7 @@ class RnaFmConfig(PreTrainedConfig):
         initializer_range: float = 0.02,
         layer_norm_eps: float = 1e-12,
         position_embedding_type: str = "absolute",
+        is_decoder: bool = False,
         use_cache: bool = True,
         emb_layer_norm_before: bool = True,
         token_dropout: bool = False,
@@ -129,6 +130,7 @@ class RnaFmConfig(PreTrainedConfig):
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
+        self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.emb_layer_norm_before = emb_layer_norm_before
         self.token_dropout = token_dropout

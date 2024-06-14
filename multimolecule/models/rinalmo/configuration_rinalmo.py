@@ -102,6 +102,7 @@ class RiNALMoConfig(PreTrainedConfig):
         initializer_range: float = 0.02,
         layer_norm_eps: float = 1e-12,
         position_embedding_type: str = "rotary",
+        is_decoder: bool = False,
         use_cache: bool = True,
         emb_layer_norm_before: bool = True,
         learnable_beta: bool = True,
@@ -123,6 +124,7 @@ class RiNALMoConfig(PreTrainedConfig):
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.position_embedding_type = position_embedding_type
+        self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.learnable_beta = learnable_beta
         self.token_dropout = token_dropout
