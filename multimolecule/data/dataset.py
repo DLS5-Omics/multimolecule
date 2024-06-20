@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Mapping, Sequence
 from functools import cached_property
 from typing import Any, List
@@ -23,7 +24,7 @@ from typing import Any, List
 import danling as dl
 import datasets
 import torch
-from chanfig import NestedDict
+from chanfig import FlatDict, NestedDict
 from danling import NestedTensor
 from torch import Tensor
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
@@ -279,6 +280,16 @@ class Dataset(datasets.Dataset):
             if tokenize:
                 data = self.tokenize(data)
             return dl.tensor(data) if len(data) == 1 else NestedTensor(data)
-        if col in self.structure_cols:
-            return None
-        return torch.tensor(data)
+        try:
+            return torch.tensor(data)
+        except ValueError:
+            return NestedTensor(data)
+
+    def __getitem__(self, key: int | slice | str | Sequence[int]) -> OrderedDict:
+        batch = self._getitem(key)
+        input = FlatDict({col: batch[col] for col in self.feature_cols})
+        target = FlatDict({col: batch[col] for col in self.label_cols})
+        return OrderedDict(input=input, target=target)
+
+    def __getitems__(self, keys: Sequence) -> OrderedDict:
+        return self.__getitem__(keys)
