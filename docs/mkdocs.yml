@@ -13,6 +13,8 @@ nav:
       - data: data.md
       - Dataset: data/dataset.md
       - PandasDataset: data/pandas.md
+  - datasets:
+      - RNAcentral: datasets/rnacentral.md
   - module:
       - module: module.md
       - heads: module/heads.md
