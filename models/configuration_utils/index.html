@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
     
     
       
@@ -1223,14 +1223,14 @@
 
 
 <h2 id="multimolecule.models.configuration_utils" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <span class="doc doc-object-name doc-module-name">multimolecule.models.configuration_utils</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">multimolecule.models.configuration_utils</span>
 
 
 <a href="#multimolecule.models.configuration_utils" class="headerlink" title="Permanent link">&para;</a></h2>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1246,9 +1246,9 @@
 
 
 <h3 id="multimolecule.models.configuration_utils.HeadConfig" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">HeadConfig</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">HeadConfig</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
@@ -1256,177 +1256,176 @@
 <a href="#multimolecule.models.configuration_utils.HeadConfig" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="multimolecule.module.heads.config.BaseHeadConfig">BaseHeadConfig</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="multimolecule.module.heads.config.BaseHeadConfig">BaseHeadConfig</span></code></p>
 
-  
+
       <p>Configuration class for a prediction head.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>num_labels</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Number of labels to use in the last layer added to the model, typically for a classification task.</p>
-<p>Head should look for <a class="autorefs autorefs-internal" href="#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.num_labels</code></a> if is <code>None</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code>problem_type</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Problem type for <code>XxxForYyyPrediction</code> models. Can be one of <code>"regression"</code>,
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>num_labels</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of labels to use in the last layer added to the model, typically for a classification task.</p>
+<p>Head should look for <a class="autorefs autorefs-internal" href="#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.num_labels</code></a> if is <code>None</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>problem_type</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Problem type for <code>XxxForYyyPrediction</code> models. Can be one of <code>"regression"</code>,
 <code>"single_label_classification"</code> or <code>"multi_label_classification"</code>.</p>
 <p>Head should look for <a class="autorefs autorefs-internal" href="#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.problem_type</code></a> if is <code>None</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>hidden_size</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Dimensionality of the encoder layers and the pooler layer.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>hidden_size</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dimensionality of the encoder layers and the pooler layer.</p>
 <p>Head should look for <a class="autorefs autorefs-internal" href="#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a> if is <code>None</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>dropout</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The dropout ratio for the hidden states.</p>
-            </div>
-          </td>
-          <td>
-                <code>0.0</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>transform</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The transform operation applied to hidden states.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>transform_act</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The activation function of transform applied to hidden states.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;gelu&#39;</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>bias</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to apply bias to the final prediction layer.</p>
-            </div>
-          </td>
-          <td>
-                <code>True</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>act</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The activation function of the final prediction output.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>layer_norm_eps</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The epsilon used by the layer normalization layers.</p>
-            </div>
-          </td>
-          <td>
-                <code>1e-12</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>output_name</code></td>
-          <td>
-                <code>`str`, *optional*</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The name of the tensor required in model outputs.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>dropout</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The dropout ratio for the hidden states.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>transform</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The transform operation applied to hidden states.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>transform_act</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The activation function of transform applied to hidden states.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;gelu&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>bias</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to apply bias to the final prediction layer.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>act</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The activation function of the final prediction output.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>layer_norm_eps</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The epsilon used by the layer normalization layers.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-12</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>output_name</code></td>
+            <td>
+                  <code>`str`, *optional*</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the tensor required in model outputs.</p>
 <p>If is <code>None</code>, will use the default output name of the corresponding head.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/module/heads/config.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/module/heads/config.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
@@ -1520,9 +1519,9 @@
 </span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>    <span class="n">layer_norm_eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>    <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1538,8 +1537,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1548,9 +1546,9 @@
 
 
 <h3 id="multimolecule.models.configuration_utils.MaskedLMHeadConfig" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">MaskedLMHeadConfig</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">MaskedLMHeadConfig</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
@@ -1558,146 +1556,145 @@
 <a href="#multimolecule.models.configuration_utils.MaskedLMHeadConfig" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="multimolecule.module.heads.config.BaseHeadConfig">BaseHeadConfig</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="multimolecule.module.heads.config.BaseHeadConfig">BaseHeadConfig</span></code></p>
 
-  
+
       <p>Configuration class for a Masked Language Modeling head.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>hidden_size</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Dimensionality of the encoder layers and the pooler layer.</p>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>hidden_size</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dimensionality of the encoder layers and the pooler layer.</p>
 <p>Head should look for <a class="autorefs autorefs-internal" href="#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a> if is <code>None</code>.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>dropout</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The dropout ratio for the hidden states.</p>
-            </div>
-          </td>
-          <td>
-                <code>0.0</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>transform</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The transform operation applied to hidden states.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;nonlinear&#39;</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>transform_act</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The activation function of transform applied to hidden states.</p>
-            </div>
-          </td>
-          <td>
-                <code>&#39;gelu&#39;</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>bias</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to apply bias to the final prediction layer.</p>
-            </div>
-          </td>
-          <td>
-                <code>True</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>act</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The activation function of the final prediction output.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>layer_norm_eps</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The epsilon used by the layer normalization layers.</p>
-            </div>
-          </td>
-          <td>
-                <code>1e-12</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>output_name</code></td>
-          <td>
-                <code>`str`, *optional*</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The name of the tensor required in model outputs.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>dropout</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The dropout ratio for the hidden states.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>transform</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The transform operation applied to hidden states.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;nonlinear&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>transform_act</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The activation function of transform applied to hidden states.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;gelu&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>bias</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to apply bias to the final prediction layer.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>act</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The activation function of the final prediction output.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>layer_norm_eps</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The epsilon used by the layer normalization layers.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-12</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>output_name</code></td>
+            <td>
+                  <code>`str`, *optional*</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the tensor required in model outputs.</p>
 <p>If is <code>None</code>, will use the default output name of the corresponding head.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/module/heads/config.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-76"> 76</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/module/heads/config.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-76"> 76</a></span>
 <span class="normal"><a href="#__codelineno-0-77"> 77</a></span>
 <span class="normal"><a href="#__codelineno-0-78"> 78</a></span>
 <span class="normal"><a href="#__codelineno-0-79"> 79</a></span>
@@ -1769,9 +1766,9 @@
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>    <span class="n">layer_norm_eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1787,8 +1784,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1797,22 +1793,22 @@
 
 
 <h3 id="multimolecule.models.configuration_utils.PreTrainedConfig" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">PreTrainedConfig</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">PreTrainedConfig</span>
 
 
 <a href="#multimolecule.models.configuration_utils.PreTrainedConfig" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="transformers.configuration_utils.PretrainedConfig">PretrainedConfig</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="transformers.configuration_utils.PretrainedConfig">PretrainedConfig</span></code></p>
 
-  
+
       <p>Base class for all model configuration classes.</p>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/models/configuration_utils.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-28">28</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/configuration_utils.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
@@ -1886,9 +1882,9 @@
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>                <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="k">return</span> <span class="n">output</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1904,8 +1900,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1914,7 +1909,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 

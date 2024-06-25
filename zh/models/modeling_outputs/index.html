@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
     
     
       
@@ -1243,14 +1243,14 @@
 
 
 <h2 id="multimolecule.models.modeling_outputs" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <span class="doc doc-object-name doc-module-name">multimolecule.models.modeling_outputs</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">multimolecule.models.modeling_outputs</span>
 
 
 <a href="#multimolecule.models.modeling_outputs" class="headerlink" title="Permanent link">&para;</a></h2>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1266,9 +1266,9 @@
 
 
 <h3 id="multimolecule.models.modeling_outputs.ContactPredictorOutput" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">ContactPredictorOutput</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">ContactPredictorOutput</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
@@ -1276,97 +1276,96 @@
 <a href="#multimolecule.models.modeling_outputs.ContactPredictorOutput" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
 
-  
+
       <p>Base class for outputs of contact classification &amp; regression models.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>loss</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>loss</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
 <p>Optional, returned when <code>labels</code> is provided</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>logits</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>logits</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
 <p>Prediction outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>hidden_states</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>hidden_states</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
 <p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>attentions</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>attentions</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
 <p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-26">26</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
@@ -1436,9 +1435,9 @@ heads.</p>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="n">hidden_states</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">attentions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1454,8 +1453,7 @@ heads.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1464,9 +1462,9 @@ heads.</p>
 
 
 <h3 id="multimolecule.models.modeling_outputs.NucleotidePredictorOutput" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">NucleotidePredictorOutput</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">NucleotidePredictorOutput</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
@@ -1474,97 +1472,96 @@ heads.</p>
 <a href="#multimolecule.models.modeling_outputs.NucleotidePredictorOutput" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
 
-  
+
       <p>Base class for outputs of nucleotide classification &amp; regression models.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>loss</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>loss</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
 <p>Optional, returned when <code>labels</code> is provided</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>logits</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>logits</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
 <p>Prediction outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>hidden_states</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>hidden_states</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
 <p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>attentions</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>attentions</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
 <p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-63">63</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-63">63</a></span>
 <span class="normal"><a href="#__codelineno-0-64">64</a></span>
 <span class="normal"><a href="#__codelineno-0-65">65</a></span>
 <span class="normal"><a href="#__codelineno-0-66">66</a></span>
@@ -1634,9 +1631,9 @@ heads.</p>
 </span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>    <span class="n">hidden_states</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-97"><a id="__codelineno-0-97" name="__codelineno-0-97"></a>    <span class="n">attentions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1652,8 +1649,7 @@ heads.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1662,9 +1658,9 @@ heads.</p>
 
 
 <h3 id="multimolecule.models.modeling_outputs.SequencePredictorOutput" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">SequencePredictorOutput</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">SequencePredictorOutput</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
@@ -1672,97 +1668,96 @@ heads.</p>
 <a href="#multimolecule.models.modeling_outputs.SequencePredictorOutput" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
 
-  
+
       <p>Base class for outputs of sentence classification &amp; regression models.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>loss</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>loss</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
 <p>Optional, returned when <code>labels</code> is provided</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>logits</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>logits</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
 <p>Prediction outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>hidden_states</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>hidden_states</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
 <p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>attentions</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>attentions</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
 <p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-100">100</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-100">100</a></span>
 <span class="normal"><a href="#__codelineno-0-101">101</a></span>
 <span class="normal"><a href="#__codelineno-0-102">102</a></span>
 <span class="normal"><a href="#__codelineno-0-103">103</a></span>
@@ -1832,9 +1827,9 @@ heads.</p>
 </span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a>    <span class="n">hidden_states</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a>    <span class="n">attentions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1850,8 +1845,7 @@ heads.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1860,9 +1854,9 @@ heads.</p>
 
 
 <h3 id="multimolecule.models.modeling_outputs.TokenPredictorOutput" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">TokenPredictorOutput</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">TokenPredictorOutput</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
@@ -1870,97 +1864,96 @@ heads.</p>
 <a href="#multimolecule.models.modeling_outputs.TokenPredictorOutput" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
 
-  
+
       <p>Base class for outputs of token classification &amp; regression models.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>loss</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>loss</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
 <p>Optional, returned when <code>labels</code> is provided</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>logits</code></td>
-          <td>
-                <code><span title="torch.FloatTensor">FloatTensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>logits</code></td>
+            <td>
+                  <code><span title="torch.FloatTensor">FloatTensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>torch.FloatTensor</code> of shape <code>(batch_size, sequence_length, config.num_labels)</code></p>
 <p>Prediction outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>hidden_states</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>hidden_states</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
 <p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code>attentions</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>attentions</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<span title="torch.FloatTensor">FloatTensor</span>, ...] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
 <p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-137">137</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/modeling_outputs.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-137">137</a></span>
 <span class="normal"><a href="#__codelineno-0-138">138</a></span>
 <span class="normal"><a href="#__codelineno-0-139">139</a></span>
 <span class="normal"><a href="#__codelineno-0-140">140</a></span>
@@ -2030,9 +2023,9 @@ heads.</p>
 </span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>    <span class="n">hidden_states</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="n">attentions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2048,8 +2041,7 @@ heads.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -2058,7 +2050,7 @@ heads.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 

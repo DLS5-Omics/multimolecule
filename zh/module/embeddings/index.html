@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
     
     
       
@@ -851,14 +851,14 @@
 
 
 <h2 id="multimolecule.module.embeddings" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>          <span class="doc doc-object-name doc-module-name">multimolecule.module.embeddings</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">multimolecule.module.embeddings</span>
 
 
 <a href="#multimolecule.module.embeddings" class="headerlink" title="Permanent link">&para;</a></h2>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
+
 
   <div class="doc doc-children">
 
@@ -874,33 +874,35 @@
 
 
 <h3 id="multimolecule.module.embeddings.RotaryEmbedding" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">RotaryEmbedding</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">RotaryEmbedding</span>
 
 
 <a href="#multimolecule.module.embeddings.RotaryEmbedding" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-external" title="torch.nn.Module" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module">Module</a></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="torch.nn.Module" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module">Module</a></code></p>
 
-  
+
       <p>Rotary position embeddings based on those in
 <a href="https://huggingface.co/docs/transformers/model_doc/roformer">RoFormer</a>.</p>
 <p>Query and keys are transformed by rotation
 matrices which depend on their relative positions.</p>
 
+
 <details class="tip" open>
   <summary><strong>Cache</strong></summary>
   <p>The inverse frequency buffer is cached and updated only when the sequence length changes or the device changes.</p>
 </details>
+
 <details class="success" open>
   <summary><strong>Sequence Length</strong></summary>
   <p>Rotary Embedding is irrespective of the sequence length and can be used for any sequence length.</p>
 </details>
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/module/embeddings/rotary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/module/embeddings/rotary.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
@@ -1016,9 +1018,9 @@ matrices which depend on their relative positions.</p>
 </span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="o">-</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1034,8 +1036,7 @@ matrices which depend on their relative positions.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1044,35 +1045,38 @@ matrices which depend on their relative positions.</p>
 
 
 <h3 id="multimolecule.module.embeddings.SinusoidalEmbedding" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">SinusoidalEmbedding</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">SinusoidalEmbedding</span>
 
 
 <a href="#multimolecule.module.embeddings.SinusoidalEmbedding" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-external" title="torch.nn.Embedding" href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html#torch.nn.Embedding">Embedding</a></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="torch.nn.Embedding" href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html#torch.nn.Embedding">Embedding</a></code></p>
 
-  
+
       <p>Sinusoidal positional embeddings for inputs with any length.</p>
+
 
 <details class="note" open>
   <summary><strong>Freezing</strong></summary>
   <p>The embeddings are frozen and cannot be trained.
 They will not be saved in the model&rsquo;s state_dict.</p>
 </details>
+
 <details class="tip" open>
   <summary><strong>Padding Idx</strong></summary>
   <p>Padding symbols are ignored if the padding_idx is specified.</p>
 </details>
+
 <details class="success" open>
   <summary><strong>Sequence Length</strong></summary>
   <p>These embeddings get automatically extended in forward if more positions is needed.</p>
 </details>
-            <details class="quote">
-              <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-30"> 30</a></span>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-30"> 30</a></span>
 <span class="normal"><a href="#__codelineno-0-31"> 31</a></span>
 <span class="normal"><a href="#__codelineno-0-32"> 32</a></span>
 <span class="normal"><a href="#__codelineno-0-33"> 33</a></span>
@@ -1246,12 +1250,11 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 </span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a>    <span class="p">):</span>
 </span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a>        <span class="k">return</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -1264,36 +1267,27 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="multimolecule.module.embeddings.SinusoidalEmbedding.get_embedding" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">get_embedding</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">get_embedding</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
 
 <a href="#multimolecule.module.embeddings.SinusoidalEmbedding.get_embedding" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="language-python doc-signature highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">get_embedding</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>    <span class="n">num_embeddings</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>    <span class="n">embedding_dim</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>    <span class="n">padding_idx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="torch.Tensor" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span>
+<div class="language-python doc-signature highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">get_embedding</span><span class="p">(</span><span class="n">num_embeddings</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n">padding_idx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="torch.Tensor" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span>
 </span></code></pre></div></td></tr></table></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Build sinusoidal embeddings.</p>
 <p>This matches the implementation in tensor2tensor, but differs slightly from the description in Section 3.5 of
 &ldquo;Attention Is All You Need&rdquo;.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-60">60</a></span>
+            <details class="quote">
+              <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-60">60</a></span>
 <span class="normal"><a href="#__codelineno-0-61">61</a></span>
 <span class="normal"><a href="#__codelineno-0-62">62</a></span>
 <span class="normal"><a href="#__codelineno-0-63">63</a></span>
@@ -1329,20 +1323,18 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 </span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="n">emb</span><span class="p">[</span><span class="n">padding_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>    <span class="k">return</span> <span class="n">emb</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="multimolecule.module.embeddings.SinusoidalEmbedding.get_position_ids" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">get_position_ids</span>
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">get_position_ids</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
@@ -1351,14 +1343,14 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 <div class="language-python doc-signature highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">get_position_ids</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">padding_idx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Replace non-padding symbols with their position numbers.</p>
 <p>Position numbers begin at padding_idx+1. Padding symbols are ignored.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-79">79</a></span>
+            <details class="quote">
+              <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-79">79</a></span>
 <span class="normal"><a href="#__codelineno-0-80">80</a></span>
 <span class="normal"><a href="#__codelineno-0-81">81</a></span>
 <span class="normal"><a href="#__codelineno-0-82">82</a></span>
@@ -1388,8 +1380,8 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 </span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="n">mask</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ne</span><span class="p">(</span><span class="n">padding_idx</span><span class="p">)</span><span class="o">.</span><span class="n">int</span><span class="p">()</span>
 </span><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span> <span class="o">+</span> <span class="n">padding_idx</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -1397,8 +1389,7 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1407,7 +1398,7 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
