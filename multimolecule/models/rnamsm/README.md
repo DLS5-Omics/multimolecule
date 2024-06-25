@@ -198,7 +198,9 @@ RNA-MSM used Masked Language Modeling (MLM) as the pre-training objective: takin
 
 ### Training Data
 
-The RNA-MSM model was pre-trained on [Rfam](https://rfam.org). Rfam database is a collection of RNA families, each represented by multiple sequence alignments, consensus secondary structures and covariance models. RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.
+The RNA-MSM model was pre-trained on [Rfam](https://rfam.org).
+The Rfam database is a collection of RNA sequence families of structural RNAs including non-coding RNA genes as well as cis-regulatory elements.
+RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.
 
 To avoid potential overfitting in structural inference, RNA-MSM excluded families with experimentally determined structures, such as ribosomal RNAs, transfer RNAs, and small nuclear RNAs. The final dataset contains 3,932 RNA families. The median value for the number of MSA sequences for these families by RNAcmap3 is 2,184.
 

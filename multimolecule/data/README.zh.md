@@ -12,10 +12,16 @@ date: 2024-05-04
 
 `data` 包旨在通过提供在科学任务中常用的数据处理实用程序来补充 [`datasets`](https://huggingface.co/docs/datasets)。
 
-## Usage
+## 使用
 
 ### 从本地数据文件加载
 
 ```python
 --8<-- "demo/data/local-file.py:17:"
+```
+
+### 从:hugs: [`datasets`](https://huggingface.co/docs/datasets)加载
+
+```python
+--8<-- "demo/data/huggingface-datasets.py:17:"
 ```

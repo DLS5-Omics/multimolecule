@@ -191,7 +191,8 @@ RiNALMo used Masked Language Modeling (MLM) as the pre-training objective: takin
 
 ### Training Data
 
-The RiNALMo model was pre-trained on a cocktail of databases including [RNAcentral](https://rnacentral.org), [Rfam](https://rfam.org), [Ensembl Genome Browser](https://ensembl.org), and [Nucleotide](https://ncbi.nlm.nih.gov/nucleotide). The training data contains 36 million unique ncRNA sequences.
+The RiNALMo model was pre-trained on a cocktail of databases including [RNAcentral](https://rnacentral.org), [Rfam](https://rfam.org), [Ensembl Genome Browser](https://ensembl.org), and [Nucleotide](https://ncbi.nlm.nih.gov/nucleotide).
+The training data contains 36 million unique ncRNA sequences.
 
 To ensure sequence diversity in each training batch, RiNALMo clustered the sequences with [MMSeqs2](https://github.com/soedinglab/MMseqs2) into 17 million clusters and then sampled each sequence in the batch from a different cluster.
 

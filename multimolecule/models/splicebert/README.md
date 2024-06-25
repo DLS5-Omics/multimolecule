@@ -226,7 +226,8 @@ SpliceBERT used Masked Language Modeling (MLM) as the pre-training objective: ta
 
 ### Training Data
 
-The SpliceBERT model was pre-trained on messenger RNA precursor sequences from [UCSC Genome Browser](https://genome.ucsc.edu). UCSC Genome Browser provides visualization, analysis, and download of comprehensive vertebrate genome data with aligned annotation tracks (known genes, predicted genes, ESTs, mRNAs, CpG islands, etc.).
+The SpliceBERT model was pre-trained on messenger RNA precursor sequences from [UCSC Genome Browser](https://genome.ucsc.edu).
+UCSC Genome Browser provides visualization, analysis, and download of comprehensive vertebrate genome data with aligned annotation tracks (known genes, predicted genes, ESTs, mRNAs, CpG islands, etc.).
 
 SpliceBERT collected reference genomes and gene annotations from the UCSC Genome Browser for 72 vertebrate species. It applied [bedtools getfasta](https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html) to extract pre-mRNA sequences from the reference genomes based on the gene annotations. The pre-mRNA sequences are then used to pre-train SpliceBERT. The pre-training data contains 2 million pre-mRNA sequences with a total length of 65 billion nucleotides.
 

@@ -199,8 +199,10 @@ RNABERT has two pre-training objectives: masked language modeling (MLM) and stru
 
 ### Training Data
 
-The RNABERT model was pre-trained on [RNAcentral](https://rnacentral.org). RNAcentral is a comprehensive database of non-coding RNA sequences from a wide range of species. It combines 47 different databases, adding up to around 27 million RNA sequences in total. RNABERT used a subset of 76, 237 human ncRNA sequences from RNAcentral for pre-training.
+The RNABERT model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
+RNABERT used a subset of 76, 237 human ncRNA sequences from RNAcentral for pre-training.
 RNABERT preprocessed all tokens by replacing "U"s with "T"s.
 
 Note that during model conversions, "T" is replaced with "U". [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.

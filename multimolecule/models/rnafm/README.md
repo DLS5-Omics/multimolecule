@@ -224,7 +224,8 @@ RNA-FM used Masked Language Modeling (MLM) as the pre-training objective: taking
 
 ### Training Data
 
-The RNA-FM model was pre-trained on [RNAcentral](https://rnacentral.org). RNAcentral is a comprehensive database of non-coding RNA sequences from a wide range of species. It combines 47 different databases, adding up to around 27 million RNA sequences in total.
+The RNA-FM model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 RNA-FM applied [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.
 

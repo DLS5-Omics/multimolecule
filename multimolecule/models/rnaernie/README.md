@@ -208,7 +208,8 @@ RNAErnie used Masked Language Modeling (MLM) as the pre-training objective: taki
 
 ### Training Data
 
-The RNAErnie model was pre-trained on [RNAcentral](https://rnacentral.org). RNAcentral is a comprehensive database of non-coding RNA sequences from a wide range of species. It combines 47 different databases, adding up to around 34 million RNA sequences in total.
+The RNAErnie model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 RNAErnie used a subset of RNAcentral for pre-training. The subset contains 23 million sequences.
 RNAErnie preprocessed all tokens by replacing "T"s with "S"s.

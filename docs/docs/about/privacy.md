@@ -1,7 +1,3 @@
-!!! info "Last Revised Date"
-
-    This notice was last updated on May 04, 2024.
-
 # Privacy Notice
 
 This privacy notice for DanLing Team (also known as DanLing) ('we', 'us', or 'our'), describes how and why we might collect, store, use, and/or share ('process') your information when you use our services ('Services'), such as when you:
@@ -406,7 +402,7 @@ It is very unlikely that you will be able to review, update, or delete the data 
     Yes, we will update this notice as necessary to stay compliant with relevant laws.
 
 We may update this privacy notice from time to time.
-The updated version will be indicated by an updated 'Last Revised Date' at the top of this privacy notice.
+The updated version will be indicated by an updated 'Last Revised Time' at the bottom of this privacy notice.
 If we make any material changes, we will notify you by posting the new privacy notice on this page.
 We are unable to notify you directly as we do not collect any contact information from you.
 We encourage you to review this privacy notice frequently to stay informed of how we are protecting your information.

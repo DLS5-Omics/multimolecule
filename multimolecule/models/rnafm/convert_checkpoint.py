@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import os
 from copy import deepcopy
-from dataclasses import dataclass
 
 import chanfig
 import torch
@@ -213,7 +212,6 @@ def convert_checkpoint(convert_config):
     save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 
 
-@dataclass
 class ConvertConfig(ConvertConfig_):
     root: str = os.path.dirname(__file__)
     output_path: str = Config.model_type

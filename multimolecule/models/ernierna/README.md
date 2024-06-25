@@ -192,7 +192,8 @@ ERNIE-RNA used Masked Language Modeling (MLM) as the pre-training objective: tak
 
 ### Training Data
 
-The ERNIE-RNA model was pre-trained on [RNAcentral](https://rnacentral.org). RNAcentral is a comprehensive database of non-coding RNA sequences from a wide range of species. It combines 47 different databases, adding up to around 34 million RNA sequences in total.
+The ERNIE-RNA model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 ERNIE-RNA applied [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral, resulting 25 million unique sequences. Sequences longer than 1024 nucleotides were subsequently excluded. The final dataset contains 20.4 million non-redundant RNA sequences.
 ERNIE-RNA preprocessed all tokens by replacing "T"s with "S"s.

@@ -13,6 +13,7 @@ Welcome to MultiMolecule (浦原), a foundational library designed to accelerate
 We understand that AI4Science is a broad field, with researchers from different disciplines employing various practices. Therefore, MultiMolecule is designed with low coupling in mind, meaning that while it offers a full suite of functionalities, each module can be used independently. This allows you to integrate only the components you need into your existing workflows without adding unnecessary complexity. The key functionalities that MultiMolecule provides include:
 
 - [`data`](data): Efficient data handling and preprocessing capabilities to streamline the ingestion and transformation of scientific datasets.
+- [`datasets`](datasets): A collection of widely-used datasets across different scientific domains, providing a solid foundation for training and evaluation.
 - [`module`](module): Modular components designed to provide flexibility and reusability across various machine learning tasks.
 - [`models`](models): State-of-the-art model architectures optimized for scientific research applications, ensuring high performance and accuracy.
 - [`tokenisers`](tokenisers): Advanced tokenization methods to effectively handle complex scientific text and data representations.

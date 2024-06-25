@@ -203,3 +203,22 @@ class TestSyntheticDataset:
         assert dataset.tasks["contact_regression"] == Task(
             type=TaskType.Regression, level=TaskLevel.Contact, num_labels=1
         )
+
+
+class TestHuggingFaceDataset:
+
+    pretrained = "multimolecule/rna"
+    root = "multimolecule/"
+
+    def test_bprna_spot(self):
+        file = os.path.join(self.root, "bprna-spot")
+        dataset = Dataset(file, split="test", pretrained=self.pretrained, preprocess=True)
+        elem = dataset[0]
+        assert isinstance(elem["sequence"], dl.PNTensor)
+        assert isinstance(elem["secondary_structure"], torch.LongTensor)
+        batch = dataset[list(range(3))]
+        assert isinstance(batch["sequence"], dl.NestedTensor)
+        assert isinstance(batch["secondary_structure"], dl.NestedTensor)
+        assert dataset.tasks["secondary_structure"] == Task("binary", "contact", 1)
+        assert dataset.discrete_map["structural_annotation"] == {"B": 0, "E": 1, "H": 2, "I": 3, "M": 4, "S": 5, "X": 6}
+        assert dataset.discrete_map["functional_annotation"] == {"K": 0, "N": 1}

@@ -12,6 +12,16 @@ nav:
   - data:
       - data/index.md
       - Dataset: data/dataset.md
+  - datasets:
+      - datasets/index.md
+      - DNA:
+          - GENCODE: datasets/gencode.md
+      - RNA:
+          - RNAcentral: datasets/rnacentral.md
+          - Rfam: datasets/rfam.md
+          - bpRNA-1m: datasets/bprna.md
+          - bpRNA-spot: datasets/bprna-spot.md
+          - bpRNA-new: datasets/bprna-new.md
   - module:
       - module/index.md
       - heads: module/heads.md
@@ -39,9 +49,10 @@ nav:
       - RNA: tokenisers/rna.md
       - Protein: tokenisers/protein.md
       - DotBracket: tokenisers/dot_bracket.md
-  - About:
+  - about:
       - about/index.md
       - License: about/license.md
+      - License FAQ: about/license-faq.md
       - Privacy Notice: about/privacy.md
 
 theme:

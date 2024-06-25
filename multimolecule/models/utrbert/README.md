@@ -233,7 +233,8 @@ output = model(**input, labels=label)
 
 ### Training Data
 
-The 3UTRBERT model was pre-trained on human mRNA transcript sequences from [GENCODE](https://gencodegenes.org). GENCODE aims to identify all gene features in the human genome using a combination of computational analysis, manual annotation, and experimental validation. The GENCODE release 40 used by this work contains 61,544 genes, and 246,624 transcripts.
+The 3UTRBERT model was pre-trained on human mRNA transcript sequences from [GENCODE](https://gencodegenes.org).
+GENCODE aims to identify all gene features in the human genome using a combination of computational analysis, manual annotation, and experimental validation. The GENCODE release 40 used by this work contains 61,544 genes, and 246,624 transcripts.
 
 3UTRBERT collected the human mRNA transcript sequences from GENCODE, including 108,573 unique mRNA transcripts. Only the longest transcript of each gene was used in the pre-training process. 3UTRBERT only used the 3’ untranslated regions (3’UTRs) of the mRNA transcripts for pre-training to avoid codon constrains in the CDS region, and to reduce increased complexity of the entire mRNA transcripts. The average length of the 3’UTRs was 1,227 nucleotides, while the median length was 631 nucleotides. Each 3’UTR sequence was cut to non-overlapping patches of 510 nucleotides. The remaining sequences were padded to the same length.
 

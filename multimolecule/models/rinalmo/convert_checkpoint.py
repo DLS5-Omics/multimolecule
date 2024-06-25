@@ -17,7 +17,6 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
 
 import torch
 
@@ -118,7 +117,6 @@ def convert_checkpoint(convert_config):
     save_checkpoint(convert_config, model)
 
 
-@dataclass
 class ConvertConfig(ConvertConfig_):
     root: str = os.path.dirname(__file__)
     output_path: str = Config.model_type

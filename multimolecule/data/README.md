@@ -19,3 +19,9 @@ The `data` package is designed to complement [`datasets`](https://huggingface.co
 ```python
 --8<-- "demo/data/local-file.py:17:"
 ```
+
+### Load from :hugs: [`datasets`](https://huggingface.co/docs/datasets)
+
+```python
+--8<-- "demo/data/huggingface-datasets.py:17:"
+```
