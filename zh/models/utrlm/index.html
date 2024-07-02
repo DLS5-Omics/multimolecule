@@ -2045,7 +2045,7 @@ This is because</p>
 </span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="training-details">Training Details<a class="headerlink" href="#training-details" title="Permanent link">&para;</a></h2>
-<p>UTR-LM used a mixed training strategy with one self-supervised task and two supervised tasks, where the labels of both supervised tasks are calculated using [ViennaRNA](<a href="https://viennarna.readthedocs.io">https://viennarna.readthedocs.io</a>.</p>
+<p>UTR-LM used a mixed training strategy with one self-supervised task and two supervised tasks, where the labels of both supervised tasks are calculated using <a href="https://viennarna.readthedocs.io">ViennaRNA</a>.</p>
 <ol>
 <li><strong>Masked Language Modeling (MLM)</strong>: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.</li>
 <li><strong>Secondary Structure (SS)</strong>: predicting the secondary structure of the <code>&lt;mask&gt;</code> token in the MLM task.</li>
