@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/ucsc-genome-browser
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "A"
+        score: 0.09628374129533768
+      - label: "W"
+        score: 0.09019321203231812
+      - label: "U"
+        score: 0.08448788523674011
+      - label: "H"
+        score: 0.07201363891363144
+      - label: "M"
+        score: 0.06648518145084381
 ---
 
 # SpliceBERT

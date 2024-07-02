@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/ena
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "PRNP"
+    text: "CTG<mask>AAGCGGCCCACGCGGACTGACGGGCGGGGG"
+    output:
+      - label: "CGG"
+        score: 0.03824129328131676
+      - label: "CCG"
+        score: 0.030699172988533974
+      - label: "GGG"
+        score: 0.026188895106315613
+      - label: "GCG"
+        score: 0.02376439981162548
+      - label: "CCC"
+        score: 0.023052876815199852
 ---
 
 # CaLM
@@ -78,28 +94,28 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
 >>> unmasker = pipeline('fill-mask', model='multimolecule/calm')
->>> unmasker("gcc<mask>cgctgacagccgcgg")
+>>> unmasker("ctg<mask>aagcggcccacgcggactgacgggcggggg")
 
-[{'score': 0.049356844276189804,
-  'token': 42,
-  'token_str': 'CGC',
-  'sequence': 'GCC CGC CGC UGA CAG CCG CGG'},
- {'score': 0.038425520062446594,
-  'token': 67,
-  'token_str': 'GGC',
-  'sequence': 'GCC GGC CGC UGA CAG CCG CGG'},
- {'score': 0.031837038695812225,
-  'token': 62,
-  'token_str': 'GCC',
-  'sequence': 'GCC GCC CGC UGA CAG CCG CGG'},
- {'score': 0.02501658722758293,
-  'token': 32,
-  'token_str': 'CAC',
-  'sequence': 'GCC CAC CGC UGA CAG CCG CGG'},
- {'score': 0.024257611483335495,
+[{'score': 0.03824129328131676,
+  'token': 43,
+  'token_str': 'CGG',
+  'sequence': 'CUG CGG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
+ {'score': 0.030699172988533974,
+  'token': 38,
+  'token_str': 'CCG',
+  'sequence': 'CUG CCG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
+ {'score': 0.026188895106315613,
+  'token': 68,
+  'token_str': 'GGG',
+  'sequence': 'CUG GGG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
+ {'score': 0.02376439981162548,
+  'token': 63,
+  'token_str': 'GCG',
+  'sequence': 'CUG GCG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
+ {'score': 0.023052876815199852,
   'token': 37,
   'token_str': 'CCC',
-  'sequence': 'GCC CCC CGC UGA CAG CCG CGG'}]
+  'sequence': 'CUG CCC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'}]
 ```
 
 ### Downstream Use

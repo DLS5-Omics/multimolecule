@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/rfam
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "U"
+        score: 0.28535839915275574
+      - label: "K"
+        score: 0.2532415986061096
+      - label: "G"
+        score: 0.2247398942708969
+      - label: "D"
+        score: 0.06841657310724258
+      - label: "W"
+        score: 0.03774874284863472
 ---
 
 # RNA-MSM

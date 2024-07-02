@@ -10,6 +10,22 @@ datasets:
   - multimolecule/ensembl-genome-browser
   - multimolecule/nucleotide
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "A"
+        score: 0.28896641731262207
+      - label: "U"
+        score: 0.27602624893188477
+      - label: "X"
+        score: 0.18329711258411407
+      - label: "C"
+        score: 0.1668907254934311
+      - label: "G"
+        score: 0.08479981869459152
 ---
 
 # RiNALMo

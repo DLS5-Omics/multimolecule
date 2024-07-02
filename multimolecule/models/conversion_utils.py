@@ -52,7 +52,7 @@ def save_checkpoint(
     NestedDict(special_tokens_map).json(os.path.join(output_path, "special_tokens_map.json"))
 
     if f"README.{output_path}.md" in os.listdir(root):
-        shutil.copy2(os.path.join(root, f"README.{output_path}.md"), output_path)
+        shutil.copy2(os.path.join(root, f"README.{output_path}.md"), os.path.join(output_path, "README.md"))
     else:
         shutil.copy2(os.path.join(root, "README.md"), output_path)
 

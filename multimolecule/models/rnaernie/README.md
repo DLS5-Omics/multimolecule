@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "G"
+        score: 0.10253211855888367
+      - label: "R"
+        score: 0.09673436731100082
+      - label: "A"
+        score: 0.09126435220241547
+      - label: "V"
+        score: 0.08036787807941437
+      - label: "S"
+        score: 0.07541776448488235
 ---
 
 # RNAErnie

@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "<null>"
+        score: 0.038491372019052505
+      - label: "."
+        score: 0.03848646208643913
+      - label: "<pad>"
+        score: 0.03846566751599312
+      - label: "U"
+        score: 0.03846472129225731
+      - label: "W"
+        score: 0.03846454620361328
 ---
 
 # RNABERT

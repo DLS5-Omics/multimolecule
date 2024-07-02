@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/gencode
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask><mask><mask>UCAGACUGAUGUUGA"
+    output:
+      - label: "CUU"
+        score: 0.510771632194519
+      - label: "CCU"
+        score: 0.3299057185649872
+      - label: "CAU"
+        score: 0.09743840992450714
+      - label: "GCU"
+        score: 0.010745460167527199
+      - label: "AUU"
+        score: 0.010299043729901314
 ---
 
 # 3UTRBERT

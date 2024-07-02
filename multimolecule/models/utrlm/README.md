@@ -7,6 +7,22 @@ license: agpl-3.0
 datasets:
   - multimolecule/ensembl-genome-browser
 library_name: multimolecule
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "I"
+        score: 0.07525687664747238
+      - label: "A"
+        score: 0.07319962233304977
+      - label: "*"
+        score: 0.07106836140155792
+      - label: "N"
+        score: 0.06967106461524963
+      - label: "W"
+        score: 0.06574146449565887
 ---
 
 # UTR-LM
