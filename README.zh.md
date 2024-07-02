@@ -32,6 +32,23 @@ pip install multimolecule
 pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ```
 
+## 引用
+
+如果您在研究中使用 MultiMolecule，请按照以下方式引用我们：
+
+```bibtex
+@software{chen_2024_12638419,
+  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
+  title     = {MultiMolecule},
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
+}
+```
+
 ## 许可证
 
 我们相信开放是研究的基础。
