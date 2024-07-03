@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Mapping, Tuple
 
 import torch
+from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers.activations import ACT2FN
@@ -91,5 +92,9 @@ class MaskedLMHead(nn.Module):
         if self.activation is not None:
             output = self.activation(output)
         if labels is not None:
+            if isinstance(labels, NestedTensor):
+                if isinstance(output, Tensor):
+                    output = labels.nested_like(output, strict=False)
+                return HeadOutput(output, F.cross_entropy(torch.cat(output.storage()), torch.cat(labels.storage())))
             return HeadOutput(output, F.cross_entropy(output.view(-1, self.num_labels), labels.view(-1)))
         return HeadOutput(output)
