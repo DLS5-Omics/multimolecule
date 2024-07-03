@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import torch
+from danling import NestedTensor
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
@@ -74,5 +76,9 @@ class PredictionHead(nn.Module):
         if self.activation is not None:
             output = self.activation(output)
         if labels is not None:
+            if isinstance(labels, NestedTensor):
+                if isinstance(output, Tensor):
+                    output = labels.nested_like(output, strict=False)
+                return HeadOutput(output, self.criterion(torch.cat(output.storage()), torch.cat(labels.storage())))
             return HeadOutput(output, self.criterion(output, labels))
         return HeadOutput(output)
