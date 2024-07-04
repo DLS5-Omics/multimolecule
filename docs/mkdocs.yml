@@ -41,6 +41,9 @@ nav:
       - Protein:
           - ProteinTokenizer: tokenisers/protein.md
           - Protein Alphabet: tokenisers/protein/alphabet.md
+  - about:
+      - privacy: about/privacy.md
+      - license: about/license.md
 
 theme:
   name: material
@@ -93,9 +96,9 @@ theme:
   font: false
 
 extra:
-  # analytics:
-  #   provider: google
-  #   property: "G-RE7EKZ9T8D"
+  analytics:
+    provider: google
+    property: "G-YFVBYNKMD6"
   consent:
     title: Cookie Consent
     description: >-
@@ -103,7 +106,7 @@ extra:
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
       make our documentation better. Please check out our
-      <a href="https://zyc.ai/about/privacy">Privacy Policy</a> for more information.
+      <a href="https://multimolecule.danling.org/about/privacy">Privacy Policy</a> for more information.
   generator: false
   manifest: "manifest.webmanifest"
 
