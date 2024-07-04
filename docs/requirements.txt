@@ -4,6 +4,7 @@ mkdocs
 mkdocs-git-committers-plugin
 mkdocs-git-revision-date-localized-plugin
 mkdocs-material
+mkdocs-material-extensions-2
 mkdocs-rss-plugin
 mkdocs-static-i18n
 mkdocstrings
