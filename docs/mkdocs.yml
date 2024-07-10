@@ -8,13 +8,13 @@ repo_name: MultiMolecule
 repo_url: https://github.com/DLS5-Omics/multimolecule
 
 nav:
-  - MultiMolecule: index.md
+  - index.md
   - module:
-      - module: module.md
+      - module/index.md
       - heads: module/heads.md
       - embeddings: module/embeddings.md
   - models:
-      - models: models.md
+      - models/index.md
       - DNA:
           - CaLM: models/calm.md
       - RNA:
@@ -31,7 +31,7 @@ nav:
           - configuration_utils: models/configuration_utils.md
           - modeling_outputs: models/modeling_outputs.md
   - tokenisers:
-      - tokenisers: tokenisers.md
+      - tokenisers/index.md
       - DNA:
           - DnaTokenizer: tokenisers/dna.md
           - DNA Alphabet: tokenisers/dna/alphabet.md
@@ -41,6 +41,10 @@ nav:
       - Protein:
           - ProteinTokenizer: tokenisers/protein.md
           - Protein Alphabet: tokenisers/protein/alphabet.md
+  - About:
+      - about/index.md
+      - License: about/license.md
+      - Privacy Notice: about/privacy.md
 
 theme:
   name: material
@@ -93,9 +97,9 @@ theme:
   font: false
 
 extra:
-  # analytics:
-  #   provider: google
-  #   property: "G-RE7EKZ9T8D"
+  analytics:
+    provider: google
+    property: "G-YFVBYNKMD6"
   consent:
     title: Cookie Consent
     description: >-
@@ -103,7 +107,7 @@ extra:
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
       make our documentation better. Please check out our
-      <a href="https://zyc.ai/about/privacy">Privacy Policy</a> for more information.
+      <a href="https://multimolecule.danling.org/about/privacy">Privacy Notice</a> for more information.
   generator: false
   manifest: "manifest.webmanifest"
 
@@ -121,8 +125,10 @@ markdown_extensions:
   - abbr
   - admonition
   - attr_list
+  - callouts
   - def_list
   - footnotes
+  - markdown_gfm_admonition
   - md_in_html
   - mdx_math
   - meta
@@ -134,8 +140,8 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:pymdownx.emoji.gemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:materialy.gemoji
+      emoji_generator: !!python/name:materialy.to_png
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -183,6 +189,7 @@ plugins:
             - https://huggingface.co/docs/transformers/master/en/objects.inv
             - https://danling.org/objects.inv
             - https://chanfig.danling.org/objects.inv
+  - section-index
   - i18n:
       docs_structure: suffix
       fallback_to_default: true

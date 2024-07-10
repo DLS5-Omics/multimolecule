@@ -24,7 +24,7 @@ from ..alphabet import Alphabet
 from ..utils import SPECIAL_TOKENS_MAP
 from ..utils import convert_word_embeddings as convert_word_embeddings_
 
-torch.manual_seed(1013)
+torch.manual_seed(1016)
 
 
 def get_alphabet(alphabet: List[str] | str | None = None) -> Alphabet:
@@ -59,7 +59,7 @@ def convert_word_embeddings(
     mean: float = 0.0,
     std: float = 0.02,
     vocab_mapping: dict[str, str] | None = None,
-    seed: int | None = 1013,
+    seed: int | None = 1016,
 ) -> Sequence[torch.Tensor]:
     if vocab_mapping is None:
         vocab_mapping = get_vocab_mapping()

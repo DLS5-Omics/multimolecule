@@ -13,16 +13,16 @@ widget:
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
-      - label: "*"
-        score: 0.3237496316432953
       - label: "I"
-        score: 0.28286001086235046
+        score: 0.35248875617980957
+      - label: "*"
+        score: 0.18891523778438568
       - label: "."
-        score: 0.11762786656618118
+        score: 0.14166751503944397
       - label: "A"
-        score: 0.07875438779592514
+        score: 0.09060215204954147
       - label: "U"
-        score: 0.06866674870252609
+        score: 0.07837390154600143
 ---
 
 # RNA-FM
@@ -35,9 +35,8 @@ This is an UNOFFICIAL implementation of the [Interpretable RNA Foundation Model 
 
 The OFFICIAL repository of RNA-FM is at [ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM).
 
-!!! Success "Reproducibility"
-
-    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> [!TIP]
+> The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 
 **The team releasing RNA-FM did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -115,23 +114,23 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnafm')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.3237496316432953,
-  'token': 24,
-  'token_str': '*',
-  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
- {'score': 0.28286001086235046,
+[{'score': 0.35248875617980957,
   'token': 11,
   'token_str': 'I',
   'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
- {'score': 0.11762786656618118,
+ {'score': 0.18891523778438568,
+  'token': 24,
+  'token_str': '*',
+  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
+ {'score': 0.14166751503944397,
   'token': 23,
   'token_str': '.',
   'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.07875438779592514,
+ {'score': 0.09060215204954147,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.06866674870252609,
+ {'score': 0.07837390154600143,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'}]

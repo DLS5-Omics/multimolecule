@@ -8,6 +8,22 @@ datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 base_model: multimolecule/ernierna
+pipeline_tag: fill-mask
+mask_token: "<mask>"
+widget:
+  - example_title: "microRNA-21"
+    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    output:
+      - label: "U"
+        score: 0.19948424398899078
+      - label: "C"
+        score: 0.16601084172725677
+      - label: "-"
+        score: 0.16062632203102112
+      - label: "G"
+        score: 0.15660236775875092
+      - label: "A"
+        score: 0.12853538990020752
 ---
 
 # ERNIE-RNA
@@ -20,9 +36,8 @@ This is an UNOFFICIAL implementation of the [ERNIE-RNA: An RNA Language Model wi
 
 The OFFICIAL repository of ERNIE-RNA is at [Bruce-ywj/ERNIE-RNA](https://github.com/Bruce-ywj/ERNIE-RNA).
 
-!!! Success "Reproducibility"
-
-    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> [!TIP]
+> The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 
 **The team releasing ERNIE-RNA did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -68,23 +83,23 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/ernierna.ss')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.19777926802635193,
+[{'score': 0.19948424398899078,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.16415606439113617,
+ {'score': 0.16601084172725677,
   'token': 7,
   'token_str': 'C',
   'sequence': 'U A G C C U A U C A G A C U G A U G U U G A'},
- {'score': 0.15474674105644226,
-  'token': 8,
-  'token_str': 'G',
-  'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.13006599247455597,
+ {'score': 0.16062632203102112,
   'token': 25,
   'token_str': '-',
   'sequence': 'U A G C - U A U C A G A C U G A U G U U G A'},
- {'score': 0.1272154450416565,
+ {'score': 0.15660236775875092,
+  'token': 8,
+  'token_str': 'G',
+  'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
+ {'score': 0.12853538990020752,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'}]

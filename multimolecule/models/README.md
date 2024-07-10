@@ -10,7 +10,7 @@ date: 2024-05-04
 
 ## Model Class
 
-In the [`transformers`](https://huggingface.co/docs/transformers/en/tasks/sequence_classification) library, the names of model classes can sometimes be misleading.
+In the :hugs: [`transformers`](https://huggingface.co/docs/transformers/en/tasks/sequence_classification) library, the names of model classes can sometimes be misleading.
 While these classes support both regression and classification tasks, their names often include `xxxForSequenceClassification`, which may imply they are only for classification.
 
 To avoid this ambiguity, MultiMolecule provides a set of model classes with clear, intuitive names that reflect their intended use:
@@ -83,16 +83,16 @@ You can also initialize a vanilla model using the model class.
 
 ### DeoxyriboNucleic Acid (DNA)
 
-- [CaLM](models/calm.md)
+- [CaLM](calm)
 
-### RiboNucleic acid (RNA)
+### RiboNucleic Acid (RNA)
 
-- [ERNIE-RNA](models/ernierna.md)
-- [RiNALMo](models/rinalmo.md)
-- [RNABERT](models/rnabert.md)
-- [RNAErnie](models/rnaernie.md)
-- [RNA-FM](models/rnafm.md)
-- [RNA-MSM](models/rnamsm.md)
-- [SpliceBERT](models/splicebert.md)
-- [3UTRBERT](models/utrbert.md)
-- [UTR-LM](models/utrlm.md)
+- [ERNIE-RNA](ernierna)
+- [RiNALMo](rinalmo)
+- [RNABERT](rnabert)
+- [RNAErnie](rnaernie)
+- [RNA-FM](rnafm)
+- [RNA-MSM](rnamsm)
+- [SpliceBERT](splicebert)
+- [3UTRBERT](utrbert)
+- [UTR-LM](utrlm)

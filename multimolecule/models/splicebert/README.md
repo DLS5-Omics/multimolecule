@@ -14,15 +14,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "A"
-        score: 0.09628374129533768
+        score: 0.09095983952283859
       - label: "W"
-        score: 0.09019321203231812
+        score: 0.08519190549850464
       - label: "U"
-        score: 0.08448788523674011
+        score: 0.0797896757721901
       - label: "H"
-        score: 0.07201363891363144
-      - label: "M"
-        score: 0.06648518145084381
+        score: 0.06834687292575836
+      - label: "I"
+        score: 0.06398838013410568
 ---
 
 # SpliceBERT
@@ -35,9 +35,8 @@ This is an UNOFFICIAL implementation of the [Self-supervised learning on million
 
 The OFFICIAL repository of SpliceBERT is at [chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT).
 
-!!! Success "Reproducibility"
-
-    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> [!TIP]
+> The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 
 **The team releasing SpliceBERT did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -117,26 +116,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/splicebert')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.09628374129533768,
+[{'score': 0.09095983952283859,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.09019321203231812,
+ {'score': 0.08519190549850464,
   'token': 19,
   'token_str': 'W',
   'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'},
- {'score': 0.08448788523674011,
+ {'score': 0.0797896757721901,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.07201363891363144,
+ {'score': 0.06834687292575836,
   'token': 14,
   'token_str': 'H',
   'sequence': 'U A G C H U A U C A G A C U G A U G U U G A'},
- {'score': 0.06648518145084381,
-  'token': 17,
-  'token_str': 'M',
-  'sequence': 'U A G C M U A U C A G A C U G A U G U U G A'}]
+ {'score': 0.06398838013410568,
+  'token': 11,
+  'token_str': 'I',
+  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

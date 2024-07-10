@@ -25,14 +25,15 @@ logger = logging.get_logger(__name__)
 
 class SpliceBertConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`SpliceBertModel`]. It is used to instantiate a
-    SpliceBert model according to the specified arguments, defining the model architecture. Instantiating a
-    configuration with the defaults will yield a similar configuration to that of the SpliceBert
+    This is the configuration class to store the configuration of a
+    [`SpliceBertModel`][multimolecule.models.SpliceBertModel]. It is used to instantiate a SpliceBert model according
+    to the specified arguments, defining the model architecture. Instantiating a configuration with the defaults will
+    yield a similar configuration to that of the SpliceBert
     [biomed-AI/SpliceBERT](https://github.com/biomed-AI/SpliceBERT) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

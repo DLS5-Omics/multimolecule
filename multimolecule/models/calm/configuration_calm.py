@@ -25,14 +25,14 @@ logger = logging.get_logger(__name__)
 
 class CaLmConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`CaLmModel`]. It is used to instantiate a CaLM
-    model according to the specified arguments, defining the model architecture. Instantiating a configuration with the
-    defaults will yield a similar configuration to that of the CaLM
+    This is the configuration class to store the configuration of a [`CaLmModel`][multimolecule.models.CaLmModel]. It
+    is used to instantiate a CaLM model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the CaLM
     [oxpig/CaLM](https://github.com/oxpig/CaLM) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

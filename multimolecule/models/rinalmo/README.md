@@ -17,15 +17,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "A"
-        score: 0.28896641731262207
+        score: 0.2931748032569885
       - label: "U"
-        score: 0.27602624893188477
+        score: 0.2710167169570923
       - label: "X"
-        score: 0.18329711258411407
+        score: 0.18341825902462006
       - label: "C"
-        score: 0.1668907254934311
+        score: 0.16714636981487274
       - label: "G"
-        score: 0.08479981869459152
+        score: 0.08522326499223709
 ---
 
 # RiNALMo
@@ -38,9 +38,8 @@ This is an UNOFFICIAL implementation of the [RiNALMo: General-Purpose RNA Langua
 
 The OFFICIAL repository of RiNALMo is at [lbcb-sci/RiNALMo](https://github.com/lbcb-sci/RiNALMo).
 
-!!! Success "Reproducibility"
-
-    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> [!TIP]
+> The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 
 **The team releasing RiNALMo did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -82,23 +81,23 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rinalmo')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.28896641731262207,
+[{'score': 0.2931748032569885,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.27602624893188477,
+ {'score': 0.2710167169570923,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.18329711258411407,
+ {'score': 0.18341825902462006,
   'token': 12,
   'token_str': 'X',
   'sequence': 'U A G C X U A U C A G A C U G A U G U U G A'},
- {'score': 0.1668907254934311,
+ {'score': 0.16714636981487274,
   'token': 7,
   'token_str': 'C',
   'sequence': 'U A G C C U A U C A G A C U G A U G U U G A'},
- {'score': 0.08479981869459152,
+ {'score': 0.08522326499223709,
   'token': 8,
   'token_str': 'G',
   'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'}]

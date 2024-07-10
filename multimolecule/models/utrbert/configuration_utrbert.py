@@ -25,14 +25,14 @@ logger = logging.get_logger(__name__)
 
 class UtrBertConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`UtrBertModel`]. It is used to instantiate a
-    3UTRBERT model according to the specified arguments, defining the model architecture. Instantiating a configuration
-    with the defaults will yield a similar configuration to that of the 3UTRBERT
+    This is the configuration class to store the configuration of a [`UtrBertModel`][multimolecule.models.UtrBertModel].
+    It is used to instantiate a 3UTRBERT model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the 3UTRBERT
     [yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

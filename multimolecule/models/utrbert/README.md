@@ -13,16 +13,16 @@ widget:
   - example_title: "microRNA-21"
     text: "UAGC<mask><mask><mask>UCAGACUGAUGUUGA"
     output:
-      - label: "CUU"
-        score: 0.510771632194519
-      - label: "CCU"
-        score: 0.3299057185649872
-      - label: "CAU"
-        score: 0.09743840992450714
-      - label: "GCU"
-        score: 0.010745460167527199
-      - label: "AUU"
-        score: 0.010299043729901314
+      - label: "GAC"
+        score: 0.6499986052513123
+      - label: "GUC"
+        score: 0.07012350112199783
+      - label: "CAC"
+        score: 0.06567499041557312
+      - label: "GCC"
+        score: 0.06494498997926712
+      - label: "GGC"
+        score: 0.06052926927804947
 ---
 
 # 3UTRBERT
@@ -35,9 +35,8 @@ This is an UNOFFICIAL implementation of the [Deciphering 3’ UTR mediated gene 
 
 The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT).
 
-!!! Success "Reproducibility"
-
-    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> [!TIP]
+> The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 
 **The team releasing 3UTRBERT did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -122,28 +121,28 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
 >>> unmasker = pipeline('fill-mask', model='multimolecule/utrbert-3mer')
->>> unmasker("uagc<mask><mask><mask>ucagacugauguuga")[1]
+>>> unmasker("uag<mask><mask><mask>cagacugauguuga")[1]
 
-[{'score': 0.510771632194519,
-  'token': 49,
-  'token_str': 'CUU',
-  'sequence': '<cls> UAG AGC <mask> CUU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.3299057185649872,
-  'token': 39,
-  'token_str': 'CCU',
-  'sequence': '<cls> UAG AGC <mask> CCU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.09743840992450714,
-  'token': 34,
-  'token_str': 'CAU',
-  'sequence': '<cls> UAG AGC <mask> CAU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.010745460167527199,
-  'token': 64,
-  'token_str': 'GCU',
-  'sequence': '<cls> UAG AGC <mask> GCU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.010299043729901314,
-  'token': 24,
-  'token_str': 'AUU',
-  'sequence': '<cls> UAG AGC <mask> AUU <mask> UCA CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'}]
+[{'score': 0.6499986052513123,
+  'token': 57,
+  'token_str': 'GAC',
+  'sequence': '<cls> UAG <mask> GAC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
+ {'score': 0.07012350112199783,
+  'token': 72,
+  'token_str': 'GUC',
+  'sequence': '<cls> UAG <mask> GUC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
+ {'score': 0.06567499041557312,
+  'token': 32,
+  'token_str': 'CAC',
+  'sequence': '<cls> UAG <mask> CAC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
+ {'score': 0.06494498997926712,
+  'token': 62,
+  'token_str': 'GCC',
+  'sequence': '<cls> UAG <mask> GCC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
+ {'score': 0.06052926927804947,
+  'token': 67,
+  'token_str': 'GGC',
+  'sequence': '<cls> UAG <mask> GGC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'}]
 ```
 
 ### Downstream Use

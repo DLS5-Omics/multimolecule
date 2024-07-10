@@ -49,6 +49,7 @@ class Criterion(nn.Module):
                 self.problem_type = "multi_label_classification"
             self.config.problem_type = self.problem_type
         if self.problem_type == "regression":
+            labels = labels.to(logits.dtype)
             if self.num_labels == 1:
                 return F.mse_loss(logits.squeeze(), labels.squeeze())
             logits, labels = logits.view(-1, self.num_labels), labels.view(-1, self.num_labels)

@@ -14,15 +14,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "I"
-        score: 0.07525687664747238
+        score: 0.09042543172836304
+      - label: "."
+        score: 0.07878069579601288
+      - label: "<null>"
+        score: 0.07764176279306412
       - label: "A"
-        score: 0.07319962233304977
-      - label: "*"
-        score: 0.07106836140155792
+        score: 0.07515929639339447
       - label: "N"
-        score: 0.06967106461524963
-      - label: "W"
-        score: 0.06574146449565887
+        score: 0.06679271906614304
 ---
 
 # UTR-LM
@@ -39,7 +39,7 @@ _A 5’ UTR Language Model for Decoding Untranslated Regions of mRNA and Functio
 
 The MultiMolecule team is committed to the principles of open access and open science.
 
-We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals.
+We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals and conferences.
 
 Please consider signing the [Statement on Nature Machine Intelligence](https://openaccess.engineering.oregonstate.edu).
 
@@ -49,12 +49,11 @@ This is an UNOFFICIAL implementation of the [A 5’ UTR Language Model for Decod
 
 The OFFICIAL repository of UTR-LM is at [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM).
 
-!!! Danger "Reproducibility"
-
-    The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
-    This is because
-
-    The proposed method is published in a Closed Access / Author-Fee journal.
+> [!WARNING]
+> The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> This is because
+>
+> The proposed method is published in a Closed Access / Author-Fee journal.
 
 **The team releasing UTR-LM did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -131,26 +130,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/utrlm.te_el')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.07525687664747238,
+[{'score': 0.09042543172836304,
   'token': 11,
   'token_str': 'I',
   'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
- {'score': 0.07319962233304977,
+ {'score': 0.07878069579601288,
+  'token': 23,
+  'token_str': '.',
+  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
+ {'score': 0.07764176279306412,
+  'token': 5,
+  'token_str': '<null>',
+  'sequence': 'U A G C <null> U A U C A G A C U G A U G U U G A'},
+ {'score': 0.07515929639339447,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.07106836140155792,
-  'token': 24,
-  'token_str': '*',
-  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
- {'score': 0.06967106461524963,
+ {'score': 0.06679271906614304,
   'token': 10,
   'token_str': 'N',
-  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'},
- {'score': 0.06574146449565887,
-  'token': 19,
-  'token_str': 'W',
-  'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

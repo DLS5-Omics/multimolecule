@@ -34,7 +34,7 @@ from multimolecule.tokenisers.rna.utils import (
     get_tokenizer_config,
 )
 
-torch.manual_seed(1013)
+torch.manual_seed(1016)
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):

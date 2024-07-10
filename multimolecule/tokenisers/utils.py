@@ -30,7 +30,7 @@ def convert_word_embeddings(
     mean: float = 0.0,
     std: float = 0.02,
     vocab_mapping: dict[str, str] | None = None,
-    seed: int | None = 1013,
+    seed: int | None = 1016,
 ) -> Sequence[Tensor]:
     if old_vocab == new_vocab:
         return old_embeddings

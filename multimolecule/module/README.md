@@ -9,7 +9,7 @@ date: 2024-05-04
 `module` provides a collection of pre-defined modules for users to implement their own architectures.
 
 MultiMolecule is built upon the :hugs: ecosystem, embracing a similar design philosophy: [**~~Don't~~ Repeat Yourself**](https://huggingface.co/blog/transformers-design-philosophy).
-We follow the `single model file policy` where each model under the [`models`](models.md) package contains one and only one `modeling.py` file that describes the network design.
+We follow the `single model file policy` where each model under the [`models`](../models) package contains one and only one `modeling.py` file that describes the network design.
 
 The `module` package is intended for simple, reusable modules that are consistent across multiple models. This approach minimizes code duplication and promotes clean, maintainable code.
 

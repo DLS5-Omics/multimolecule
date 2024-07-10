@@ -25,14 +25,14 @@ logger = logging.get_logger(__name__)
 
 class RnaMsmConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`RnaMsmModel`]. It is used to instantiate a
-    RnaMsm model according to the specified arguments, defining the model architecture. Instantiating a configuration
-    with the defaults will yield a similar configuration to that of the RnaMsm
+    This is the configuration class to store the configuration of a [`RnaMsmModel`][multimolecule.models.RnaMsmModel].
+    It is used to instantiate a RnaMsm model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaMsm
     [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

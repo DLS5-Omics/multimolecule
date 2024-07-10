@@ -13,16 +13,16 @@ widget:
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
+      - label: "N"
+        score: 0.03853221237659454
+      - label: "-"
+        score: 0.03851545602083206
+      - label: "<unk>"
+        score: 0.03850385919213295
       - label: "<null>"
-        score: 0.038491372019052505
-      - label: "."
-        score: 0.03848646208643913
-      - label: "<pad>"
-        score: 0.03846566751599312
-      - label: "U"
-        score: 0.03846472129225731
-      - label: "W"
-        score: 0.03846454620361328
+        score: 0.038502465933561325
+      - label: "I"
+        score: 0.03848615288734436
 ---
 
 # RNABERT
@@ -35,16 +35,16 @@ This is an UNOFFICIAL implementation of the [Informative RNA-base embedding for 
 
 The OFFICIAL repository of RNABERT is at [mana438/RNABERT](https://github.com/mana438/RNABERT).
 
-!!! Bug "Reproducibility"
+> [!CAUTION]
+> The MultiMolecule team is aware of a potential risk in reproducing the results of RNABERT.
+>
+> The original implementation of RNABERT does not prepend `<cls>` and append `<eos>` tokens to the input sequence.
+> This should not affect the performance of the model in most cases, but it can lead to unexpected behavior in some cases.
+>
+> Please set `cls_token=None` and `eos_token=None` explicitly in the tokenizer if you want the exact behavior of the original implementation.
 
-    The MultiMolecule team is aware of a potential risk in reproducing the results of RNABERT.
-
-    The original implementation of RNABERT does not prepend `<cls>` and append `<eos>` tokens to the input sequence.
-    This may lead to unexpected results when using the model.
-
-!!! Success "Reproducibility"
-
-    The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> [!TIP]
+> The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 
 **The team releasing RNABERT did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -86,26 +86,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnabert')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.038491372019052505,
+[{'score': 0.03853221237659454,
+  'token': 10,
+  'token_str': 'N',
+  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03851545602083206,
+  'token': 25,
+  'token_str': '-',
+  'sequence': 'U A G C - U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03850385919213295,
+  'token': 3,
+  'token_str': '<unk>',
+  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
+ {'score': 0.038502465933561325,
   'token': 5,
   'token_str': '<null>',
-  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.03848646208643913,
-  'token': 23,
-  'token_str': '.',
-  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.03846566751599312,
-  'token': 0,
-  'token_str': '<pad>',
-  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.03846472129225731,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.03846454620361328,
-  'token': 19,
-  'token_str': 'W',
-  'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C <null> U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03848615288734436,
+  'token': 11,
+  'token_str': 'I',
+  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

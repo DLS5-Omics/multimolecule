@@ -25,14 +25,14 @@ logger = logging.get_logger(__name__)
 
 class RiNALMoConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`RiNALMoModel`]. It is used to instantiate a
-    RiNALMo model according to the specified arguments, defining the model architecture. Instantiating a configuration
-    with the defaults will yield a similar configuration to that of the RiNALMo
+    This is the configuration class to store the configuration of a [`RiNALMoModel`][multimolecule.models.RiNALMoModel].
+    It is used to instantiate a RiNALMo model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the RiNALMo
     [lbcb-sci/RiNALMo](https://github.com/lbcb-sci/RiNALMo) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

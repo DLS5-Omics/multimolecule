@@ -30,7 +30,7 @@ from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig
 from multimolecule.models.conversion_utils import save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
-torch.manual_seed(1013)
+torch.manual_seed(1016)
 
 # evil hack
 __main__.OptimizerConfig = chanfig.FlatDict()

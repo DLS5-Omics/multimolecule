@@ -14,15 +14,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "G"
-        score: 0.10253211855888367
+        score: 0.09175308048725128
       - label: "R"
-        score: 0.09673436731100082
+        score: 0.0863049179315567
       - label: "A"
-        score: 0.09126435220241547
+        score: 0.08118009567260742
+      - label: "<eos>"
+        score: 0.0767645537853241
       - label: "V"
-        score: 0.08036787807941437
-      - label: "S"
-        score: 0.07541776448488235
+        score: 0.07190170139074326
 ---
 
 # RNAErnie
@@ -39,7 +39,7 @@ _Multi-purpose RNA language modelling with motif-aware pretraining and type-guid
 
 The MultiMolecule team is committed to the principles of open access and open science.
 
-We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals.
+We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals and conferences.
 
 Please consider signing the [Statement on Nature Machine Intelligence](https://openaccess.engineering.oregonstate.edu).
 
@@ -50,12 +50,11 @@ Haoyi Xiong, et al.
 
 The OFFICIAL repository of RNAErnie is at [CatIIIIIIII/RNAErnie](https://github.com/CatIIIIIIII/RNAErnie).
 
-!!! Danger "Reproducibility"
-
-    The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
-    This is because
-
-    The proposed method is published in a Closed Access / Author-Fee journal.
+> [!WARNING]
+> The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
+> This is because
+>
+> The proposed method is published in a Closed Access / Author-Fee journal.
 
 **The team releasing RNAErnie did not write this model card for this model so this model card has been written by the MultiMolecule team.**
 
@@ -99,26 +98,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnaernie')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.10253211855888367,
+[{'score': 0.09175308048725128,
   'token': 8,
   'token_str': 'G',
   'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.09673436731100082,
+ {'score': 0.0863049179315567,
   'token': 18,
   'token_str': 'R',
   'sequence': 'U A G C R U A U C A G A C U G A U G U U G A'},
- {'score': 0.09126435220241547,
+ {'score': 0.08118009567260742,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.08036787807941437,
+ {'score': 0.0767645537853241,
+  'token': 2,
+  'token_str': '<eos>',
+  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
+ {'score': 0.07190170139074326,
   'token': 13,
   'token_str': 'V',
-  'sequence': 'U A G C V U A U C A G A C U G A U G U U G A'},
- {'score': 0.07541776448488235,
-  'token': 20,
-  'token_str': 'S',
-  'sequence': 'U A G C S U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C V U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

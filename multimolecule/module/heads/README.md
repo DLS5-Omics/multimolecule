@@ -14,7 +14,7 @@ It automatically looks for the model output required for prediction and processe
 Some prediction heads may require additional information, such as the `attention_mask` or the `input_ids`, like [`ContactPredictionHead`][multimolecule.ContactPredictionHead].
 These additional arguments can be passed in as arguments/keyword arguments.
 
-Note that `heads` use the same [`ModelOutupt`](https://huggingface.co/docs/transformers/en/main_classes/output) conventions as the 🤗 Transformers.
+Note that `heads` use the same [`ModelOutupt`](https://huggingface.co/docs/transformers/en/main_classes/output) conventions as the :hugs: Transformers.
 If the model output is a [`tuple`][], we consider the first element as the `pooler_output`, the second element as the `last_hidden_state`, and the last element as the `attention_map`.
 It is the user's responsibility to ensure that the model output is correctly formatted.
 

@@ -25,14 +25,14 @@ logger = logging.get_logger(__name__)
 
 class RnaBertConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`RnaBertModel`]. It is used to instantiate a
-    RnaBert model according to the specified arguments, defining the model architecture. Instantiating a configuration
-    with the defaults will yield a similar configuration to that of the RnaBert
+    This is the configuration class to store the configuration of a [`RnaBertModel`][multimolecule.models.RnaBertModel].
+    It is used to instantiate a RnaBert model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaBert
     [mana438/RNABERT](https://github.com/mana438/RNABERT) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

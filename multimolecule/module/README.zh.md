@@ -8,8 +8,8 @@ date: 2024-05-04
 
 `module` 提供了一系列预定义模块，供用户实现自己的架构。
 
-MultiMolecule 建立在 🤗 生态系统之上，拥抱类似的设计理念：[**~~不要~~ 重复自己**](https://huggingface.co/blog/transformers-design-philosophy)。
-我们遵循 `单一模型文件策略`，其中 [`models`](models.md) 包中的每个模型都包含一个且仅有一个描述网络设计的 `modeling.py` 文件。
+MultiMolecule 建立在 :hugs: 生态系统之上，拥抱类似的设计理念：[**~~不要~~ 重复自己**](https://huggingface.co/blog/transformers-design-philosophy)。
+我们遵循 `单一模型文件策略`，其中 [`models`](../models) 包中的每个模型都包含一个且仅有一个描述网络设计的 `modeling.py` 文件。
 
 `module` 包旨在提供简单、可重用的模块，这些模块在多个模型中保持一致。这种方法最大程度地减少了代码重复，并促进了干净、易于维护的代码。
 

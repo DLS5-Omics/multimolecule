@@ -25,18 +25,18 @@ logger = logging.get_logger(__name__)
 
 class UtrLmConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`UtrLmModel`]. It is used to instantiate a RNA-FM
-    model according to the specified arguments, defining the model architecture. Instantiating a configuration with the
-    defaults will yield a similar configuration to that of the RNA-FM
+    This is the configuration class to store the configuration of a [`UtrLmModel`][multimolecule.models.UtrLmModel].
+    It is used to instantiate a UTR-LM model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the UTR-LM
     [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:
-            Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
+            Vocabulary size of the UTR-LM model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`UtrLmModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.

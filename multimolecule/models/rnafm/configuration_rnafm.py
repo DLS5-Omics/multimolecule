@@ -25,14 +25,14 @@ logger = logging.get_logger(__name__)
 
 class RnaFmConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`RnaFmModel`]. It is used to instantiate a RNA-FM
-    model according to the specified arguments, defining the model architecture. Instantiating a configuration with the
-    defaults will yield a similar configuration to that of the RNA-FM
+    This is the configuration class to store the configuration of a [`RnaFmModel`][multimolecule.models.RnaFmModel].
+    It is used to instantiate a RNA-FM model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the RNA-FM
     [ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM) architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:

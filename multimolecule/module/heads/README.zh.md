@@ -14,7 +14,7 @@ date: 2024-05-04
 一些预测头可能需要额外的信息，例如 `attention_mask` 或 `input_ids`，例如 [`ContactPredictionHead`][multimolecule.ContactPredictionHead]。
 这些额外的参数可以作为参数/关键字参数传入。
 
-请注意，`heads` 使用与 🤗 Transformers 相同的 [`ModelOutupt`](https://huggingface.co/docs/transformers/en/main_classes/output) 约定。
+请注意，`heads` 使用与 :hugs: Transformers 相同的 [`ModelOutupt`](https://huggingface.co/docs/transformers/en/main_classes/output) 约定。
 如果模型输出是一个 [`tuple`][]，我们将第一个元素视为 `pooler_output`，第二个元素视为 `last_hidden_state`，最后一个元素视为 `attention_map`。
 用户有责任确保模型输出格式正确。
 

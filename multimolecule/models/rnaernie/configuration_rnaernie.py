@@ -25,14 +25,15 @@ logger = logging.get_logger(__name__)
 
 class RnaErnieConfig(PreTrainedConfig):
     r"""
-    This is the configuration class to store the configuration of a [`RnaErnieModel`]. It is used to instantiate a
-    RnaErnie model according to the specified arguments, defining the model architecture. Instantiating a
-    configuration with the defaults will yield a similar configuration to that of the RnaErnie
-    [Bruce-ywj/rnaernie](https://github.com/Bruce-ywj/rnaernie) architecture.
+    This is the configuration class to store the configuration of a
+    [`RnaErnieModel`][multimolecule.models.RnaErnieModel]. It is used to instantiate a RnaErnie model according to the
+    specified arguments, defining the model architecture. Instantiating a configuration with the defaults will yield a
+    similar configuration to that of the RnaErnie [Bruce-ywj/rnaernie](https://github.com/Bruce-ywj/rnaernie)
+    architecture.
 
-    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the
-    documentation from [`PreTrainedConfig`] for more information.
-
+    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
+    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]
+    for more information.
 
     Args:
         vocab_size:
