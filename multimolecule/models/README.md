@@ -10,7 +10,7 @@ date: 2024-05-04
 
 ## Model Class
 
-In the [`transformers`](https://huggingface.co/docs/transformers/en/tasks/sequence_classification) library, the names of model classes can sometimes be misleading.
+In the :hugs: [`transformers`](https://huggingface.co/docs/transformers/en/tasks/sequence_classification) library, the names of model classes can sometimes be misleading.
 While these classes support both regression and classification tasks, their names often include `xxxForSequenceClassification`, which may imply they are only for classification.
 
 To avoid this ambiguity, MultiMolecule provides a set of model classes with clear, intuitive names that reflect their intended use:

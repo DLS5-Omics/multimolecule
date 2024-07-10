@@ -10,7 +10,7 @@ date: 2024-05-04
 
 ## 模型类
 
-在 [`transformers`](https://huggingface.co/docs/transformers/en/tasks/sequence_classification) 库当中，模型类的名字有时可以引起误解。
+在 :hugs: [`transformers`](https://huggingface.co/docs/transformers/en/tasks/sequence_classification) 库当中，模型类的名字有时可以引起误解。
 尽管这些类支持回归和分类任务，但它们的名字通常包含 `xxxForSequenceClassification`，这可能暗示它们只能用于分类。
 
 为了避免这种歧义，MultiMolecule 提供了一系列模型类，这些类的名称清晰、直观，反映了它们的预期用途：
