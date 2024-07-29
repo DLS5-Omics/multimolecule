@@ -295,19 +295,16 @@
     
   
   
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
-          
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
   
     
   
   module
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -315,19 +312,16 @@
   
   
   
-    
-    
-      <li class="md-tabs__item">
-        <a href="../models/" class="md-tabs__link">
-          
+    <li class="md-tabs__item">
+      <a href="../models/" class="md-tabs__link">
+        
   
     
   
   models
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -335,19 +329,16 @@
   
   
   
-    
-    
-      <li class="md-tabs__item">
-        <a href="../tokenisers/" class="md-tabs__link">
-          
+    <li class="md-tabs__item">
+      <a href="../tokenisers/" class="md-tabs__link">
+        
   
     
   
   tokenisers
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -355,19 +346,16 @@
   
   
   
-    
-    
-      <li class="md-tabs__item">
-        <a href="../about/license/" class="md-tabs__link">
-          
+    <li class="md-tabs__item">
+      <a href="../about/" class="md-tabs__link">
+        
   
     
   
   About
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -456,8 +444,6 @@
       
         
       
-        
-      
     
     
       
@@ -478,16 +464,24 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
   
   <span class="md-ellipsis">
     module
   </span>
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
@@ -495,85 +489,6 @@
             module
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    module
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    module
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      核心特性
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modules
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
             
               
                 
@@ -639,8 +554,6 @@
       
         
       
-        
-      
     
     
       
@@ -659,7 +572,10 @@
         
   
   
-    <a href="../models/" class="md-nav__link">
+    
+  
+  
+    <a href="../models/calm/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -671,6 +587,8 @@
         <span class="md-nav__icon md-icon"></span>
       
     </a>
+  
+
   
 
       
@@ -693,8 +611,6 @@
       
         
       
-        
-      
     
     
       
@@ -713,7 +629,10 @@
         
   
   
-    <a href="../tokenisers/" class="md-nav__link">
+    
+  
+  
+    <a href="../tokenisers/dna/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -725,6 +644,8 @@
         <span class="md-nav__icon md-icon"></span>
       
     </a>
+  
+
   
 
       
@@ -847,7 +768,7 @@
 <h1 id="module">module<a class="headerlink" href="#module" title="Permanent link">&para;</a></h1>
 <p><code>module</code> 提供了一系列预定义模块，供用户实现自己的架构。</p>
 <p>MultiMolecule 建立在 <img alt="🤗" class="gemoji" src="https://github.githubassets.com/images/icons/emoji/unicode/1f917.png" title=":hugs:" /> 生态系统之上，拥抱类似的设计理念：<a href="https://huggingface.co/blog/transformers-design-philosophy"><strong><del>不要</del> 重复自己</strong></a>。
-我们遵循 <code>单一模型文件策略</code>，其中 <a href="../models/"><code>models</code></a> 包中的每个模型都包含一个且仅有一个描述网络设计的 <code>modeling.py</code> 文件。</p>
+我们遵循 <code>单一模型文件策略</code>，其中 <a href="models.md"><code>models</code></a> 包中的每个模型都包含一个且仅有一个描述网络设计的 <code>modeling.py</code> 文件。</p>
 <p><code>module</code> 包旨在提供简单、可重用的模块，这些模块在多个模型中保持一致。这种方法最大程度地减少了代码重复，并促进了干净、易于维护的代码。</p>
 <h2 id="_1">核心特性<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <ul>
@@ -880,7 +801,7 @@
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2024-06-05 18:22:47</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2024-07-29 20:31:52</span>
   </span>
 
     
