@@ -8,13 +8,13 @@ repo_name: MultiMolecule
 repo_url: https://github.com/DLS5-Omics/multimolecule
 
 nav:
-  - MultiMolecule: index.md
+  - index.md
   - module:
-      - module: module.md
+      - module/index.md
       - heads: module/heads.md
       - embeddings: module/embeddings.md
   - models:
-      - models: models.md
+      - models/index.md
       - DNA:
           - CaLM: models/calm.md
       - RNA:
@@ -31,7 +31,7 @@ nav:
           - configuration_utils: models/configuration_utils.md
           - modeling_outputs: models/modeling_outputs.md
   - tokenisers:
-      - tokenisers: tokenisers.md
+      - tokenisers/index.md
       - DNA:
           - DnaTokenizer: tokenisers/dna.md
           - DNA Alphabet: tokenisers/dna/alphabet.md
@@ -42,6 +42,7 @@ nav:
           - ProteinTokenizer: tokenisers/protein.md
           - Protein Alphabet: tokenisers/protein/alphabet.md
   - About:
+      - about/index.md
       - License: about/license.md
       - Privacy Notice: about/privacy.md
 
@@ -186,6 +187,7 @@ plugins:
             - https://huggingface.co/docs/transformers/master/en/objects.inv
             - https://danling.org/objects.inv
             - https://chanfig.danling.org/objects.inv
+  - section-index
   - i18n:
       docs_structure: suffix
       fallback_to_default: true

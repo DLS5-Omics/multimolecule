@@ -6,7 +6,7 @@
 
 This privacy notice for DanLing Team (also known as DanLing) ('we', 'us', or 'our'), describes how and why we might collect, store, use, and/or share ('process') your information when you use our services ('Services'), such as when you:
 
-- Visit our website at [danling.org](https://multimolecule.danling.org), or any website of ours that links to this privacy notice
+- Visit our website at [multimolecule.danling.org](https://multimolecule.danling.org), or any website of ours that links to this privacy notice
 
 You can change your privacy settings at any time by clicking the button below:
 
@@ -255,8 +255,6 @@ We also may need to share your personal information in the following situations:
 
 !!! info "The categories of third parties to whom we shared personal information with in the past twelve (12) months:"
 
-    - **Advertising, Direct Marketing, and Lead Generation**
-        - Google AdSense
     - **Web and Mobile Analytics**
         - Google Analytics
 
@@ -279,10 +277,16 @@ To the extent these online tracking technologies are deemed to be a 'sale'/'shar
 
 We may share your information with Google Analytics to track and analyse the use of the Services.
 The Google Analytics Advertising Features that we may use include:
-Remarketing with Google Analytics, Google Display Network Impressions Reporting and Google Analytics Demographics and Interests Reporting.
-To opt out of being tracked by Google Analytics across the Services, visit https://tools.google.com/dlpage/gaoptout.
+
+- Remarketing with Google Analytics
+- Google Display Network Impressions Reporting
+- Google Analytics Demographics and Interests Reporting
+
+To opt out of being tracked by Google Analytics across the Services, visit [https://tools.google.com/dlpage/gaoptout](https://tools.google.com/dlpage/gaoptout).
 You can opt out of Google Analytics Advertising Features through [Ads Settings](https://adssettings.google.com) and Ad Settings for mobile apps.
+
 Other opt out means include [http://optout.networkadvertising.org/](http://optout.networkadvertising.org/) and [http://www.networkadvertising.org/mobile-choice](http://www.networkadvertising.org/mobile-choice).
+
 For more information on the privacy practices of Google, please visit the [Google Privacy & Terms](https://policies.google.com/privacy).
 
 ## 6. How long do we keep your information?
