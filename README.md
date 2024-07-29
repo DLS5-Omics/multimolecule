@@ -37,15 +37,15 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 If you use MultiMolecule in your research, please cite us as follows:
 
 ```bibtex
-@software{chen_2024_12625318,
+@software{chen_2024_12638419,
   author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
-  doi       = {10.5281/zenodo.12625318},
-  month     = jul,
-  publisher = {Zenodo},
   title     = {MultiMolecule},
-  url       = {https://doi.org/10.5281/zenodo.12625318},
-  version   = {0.0.4},
-  year      = 2024
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
 }
 ```
 
