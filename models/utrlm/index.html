@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -1872,7 +1872,7 @@
 <p>We see no role for closed access or author-fee publication in the future of machine learning research and believe the adoption of these journals as an outlet of record for the machine learning community would be a retrograde step.</p>
 </blockquote>
 <p>The MultiMolecule team is committed to the principles of open access and open science.</p>
-<p>We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals.</p>
+<p>We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals and conferences.</p>
 <p>Please consider signing the <a href="https://openaccess.engineering.oregonstate.edu">Statement on Nature Machine Intelligence</a>.</p>
 <h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
 <p>This is an UNOFFICIAL implementation of the <a href="https://doi.org/10.1101/2023.10.11.561938">A 5’ UTR Language Model for Decoding Untranslated Regions of mRNA and Function Predictions</a> by Yanyi Chu, Dan Yu, et al.</p>
@@ -2537,12 +2537,13 @@ This is because</p>
               Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.configuration_utils.PreTrainedConfig" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
 
 
-      <p>This is the configuration class to store the configuration of a [<code>UtrLmModel</code>]. It is used to instantiate a RNA-FM
-model according to the specified arguments, defining the model architecture. Instantiating a configuration with the
-defaults will yield a similar configuration to that of the RNA-FM
+      <p>This is the configuration class to store the configuration of a <a class="autorefs autorefs-internal" href="#multimolecule.models.utrlm.UtrLmModel"><code>UtrLmModel</code></a>.
+It is used to instantiate a UTR-LM model according to the specified arguments, defining the model architecture.
+Instantiating a configuration with the defaults will yield a similar configuration to that of the UTR-LM
 <a href="https://github.com/a96123155/UTR-LM">a96123155/UTR-LM</a> architecture.</p>
-<p>Configuration objects inherit from [<code>PreTrainedConfig</code>] and can be used to control the model outputs. Read the
-documentation from [<code>PreTrainedConfig</code>] for more information.</p>
+<p>Configuration objects inherit from <a class="autorefs autorefs-internal" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a> and can be used to
+control the model outputs. Read the documentation from <a class="autorefs autorefs-internal" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a>
+for more information.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2563,7 +2564,7 @@ documentation from [<code>PreTrainedConfig</code>] for more information.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
+                <p>Vocabulary size of the UTR-LM model. Defines the number of different tokens that can be represented by the
 <code>inputs_ids</code> passed when calling [<code>UtrLmModel</code>].</p>
               </div>
             </td>
@@ -2904,18 +2905,18 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <span class="normal"><a href="#__codelineno-0-135">135</a></span>
 <span class="normal"><a href="#__codelineno-0-136">136</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="k">class</span> <span class="nc">UtrLmConfig</span><span class="p">(</span><span class="n">PreTrainedConfig</span><span class="p">):</span>
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    This is the configuration class to store the configuration of a [`UtrLmModel`]. It is used to instantiate a RNA-FM</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    model according to the specified arguments, defining the model architecture. Instantiating a configuration with the</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    defaults will yield a similar configuration to that of the RNA-FM</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    This is the configuration class to store the configuration of a [`UtrLmModel`][multimolecule.models.UtrLmModel].</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    It is used to instantiate a UTR-LM model according to the specified arguments, defining the model architecture.</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    Instantiating a configuration with the defaults will yield a similar configuration to that of the UTR-LM</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM) architecture.</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    Configuration objects inherit from [`PreTrainedConfig`] and can be used to control the model outputs. Read the</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    documentation from [`PreTrainedConfig`] for more information.</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    control the model outputs. Read the documentation from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig]</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    for more information.</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        vocab_size:</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">            Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">            Vocabulary size of the UTR-LM model. Defines the number of different tokens that can be represented by the</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">            `inputs_ids` passed when calling [`UtrLmModel`].</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        hidden_size:</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">            Dimensionality of the encoder layers and the pooler layer.</span>
