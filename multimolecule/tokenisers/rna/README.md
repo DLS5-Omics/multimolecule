@@ -10,4 +10,4 @@ RnaTokenizer is smart, it tokenizes raw RNA nucleotides into tokens, no matter i
 It also supports tokenization into nmers and codons, so you don't have to write complex code to preprocess your data.
 
 By default, `RnaTokenizer` uses the [standard alphabet](alphabet#standard-alphabet).
-If `kmers` is greater than `1`, or `codon` is set to `True`, it will instead use the [streamline alphabet](alphabet#streamline-alphabet).
+If `nmers` is greater than `1`, or `codon` is set to `True`, it will instead use the [streamline alphabet](alphabet#streamline-alphabet).

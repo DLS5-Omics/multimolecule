@@ -41,7 +41,7 @@ class DnaTokenizer(Tokenizer):
                 + `streamline`
                 + `nucleobase`
             - If is an alphabet or a list of characters, that specific alphabet will be used.
-        nmers: Size of nmers to tokenize.
+        nmers: Size of kmer to tokenize.
         codon: Whether to tokenize into codons.
         replace_U_with_T: Whether to replace U with T.
         do_upper_case: Whether to convert input to uppercase.

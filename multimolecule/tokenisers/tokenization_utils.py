@@ -85,14 +85,14 @@ class Tokenizer(PreTrainedTokenizer):
     def __init__(
         self,
         alphabet: Alphabet | List[str] | None = None,
-        bos_token: str | None = None,
-        cls_token: str | None = None,
-        pad_token: str | None = None,
-        eos_token: str | None = None,
-        sep_token: str | None = None,
-        unk_token: str | None = None,
-        mask_token: str | None = None,
-        null_token: str | None = None,
+        bos_token: str | None = ...,  # type: ignore[assignment]
+        cls_token: str | None = ...,  # type: ignore[assignment]
+        pad_token: str | None = ...,  # type: ignore[assignment]
+        eos_token: str | None = ...,  # type: ignore[assignment]
+        sep_token: str | None = ...,  # type: ignore[assignment]
+        unk_token: str | None = ...,  # type: ignore[assignment]
+        mask_token: str | None = ...,  # type: ignore[assignment]
+        null_token: str | None = ...,  # type: ignore[assignment]
         additional_special_tokens: List | Tuple | None = None,
         do_upper_case: bool = True,
         vocab_file: str | None = None,
@@ -107,21 +107,21 @@ class Tokenizer(PreTrainedTokenizer):
         self._id_to_token = OrderedDict(enumerate(alphabet))
         self._token_to_id = OrderedDict({tok: ind for ind, tok in enumerate(alphabet)})
 
-        if bos_token is None:
-            bos_token = self.identify_special_token(alphabet, "cls")
-        if cls_token is None:
+        if cls_token is ...:
             cls_token = self.identify_special_token(alphabet, "cls")
-        if pad_token is None:
+        if bos_token is ...:
+            bos_token = cls_token
+        if pad_token is ...:
             pad_token = self.identify_special_token(alphabet, "pad")
-        if eos_token is None:
+        if eos_token is ...:
             eos_token = self.identify_special_token(alphabet, "eos")
-        if sep_token is None:
+        if sep_token is ...:
             sep_token = self.identify_special_token(alphabet, "sep") or self.identify_special_token(alphabet, "eos")
-        if unk_token is None:
+        if unk_token is ...:
             unk_token = self.identify_special_token(alphabet, "unk")
-        if mask_token is None:
+        if mask_token is ...:
             mask_token = self.identify_special_token(alphabet, "mask")
-        if null_token is None:
+        if null_token is ...:
             null_token = self.identify_special_token(alphabet, "null")
         if additional_special_tokens is None:
             additional_special_tokens = []

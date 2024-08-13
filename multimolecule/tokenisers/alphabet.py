@@ -74,11 +74,11 @@ class Alphabet:
 
 def generate_kmer_vocabulary(vocabulary: Tuple[str, ...], nmers: int = 1) -> Tuple[str, ...]:
     """
-    Generates a kmer vocabulary given an original vocabulary and the size of kmers.
+    Generates a kmer vocabulary given an original vocabulary and the size of kmer.
 
     Args:
         vocabulary (List[str]): The original vocabulary.
-        nmers (int, defaults to 1): The size of the kmers to generate.
+        nmers (int, defaults to 1): The size of kmer to generate.
 
     Returns:
         vocabulary (List[str]): The kmer vocabulary.
