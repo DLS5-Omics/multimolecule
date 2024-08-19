@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../feed_rss_updated.xml">
       
       <link rel="icon" href="../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.32">
     
     
       
@@ -293,19 +293,16 @@
     
   
   
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
-          
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
   
     
   
   data
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -462,8 +459,6 @@
       
         
       
-        
-      
     
     
       
@@ -484,16 +479,24 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
   
   <span class="md-ellipsis">
     data
   </span>
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
@@ -501,37 +504,6 @@
             data
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    data
-  </span>
-  
-
-      </a>
-      
-    </li>
-  
-
-              
             
               
                 
@@ -816,6 +788,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -834,6 +823,13 @@
 
 <h1 id="data">data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h1>
 <p><code>data</code> provides a collection of data processing utilities for handling data.</p>
+<p>While <img alt="🤗" class="gemoji" src="https://github.githubassets.com/images/icons/emoji/unicode/1f917.png" title=":hugs:" /> <a href="https://huggingface.co/docs/datasets"><code>datasets</code></a> is a powerful library for managing datasets, it is a general-purpose tool that may not cover all the specific functionalities of scientific applications.</p>
+<p>The <code>data</code> package is designed to complement <a href="https://huggingface.co/docs/datasets"><code>datasets</code></a> by offering additional data processing utilities that are commonly used in scientific tasks.</p>
+<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Data Pre-Processing: <a class="autorefs autorefs-internal" href="dataset/#multimolecule.data.Dataset"><code>Dataset</code></a> is a base class that provides a consistent interface for pre-processing data. It includes methods for identifying the data columns and tasks, tokenizing sequences, and batching.</li>
+<li>Data Loading: <a class="autorefs autorefs-internal" href="pandas/#multimolecule.data.PandasDataset"><code>PandasDataset</code></a> is a subclass of <a class="autorefs autorefs-internal" href="dataset/#multimolecule.data.Dataset"><code>Dataset</code></a> that loads data in a <a class="autorefs autorefs-external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame"><code>DataFrame</code></a> compatible format. This provides a convenient way to work with many common data formats, including CSV, JSON, and Excel files.</li>
+</ul>
 
 
 
@@ -1077,7 +1073,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["announce.dismiss", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      <script src="../assets/javascripts/bundle.471ce7a9.min.js"></script>
       
         <script src="../javascripts/mathjax.js"></script>
       
