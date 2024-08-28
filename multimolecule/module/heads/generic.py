@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from warnings import warn
 
 import torch
 from danling import NestedTensor
@@ -62,7 +63,7 @@ class PredictionHead(nn.Module):
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
         self.criterion = Criterion(self.config)
 
-    def forward(self, embeddings: Tensor, labels: Tensor | None) -> HeadOutput:
+    def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
         r"""
         Forward pass of the PredictionHead.
 
@@ -70,6 +71,11 @@ class PredictionHead(nn.Module):
             embeddings: The embeddings to be passed through the head.
             labels: The labels for the head.
         """
+        if kwargs:
+            warn(
+                f"The following arguments are not applicable to {self.__class__.__name__}"
+                f"and will be ignored: {kwargs.keys()}"
+            )
         output = self.dropout(embeddings)
         output = self.transform(output)
         output = self.decoder(output)

@@ -1247,19 +1247,22 @@ class ErnieRnaContactClassificationHead(nn.Module):
         self,
         attention: Tensor,
         attention_mask: Tensor | None = None,
-        input_ids: Tensor | None = None,
+        input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
         if attention_mask is None:
-            if input_ids is None:
-                raise ValueError(
-                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
-                )
-            if self.pad_token_id is None:
-                raise ValueError(
-                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
-                )
-            attention_mask = input_ids.ne(self.pad_token_id)
+            if isinstance(input_ids, NestedTensor):
+                input_ids, attention_mask = input_ids.tensor, input_ids.mask
+            else:
+                if input_ids is None:
+                    raise ValueError(
+                        f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                    )
+                if self.pad_token_id is None:
+                    raise ValueError(
+                        f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
+                    )
+                attention_mask = input_ids.ne(self.pad_token_id)
         # In the original model, attention for padding tokens are completely zeroed out.
         # This makes no difference most of the time because the other tokens won't attend to them,
         # but it does for the contact prediction task, which takes attention as input,

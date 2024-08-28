@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import Mapping, Tuple
 
 import torch
+from danling import NestedTensor
 from torch import Tensor, nn
 from transformers.modeling_outputs import ModelOutput
 from typing_extensions import TYPE_CHECKING
@@ -64,9 +65,10 @@ class ContactPredictionHead(PredictionHead):
         self,
         outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
-        input_ids: Tensor | None = None,
+        input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
         output_name: str | None = None,
+        **kwargs,
     ) -> HeadOutput:
         r"""
         Forward pass of the ContactPredictionHead.
@@ -80,15 +82,18 @@ class ContactPredictionHead(PredictionHead):
                 Defaults to `self.output_name`.
         """
         if attention_mask is None:
-            if input_ids is None:
-                raise ValueError(
-                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
-                )
-            if self.pad_token_id is None:
-                raise ValueError(
-                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
-                )
-            attention_mask = input_ids.ne(self.pad_token_id)
+            if isinstance(input_ids, NestedTensor):
+                input_ids, attention_mask = input_ids.tensor, input_ids.mask
+            else:
+                if input_ids is None:
+                    raise ValueError(
+                        f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                    )
+                if self.pad_token_id is None:
+                    raise ValueError(
+                        f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
+                    )
+                attention_mask = input_ids.ne(self.pad_token_id)
 
         if isinstance(outputs, (Mapping, ModelOutput)):
             output = outputs[output_name or self.output_name]
@@ -129,4 +134,4 @@ class ContactPredictionHead(PredictionHead):
         attentions = average_product_correct(symmetrize(attentions))
         attentions = attentions.permute(0, 2, 3, 1).squeeze(3)
 
-        return super().forward(attentions, labels)
+        return super().forward(attentions, labels, **kwargs)

@@ -20,6 +20,7 @@ from functools import partial
 from typing import TYPE_CHECKING, Mapping, Tuple
 
 from chanfig import ConfigRegistry
+from danling import NestedTensor
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
 
@@ -62,9 +63,10 @@ class TokenPredictionHead(PredictionHead):
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
-        input_ids: Tensor | None = None,
+        input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
         output_name: str | None = None,
+        **kwargs,
     ) -> HeadOutput:
         r"""
         Forward pass of the TokenPredictionHead.
@@ -78,22 +80,25 @@ class TokenPredictionHead(PredictionHead):
                 Defaults to `self.output_name`.
         """
         if attention_mask is None:
-            if input_ids is None:
-                raise ValueError(
-                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
-                )
-            if self.pad_token_id is None:
-                raise ValueError(
-                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
-                )
-            attention_mask = input_ids.ne(self.pad_token_id)
+            if isinstance(input_ids, NestedTensor):
+                input_ids, attention_mask = input_ids.tensor, input_ids.mask
+            else:
+                if input_ids is None:
+                    raise ValueError(
+                        f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                    )
+                if self.pad_token_id is None:
+                    raise ValueError(
+                        f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
+                    )
+                attention_mask = input_ids.ne(self.pad_token_id)
 
         if isinstance(outputs, (Mapping, ModelOutput)):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[0]
         output = output * attention_mask.unsqueeze(-1)
-        return super().forward(output, labels)
+        return super().forward(output, labels, **kwargs)
 
 
 @HeadRegistry.register("token.kmer")
@@ -127,9 +132,10 @@ class TokenKMerHead(PredictionHead):
         self,
         outputs: ModelOutput | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
-        input_ids: Tensor | None = None,
+        input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
         output_name: str | None = None,
+        **kwargs,
     ) -> HeadOutput:
         r"""
         Forward pass of the TokenKMerHead.
@@ -143,15 +149,18 @@ class TokenKMerHead(PredictionHead):
                 Defaults to `self.output_name`.
         """
         if attention_mask is None:
-            if input_ids is None:
-                raise ValueError(
-                    f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
-                )
-            if self.pad_token_id is None:
-                raise ValueError(
-                    f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
-                )
-            attention_mask = input_ids.ne(self.pad_token_id)
+            if isinstance(input_ids, NestedTensor):
+                input_ids, attention_mask = input_ids.tensor, input_ids.mask
+            else:
+                if input_ids is None:
+                    raise ValueError(
+                        f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                    )
+                if self.pad_token_id is None:
+                    raise ValueError(
+                        f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
+                    )
+                attention_mask = input_ids.ne(self.pad_token_id)
 
         if isinstance(outputs, (Mapping, ModelOutput)):
             output = outputs[output_name or self.output_name]
@@ -159,4 +168,4 @@ class TokenKMerHead(PredictionHead):
             output = outputs[0]
         output *= attention_mask.unsqueeze(-1)
         output = self.unfold_kmer_embeddings(output, attention_mask)
-        return super().forward(output, labels)
+        return super().forward(output, labels, **kwargs)
