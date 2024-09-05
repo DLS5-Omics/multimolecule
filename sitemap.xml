@@ -8,13 +8,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/data/</loc>
-        <lastmod>2024-09-05</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/about/</loc>
         <lastmod>2024-09-05</lastmod>
         <changefreq>daily</changefreq>
@@ -43,11 +36,11 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/privacy/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/data/data/</loc>
+        <loc>https://multimolecule.danling.org/data/</loc>
         <lastmod>2024-09-05</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/data/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/data/dataset/</loc>
@@ -281,13 +274,6 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/data/</loc>
-        <lastmod>2024-09-05</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/zh/about/</loc>
         <lastmod>2024-09-05</lastmod>
         <changefreq>daily</changefreq>
@@ -316,11 +302,11 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/privacy/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/data/data/</loc>
+        <loc>https://multimolecule.danling.org/zh/data/</loc>
         <lastmod>2024-09-05</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/data/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/data/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/data/dataset/</loc>
