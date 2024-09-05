@@ -31,6 +31,41 @@ except ImportError:
     HfApi = None
 
 
+def write_model(
+    output_path: str,
+    model: PreTrainedModel,
+    tokenizer_config: Dict | None = None,
+    special_tokens_map: Dict | None = None,
+):
+    model.save_pretrained(output_path, safe_serialization=True)
+    model.save_pretrained(output_path, safe_serialization=False)
+    if tokenizer_config is None:
+        tokenizer_config = get_tokenizer_config()
+        tokenizer_config["model_max_length"] = getattr(model.config, "max_position_embeddings", None)
+    NestedDict(tokenizer_config).json(os.path.join(output_path, "tokenizer_config.json"))
+    if special_tokens_map is None:
+        special_tokens_map = get_special_tokens_map()
+    NestedDict(special_tokens_map).json(os.path.join(output_path, "special_tokens_map.json"))
+
+
+def copy_readme(root: str, output_path: str):
+    readme = f"README.{output_path}.md" if f"README.{output_path}.md" in os.listdir(root) else "README.md"
+    shutil.copy2(os.path.join(root, readme), os.path.join(output_path, "README.md"))
+
+
+def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "model"):
+    if convert_config.push_to_hub:
+        if HfApi is None:
+            raise ImportError("Please install huggingface_hub to push to the hub.")
+        api = HfApi()
+        if convert_config.delete_existing:
+            api.delete_repo(convert_config.repo_id, token=convert_config.token, missing_ok=True)
+        api.create_repo(convert_config.repo_id, token=convert_config.token, exist_ok=True, repo_type=repo_type)
+        api.upload_folder(
+            repo_id=convert_config.repo_id, folder_path=output_path, token=convert_config.token, repo_type=repo_type
+        )
+
+
 def save_checkpoint(
     convert_config: ConvertConfig,
     model: PreTrainedModel,
@@ -38,32 +73,9 @@ def save_checkpoint(
     special_tokens_map: Dict | None = None,
 ):
     root, output_path = convert_config.root, convert_config.output_path
-
-    model.save_pretrained(output_path, safe_serialization=True)
-    model.save_pretrained(output_path, safe_serialization=False)
-
-    if tokenizer_config is None:
-        tokenizer_config = get_tokenizer_config()
-        tokenizer_config["model_max_length"] = getattr(model.config, "max_position_embeddings", None)
-    NestedDict(tokenizer_config).json(os.path.join(output_path, "tokenizer_config.json"))
-
-    if special_tokens_map is None:
-        special_tokens_map = get_special_tokens_map()
-    NestedDict(special_tokens_map).json(os.path.join(output_path, "special_tokens_map.json"))
-
-    if f"README.{output_path}.md" in os.listdir(root):
-        shutil.copy2(os.path.join(root, f"README.{output_path}.md"), os.path.join(output_path, "README.md"))
-    else:
-        shutil.copy2(os.path.join(root, "README.md"), output_path)
-
-    if convert_config.push_to_hub:
-        if HfApi is None:
-            raise ImportError("Please install huggingface_hub to push to the hub.")
-        api = HfApi()
-        if convert_config.delete_existing:
-            api.delete_repo(convert_config.repo_id, token=convert_config.token, missing_ok=True)
-        api.create_repo(convert_config.repo_id, token=convert_config.token, exist_ok=True)
-        api.upload_folder(repo_id=convert_config.repo_id, folder_path=output_path, token=convert_config.token)
+    write_model(output_path, model, tokenizer_config, special_tokens_map)
+    copy_readme(root, output_path)
+    push_to_hub(convert_config, output_path)
 
 
 class ConvertConfig(Config):
