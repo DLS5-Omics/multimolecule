@@ -43,6 +43,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/privacy/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/data/data/</loc>
+        <lastmod>2024-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/data/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/data/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/data/dataset/</loc>
         <lastmod>2024-09-05</lastmod>
         <changefreq>daily</changefreq>
@@ -62,6 +69,20 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/datasets/bprna-new/</loc>
+        <lastmod>2024-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna-new/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna-new/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/datasets/bprna-spot/</loc>
+        <lastmod>2024-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna-spot/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna-spot/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/datasets/bprna/</loc>
@@ -295,6 +316,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/privacy/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/zh/data/data/</loc>
+        <lastmod>2024-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/data/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/zh/data/dataset/</loc>
         <lastmod>2024-09-05</lastmod>
         <changefreq>daily</changefreq>
@@ -314,6 +342,20 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/bprna-new/</loc>
+        <lastmod>2024-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna-new/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna-new/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/bprna-spot/</loc>
+        <lastmod>2024-09-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna-spot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna-spot/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/datasets/bprna/</loc>
