@@ -14,15 +14,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "A"
-        score: 0.09095983952283859
+        score: 0.09350304305553436
       - label: "W"
-        score: 0.08519190549850464
+        score: 0.08757384121417999
       - label: "U"
-        score: 0.0797896757721901
+        score: 0.08202056586742401
       - label: "H"
-        score: 0.06834687292575836
-      - label: "I"
-        score: 0.06398838013410568
+        score: 0.07025782763957977
+      - label: "M"
+        score: 0.06502506136894226
 ---
 
 # SpliceBERT
@@ -116,26 +116,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/splicebert')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.09095983952283859,
+[{'score': 0.09350304305553436,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.08519190549850464,
-  'token': 19,
+ {'score': 0.08757384121417999,
+  'token': 14,
   'token_str': 'W',
   'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'},
- {'score': 0.0797896757721901,
+ {'score': 0.08202056586742401,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.06834687292575836,
-  'token': 14,
+ {'score': 0.07025782763957977,
+  'token': 19,
   'token_str': 'H',
   'sequence': 'U A G C H U A U C A G A C U G A U G U U G A'},
- {'score': 0.06398838013410568,
-  'token': 11,
-  'token_str': 'I',
-  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'}]
+ {'score': 0.06502506136894226,
+  'token': 16,
+  'token_str': 'M',
+  'sequence': 'U A G C M U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

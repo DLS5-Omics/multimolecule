@@ -45,7 +45,7 @@ class ProteinTokenizer(Tokenizer):
     Examples:
         >>> from multimolecule import ProteinTokenizer
         >>> tokenizer = ProteinTokenizer()
-        >>> tokenizer('ACDEFGHIKLMNPQRSTVWYXBZJUO')["input_ids"]
+        >>> tokenizer('ACDEFGHIKLMNPQRSTVWYXZBJUO')["input_ids"]
         [1, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 2]
         >>> tokenizer('<pad><cls><eos><unk><mask><null>.*-')["input_ids"]
         [1, 0, 1, 2, 3, 4, 5, 32, 33, 34, 2]
@@ -58,8 +58,8 @@ class ProteinTokenizer(Tokenizer):
     def __init__(
         self,
         alphabet: Alphabet | str | List[str] | None = None,
-        additional_special_tokens: List | Tuple | None = None,
         do_upper_case: bool = True,
+        additional_special_tokens: List | Tuple | None = None,
         **kwargs,
     ):
         if not isinstance(alphabet, Alphabet):

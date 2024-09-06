@@ -74,64 +74,16 @@ def convert_word_embeddings(
     )
 
 
-STANDARD_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "T",
-    "N",
-    "X",
-    "V",
-    "H",
-    "D",
-    "B",
-    "M",
-    "R",
-    "W",
-    "S",
-    "Y",
-    "K",
-    ".",
-    "*",
-    "-",
-]
+STANDARD_ALPHABET = list("ACGTNRYSWKMBDHV.X*-")
 
 
-IUPAC_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "T",
-    "R",
-    "Y",
-    "S",
-    "W",
-    "K",
-    "M",
-    "B",
-    "D",
-    "H",
-    "V",
-    "N",
-    ".",
-]
+IUPAC_ALPHABET = list("ACGTNRYSWKMBDHV.")
 
 
-STREAMLINE_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "T",
-    "N",
-]
+STREAMLINE_ALPHABET = list("ACGTN")
 
 
-NUCLEOBASE_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "T",
-]
+NUCLEOBASE_ALPHABET = list("ACGT")
 
 
 ALPHABETS = {
@@ -143,17 +95,17 @@ ALPHABETS = {
 
 
 VOCAB_MAPPING = {
-    "X": "ACGT",
-    "V": "ACG",
-    "H": "ACT",
-    "D": "AGT",
-    "B": "CGT",
-    "M": "AC",
     "R": "AG",
-    "W": "AT",
-    "S": "CG",
     "Y": "CT",
+    "S": "CG",
+    "W": "AT",
     "K": "GT",
+    "M": "AC",
+    "B": "CGT",
+    "D": "AGT",
+    "H": "ACT",
+    "V": "ACG",
+    "X": "ACGT",
 }
 
 TOKENIZER_CONFIG = {

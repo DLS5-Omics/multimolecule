@@ -27,12 +27,7 @@ from multimolecule.models import RnaFmConfig as Config
 from multimolecule.models import RnaFmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
-from multimolecule.tokenisers.rna.utils import (
-    convert_word_embeddings,
-    get_alphabet,
-    get_special_tokens_map,
-    get_tokenizer_config,
-)
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
 
@@ -215,9 +210,7 @@ def convert_checkpoint(convert_config):
     if mranfm:
         tokenizer_config["codon"] = True
 
-    save_checkpoint(
-        convert_config, model, tokenizer_config=tokenizer_config, special_tokens_map=get_special_tokens_map()
-    )
+    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 
 
 @dataclass

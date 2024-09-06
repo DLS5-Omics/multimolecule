@@ -27,7 +27,7 @@ from multimolecule.models import UtrLmConfig as Config
 from multimolecule.models import UtrLmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
 
@@ -98,7 +98,7 @@ def convert_checkpoint(convert_config):
 
     model.lm_head = deepcopy(model.pretrain.predictions)
 
-    save_checkpoint(convert_config, model, tokenizer_config=get_tokenizer_config())
+    save_checkpoint(convert_config, model)
 
 
 @dataclass

@@ -16,27 +16,22 @@
 
 from __future__ import annotations
 
-from typing import List, Sequence
+from typing import List
 
 import torch
 
 from ..alphabet import Alphabet
 from ..utils import SPECIAL_TOKENS_MAP
-from ..utils import convert_word_embeddings as convert_word_embeddings_
 
 torch.manual_seed(1016)
 
 
-def get_alphabet(alphabet: List[str] | str | None = None) -> Alphabet:
+def get_alphabet(alphabet: List[str] | str | None = None, nmers: int = 1) -> Alphabet:
     if alphabet is None:
-        alphabet = STANDARD_ALPHABET
+        alphabet = STANDARD_ALPHABET if nmers <= 1 else STREAMLINE_ALPHABET
     elif isinstance(alphabet, str):
         alphabet = ALPHABETS[alphabet]
-    return Alphabet(alphabet)
-
-
-def get_vocab_mapping():
-    return VOCAB_MAPPING
+    return Alphabet(alphabet, nmers=nmers)
 
 
 def get_special_tokens_map():
@@ -52,52 +47,20 @@ def get_tokenizer_config(add_special_tokens: bool = False):
     return config
 
 
-def convert_word_embeddings(
-    *old_embeddings: torch.Tensor,
-    old_vocab: List[str],
-    new_vocab: List[str],
-    mean: float = 0.0,
-    std: float = 0.02,
-    vocab_mapping: dict[str, str] | None = None,
-    seed: int | None = 1016,
-) -> Sequence[torch.Tensor]:
-    if vocab_mapping is None:
-        vocab_mapping = get_vocab_mapping()
-    return convert_word_embeddings_(
-        *old_embeddings,
-        old_vocab=old_vocab,
-        new_vocab=new_vocab,
-        mean=mean,
-        std=std,
-        vocab_mapping=vocab_mapping,
-        seed=seed,
-    )
+STANDARD_ALPHABET = list(".()+,[]{}|<>-_:~$@^%*")
 
+EXTENDED_ALPHABET = list(".()+,[]{}|<>")
 
-STANDARD_ALPHABET = list("ACDEFGHIKLMNPQRSTVWYXZBJUO.*-")
-
-
-IUPAC_ALPHABET = list("ACDEFGHIKLMNPQRSTVWYXZB")
-
-
-STREAMLINE_ALPHABET = list("ACDEFGHIKLMNPQRSTVWYX")
+STREAMLINE_ALPHABET = list(".()+")
 
 
 ALPHABETS = {
     "standard": STANDARD_ALPHABET,
-    "iupac": IUPAC_ALPHABET,
+    "extended": EXTENDED_ALPHABET,
     "streamline": STREAMLINE_ALPHABET,
 }
 
-
-VOCAB_MAPPING = {
-    "X": "ACDEFGHIKLMNPQRSTVWY",
-    "B": "DN",
-    "Z": "EQ",
-    "J": "IL",
-}
-
 TOKENIZER_CONFIG = {
-    "tokenizer_class": "RnaTokenizer",
+    "tokenizer_class": "SecondaryStructureTokenizer",
     "clean_up_tokenization_spaces": True,
 }

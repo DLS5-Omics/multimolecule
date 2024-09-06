@@ -13,16 +13,16 @@ widget:
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
-      - label: "I"
-        score: 0.35248875617980957
-      - label: "*"
-        score: 0.18891523778438568
       - label: "."
-        score: 0.14166751503944397
+        score: 0.23545819520950317
+      - label: "*"
+        score: 0.1889132708311081
+      - label: "I"
+        score: 0.15300516784191132
       - label: "A"
-        score: 0.09060215204954147
+        score: 0.12081773579120636
       - label: "U"
-        score: 0.07837390154600143
+        score: 0.10451140254735947
 ---
 
 # RNA-FM
@@ -114,23 +114,23 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnafm')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.35248875617980957,
-  'token': 11,
-  'token_str': 'I',
-  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
- {'score': 0.18891523778438568,
-  'token': 24,
-  'token_str': '*',
-  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
- {'score': 0.14166751503944397,
-  'token': 23,
+[{'score': 0.23545819520950317,
+  'token': 21,
   'token_str': '.',
   'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.09060215204954147,
+ {'score': 0.1889132708311081,
+  'token': 23,
+  'token_str': '*',
+  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
+ {'score': 0.15300516784191132,
+  'token': 25,
+  'token_str': 'I',
+  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
+ {'score': 0.12081773579120636,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.07837390154600143,
+ {'score': 0.10451140254735947,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'}]

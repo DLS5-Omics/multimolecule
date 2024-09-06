@@ -9,3 +9,5 @@ date: 2024-05-04
 --8<-- "multimolecule/tokenisers/dna/README.md:8:"
 
 ::: multimolecule.tokenisers.DnaTokenizer
+
+--8<-- "multimolecule/tokenisers/dna/ALPHABET.md:8:"

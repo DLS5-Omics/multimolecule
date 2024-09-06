@@ -14,15 +14,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "N"
-        score: 0.03853221237659454
-      - label: "-"
-        score: 0.03851545602083206
-      - label: "<unk>"
-        score: 0.03850385919213295
-      - label: "<null>"
-        score: 0.038502465933561325
+        score: 0.0385337695479393
       - label: "I"
-        score: 0.03848615288734436
+        score: 0.03851701319217682
+      - label: "<unk>"
+        score: 0.03850541263818741
+      - label: "<null>"
+        score: 0.03850402310490608
+      - label: "<cls>"
+        score: 0.03848475590348244
 ---
 
 # RNABERT
@@ -86,26 +86,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnabert')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.03853221237659454,
+[{'score': 0.0385337695479393,
   'token': 10,
   'token_str': 'N',
   'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'},
- {'score': 0.03851545602083206,
+ {'score': 0.03851701319217682,
   'token': 25,
-  'token_str': '-',
-  'sequence': 'U A G C - U A U C A G A C U G A U G U U G A'},
- {'score': 0.03850385919213295,
+  'token_str': 'I',
+  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03850541263818741,
   'token': 3,
   'token_str': '<unk>',
   'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
- {'score': 0.038502465933561325,
+ {'score': 0.03850402310490608,
   'token': 5,
   'token_str': '<null>',
-  'sequence': 'U A G C <null> U A U C A G A C U G A U G U U G A'},
- {'score': 0.03848615288734436,
-  'token': 11,
-  'token_str': 'I',
-  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
+ {'score': 0.03848475590348244,
+  'token': 1,
+  'token_str': '<cls>',
+  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

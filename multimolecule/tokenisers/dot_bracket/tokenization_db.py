@@ -27,14 +27,14 @@ from .utils import get_alphabet
 logger = logging.get_logger(__name__)
 
 
-class DnaTokenizer(Tokenizer):
+class DotBracketTokenizer(Tokenizer):
     """
-    Tokenizer for DNA sequences.
+    Tokenizer for Secondary Structure sequences.
 
     Args:
         alphabet: alphabet to use for tokenization.
 
-            - If is `None`, the standard RNA alphabet will be used.
+            - If is `None`, the standard Secondary Structure alphabet will be used.
             - If is a `string`, it should correspond to the name of a predefined alphabet. The options include
                 + `standard`
                 + `iupac`
@@ -43,30 +43,25 @@ class DnaTokenizer(Tokenizer):
             - If is an alphabet or a list of characters, that specific alphabet will be used.
         nmers: Size of kmer to tokenize.
         codon: Whether to tokenize into codons.
-        replace_U_with_T: Whether to replace U with T.
-        do_upper_case: Whether to convert input to uppercase.
 
     Examples:
-        >>> from multimolecule import DnaTokenizer
-        >>> tokenizer = DnaTokenizer()
-        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGTNRYSWKMBDHV.X*-')["input_ids"]
-        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 2]
-        >>> tokenizer('acgt')["input_ids"]
-        [1, 6, 7, 8, 9, 2]
-        >>> tokenizer('acgu')["input_ids"]
-        [1, 6, 7, 8, 9, 2]
-        >>> tokenizer = DnaTokenizer(replace_U_with_T=False)
-        >>> tokenizer('acgu')["input_ids"]
-        [1, 6, 7, 8, 3, 2]
-        >>> tokenizer = DnaTokenizer(nmers=3)
-        >>> tokenizer('tataaagta')["input_ids"]
-        [1, 84, 21, 81, 6, 8, 19, 71, 2]
-        >>> tokenizer = DnaTokenizer(codon=True)
-        >>> tokenizer('tataaagta')["input_ids"]
-        [1, 84, 6, 71, 2]
-        >>> tokenizer('tataaagtaa')["input_ids"]
+        >>> from multimolecule import DotBracketTokenizer
+        >>> tokenizer = DotBracketTokenizer()
+        >>> tokenizer('<pad><cls><eos><unk><mask><null>.()+,[]{}|<>-_:~$@^%*')["input_ids"]
+        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 2]
+        >>> tokenizer('(.)')["input_ids"]
+        [1, 7, 6, 8, 2]
+        >>> tokenizer('+(.)')["input_ids"]
+        [1, 9, 7, 6, 8, 2]
+        >>> tokenizer = DotBracketTokenizer(nmers=3)
+        >>> tokenizer('(((((+..........)))))')["input_ids"]
+        [1, 27, 27, 27, 29, 34, 54, 6, 6, 6, 6, 6, 6, 6, 6, 8, 16, 48, 48, 48, 2]
+        >>> tokenizer = DotBracketTokenizer(codon=True)
+        >>> tokenizer('(((((+..........)))))')["input_ids"]
+        [1, 27, 29, 6, 6, 6, 16, 48, 2]
+        >>> tokenizer('(((((+...........)))))')["input_ids"]
         Traceback (most recent call last):
-        ValueError: length of input sequence must be a multiple of 3 for codon tokenization, but got 10
+        ValueError: length of input sequence must be a multiple of 3 for codon tokenization, but got 22
     """
 
     model_input_names = ["input_ids", "attention_mask"]
@@ -76,8 +71,6 @@ class DnaTokenizer(Tokenizer):
         alphabet: Alphabet | str | List[str] | None = None,
         nmers: int = 1,
         codon: bool = False,
-        replace_U_with_T: bool = True,
-        do_upper_case: bool = True,
         additional_special_tokens: List | Tuple | None = None,
         **kwargs,
     ):
@@ -91,20 +84,13 @@ class DnaTokenizer(Tokenizer):
             alphabet=alphabet,
             nmers=nmers,
             codon=codon,
-            replace_U_with_T=replace_U_with_T,
-            do_upper_case=do_upper_case,
             additional_special_tokens=additional_special_tokens,
             **kwargs,
         )
-        self.replace_U_with_T = replace_U_with_T
         self.nmers = nmers
         self.condon = codon
 
     def _tokenize(self, text: str, **kwargs):
-        if self.do_upper_case:
-            text = text.upper()
-        if self.replace_U_with_T:
-            text = text.replace("U", "T")
         if self.condon:
             if len(text) % 3 != 0:
                 raise ValueError(

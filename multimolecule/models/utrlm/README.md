@@ -13,16 +13,16 @@ widget:
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
-      - label: "I"
-        score: 0.09042543172836304
-      - label: "."
-        score: 0.07878069579601288
+      - label: "*"
+        score: 0.08083827048540115
       - label: "<null>"
-        score: 0.07764176279306412
+        score: 0.07966958731412888
       - label: "A"
-        score: 0.07515929639339447
+        score: 0.0771222859621048
       - label: "N"
-        score: 0.06679271906614304
+        score: 0.06853719055652618
+      - label: "."
+        score: 0.06666938215494156
 ---
 
 # UTR-LM
@@ -130,26 +130,26 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/utrlm.te_el')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.09042543172836304,
-  'token': 11,
-  'token_str': 'I',
-  'sequence': 'U A G C I U A U C A G A C U G A U G U U G A'},
- {'score': 0.07878069579601288,
+[{'score': 0.08083827048540115,
   'token': 23,
-  'token_str': '.',
-  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'},
- {'score': 0.07764176279306412,
+  'token_str': '*',
+  'sequence': 'U A G C * U A U C A G A C U G A U G U U G A'},
+ {'score': 0.07966958731412888,
   'token': 5,
   'token_str': '<null>',
-  'sequence': 'U A G C <null> U A U C A G A C U G A U G U U G A'},
- {'score': 0.07515929639339447,
+  'sequence': 'U A G C U A U C A G A C U G A U G U U G A'},
+ {'score': 0.0771222859621048,
   'token': 6,
   'token_str': 'A',
   'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.06679271906614304,
+ {'score': 0.06853719055652618,
   'token': 10,
   'token_str': 'N',
-  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'U A G C N U A U C A G A C U G A U G U U G A'},
+ {'score': 0.06666938215494156,
+  'token': 21,
+  'token_str': '.',
+  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'}]
 ```
 
 ### Downstream Use

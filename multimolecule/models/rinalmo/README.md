@@ -90,7 +90,7 @@ You can use this model directly with a pipeline for masked language modeling:
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
  {'score': 0.18341825902462006,
-  'token': 12,
+  'token': 22,
   'token_str': 'X',
   'sequence': 'U A G C X U A U C A G A C U G A U G U U G A'},
  {'score': 0.16714636981487274,

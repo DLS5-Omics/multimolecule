@@ -32,15 +32,10 @@ nav:
           - modeling_outputs: models/modeling_outputs.md
   - tokenisers:
       - tokenisers/index.md
-      - DNA:
-          - DnaTokenizer: tokenisers/dna.md
-          - DNA Alphabet: tokenisers/dna/alphabet.md
-      - RNA:
-          - RnaTokenizer: tokenisers/rna.md
-          - RNA Alphabet: tokenisers/rna/alphabet.md
-      - Protein:
-          - ProteinTokenizer: tokenisers/protein.md
-          - Protein Alphabet: tokenisers/protein/alphabet.md
+      - DNA: tokenisers/dna.md
+      - RNA: tokenisers/rna.md
+      - Protein: tokenisers/protein.md
+      - DotBracket: tokenisers/dot_bracket.md
   - About:
       - about/index.md
       - License: about/license.md

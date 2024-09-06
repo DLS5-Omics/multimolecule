@@ -23,27 +23,27 @@ This extension includes two additional symbols to the [IUPAC alphabet](#iupac-al
 
     While `-` exists in the standard alphabet, it is not used in MultiMolecule and is reserved for future use.
 
-| Standard Code | Represents |
-| ------------- | ---------- |
-| A             | Adenine    |
-| C             | Cytosine   |
-| G             | Guanine    |
-| T             | Thymine    |
-| N             | Unknown    |
-| X             | Any        |
-| V             | A, C, or G |
-| H             | A, C, or T |
-| D             | A, G, or T |
-| B             | C, G, or T |
-| M             | A or C     |
-| R             | A or G     |
-| W             | A or T     |
-| S             | C or G     |
-| Y             | C or T     |
-| K             | G or T     |
-| .             | Gap        |
-| \*            | Not Used   |
-| -             | Not Used   |
+| Code | Represents |
+| ---- | ---------- |
+| A    | Adenine    |
+| C    | Cytosine   |
+| G    | Guanine    |
+| T    | Thymine    |
+| N    | Unknown    |
+| R    | A or G     |
+| Y    | C or T     |
+| S    | C or G     |
+| W    | A or T     |
+| K    | G or T     |
+| M    | A or C     |
+| B    | C, G, or T |
+| D    | A, G, or T |
+| H    | A, C, or T |
+| V    | A, C, or G |
+| .    | Gap        |
+| X    | Any        |
+| \*   | Not Used   |
+| -    | Not Used   |
 
 ## IUPAC Alphabet
 
@@ -51,24 +51,24 @@ This extension includes two additional symbols to the [IUPAC alphabet](#iupac-al
 
 It consists of 10 symbols that represent ambiguity in the nucleotide sequence and 1 symbol that represents a gap in addition to the [streamline alphabet](#streamline-alphabet).
 
-| IUPAC Code | Represents    |
-| ---------- | ------------- |
-| A          | Adenine       |
-| C          | Cytosine      |
-| G          | Guanine       |
-| T          | Thymine       |
-| R          | A or G        |
-| Y          | C or T        |
-| S          | C or G        |
-| W          | A or T        |
-| K          | G or T        |
-| M          | A or C        |
-| B          | C, G, or T    |
-| D          | A, G, or T    |
-| H          | A, C, or T    |
-| V          | A, C, or G    |
-| N          | A, C, G, or T |
-| .          | Gap           |
+| Code | Represents    |
+| ---- | ------------- |
+| A    | Adenine       |
+| C    | Cytosine      |
+| G    | Guanine       |
+| T    | Thymine       |
+| R    | A or G        |
+| Y    | C or T        |
+| S    | C or G        |
+| W    | A or T        |
+| K    | G or T        |
+| M    | A or C        |
+| B    | C, G, or T    |
+| D    | A, G, or T    |
+| H    | A, C, or T    |
+| V    | A, C, or G    |
+| N    | A, C, G, or T |
+| .    | Gap           |
 
 Note that we use `.` to represent a gap in the sequence.
 
@@ -76,21 +76,21 @@ Note that we use `.` to represent a gap in the sequence.
 
 The streamline alphabet includes one additional symbol to the [nucleobase alphabet](#nucleobase-alphabet), `N` to represent unknown nucleobase.
 
-| IUPAC Code | Nucleotide |
-| ---------- | ---------- |
-| A          | Adenine    |
-| C          | Cytosine   |
-| G          | Guanine    |
-| T          | Thymine    |
-| N          | Unknown    |
+| Code | Nucleotide |
+| ---- | ---------- |
+| A    | Adenine    |
+| C    | Cytosine   |
+| G    | Guanine    |
+| T    | Thymine    |
+| N    | Unknown    |
 
 ## Nucleobase Alphabet
 
 The nucleobase alphabet is a minimal version of the DNA alphabet that includes only the four canonical nucleotides `A`, `C`, `G`, and `T`.
 
-| IUPAC Code | Nucleotide |
-| ---------- | ---------- |
-| A          | Adenine    |
-| C          | Cytosine   |
-| G          | Guanine    |
-| T          | Thymine    |
+| Code | Nucleotide |
+| ---- | ---------- |
+| A    | Adenine    |
+| C    | Cytosine   |
+| G    | Guanine    |
+| T    | Thymine    |

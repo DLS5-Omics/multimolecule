@@ -9,3 +9,5 @@ date: 2024-05-04
 --8<-- "multimolecule/tokenisers/protein/README.md:8:"
 
 ::: multimolecule.tokenisers.ProteinTokenizer
+
+--8<-- "multimolecule/tokenisers/protein/ALPHABET.md:8:"

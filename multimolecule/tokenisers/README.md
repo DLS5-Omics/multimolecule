@@ -17,3 +17,4 @@ Please refer to [Tokenizer](https://huggingface.co/docs/transformers/main/en/mai
 - [DnaTokenizer](dna)
 - [RnaTokenizer](rna)
 - [ProteinTokenizer](protein)
+- [DotBracketTokenizer](dot_bracket)

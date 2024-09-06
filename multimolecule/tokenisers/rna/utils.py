@@ -74,65 +74,16 @@ def convert_word_embeddings(
     )
 
 
-STANDARD_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "U",
-    "N",
-    "I",
-    "X",
-    "V",
-    "H",
-    "D",
-    "B",
-    "M",
-    "R",
-    "W",
-    "S",
-    "Y",
-    "K",
-    ".",
-    "*",
-    "-",
-]
+STANDARD_ALPHABET = list("ACGUNRYSWKMBDHV.X*-I")
 
 
-IUPAC_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "U",
-    "R",
-    "Y",
-    "S",
-    "W",
-    "K",
-    "M",
-    "B",
-    "D",
-    "H",
-    "V",
-    "N",
-    ".",
-]
+IUPAC_ALPHABET = list("ACGUNRYSWKMBDHV.")
 
 
-STREAMLINE_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "U",
-    "N",
-]
+STREAMLINE_ALPHABET = list("ACGUN")
 
 
-NUCLEOBASE_ALPHABET = [
-    "A",
-    "C",
-    "G",
-    "U",
-]
+NUCLEOBASE_ALPHABET = list("ACGU")
 
 
 ALPHABETS = {
@@ -144,17 +95,17 @@ ALPHABETS = {
 
 
 VOCAB_MAPPING = {
-    "X": "ACGU",
-    "V": "ACG",
-    "H": "ACU",
-    "D": "AGU",
-    "B": "CGU",
-    "M": "AC",
     "R": "AG",
-    "W": "AU",
-    "S": "CG",
     "Y": "CU",
+    "S": "CG",
+    "W": "AU",
     "K": "GU",
+    "M": "AC",
+    "B": "CGU",
+    "D": "AGU",
+    "H": "ACU",
+    "V": "ACG",
+    "X": "ACGU",
 }
 
 TOKENIZER_CONFIG = {

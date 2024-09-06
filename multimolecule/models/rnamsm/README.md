@@ -14,15 +14,15 @@ widget:
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
       - label: "U"
-        score: 0.28288617730140686
+        score: 0.2819758355617523
       - label: "K"
-        score: 0.25364217162132263
+        score: 0.25282594561576843
       - label: "G"
-        score: 0.22742131352424622
+        score: 0.22668947279453278
       - label: "D"
-        score: 0.06836166977882385
+        score: 0.06814167648553848
       - label: "W"
-        score: 0.03748038411140442
+        score: 0.03735977038741112
 ---
 
 # RNA-MSM
@@ -88,24 +88,24 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/rnamsm')
 >>> unmasker("uagc<mask>uaucagacugauguuga")
 
-[{'score': 0.28288617730140686,
+[{'score': 0.2819758355617523,
   'token': 9,
   'token_str': 'U',
   'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.25364217162132263,
-  'token': 22,
+ {'score': 0.25282594561576843,
+  'token': 15,
   'token_str': 'K',
   'sequence': 'U A G C K U A U C A G A C U G A U G U U G A'},
- {'score': 0.22742131352424622,
+ {'score': 0.22668947279453278,
   'token': 8,
   'token_str': 'G',
   'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.06836166977882385,
-  'token': 15,
+ {'score': 0.06814167648553848,
+  'token': 18,
   'token_str': 'D',
   'sequence': 'U A G C D U A U C A G A C U G A U G U U G A'},
- {'score': 0.03748038411140442,
-  'token': 19,
+ {'score': 0.03735977038741112,
+  'token': 14,
   'token_str': 'W',
   'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
 ```

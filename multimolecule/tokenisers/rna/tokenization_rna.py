@@ -37,7 +37,7 @@ class RnaTokenizer(Tokenizer):
             - If is `None`, the standard RNA alphabet will be used.
             - If is a `string`, it should correspond to the name of a predefined alphabet. The options include
                 + `standard`
-                + `iupac`
+                + `extended`
                 + `streamline`
                 + `nucleobase`
             - If is an alphabet or a list of characters, that specific alphabet will be used.
@@ -49,7 +49,7 @@ class RnaTokenizer(Tokenizer):
     Examples:
         >>> from multimolecule import RnaTokenizer
         >>> tokenizer = RnaTokenizer()
-        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGUNIXVHDBMRWSYK.*-')["input_ids"]
+        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGUNRYSWKMBDHV.X*-I')["input_ids"]
         [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 2]
         >>> tokenizer('acgu')["input_ids"]
         [1, 6, 7, 8, 9, 2]
@@ -66,7 +66,7 @@ class RnaTokenizer(Tokenizer):
         [1, 83, 49, 22, 2]
         >>> tokenizer('uagcuuauca')["input_ids"]
         Traceback (most recent call last):
-        ValueError: length of input sequence  must be a multiple of 3 for codon tokenization, but got 10
+        ValueError: length of input sequence must be a multiple of 3 for codon tokenization, but got 10
     """
 
     model_input_names = ["input_ids", "attention_mask"]
@@ -77,11 +77,11 @@ class RnaTokenizer(Tokenizer):
         nmers: int = 1,
         codon: bool = False,
         replace_T_with_U: bool = True,
-        additional_special_tokens: List | Tuple | None = None,
         do_upper_case: bool = True,
+        additional_special_tokens: List | Tuple | None = None,
         **kwargs,
     ):
-        if codon and nmers > 1:
+        if codon and (nmers > 1 and nmers != 3):
             raise ValueError("Codon and nmers cannot be used together.")
         if codon:
             nmers = 3  # set to 3 to get correct vocab
@@ -89,8 +89,11 @@ class RnaTokenizer(Tokenizer):
             alphabet = get_alphabet(alphabet, nmers=nmers)
         super().__init__(
             alphabet=alphabet,
-            additional_special_tokens=additional_special_tokens,
+            nmers=nmers,
+            codon=codon,
+            replace_T_with_U=replace_T_with_U,
             do_upper_case=do_upper_case,
+            additional_special_tokens=additional_special_tokens,
             **kwargs,
         )
         self.replace_T_with_U = replace_T_with_U
@@ -105,7 +108,7 @@ class RnaTokenizer(Tokenizer):
         if self.condon:
             if len(text) % 3 != 0:
                 raise ValueError(
-                    f"length of input sequence  must be a multiple of 3 for codon tokenization, but got {len(text)}"
+                    f"length of input sequence must be a multiple of 3 for codon tokenization, but got {len(text)}"
                 )
             return [text[i : i + 3] for i in range(0, len(text), 3)]
         if self.nmers > 1:

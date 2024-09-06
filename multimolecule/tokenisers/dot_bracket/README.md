@@ -4,10 +4,10 @@ authors:
 date: 2024-05-04
 ---
 
-# DnaTokenizer
+# DotBracketTokenizer
 
-DnaTokenizer is smart, it tokenizes raw DNA nucleotides into tokens, no matter if the input is in uppercase or lowercase, uses T (Thymine) or U (Uracil), and with or without special tokens.
+DotBracketTokenizer provides a simple way to tokenize secondary structure in dot-bracket notation.
 It also supports tokenization into nmers and codons, so you don't have to write complex code to preprocess your data.
 
-By default, `DnaTokenizer` uses the [standard alphabet](#standard-alphabet).
+By default, `DotBracketTokenizer` uses the [standard alphabet](#standard-alphabet).
 If `nmers` is greater than `1`, or `codon` is set to `True`, it will instead use the [streamline alphabet](#streamline-alphabet).

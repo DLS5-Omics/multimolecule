@@ -130,7 +130,7 @@ from .module import (
     TokenKMerHead,
     TokenPredictionHead,
 )
-from .tokenisers import Alphabet, DnaTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
+from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
 
 __all__ = [
@@ -144,6 +144,7 @@ __all__ = [
     "DnaTokenizer",
     "RnaTokenizer",
     "ProteinTokenizer",
+    "DotBracketTokenizer",
     "Alphabet",
     "Tokenizer",
     "models",

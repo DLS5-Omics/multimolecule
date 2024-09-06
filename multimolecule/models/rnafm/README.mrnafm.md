@@ -13,16 +13,16 @@ widget:
   - example_title: "PRNP"
     text: "CTG<mask>AAGCGGCCCACGCGGACTGACGGGCGGGGG"
     output:
-      - label: "GAG"
-        score: 0.09500275552272797
       - label: "GGC"
-        score: 0.09362148493528366
-      - label: "AAG"
-        score: 0.07337076216936111
+        score: 0.09496457129716873
+      - label: "GAG"
+        score: 0.09480331838130951
       - label: "GAC"
-        score: 0.07307938486337662
+        score: 0.07397700101137161
+      - label: "AAG"
+        score: 0.07375374436378479
       - label: "GUG"
-        score: 0.06616155058145523
+        score: 0.06565868109464645
 ---
 
 # mRNA-FM
@@ -114,23 +114,23 @@ You can use this model directly with a pipeline for masked language modeling:
 >>> unmasker = pipeline('fill-mask', model='multimolecule/mrnafm')
 >>> unmasker("ctg<mask>aagcggcccacgcggactgacgggcggggg")
 
-[{'score': 0.09500275552272797,
-  'token': 58,
-  'token_str': 'GAG',
-  'sequence': 'CUG GAG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.09362148493528366,
+[{'score': 0.09496457129716873,
   'token': 67,
   'token_str': 'GGC',
   'sequence': 'CUG GGC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.07337076216936111,
-  'token': 8,
-  'token_str': 'AAG',
-  'sequence': 'CUG AAG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.07307938486337662,
+ {'score': 0.09480331838130951,
+  'token': 58,
+  'token_str': 'GAG',
+  'sequence': 'CUG GAG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
+ {'score': 0.07397700101137161,
   'token': 57,
   'token_str': 'GAC',
   'sequence': 'CUG GAC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.06616155058145523,
+ {'score': 0.07375374436378479,
+  'token': 8,
+  'token_str': 'AAG',
+  'sequence': 'CUG AAG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
+ {'score': 0.06565868109464645,
   'token': 73,
   'token_str': 'GUG',
   'sequence': 'CUG GUG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'}]
