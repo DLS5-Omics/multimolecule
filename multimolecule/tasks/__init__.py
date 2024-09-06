@@ -14,6 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chanfig import Registry
+from .task import Task, TaskLevel, TaskType
 
-HeadRegistry = Registry(default_factory=Registry, fallback=True)
+__all__ = ["Task", "TaskType", "TaskLevel"]

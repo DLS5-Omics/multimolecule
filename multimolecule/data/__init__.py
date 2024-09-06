@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chanfig import Registry
+from .dataset import Dataset
+from .utils import no_collate
 
-HeadRegistry = Registry(default_factory=Registry, fallback=True)
+__all__ = ["Dataset", "no_collate"]

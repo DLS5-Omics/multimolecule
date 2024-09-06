@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 TokenHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
 
-@HeadRegistry.register("token.single")
+@HeadRegistry.token.register("single", default=True)
 @TokenHeadRegistryHF.register("single", default=True)
 class TokenPredictionHead(PredictionHead):
     r"""

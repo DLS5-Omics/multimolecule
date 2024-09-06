@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import models, tokenisers
+from .data import Dataset
 from .models import (
     AutoModelForContactPrediction,
     AutoModelForNucleotidePrediction,
@@ -130,17 +130,18 @@ from .module import (
     TokenKMerHead,
     TokenPredictionHead,
 )
+from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
 
 __all__ = [
     "modeling_auto",
     "modeling_outputs",
+    "Dataset",
     "PreTrainedConfig",
     "HeadConfig",
     "BaseHeadConfig",
     "MaskedLMHeadConfig",
-    "tokenisers",
     "DnaTokenizer",
     "RnaTokenizer",
     "ProteinTokenizer",
@@ -254,4 +255,7 @@ __all__ = [
     "SinusoidalEmbedding",
     "Criterion",
     "count_parameters",
+    "Task",
+    "TaskLevel",
+    "TaskType",
 ]

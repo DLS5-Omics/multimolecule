@@ -18,14 +18,16 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
       - name: Install dependencies for testing
-        run: pip install pytest pytest-cov torch torchvision
+        run: pip install pytest pytest-cov
       - name: Install module
-        run: pip install -e .
+        run: pip install -r requirements.txt && pip install -e .
       - name: pytest
         run: pytest --cov=materialx --cov-report=xml --cov-report=html .
       - name: Upload coverage report for documentation
@@ -83,11 +85,11 @@ jobs:
   release:
     if: startsWith(github.event.ref, 'refs/tags/v')
     needs: [lint, test]
+    environment: pypi
     permissions:
       contents: write
       id-token: write
     runs-on: ubuntu-latest
-    environment: pypi
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -110,6 +112,7 @@ jobs:
   develop:
     if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
     needs: [lint, test]
+    environment: pypi
     permissions:
       contents: write
     runs-on: ubuntu-latest

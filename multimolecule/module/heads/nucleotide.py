@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 NucleotideHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
 
-@HeadRegistry.register("nucleotide.single")
+@HeadRegistry.nucleotide.register("single", default=True)
 @NucleotideHeadRegistryHF.register("single", default=True)
 class NucleotidePredictionHead(PredictionHead):
     r"""

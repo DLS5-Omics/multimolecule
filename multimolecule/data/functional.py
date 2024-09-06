@@ -14,6 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chanfig import Registry
+import numpy as np
 
-HeadRegistry = Registry(default_factory=Registry, fallback=True)
+dot_bracket_to_contact_map_table = str.maketrans(
+    {",": ".", "_": ".", "[": "(", "]": ")", "{": "(", "}": ")", "<": "(", ">": ")"}
+)
+
+
+def dot_bracket_to_contact_map(dot_bracket: str):
+    dot_bracket = dot_bracket.translate(dot_bracket_to_contact_map_table)
+    n = len(dot_bracket)
+    contact_map = np.zeros((n, n), dtype=int)
+    stack = []
+    for i, symbol in enumerate(dot_bracket):
+        if symbol == "(":
+            stack.append(i)
+        elif symbol == ")":
+            j = stack.pop()
+            contact_map[i, j] = contact_map[j, i] = 1
+    return contact_map

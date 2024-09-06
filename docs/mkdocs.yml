@@ -9,6 +9,9 @@ repo_url: https://github.com/DLS5-Omics/multimolecule
 
 nav:
   - index.md
+  - data:
+      - data/index.md
+      - Dataset: data/dataset.md
   - module:
       - module/index.md
       - heads: module/heads.md
@@ -182,6 +185,8 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://pytorch.org/docs/stable/objects.inv
             - https://huggingface.co/docs/transformers/master/en/objects.inv
+            - https://huggingface.co/docs/datasets/master/en/objects.inv
+            - https://pandas.pydata.org/docs/objects.inv
             - https://danling.org/objects.inv
             - https://chanfig.danling.org/objects.inv
   - section-index

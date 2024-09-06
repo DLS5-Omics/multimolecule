@@ -41,7 +41,7 @@ date: 2024-05-04
 ### 使用 `multimolecule.AutoModel` 构建
 
 ```python
---8<-- "demo/multimolecule-automodel.py:17:"
+--8<-- "demo/models/multimolecule-automodel.py:17:"
 ```
 
 ### 直接访问
@@ -49,7 +49,7 @@ date: 2024-05-04
 所有模型可以通过 `from_pretrained` 方法直接加载。
 
 ```python
---8<-- "demo/direct-access.py:17:"
+--8<-- "demo/models/direct-access.py:17:"
 ```
 
 ### 使用 [`transformers.AutoModel`][] 构建
@@ -57,7 +57,7 @@ date: 2024-05-04
 虽然我们为模型类使用了不同的命名约定，但模型仍然注册到相应的 [`transformers.AutoModel`][] 中。
 
 ```python
---8<-- "demo/transformers-automodel.py:17:"
+--8<-- "demo/models/transformers-automodel.py:17:"
 ```
 
 !!! danger "使用前先 `import multimolecule`"
@@ -76,7 +76,7 @@ date: 2024-05-04
 你也可以使用模型类初始化一个基础模型。
 
 ```python
---8<-- "demo/vanilla.py:17:"
+--8<-- "demo/models/vanilla.py:17:"
 ```
 
 ## 可用模型

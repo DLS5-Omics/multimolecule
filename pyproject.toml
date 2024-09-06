@@ -45,8 +45,9 @@ dynamic = [
 ]
 dependencies = [
   "accelerate",
-  "chanfig>=0.0.99",
-  "danling>=0.3.6",
+  "chanfig>=0.0.105",
+  "danling>=0.3.11",
+  "datasets",
   "torch",
   "transformers",
 ]

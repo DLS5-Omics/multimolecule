@@ -41,7 +41,7 @@ Similar to [Token Classification](https://huggingface.co/docs/transformers/en/ta
 ### Build with `multimolecule.AutoModel`s
 
 ```python
---8<-- "demo/multimolecule-automodel.py:17:"
+--8<-- "demo/models/multimolecule-automodel.py:17:"
 ```
 
 ### Direct Access
@@ -49,7 +49,7 @@ Similar to [Token Classification](https://huggingface.co/docs/transformers/en/ta
 All models can be directly loaded with the `from_pretrained` method.
 
 ```python
---8<-- "demo/direct-access.py:17:"
+--8<-- "demo/models/direct-access.py:17:"
 ```
 
 ### Build with [`transformers.AutoModel`][]s
@@ -57,7 +57,7 @@ All models can be directly loaded with the `from_pretrained` method.
 While we use a different naming convention for model classes, the models are still registered to corresponding [`transformers.AutoModel`][]s.
 
 ```python
---8<-- "demo/transformers-automodel.py:17:"
+--8<-- "demo/models/transformers-automodel.py:17:"
 ```
 
 !!! danger "`import multimolecule` before use"
@@ -76,7 +76,7 @@ While we use a different naming convention for model classes, the models are sti
 You can also initialize a vanilla model using the model class.
 
 ```python
---8<-- "demo/vanilla.py:17:"
+--8<-- "demo/models/vanilla.py:17:"
 ```
 
 ## Available Models
