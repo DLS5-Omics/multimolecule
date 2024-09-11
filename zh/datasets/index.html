@@ -1122,15 +1122,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#datasets_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      使用 datasets加载
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1171,10 +1162,11 @@
 </ul>
 <h2 id="_2">使用<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <h3 id="multimolecule">使用 <a class="autorefs autorefs-internal" href="../../data/dataset/#multimolecule.data.Dataset">MultiMolecule</a> 加载<a class="headerlink" href="#multimolecule" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>
-</span></code></pre></div></td></tr></table></div>
-<h3 id="datasets_1">使用<img alt="🤗" class="gemoji" src="https://github.githubassets.com/images/icons/emoji/unicode/1f917.png" title=":hugs:" /> <a href="https://huggingface.co/docs/datasets"><code>datasets</code></a>加载<a class="headerlink" href="#datasets_1" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">multimolecule.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s2">&quot;multimolecule/bprna-spot&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="s2">&quot;multimolecule/rna&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 
 
