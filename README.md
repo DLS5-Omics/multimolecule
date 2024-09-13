@@ -6,6 +6,16 @@ date: 2024-05-04 00:00:00
 
 # [MultiMolecule](https://multimolecule.danling.org)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![CodeCov](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
+
+[![PyPI - Version](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule/)
+[![Downloads](https://static.pepy.tech/badge/multimolecule/month)](https://multimolecule.danling.org)
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
 ## Introduction
 
 Welcome to MultiMolecule (浦原), a foundational library designed to accelerate Scientific Research with Machine Learning. MultiMolecule aims to provide a comprehensive yet flexible set of tools for researchers who wish to leverage AI in their work.

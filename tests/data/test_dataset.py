@@ -35,7 +35,7 @@ class TestRNADataset:
         dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_cols=True)
         task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
-        assert isinstance(elem["input_ids"], dl.PNTensor)
+        assert isinstance(elem["input_ids"], torch.LongTensor)
         assert isinstance(elem["labels"], torch.FloatTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["input_ids"], dl.NestedTensor)
@@ -49,7 +49,7 @@ class TestRNADataset:
         dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_cols=True)
         task = Task(type=TaskType.MultiClass, level=TaskLevel.Sequence, num_labels=13)
         elem = dataset[0]
-        assert isinstance(elem["input_ids"], dl.PNTensor)
+        assert isinstance(elem["input_ids"], torch.LongTensor)
         assert isinstance(elem["labels"], torch.LongTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["input_ids"], dl.NestedTensor)
@@ -64,7 +64,7 @@ class TestRNADataset:
         dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess, label_cols=label_cols)
         task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
-        assert isinstance(elem["sequence"], dl.PNTensor)
+        assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["ON"], torch.FloatTensor)
         assert isinstance(elem["OFF"], torch.FloatTensor)
         batch = dataset[list(range(3))]
@@ -80,7 +80,7 @@ class TestRNADataset:
         dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess)
         task = Task(type=TaskType.MultiLabel, level=TaskLevel.Sequence, num_labels=12)
         elem = dataset[0]
-        assert isinstance(elem["sequence"], dl.PNTensor)
+        assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["label"], torch.LongTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
@@ -103,7 +103,7 @@ class TestRNADataset:
         )
         task = Task(type=TaskType.Regression, level=TaskLevel.Sequence, num_labels=68)
         elem = dataset[0]
-        assert isinstance(elem["sequence"], dl.PNTensor)
+        assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["deg_pH10"], torch.FloatTensor)
         assert isinstance(elem["deg_50C"], torch.FloatTensor)
         batch = dataset[list(range(3))]
@@ -128,7 +128,7 @@ class TestRNADataset:
         )
         task = Task(type=TaskType.Binary, level=TaskLevel.Nucleotide, num_labels=1)
         elem = dataset[0]
-        assert isinstance(elem["sequence"], dl.PNTensor)
+        assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["splice_ai"], torch.LongTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
@@ -214,7 +214,7 @@ class TestHuggingFaceDataset:
         file = os.path.join(self.root, "bprna-spot")
         dataset = Dataset(file, split="test", pretrained=self.pretrained, preprocess=True)
         elem = dataset[0]
-        assert isinstance(elem["sequence"], dl.PNTensor)
+        assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["secondary_structure"], torch.LongTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
