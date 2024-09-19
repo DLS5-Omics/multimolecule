@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import os
 import shutil
+from collections.abc import Mapping
+from warnings import warn
 
 import pyarrow as pa
 from chanfig import Config
@@ -74,11 +76,21 @@ def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str 
 
 
 def save_dataset(
-    convert_config: ConvertConfig, data: Table | list | dict | DataFrame, compression: str = "brotli", level: int = 4
+    convert_config: ConvertConfig,
+    data: Table | list | dict | DataFrame,
+    filename: str = "data.parquet",
+    compression: str = "brotli",
+    level: int = 4,
 ):
     root, output_path = convert_config.root, convert_config.output_path
     os.makedirs(output_path, exist_ok=True)
-    write_data(data, output_path, compression=compression, level=level)
+    if isinstance(data, Mapping):
+        if filename != "data.parquet":
+            warn("Filename is ignored when saving multiple datasets.")
+        for name, d in data.items():
+            write_data(d, output_path, filename=name + ".parquet", compression=compression, level=level)
+    else:
+        write_data(data, output_path, filename=filename, compression=compression, level=level)
     copy_readme(root, output_path)
     push_to_hub(convert_config, output_path)
 

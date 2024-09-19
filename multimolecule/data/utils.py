@@ -42,10 +42,10 @@ def infer_task(
 ) -> Task:
     if max_seq_length is not None and seq_length_offset is not None:
         max_seq_length -= seq_length_offset
-    if isinstance(sequence, ChunkedArray) and sequence.num_chunks == 1:
-        sequence = sequence.chunks[0]
-    if isinstance(column, ChunkedArray) and column.num_chunks == 1:
-        column = column.chunks[0]
+    if isinstance(sequence, ChunkedArray):
+        sequence = sequence.combine_chunks()
+    if isinstance(column, ChunkedArray):
+        column = column.combine_chunks()
     flattened, levels = flatten_column(column, truncation, max_seq_length)
     dtype = flattened.type
     unique = flattened.unique()
@@ -145,14 +145,12 @@ def flatten_column(
 
 
 def get_num_tokens(sequence: Array | ListArray, seq_length_offset: int | None = None) -> Tuple[int, int]:
-    if isinstance(sequence, StringArray):
+    if isinstance(sequence, StringArray) or isinstance(sequence[0], pa.lib.StringScalar):
         return sum(len(i.as_py()) for i in sequence), sum(len(i.as_py()) ** 2 for i in sequence)
     # remove <bos> and <eos> tokens in length calculation
     if seq_length_offset is None:
         warn("seq_length_offset not specified, automatically detecting <bos> and <eos> tokens")
         seq_length_offset = 0
-        if isinstance(sequence[0], pa.lib.StringScalar):
-            raise ValueError("seq_length_offset must be specified for StringScalar sequences")
         if len({i[0] for i in sequence}) == 1:
             seq_length_offset += 1
         if len({i[-1] for i in sequence}) == 1:
