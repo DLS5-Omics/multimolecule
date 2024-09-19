@@ -50,13 +50,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/data/multitask/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/multitask/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/multitask/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/datasets/</loc>
         <lastmod>2024-09-19</lastmod>
         <changefreq>daily</changefreq>
@@ -104,6 +97,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/datasets/ryos/</loc>
+        <lastmod>2024-09-19</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/ryos/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/ryos/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/models/</loc>
@@ -218,27 +218,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/heads/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/runners/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/runners/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/runners/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/runners/config/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/runners/config/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/runners/config/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/runners/runner/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/runners/runner/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/runners/runner/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/tokenisers/</loc>
         <lastmod>2024-09-19</lastmod>
         <changefreq>daily</changefreq>
@@ -323,13 +302,6 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/dataset/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/data/multitask/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/multitask/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/multitask/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/zh/datasets/</loc>
         <lastmod>2024-09-19</lastmod>
         <changefreq>daily</changefreq>
@@ -377,6 +349,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/ryos/</loc>
+        <lastmod>2024-09-19</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/ryos/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/ryos/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/</loc>
@@ -489,27 +468,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/heads/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/heads/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/runners/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/runners/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/runners/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/runners/config/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/runners/config/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/runners/config/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/runners/runner/</loc>
-        <lastmod>2024-09-19</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/runners/runner/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/runners/runner/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/tokenisers/</loc>
