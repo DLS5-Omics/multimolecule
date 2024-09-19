@@ -17,25 +17,15 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
 
 import torch
 from tqdm import tqdm
 
 from multimolecule.datasets.bprna.bprna import convert_sta
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.datasets.conversion_utils import copy_readme, get_files, push_to_hub, write_data
+from multimolecule.datasets.conversion_utils import get_files, save_dataset
 
 torch.manual_seed(1016)
-
-
-def save_dataset(convert_config: ConvertConfig, data: Mapping, compression: str = "brotli", level: int = 4):
-    root, output_path = convert_config.root, convert_config.output_path
-    os.makedirs(output_path, exist_ok=True)
-    for name, d in data.items():
-        write_data(d, output_path, name + ".parquet", compression, level)
-    copy_readme(root, output_path)
-    push_to_hub(convert_config, output_path)
 
 
 def _convert_dataset(dataset):
@@ -46,7 +36,7 @@ def _convert_dataset(dataset):
 def convert_dataset(convert_config):
     data = {
         "train": _convert_dataset(os.path.join(convert_config.dataset_path, "TR0")),
-        "val": _convert_dataset(os.path.join(convert_config.dataset_path, "VL0")),
+        "validation": _convert_dataset(os.path.join(convert_config.dataset_path, "VL0")),
         "test": _convert_dataset(os.path.join(convert_config.dataset_path, "TS0")),
     }
     save_dataset(convert_config, data)
