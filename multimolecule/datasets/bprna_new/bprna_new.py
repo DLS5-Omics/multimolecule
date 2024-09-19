@@ -48,7 +48,7 @@ def convert_bpseq(bpseq):
 
 def convert_dataset(convert_config):
     data = [convert_bpseq(file) for file in tqdm(get_files(convert_config.dataset_path))]
-    save_dataset(convert_config, data)
+    save_dataset(convert_config, data, filename="test.parquet")
 
 
 class ConvertConfig(ConvertConfig_):
