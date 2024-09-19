@@ -21,6 +21,7 @@ date: 2024-05-04
 - [bpRNA-1m](bprna)
 - [bpRNA-spot](bprna-spot)
 - [bpRNA-new](bprna-new)
+- [RYOS](ryos)
 
 ## 使用
 

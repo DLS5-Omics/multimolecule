@@ -50,7 +50,7 @@ def write_data(
     elif isinstance(data, dict):
         data = Table.from_pydict(data)
     elif isinstance(data, DataFrame):
-        data = Table.from_pandas(data)
+        data = Table.from_pandas(data, preserve_index=False)
     if not isinstance(data, Table):
         raise ValueError("Data must be a list, dict, pandas DataFrame, or pyarrow Table.")
 

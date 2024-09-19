@@ -22,6 +22,7 @@ nav:
           - bpRNA-1m: datasets/bprna.md
           - bpRNA-spot: datasets/bprna-spot.md
           - bpRNA-new: datasets/bprna-new.md
+          - RYOS: datasets/ryos.md
   - module:
       - module/index.md
       - heads: module/heads.md
