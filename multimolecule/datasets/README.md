@@ -22,6 +22,9 @@ date: 2024-05-04
 - [bpRNA-spot](bprna-spot)
 - [bpRNA-new](bprna-new)
 - [RYOS](ryos)
+- [EternaBench-CM](eternabench-cm)
+- [EternaBench-Switch](eternabench-switch)
+- [EternaBench-External](eternabench-external)
 
 ## Usage
 

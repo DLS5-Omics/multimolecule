@@ -23,6 +23,9 @@ nav:
           - bpRNA-spot: datasets/bprna-spot.md
           - bpRNA-new: datasets/bprna-new.md
           - RYOS: datasets/ryos.md
+          - EternaBench-CM: datasets/eternabench-cm.md
+          - EternaBench-Switch: datasets/eternabench-switch.md
+          - EternaBench-External: datasets/eternabench-external.md
   - module:
       - module/index.md
       - heads: module/heads.md
