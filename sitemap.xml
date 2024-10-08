@@ -78,6 +78,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/datasets/eternabench/</loc>
+        <lastmod>2024-10-08</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/datasets/gencode/</loc>
         <lastmod>2024-10-08</lastmod>
         <changefreq>daily</changefreq>
@@ -328,6 +335,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/eternabench/</loc>
+        <lastmod>2024-10-08</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/datasets/gencode/</loc>
