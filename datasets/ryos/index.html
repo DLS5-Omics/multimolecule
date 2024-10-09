@@ -33,7 +33,7 @@
         <link rel="prev" href="../bprna-new/">
       
       
-        <link rel="next" href="../eternabench/">
+        <link rel="next" href="../eternabench-cm/">
       
       
         <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../feed_rss_created.xml">
@@ -675,6 +675,8 @@
       
         
       
+        
+      
     
     
       
@@ -958,11 +960,32 @@
   
   
     <li class="md-nav__item">
-      <a href="../eternabench/" class="md-nav__link">
+      <a href="../eternabench-cm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    EternaBench
+    EternaBench-ChemMapping
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eternabench-switch/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EternaBench-RiboSwitch
   </span>
   
 
@@ -1345,10 +1368,10 @@ This dataset is part of a broader effort to address one of the key challenges of
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>design_name</th>
+<th>id</th>
+<th>design</th>
 <th>sequence</th>
-<th>structure</th>
+<th>secondary_structure</th>
 <th>reactivity</th>
 <th>errors_reactivity</th>
 <th>signal_to_noise_reactivity</th>
@@ -1393,51 +1416,61 @@ This dataset is part of a broader effort to address one of the key challenges of
 </tbody>
 </table>
 <h2 id="column-description">Column Description<a class="headerlink" href="#column-description" title="Permanent link">&para;</a></h2>
-<p>The RYOS dataset consists of the following columns, providing crucial insights for understanding RNA stability for vaccine design:</p>
 <ul>
 <li>
-<p><strong>ID</strong>:
-  A unique identifier for each RNA sequence entry.</p>
+<p><strong>id</strong>:
+    A unique identifier for each RNA sequence entry.</p>
 </li>
 <li>
-<p><strong>design_name</strong>:
-  The name given to each RNA design by contributors, used for easy reference.</p>
+<p><strong>design</strong>:
+    The name given to each RNA design by contributors, used for easy reference.</p>
 </li>
 <li>
 <p><strong>sequence</strong>:
-  The nucleotide sequence of the RNA, using standard bases.</p>
+    The nucleotide sequence of the RNA molecule, represented using the standard RNA bases:</p>
+<ul>
+<li><strong>A</strong>: Adenine</li>
+<li><strong>C</strong>: Cytosine</li>
+<li><strong>G</strong>: Guanine</li>
+<li><strong>U</strong>: Uracil</li>
+</ul>
 </li>
 <li>
-<p><strong>structure</strong>:
-  The predicted secondary structure of the RNA, represented using dot-bracket notation.
-  The structure helps determine the likely secondary interactions within each RNA molecule.</p>
+<p><strong>secondary_structure</strong>:
+    The secondary structure of the RNA represented in dot-bracket notation, using up to three types of symbols to indicate base pairing and unpaired regions, as per bpRNA&rsquo;s standard:</p>
+<ul>
+<li><strong>Dots (<code>.</code>)</strong>: Represent unpaired nucleotides.</li>
+<li><strong>Parentheses (<code>(</code> and <code>)</code>)</strong>: Represent base pairs in standard stems (page 1).</li>
+<li><strong>Square Brackets (<code>[</code> and <code>]</code>)</strong>: Represent base pairs in pseudoknots (page 2).</li>
+<li><strong>Curly Braces (<code>{</code> and <code>}</code>)</strong>: Represent base pairs in additional pseudoknots (page 3).</li>
+</ul>
 </li>
 <li>
 <p><strong>reactivity</strong>:
-  A list of floating-point values that provide an estimate of the likelihood of the RNA backbone being cut at each nucleotide position.
-  These values help determine the stability of the RNA structure under various experimental conditions.</p>
+    A list of floating-point values that provide an estimate of the likelihood of the RNA backbone being cut at each nucleotide position.
+    These values help determine the stability of the RNA structure under various experimental conditions.</p>
 </li>
 <li>
 <p><strong>deg_pH10</strong> and <strong>deg_Mg_pH10</strong>:
-  Arrays of degradation rates observed under two conditions: incubation at pH 10 without and with magnesium, respectively.
-  These values provide insight into how different conditions affect the stability of RNA molecules.</p>
+    Arrays of degradation rates observed under two conditions: incubation at pH 10 without and with magnesium, respectively.
+    These values provide insight into how different conditions affect the stability of RNA molecules.</p>
 </li>
 <li>
 <p><strong>deg_50C</strong> and <strong>deg_Mg_50C</strong>:
-  Arrays of degradation rates after incubation at 50°C, without and with magnesium.
-  These values capture how RNA sequences respond to elevated temperatures, which is relevant for storage and transportation conditions.</p>
+    Arrays of degradation rates after incubation at 50°C, without and with magnesium.
+    These values capture how RNA sequences respond to elevated temperatures, which is relevant for storage and transportation conditions.</p>
 </li>
 <li>
 <p><strong>*_error_* Columns</strong>:
-  Arrays of floating-point numbers indicating the experimental errors corresponding to the measurements in the <strong>reactivity</strong> and <strong>deg_</strong> columns.
-  These values help quantify the uncertainty in the degradation rates and reactivity measurements.</p>
+    Arrays of floating-point numbers indicating the experimental errors corresponding to the measurements in the <strong>reactivity</strong> and <strong>deg_</strong> columns.
+    These values help quantify the uncertainty in the degradation rates and reactivity measurements.</p>
 </li>
 <li>
 <p><strong>SN_filter</strong>:
-  A filter applied to the dataset based on the signal-to-noise ratio, indicating whether a specific sequence meets the dataset’s quality criteria.</p>
+    A filter applied to the dataset based on the signal-to-noise ratio, indicating whether a specific sequence meets the dataset’s quality criteria.</p>
+<p>If the SN_filter is <code>True</code>, the sequence meets the quality criteria; otherwise, it does not.</p>
 </li>
 </ul>
-<p>If the SN_filter is <code>True</code>, the sequence meets the quality criteria; otherwise, it does not.</p>
 <p>Note that due to technical limitations, the ground truth measurements are not available for the final bases of each RNA sequence, resulting in a shorter length for the provided labels compared to the full sequence.</p>
 <h2 id="variations">Variations<a class="headerlink" href="#variations" title="Permanent link">&para;</a></h2>
 <p>This dataset is available in two subsets:</p>
@@ -1589,13 +1622,13 @@ This dataset is part of a broader effort to address one of the key challenges of
         
         
           
-          <a href="../eternabench/" class="md-footer__link md-footer__link--next" aria-label="Next: EternaBench">
+          <a href="../eternabench-cm/" class="md-footer__link md-footer__link--next" aria-label="Next: EternaBench-ChemMapping">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                EternaBench
+                EternaBench-ChemMapping
               </div>
             </div>
             <div class="md-footer__button md-icon">
