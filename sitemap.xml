@@ -78,11 +78,18 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/eternabench/</loc>
+        <loc>https://multimolecule.danling.org/datasets/eternabench-cm/</loc>
         <lastmod>2024-10-09</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench-cm/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench-cm/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/datasets/eternabench-switch/</loc>
+        <lastmod>2024-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench-switch/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench-switch/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/datasets/gencode/</loc>
@@ -337,11 +344,18 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/eternabench/</loc>
+        <loc>https://multimolecule.danling.org/zh/datasets/eternabench-cm/</loc>
         <lastmod>2024-10-09</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench-cm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench-cm/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/eternabench-switch/</loc>
+        <lastmod>2024-10-09</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench-switch/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench-switch/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/datasets/gencode/</loc>
