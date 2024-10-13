@@ -98,7 +98,9 @@ class NucleotidePredictionHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[0]
-        output *= attention_mask.unsqueeze(-1)
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+        output = output * attention_mask.unsqueeze(-1)
 
         # remove cls token embeddings
         if self.bos_token_id is not None:
@@ -115,7 +117,7 @@ class NucleotidePredictionHead(PredictionHead):
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
-            output *= eos_mask[:, :, None]
+            output = output * eos_mask[:, :, None]
             output = output[..., :-1, :]
 
         return super().forward(output, labels, **kwargs)
@@ -186,6 +188,8 @@ class NucleotideKMerHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[0]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
         output = output * attention_mask.unsqueeze(-1)
 
         # remove cls token embeddings
@@ -203,7 +207,7 @@ class NucleotideKMerHead(PredictionHead):
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
-            output *= eos_mask[:, :, None]
+            output = output * eos_mask[:, :, None]
             output = output[..., :-1, :]
             attention_mask = attention_mask[..., 1:]
 

@@ -1268,7 +1268,7 @@ class ErnieRnaContactClassificationHead(nn.Module):
         # but it does for the contact prediction task, which takes attention as input,
         # so we have to mimic that here.
         attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
-        attention *= attention_mask[:, None, :, :]
+        attention = attention * attention_mask[:, None, :, :]
         # remove cls token attentions
         if self.bos_token_id is not None:
             attention = attention[..., 1:, 1:]
@@ -1285,9 +1285,9 @@ class ErnieRnaContactClassificationHead(nn.Module):
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=attention.device).unsqueeze(0) == last_valid_indices
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
-            attention *= eos_mask[:, None, :, :]
+            attention = attention * eos_mask[:, None, :, :]
             attention = attention[..., :-1, :-1]
-            attention_mask = attention_mask[..., 1:, 1:]
+            attention_mask = attention_mask[..., :-1, :-1]
 
         attention = attention[:, 5:6, :, :]  # Mysterious magic number 5
         out = self.conv1(attention)
