@@ -97,6 +97,8 @@ class TokenPredictionHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[0]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
         output = output * attention_mask.unsqueeze(-1)
         return super().forward(output, labels, **kwargs)
 
@@ -166,6 +168,8 @@ class TokenKMerHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[0]
-        output *= attention_mask.unsqueeze(-1)
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+        output = output * attention_mask.unsqueeze(-1)
         output = self.unfold_kmer_embeddings(output, attention_mask)
         return super().forward(output, labels, **kwargs)

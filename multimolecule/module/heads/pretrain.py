@@ -86,6 +86,8 @@ class MaskedLMHead(nn.Module):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[0]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
         output = self.dropout(output)
         output = self.transform(output)
         output = self.decoder(output)
