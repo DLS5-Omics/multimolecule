@@ -78,13 +78,10 @@ class RnaFmConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import RnaFmModel, RnaFmConfig
-
         >>> # Initializing a RNA-FM multimolecule/rnafm style configuration
         >>> configuration = RnaFmConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/rnafm style configuration
         >>> model = RnaFmModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

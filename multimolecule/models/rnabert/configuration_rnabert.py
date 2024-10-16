@@ -60,13 +60,10 @@ class RnaBertConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import RnaBertModel, RnaBertConfig
-
         >>> # Initializing a RNABERT multimolecule/rnabert style configuration
         >>> configuration = RnaBertConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/rnabert style configuration
         >>> model = RnaBertModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

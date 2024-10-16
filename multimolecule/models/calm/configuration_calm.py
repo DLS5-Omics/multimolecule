@@ -75,13 +75,10 @@ class CaLmConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import CaLmModel, CaLmConfig
-
         >>> # Initializing a CaLM multimolecule/calm style configuration
         >>> configuration = CaLmConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/calm style configuration
         >>> model = CaLmModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

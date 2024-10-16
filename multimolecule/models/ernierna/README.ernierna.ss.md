@@ -11,6 +11,19 @@ base_model: multimolecule/ernierna
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
+  - example_title: "HIV-1"
+    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    output:
+      - label: "G"
+        score: 0.2066272348165512
+      - label: "U"
+        score: 0.1811930239200592
+      - label: "A"
+        score: 0.17954225838184357
+      - label: "-"
+        score: 0.12186982482671738
+      - label: "."
+        score: 0.10200861096382141
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
@@ -80,29 +93,29 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline('fill-mask', model='multimolecule/ernierna.ss')
->>> unmasker("uagc<mask>uaucagacugauguuga")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna.ss")
+>>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
 
-[{'score': 0.20929744839668274,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.1741773933172226,
-  'token': 7,
-  'token_str': 'C',
-  'sequence': 'U A G C C U A U C A G A C U G A U G U U G A'},
- {'score': 0.16430608928203583,
+[{'score': 0.2066272348165512,
   'token': 8,
   'token_str': 'G',
-  'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.1348584145307541,
+  'sequence': 'G G U C G C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.1811930239200592,
+  'token': 9,
+  'token_str': 'U',
+  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.17954225838184357,
   'token': 6,
   'token_str': 'A',
-  'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.11933524906635284,
+  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.12186982482671738,
+  'token': 24,
+  'token_str': '-',
+  'sequence': 'G G U C - C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.10200861096382141,
   'token': 21,
   'token_str': '.',
-  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'G G U C. C U C U G G U U A G A C C A G A U C U G A G C C U'}]
 ```
 
 ### Downstream Use
@@ -115,11 +128,11 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, ErnieRnaModel
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/ernierna.ss')
-model = ErnieRnaModel.from_pretrained('multimolecule/ernierna.ss')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
+model = ErnieRnaModel.from_pretrained("multimolecule/ernierna.ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
 ```
@@ -135,11 +148,11 @@ import torch
 from multimolecule import RnaTokenizer, ErnieRnaForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/ernierna.ss')
-model = ErnieRnaForSequencePrediction.from_pretrained('multimolecule/ernierna.ss')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
+model = ErnieRnaForSequencePrediction.from_pretrained("multimolecule/ernierna.ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
 output = model(**input, labels=label)
@@ -156,11 +169,11 @@ import torch
 from multimolecule import RnaTokenizer, ErnieRnaForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/ernierna.ss')
-model = ErnieRnaForTokenPrediction.from_pretrained('multimolecule/ernierna.ss')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
+model = ErnieRnaForTokenPrediction.from_pretrained("multimolecule/ernierna.ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
 output = model(**input, labels=label)
@@ -177,11 +190,11 @@ import torch
 from multimolecule import RnaTokenizer, ErnieRnaForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/ernierna.ss')
-model = ErnieRnaForContactPrediction.from_pretrained('multimolecule/ernierna.ss')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
+model = ErnieRnaForContactPrediction.from_pretrained("multimolecule/ernierna.ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
 output = model(**input, labels=label)

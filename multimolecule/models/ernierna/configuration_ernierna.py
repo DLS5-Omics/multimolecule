@@ -61,13 +61,10 @@ class ErnieRnaConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import ErnieRnaModel, ErnieRnaConfig
-
         >>> # Initializing a ERNIE-RNA multimolecule/ernierna style configuration
         >>> configuration = ErnieRnaConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/ernierna style configuration
         >>> model = ErnieRnaModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

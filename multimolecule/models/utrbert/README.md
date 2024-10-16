@@ -10,6 +10,19 @@ library_name: multimolecule
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
+  - example_title: "HIV-1"
+    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    output:
+      - label: "CUC"
+        score: 0.40745577216148376
+      - label: "CAC"
+        score: 0.40001827478408813
+      - label: "CCC"
+        score: 0.14566268026828766
+      - label: "CGC"
+        score: 0.04422207176685333
+      - label: "CAU"
+        score: 0.0008025980787351727
   - example_title: "microRNA-21"
     text: "UAGC<mask><mask><mask>UCAGACUGAUGUUGA"
     output:
@@ -120,29 +133,29 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline('fill-mask', model='multimolecule/utrbert-3mer')
->>> unmasker("uag<mask><mask><mask>cagacugauguuga")[1]
+>>> unmasker = pipeline("fill-mask", model="multimolecule/utrbert-3mer")
+>>> unmasker("gguc<mask><mask><mask>cugguuagaccagaucugagccu")[1]
 
-[{'score': 0.6499986052513123,
-  'token': 57,
-  'token_str': 'GAC',
-  'sequence': '<cls> UAG <mask> GAC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.07012350112199783,
-  'token': 72,
-  'token_str': 'GUC',
-  'sequence': '<cls> UAG <mask> GUC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.06567499041557312,
+[{'score': 0.40745577216148376,
+  'token': 47,
+  'token_str': 'CUC',
+  'sequence': '<cls> GGU GUC <mask> CUC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
+ {'score': 0.40001827478408813,
   'token': 32,
   'token_str': 'CAC',
-  'sequence': '<cls> UAG <mask> CAC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.06494498997926712,
-  'token': 62,
-  'token_str': 'GCC',
-  'sequence': '<cls> UAG <mask> GCC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'},
- {'score': 0.06052926927804947,
-  'token': 67,
-  'token_str': 'GGC',
-  'sequence': '<cls> UAG <mask> GGC <mask> CAG AGA GAC ACU CUG UGA GAU AUG UGU GUU UUG UGA <eos>'}]
+  'sequence': '<cls> GGU GUC <mask> CAC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
+ {'score': 0.14566268026828766,
+  'token': 37,
+  'token_str': 'CCC',
+  'sequence': '<cls> GGU GUC <mask> CCC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
+ {'score': 0.04422207176685333,
+  'token': 42,
+  'token_str': 'CGC',
+  'sequence': '<cls> GGU GUC <mask> CGC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
+ {'score': 0.0008025980787351727,
+  'token': 34,
+  'token_str': 'CAU',
+  'sequence': '<cls> GGU GUC <mask> CAU <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'}]
 ```
 
 ### Downstream Use
@@ -155,11 +168,11 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, UtrBertModel
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert-3mer')
-model = UtrBertModel.from_pretrained('multimolecule/utrbert-3mer')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
+model = UtrBertModel.from_pretrained("multimolecule/utrbert-3mer")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
 ```
@@ -175,11 +188,11 @@ import torch
 from multimolecule import RnaTokenizer, UtrBertForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert-3mer')
-model = UtrBertForSequencePrediction.from_pretrained('multimolecule/utrbert-3mer')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
+model = UtrBertForSequencePrediction.from_pretrained("multimolecule/utrbert-3mer")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
 output = model(**input, labels=label)
@@ -196,11 +209,11 @@ import torch
 from multimolecule import RnaTokenizer, UtrBertForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert-3mer')
-model = UtrBertForTokenPrediction.from_pretrained('multimolecule/utrbert-3mer')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
+model = UtrBertForTokenPrediction.from_pretrained("multimolecule/utrbert-3mer")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
 output = model(**input, labels=label)
@@ -217,11 +230,11 @@ import torch
 from multimolecule import RnaTokenizer, UtrBertForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert')
-model = UtrBertForContactPrediction.from_pretrained('multimolecule/utrbert')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
+model = UtrBertForContactPrediction.from_pretrained("multimolecule/utrbert-3mer")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
 output = model(**input, labels=label)

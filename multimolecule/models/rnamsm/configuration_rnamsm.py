@@ -60,13 +60,10 @@ class RnaMsmConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import RnaMsmModel, RnaMsmConfig
-
         >>> # Initializing a RNA-MSM multimolecule/rnamsm style configuration
         >>> configuration = RnaMsmConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/rnamsm style configuration
         >>> model = RnaMsmModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

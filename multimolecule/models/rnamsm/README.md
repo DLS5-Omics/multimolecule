@@ -10,6 +10,19 @@ library_name: multimolecule
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
+  - example_title: "HIV-1"
+    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    output:
+      - label: "U"
+        score: 0.25111356377601624
+      - label: "W"
+        score: 0.1200353354215622
+      - label: "K"
+        score: 0.10132723301649094
+      - label: "D"
+        score: 0.08383019268512726
+      - label: "A"
+        score: 0.05737845227122307
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
@@ -85,29 +98,29 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline('fill-mask', model='multimolecule/rnamsm')
->>> unmasker("uagc<mask>uaucagacugauguuga")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/rnamsm")
+>>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
 
-[{'score': 0.2819758355617523,
+[{'score': 0.25111356377601624,
   'token': 9,
   'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.25282594561576843,
-  'token': 15,
-  'token_str': 'K',
-  'sequence': 'U A G C K U A U C A G A C U G A U G U U G A'},
- {'score': 0.22668947279453278,
-  'token': 8,
-  'token_str': 'G',
-  'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.06814167648553848,
-  'token': 18,
-  'token_str': 'D',
-  'sequence': 'U A G C D U A U C A G A C U G A U G U U G A'},
- {'score': 0.03735977038741112,
+  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.1200353354215622,
   'token': 14,
   'token_str': 'W',
-  'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'G G U C W C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.10132723301649094,
+  'token': 15,
+  'token_str': 'K',
+  'sequence': 'G G U C K C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.08383019268512726,
+  'token': 18,
+  'token_str': 'D',
+  'sequence': 'G G U C D C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.05737845227122307,
+  'token': 6,
+  'token_str': 'A',
+  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'}]
 ```
 
 ### Downstream Use
@@ -120,11 +133,11 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, RnaMsmModel
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnamsm')
-model = RnaMsmModel.from_pretrained('multimolecule/rnamsm')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
+model = RnaMsmModel.from_pretrained("multimolecule/rnamsm")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
 ```
@@ -140,11 +153,11 @@ import torch
 from multimolecule import RnaTokenizer, RnaMsmForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnamsm')
-model = RnaMsmForSequencePrediction.from_pretrained('multimolecule/rnamsm')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
+model = RnaMsmForSequencePrediction.from_pretrained("multimolecule/rnamsm")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
 output = model(**input, labels=label)
@@ -161,11 +174,11 @@ import torch
 from multimolecule import RnaTokenizer, RnaMsmForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnamsm')
-model = RnaMsmForNucleotidPrediction.from_pretrained('multimolecule/rnamsm')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
+model = RnaMsmForNucleotidPrediction.from_pretrained("multimolecule/rnamsm")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
 output = model(**input, labels=label)
@@ -182,11 +195,11 @@ import torch
 from multimolecule import RnaTokenizer, RnaMsmForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/rnamsm')
-model = RnaMsmForContactPrediction.from_pretrained('multimolecule/rnamsm')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
+model = RnaMsmForContactPrediction.from_pretrained("multimolecule/rnamsm")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
 output = model(**input, labels=label)

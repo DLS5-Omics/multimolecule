@@ -28,7 +28,7 @@ It focuses on families distinct from those in [bpRNA-1m](../bprna), providing a 
 
 ## Disclaimer
 
-This is an UNOFFICIAL release of the bpRNA-new by Kengo Sato, Manato Akiyama and Yasubumi Sakakibara.
+This is an UNOFFICIAL release of the bpRNA-new by Kengo Sato, et al.
 
 **The team releasing bpRNA-new did not write this dataset card for this dataset so this dataset card has been written by the MultiMolecule team.**
 
