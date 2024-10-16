@@ -31,13 +31,7 @@ from transformers import PreTrainedModel
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.module import (
-    ContactPredictionHead,
-    MaskedLMHead,
-    NucleotidePredictionHead,
-    SequencePredictionHead,
-    TokenPredictionHead,
-)
+from multimolecule.module import ContactPredictionHead, MaskedLMHead, SequencePredictionHead, TokenPredictionHead
 
 from ..configuration_utils import HeadConfig
 from .configuration_rnamsm import RnaMsmConfig
@@ -172,137 +166,6 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForContactPrediction, RnaTokenizer
-        >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForContactPrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
-    """
-
-    def __init__(self, config: RnaMsmConfig):
-        super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
-        head_config = HeadConfig(output_name="row_attentions")
-        self.contact_head = ContactPredictionHead(config, head_config)
-        self.head_config = self.contact_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnamsm(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=True,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.contact_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmContactPredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            col_attentions=outputs.col_attentions,
-            row_attentions=outputs.row_attentions,
-        )
-
-
-class RnaMsmForNucleotidePrediction(RnaMsmPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import RnaMsmConfig, RnaMsmForNucleotidePrediction, RnaTokenizer
-        >>> config = RnaMsmConfig()
-        >>> model = RnaMsmForNucleotidePrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
-    """
-
-    def __init__(self, config: RnaMsmConfig):
-        super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | RnaMsmNucleotidePredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnamsm(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmNucleotidePredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            col_attentions=outputs.col_attentions,
-            row_attentions=outputs.row_attentions,
-        )
-
-
 class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
@@ -374,9 +237,9 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
         >>> model = RnaMsmForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 7, 2])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -426,6 +289,85 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
+        )
+
+
+class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import RnaMsmConfig, RnaMsmForContactPrediction, RnaTokenizer
+        >>> config = RnaMsmConfig()
+        >>> model = RnaMsmForContactPrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
+    """
+
+    def __init__(self, config: RnaMsmConfig):
+        super().__init__(config)
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        head_config = HeadConfig(output_name="row_attentions")
+        self.contact_head = ContactPredictionHead(config, head_config)
+        self.head_config = self.contact_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.rnamsm(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return RnaMsmContactPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            col_attentions=outputs.col_attentions,
+            row_attentions=outputs.row_attentions,
+        )
+
+
+class RnaMsmForNucleotidePrediction(RnaMsmForTokenPrediction):
+
+    def __init__(self, config: RnaMsmConfig):
+        super().__init__(config)
+        warn(
+            "`RnaMsmForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
+            "Please use `RnaMsmForTokenPrediction` instead.",
+            DeprecationWarning,
         )
 
 
@@ -1409,24 +1351,6 @@ class RnaMsmPreTrainingHeads(nn.Module):
 
 
 @dataclass
-class RnaMsmContactPredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class RnaMsmNucleotidePredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
 class RnaMsmSequencePredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
@@ -1437,6 +1361,15 @@ class RnaMsmSequencePredictorOutput(ModelOutput):
 
 @dataclass
 class RnaMsmTokenPredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class RnaMsmContactPredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None

@@ -21,5 +21,5 @@ MultiMolecule 建立在 :hugs: 生态系统之上，拥抱类似的设计理念�
 
 ## Modules
 
-- [heads](heads): 包括多种预测头，比如[`SequencePredictionHead`][multimolecule.SequencePredictionHead]、[`NucleotidePredictionHead`][multimolecule.NucleotidePredictionHead]和[`ContactPredictionHead`][multimolecule.ContactPredictionHead]。
+- [heads](heads): 包括多种预测头，比如[`SequencePredictionHead`][multimolecule.SequencePredictionHead]、[`TokenPredictionHead`][multimolecule.TokenPredictionHead]和[`ContactPredictionHead`][multimolecule.ContactPredictionHead]。
 - [embeddings](embeddings)：包括多种位置编码，比如[`SinusoidalEmbedding`][multimolecule.SinusoidalEmbedding]和 [`RotaryEmbedding`][multimolecule.RotaryEmbedding]。

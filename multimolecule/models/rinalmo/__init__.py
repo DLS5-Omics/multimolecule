@@ -27,12 +27,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import (
-    AutoModelForContactPrediction,
-    AutoModelForNucleotidePrediction,
-    AutoModelForSequencePrediction,
-    AutoModelForTokenPrediction,
-)
+from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
 from .configuration_rinalmo import RiNALMoConfig
 from .modeling_rinalmo import (
     RiNALMoForContactPrediction,
@@ -62,7 +57,6 @@ AutoConfig.register("rinalmo", RiNALMoConfig)
 AutoBackbone.register(RiNALMoConfig, RiNALMoModel)
 AutoModel.register(RiNALMoConfig, RiNALMoModel)
 AutoModelForContactPrediction.register(RiNALMoConfig, RiNALMoForContactPrediction)
-AutoModelForNucleotidePrediction.register(RiNALMoConfig, RiNALMoForNucleotidePrediction)
 AutoModelForSequencePrediction.register(RiNALMoConfig, RiNALMoForSequencePrediction)
 AutoModelForSequenceClassification.register(RiNALMoConfig, RiNALMoForSequencePrediction)
 AutoModelForTokenPrediction.register(RiNALMoConfig, RiNALMoForTokenPrediction)

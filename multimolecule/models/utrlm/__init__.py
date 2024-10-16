@@ -27,12 +27,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import (
-    AutoModelForContactPrediction,
-    AutoModelForNucleotidePrediction,
-    AutoModelForSequencePrediction,
-    AutoModelForTokenPrediction,
-)
+from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
 from .configuration_utrlm import UtrLmConfig
 from .modeling_utrlm import (
     UtrLmForContactPrediction,
@@ -63,7 +58,6 @@ AutoConfig.register("utrlm", UtrLmConfig)
 AutoBackbone.register(UtrLmConfig, UtrLmModel)
 AutoModel.register(UtrLmConfig, UtrLmModel)
 AutoModelForContactPrediction.register(UtrLmConfig, UtrLmForContactPrediction)
-AutoModelForNucleotidePrediction.register(UtrLmConfig, UtrLmForNucleotidePrediction)
 AutoModelForSequencePrediction.register(UtrLmConfig, UtrLmForSequencePrediction)
 AutoModelForSequenceClassification.register(UtrLmConfig, UtrLmForSequencePrediction)
 AutoModelForTokenPrediction.register(UtrLmConfig, UtrLmForTokenPrediction)

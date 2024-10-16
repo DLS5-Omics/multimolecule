@@ -27,12 +27,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import (
-    AutoModelForContactPrediction,
-    AutoModelForNucleotidePrediction,
-    AutoModelForSequencePrediction,
-    AutoModelForTokenPrediction,
-)
+from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
 from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
     RnaMsmForContactPrediction,
@@ -62,7 +57,6 @@ AutoConfig.register("rnamsm", RnaMsmConfig)
 AutoBackbone.register(RnaMsmConfig, RnaMsmModel)
 AutoModel.register(RnaMsmConfig, RnaMsmModel)
 AutoModelForContactPrediction.register(RnaMsmConfig, RnaMsmForContactPrediction)
-AutoModelForNucleotidePrediction.register(RnaMsmConfig, RnaMsmForNucleotidePrediction)
 AutoModelForSequencePrediction.register(RnaMsmConfig, RnaMsmForSequencePrediction)
 AutoModelForSequenceClassification.register(RnaMsmConfig, RnaMsmForSequencePrediction)
 AutoModelForTokenPrediction.register(RnaMsmConfig, RnaMsmForTokenPrediction)

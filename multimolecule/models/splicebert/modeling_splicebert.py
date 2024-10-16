@@ -35,20 +35,9 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
 
-from multimolecule.module import (
-    ContactPredictionHead,
-    MaskedLMHead,
-    NucleotidePredictionHead,
-    SequencePredictionHead,
-    TokenPredictionHead,
-)
+from multimolecule.module import ContactPredictionHead, MaskedLMHead, SequencePredictionHead, TokenPredictionHead
 
-from ..modeling_outputs import (
-    ContactPredictorOutput,
-    NucleotidePredictorOutput,
-    SequencePredictorOutput,
-    TokenPredictorOutput,
-)
+from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
 from .configuration_splicebert import SpliceBertConfig
 
 try:
@@ -267,136 +256,6 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForContactPrediction, RnaTokenizer
-        >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForContactPrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
-    """
-
-    def __init__(self, config: SpliceBertConfig):
-        super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
-        self.contact_head = ContactPredictionHead(config)
-        self.head_config = self.contact_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=True,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.contact_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ContactPredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class SpliceBertForNucleotidePrediction(SpliceBertPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import SpliceBertConfig, SpliceBertForNucleotidePrediction, RnaTokenizer
-        >>> config = SpliceBertConfig()
-        >>> model = SpliceBertForNucleotidePrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
-    """
-
-    def __init__(self, config: SpliceBertConfig):
-        super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | NucleotidePredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return NucleotidePredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
 class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
     """
     Examples:
@@ -469,9 +328,9 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         >>> model = SpliceBertForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 7, 2])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -522,6 +381,83 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
+        )
+
+
+class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import SpliceBertConfig, SpliceBertForContactPrediction, RnaTokenizer
+        >>> config = SpliceBertConfig()
+        >>> model = SpliceBertForContactPrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
+    """
+
+    def __init__(self, config: SpliceBertConfig):
+        super().__init__(config)
+        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.contact_head = ContactPredictionHead(config)
+        self.head_config = self.contact_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.splicebert(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ContactPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class SpliceBertForNucleotidePrediction(SpliceBertForTokenPrediction):
+
+    def __init__(self, config: SpliceBertConfig):
+        super().__init__(config)
+        warn(
+            "`SpliceBertForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
+            "Please use `SpliceBertForTokenPrediction` instead.",
+            DeprecationWarning,
         )
 
 

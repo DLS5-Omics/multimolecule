@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
+from warnings import warn
 
 from transformers.models.auto.auto_factory import _BaseAutoModelClass, _LazyAutoMapping
 from transformers.models.auto.configuration_auto import CONFIG_MAPPING_NAMES
@@ -24,13 +25,19 @@ class AutoModelForSequencePrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
 
 
-class AutoModelForNucleotidePrediction(_BaseAutoModelClass):
+class AutoModelForTokenPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForNucleotidePrediction(AutoModelForTokenPrediction):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warn(
+            "`AutoModelForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
+            "Please use `AutoModelForTokenPrediction` instead.",
+            DeprecationWarning,
+        )
 
 
 class AutoModelForContactPrediction(_BaseAutoModelClass):
-    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
-
-
-class AutoModelForTokenPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())

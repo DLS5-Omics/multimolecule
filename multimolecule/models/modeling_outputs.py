@@ -24,80 +24,6 @@ from transformers.modeling_outputs import ModelOutput
 
 
 @dataclass
-class ContactPredictorOutput(ModelOutput):
-    """
-    Base class for outputs of contact classification & regression models.
-
-    Args:
-        loss:
-            `torch.FloatTensor` of shape `(1,)`.
-
-            Optional, returned when `labels` is provided
-        logits:
-            `torch.FloatTensor` of shape `(batch_size, sequence_length, config.num_labels)`
-
-            Prediction outputs.
-        hidden_states:
-            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +
-            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.
-
-            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True
-
-            Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.
-        attentions:
-            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
-            sequence_length)`.
-
-            Optional, eturned when `output_attentions=True` is passed or when `config.output_attentions=True`
-
-            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
-            heads.
-    """
-
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class NucleotidePredictorOutput(ModelOutput):
-    """
-    Base class for outputs of nucleotide classification & regression models.
-
-    Args:
-        loss:
-            `torch.FloatTensor` of shape `(1,)`.
-
-            Optional, returned when `labels` is provided
-        logits:
-            `torch.FloatTensor` of shape `(batch_size, sequence_length, config.num_labels)`
-
-            Prediction outputs.
-        hidden_states:
-            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +
-            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.
-
-            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True
-
-            Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.
-        attentions:
-            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
-            sequence_length)`.
-
-            Optional, eturned when `output_attentions=True` is passed or when `config.output_attentions=True`
-
-            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
-            heads.
-    """
-
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
 class SequencePredictorOutput(ModelOutput):
     """
     Base class for outputs of sentence classification & regression models.
@@ -138,6 +64,43 @@ class SequencePredictorOutput(ModelOutput):
 class TokenPredictorOutput(ModelOutput):
     """
     Base class for outputs of token classification & regression models.
+
+    Args:
+        loss:
+            `torch.FloatTensor` of shape `(1,)`.
+
+            Optional, returned when `labels` is provided
+        logits:
+            `torch.FloatTensor` of shape `(batch_size, sequence_length, config.num_labels)`
+
+            Prediction outputs.
+        hidden_states:
+            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +
+            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.
+
+            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True
+
+            Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.
+        attentions:
+            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
+            sequence_length)`.
+
+            Optional, eturned when `output_attentions=True` is passed or when `config.output_attentions=True`
+
+            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
+            heads.
+    """
+
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ContactPredictorOutput(ModelOutput):
+    """
+    Base class for outputs of contact classification & regression models.
 
     Args:
         loss:
