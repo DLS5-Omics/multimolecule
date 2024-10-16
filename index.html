@@ -501,6 +501,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -887,6 +896,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -932,24 +950,30 @@
 
 
 <h1 id="multimolecule">MultiMolecule<a class="headerlink" href="#multimolecule" title="Permanent link">&para;</a></h1>
-<p><a href="https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69" /></a>
-<a href="https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_coverage"><img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69" /></a>
-<a href="https://codecov.io/gh/DLS5-Omics/multimolecule"><img alt="CodeCov" src="https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE" /></a></p>
+<div class="admonition tips">
+<p>Accelerate Molecular Biology Research with Machine Learning</p>
+</div>
+<p><a href="https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img alt="Codacy - 代码质量" src="https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69" /></a>
+<a href="https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_coverage"><img alt="Codacy - Coverage" src="https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69" /></a>
+<a href="https://codecov.io/gh/DLS5-Omics/multimolecule"><img alt="CodeCov - Coverage" src="https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE" /></a></p>
 <p><a href="https://pypi.org/project/multimolecule/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/multimolecule" /></a>
 <a href="https://pypi.org/project/multimolecule/"><img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/multimolecule" /></a>
-<a href="https://multimolecule.danling.org"><img alt="Downloads" src="https://static.pepy.tech/badge/multimolecule/month" /></a></p>
+<a href="https://multimolecule.danling.org"><img alt="Downloads Statistics" src="https://static.pepy.tech/badge/multimolecule/month" /></a></p>
 <p><a href="https://www.gnu.org/licenses/agpl-3.0"><img alt="License: AGPL v3" src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" /></a></p>
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
-<p>Welcome to MultiMolecule (浦原), a foundational library designed to accelerate Scientific Research with Machine Learning. MultiMolecule aims to provide a comprehensive yet flexible set of tools for researchers who wish to leverage AI in their work.</p>
-<p>We understand that AI4Science is a broad field, with researchers from different disciplines employing various practices. Therefore, MultiMolecule is designed with low coupling in mind, meaning that while it offers a full suite of functionalities, each module can be used independently. This allows you to integrate only the components you need into your existing workflows without adding unnecessary complexity. The key functionalities that MultiMolecule provides include:</p>
+<p>Welcome to MultiMolecule (浦原), a foundational library designed to accelerate scientific research in molecular biology through machine learning.
+MultiMolecule provides a comprehensive yet flexible set of tools for researchers aiming to leverage AI with ease, focusing on biomolecular data (RNA, DNA, and protein).</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>MultiMolecule is built with flexibility and ease of use in mind.
+Its modular design allows you to utilize only the components you need, integrating seamlessly into your existing workflows without adding unnecessary complexity.</p>
 <ul>
-<li><a href="data"><code>data</code></a>: Efficient data handling and preprocessing capabilities to streamline the ingestion and transformation of scientific datasets.</li>
-<li><a href="datasets"><code>datasets</code></a>: A collection of widely-used datasets across different scientific domains, providing a solid foundation for training and evaluation.</li>
-<li><a href="module"><code>module</code></a>: Modular components designed to provide flexibility and reusability across various machine learning tasks.</li>
-<li><a href="models"><code>models</code></a>: State-of-the-art model architectures optimized for scientific research applications, ensuring high performance and accuracy.</li>
-<li><a href="tokenisers"><code>tokenisers</code></a>: Advanced tokenization methods to effectively handle complex scientific text and data representations.</li>
+<li><a href="data"><code>data</code></a>: Smart <a class="autorefs autorefs-internal" href="data/dataset/#multimolecule.data.Dataset"><code>Dataset</code></a> that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.</li>
+<li><a href="datasets"><code>datasets</code></a>: A collection of widely-used biomolecular datasets.</li>
+<li><a href="module"><code>module</code></a>: Modular neural network building blocks, including <a href="module/embeddings">embeddings</a>, <a href="module/heads">heads</a>, and criterions for constructing custom models.</li>
+<li><a href="models"><code>models</code></a>: Implementation of state-of-the-art pre-trained models in molecular biology.</li>
+<li><a href="tokenisers"><code>tokenisers</code></a>: Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.</li>
 </ul>
-<!-- - [`utils`][multimolecule.utils]: A collection of utility functions and tools to simplify common tasks and enhance the overall user experience. -->
+<!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->
 
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>Install the most recent stable version on PyPI:</p>
