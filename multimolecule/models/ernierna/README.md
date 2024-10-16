@@ -10,6 +10,19 @@ library_name: multimolecule
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
+  - example_title: "HIV-1"
+    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    output:
+      - label: "A"
+        score: 0.32839149236679077
+      - label: "U"
+        score: 0.3044775426387787
+      - label: "C"
+        score: 0.09914574027061462
+      - label: "-"
+        score: 0.09502048045396805
+      - label: "."
+        score: 0.06993662565946579
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
@@ -79,29 +92,29 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline('fill-mask', model='multimolecule/ernierna')
->>> unmasker("uagc<mask>uaucagacugauguuga")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna")
+>>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
 
-[{'score': 0.22777850925922394,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.21105751395225525,
+[{'score': 0.32839149236679077,
   'token': 6,
   'token_str': 'A',
-  'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.18962091207504272,
+  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.3044775426387787,
+  'token': 9,
+  'token_str': 'U',
+  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.09914574027061462,
   'token': 7,
   'token_str': 'C',
-  'sequence': 'U A G C C U A U C A G A C U G A U G U U G A'},
- {'score': 0.11191495507955551,
-  'token': 8,
-  'token_str': 'G',
-  'sequence': 'U A G C G U A U C A G A C U G A U G U U G A'},
- {'score': 0.09583593904972076,
+  'sequence': 'G G U C C C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.09502048045396805,
+  'token': 24,
+  'token_str': '-',
+  'sequence': 'G G U C - C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.06993662565946579,
   'token': 21,
   'token_str': '.',
-  'sequence': 'U A G C. U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'G G U C. C U C U G G U U A G A C C A G A U C U G A G C C U'}]
 ```
 
 ### Downstream Use

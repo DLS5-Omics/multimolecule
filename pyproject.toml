@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "multimolecule"
-description = "Neural Networks for RNA, DNA, and Protein."
+description = "Accelerate Molecular Biology Research with Machine Learning"
 readme = "README.md"
 keywords = [
   "deep-learning",

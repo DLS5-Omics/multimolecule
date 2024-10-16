@@ -6,28 +6,36 @@ date: 2024-05-04 00:00:00
 
 # [MultiMolecule](https://multimolecule.danling.org)
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
-[![CodeCov](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
+!!! tips ""
 
-[![PyPI - Version](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule/)
-[![Downloads](https://static.pepy.tech/badge/multimolecule/month)](https://multimolecule.danling.org)
+    使用机器学习加速分子生物学研究
 
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Codacy - 代码质量](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy - 测试覆盖](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![CodeCov - 测试覆盖](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
+
+[![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule/)
+[![PyPI - Python版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule/)
+[![下载统计](https://static.pepy.tech/badge/multimolecule/month)](https://multimolecule.danling.org)
+
+[![授权：AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 ## 介绍
 
-欢迎来到 MultiMolecule (浦原)，这是一个通过机器学习加速科学研究的基础库。MultiMolecule 旨在为希望在工作当中使用 AI 的研究人员提供一套全面而灵活的工具。
+欢迎来到 MultiMolecule (浦原)，这是一款基础库，旨在通过机器学习加速分子生物学的科研进展。
+MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松利用 AI，主要聚焦于生物分子数据（RNA、DNA 和蛋白质）。
 
-我们理解 AI4Science 是一个广泛的领域，来自不同学科的研究人员使用各种实践方法。因此，MultiMolecule 设计时考虑了低耦合性，这意味着虽然它提供了完整的功能套件，但每个模块都可以独立使用。这使您可以仅将所需组件集成到现有工作流程中，而不会增加不必要的复杂性。MultiMolecule 提供的主要功能包括：
+## 概览
 
-- [`data`](data): 高效的数据处理和预处理功能，以简化科学数据集的摄取和转换。
-- [`datasets`](datasets): 跨不同科学领域的广泛使用数据集集合，为训练和评估提供坚实基础。
-- [`module`](module): 旨在提供灵活性和可重用性的模块化组件，适用于各种机器学习任务。
-- [`models`](models): 为科学研究应用优化的最先进模型架构，确保高性能和高准确性。
-- [`tokenisers`](tokenisers): 先进的分词方法，有效处理复杂的科学文本和数据表示。
-<!-- - [`utils`][multimolecule.utils]: 一系列实用函数和工具，简化常见任务并增强整体用户体验。 -->
+MultiMolecule 以灵活性和易用性为设计核心。
+其模块化设计允许您根据需要仅使用所需的组件，并能无缝集成到现有的工作流程中，而不会增加不必要的复杂性。
+
+- [`data`](data)：智能的 [`Dataset`][multimolecule.data.Dataset]，能够自动推断任务，包括任务的层级（序列、令牌、接触）和类型（分类、回归）。还提供多任务数据集和采样器，简化多任务学习，无需额外配置。
+- [`datasets`](datasets)：广泛使用的生物分子数据集集合。
+- [`module`](module)：模块化神经网络构建块，包括[嵌入层](module/embeddings)、[预测头](module/heads)和损失函数，用于构建自定义模型。
+- [`models`](models)：分子生物学领域的最先进预训练模型实现。
+- [`tokenisers`](tokenisers)：用于将 DNA、RNA、蛋白质及其他序列转换为独热编码的分词器。
+<!-- - [`runner`](runner)：功能强大且可扩展的运行器，允许用户轻松进行模型微调、评估和预测。 -->
 
 ## 安装
 

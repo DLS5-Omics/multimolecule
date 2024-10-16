@@ -10,19 +10,19 @@ library_name: multimolecule
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
-  - example_title: "PRNP"
-    text: "CTG<mask>AAGCGGCCCACGCGGACTGACGGGCGGGGG"
+  - example_title: "Homo sapiens PRNP mRNA for prion"
+    text: "AGC<mask>CAUUAUGGCGAACCUUGGCUGCUG"
     output:
-      - label: "GGC"
-        score: 0.09496457129716873
-      - label: "GAG"
-        score: 0.09480331838130951
-      - label: "GAC"
-        score: 0.07397700101137161
-      - label: "AAG"
-        score: 0.07375374436378479
-      - label: "GUG"
-        score: 0.06565868109464645
+      - label: "AAA"
+        score: 0.05433480441570282
+      - label: "AUC"
+        score: 0.04437034949660301
+      - label: "AAU"
+        score: 0.03882088139653206
+      - label: "ACA"
+        score: 0.037016965448856354
+      - label: "ACC"
+        score: 0.03563101962208748
 ---
 
 # mRNA-FM
@@ -111,29 +111,29 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline('fill-mask', model='multimolecule/mrnafm')
->>> unmasker("ctg<mask>aagcggcccacgcggactgacgggcggggg")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/mrnafm")
+>>> unmasker("agc<mask>cauuauggcgaaccuuggcugcug")
 
-[{'score': 0.09496457129716873,
-  'token': 67,
-  'token_str': 'GGC',
-  'sequence': 'CUG GGC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.09480331838130951,
-  'token': 58,
-  'token_str': 'GAG',
-  'sequence': 'CUG GAG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.07397700101137161,
-  'token': 57,
-  'token_str': 'GAC',
-  'sequence': 'CUG GAC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.07375374436378479,
-  'token': 8,
-  'token_str': 'AAG',
-  'sequence': 'CUG AAG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'},
- {'score': 0.06565868109464645,
-  'token': 73,
-  'token_str': 'GUG',
-  'sequence': 'CUG GUG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG'}]
+[{'score': 0.05433480441570282,
+  'token': 6,
+  'token_str': 'AAA',
+  'sequence': 'AGC AAA CAU UAU GGC GAA CCU UGG CUG CUG'},
+ {'score': 0.04437034949660301,
+  'token': 22,
+  'token_str': 'AUC',
+  'sequence': 'AGC AUC CAU UAU GGC GAA CCU UGG CUG CUG'},
+ {'score': 0.03882088139653206,
+  'token': 9,
+  'token_str': 'AAU',
+  'sequence': 'AGC AAU CAU UAU GGC GAA CCU UGG CUG CUG'},
+ {'score': 0.037016965448856354,
+  'token': 11,
+  'token_str': 'ACA',
+  'sequence': 'AGC ACA CAU UAU GGC GAA CCU UGG CUG CUG'},
+ {'score': 0.03563101962208748,
+  'token': 12,
+  'token_str': 'ACC',
+  'sequence': 'AGC ACC CAU UAU GGC GAA CCU UGG CUG CUG'}]
 ```
 
 ### Downstream Use
