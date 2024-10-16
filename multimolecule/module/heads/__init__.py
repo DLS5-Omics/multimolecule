@@ -17,7 +17,6 @@
 from .config import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 from .contact import ContactPredictionHead
 from .generic import PredictionHead
-from .nucleotide import NucleotideHeadRegistryHF, NucleotideKMerHead, NucleotidePredictionHead
 from .output import HeadOutput
 from .pretrain import MaskedLMHead
 from .registry import HeadRegistry
@@ -41,9 +40,6 @@ __all__ = [
     "TokenHeadRegistryHF",
     "TokenPredictionHead",
     "TokenKMerHead",
-    "NucleotideHeadRegistryHF",
-    "NucleotidePredictionHead",
-    "NucleotideKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
     "HeadOutput",

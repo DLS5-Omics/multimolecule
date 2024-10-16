@@ -185,7 +185,7 @@ label = torch.tensor([1])
 output = model(**input, labels=label)
 ```
 
-#### Nucleotide Classification / Regression
+#### Token Classification / Regression
 
 **Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
 
@@ -193,11 +193,11 @@ Here is how to use this model as backbone to fine-tune for a nucleotide-level ta
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, UtrBertForNucleotidePrediction
+from multimolecule import RnaTokenizer, UtrBertForTokenPrediction
 
 
 tokenizer = RnaTokenizer.from_pretrained('multimolecule/utrbert-3mer')
-model = UtrBertForNucleotidePrediction.from_pretrained('multimolecule/utrbert-3mer')
+model = UtrBertForTokenPrediction.from_pretrained('multimolecule/utrbert-3mer')
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors='pt')

@@ -19,6 +19,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING, Mapping, Tuple
 
+import torch
 from chanfig import ConfigRegistry
 from danling import NestedTensor
 from torch import Tensor
@@ -100,6 +101,25 @@ class TokenPredictionHead(PredictionHead):
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
         output = output * attention_mask.unsqueeze(-1)
+
+        # remove cls token embeddings
+        if self.bos_token_id is not None:
+            output = output[..., 1:, :]
+            # process attention_mask and input_ids to make removal of eos token happy
+            attention_mask = attention_mask[..., 1:]
+            if input_ids is not None:
+                input_ids = input_ids[..., 1:]
+        # remove eos token embeddings
+        if self.eos_token_id is not None:
+            if input_ids is not None:
+                eos_mask = input_ids.ne(self.eos_token_id).to(output)
+            else:
+                last_valid_indices = attention_mask.sum(dim=-1)
+                seq_length = attention_mask.size(-1)
+                eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
+            output = output * eos_mask[:, :, None]
+            output = output[..., :-1, :]
+
         return super().forward(output, labels, **kwargs)
 
 
@@ -126,9 +146,9 @@ class TokenKMerHead(PredictionHead):
         self.pad_token_id = config.pad_token_id
         if head_config is not None and head_config.output_name is not None:
             self.output_name = head_config.output_name
-        self.unfold_kmer_embeddings = partial(
-            unfold_kmer_embeddings, nmers=self.nmers, bos_token_id=self.bos_token_id, eos_token_id=self.eos_token_id
-        )
+        # Do not pass bos_token_id and eos_token_id to unfold_kmer_embeddings
+        # As they will be removed in preprocess
+        self.unfold_kmer_embeddings = partial(unfold_kmer_embeddings, nmers=self.nmers)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -171,5 +191,25 @@ class TokenKMerHead(PredictionHead):
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
         output = output * attention_mask.unsqueeze(-1)
+
+        # remove cls token embeddings
+        if self.bos_token_id is not None:
+            output = output[..., 1:, :]
+            attention_mask = attention_mask[..., 1:]
+            if input_ids is not None:
+                input_ids = input_ids[..., 1:]
+        # remove eos token embeddings
+        if self.eos_token_id is not None:
+            if input_ids is not None:
+                eos_mask = input_ids.ne(self.eos_token_id).to(output)
+                input_ids = input_ids[..., :-1]
+            else:
+                last_valid_indices = attention_mask.sum(dim=-1)
+                seq_length = attention_mask.size(-1)
+                eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
+            output = output * eos_mask[:, :, None]
+            output = output[..., :-1, :]
+            attention_mask = attention_mask[..., 1:]
+
         output = self.unfold_kmer_embeddings(output, attention_mask)
         return super().forward(output, labels, **kwargs)

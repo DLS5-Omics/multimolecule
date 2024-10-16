@@ -21,5 +21,5 @@ The `module` package is intended for simple, reusable modules that are consisten
 
 ## Modules
 
-- [heads](heads): Contains various prediction heads, such as [`SequencePredictionHead`][multimolecule.SequencePredictionHead], [`NucleotidePredictionHead`][multimolecule.NucleotidePredictionHead], and [`ContactPredictionHead`][multimolecule.ContactPredictionHead].
+- [heads](heads): Contains various prediction heads, such as [`SequencePredictionHead`][multimolecule.SequencePredictionHead], [`TokenPredictionHead`][multimolecule.TokenPredictionHead], and [`ContactPredictionHead`][multimolecule.ContactPredictionHead].
 - [embeddings](embeddings): Contains various positional embeddings, such as [`SinusoidalEmbedding`][multimolecule.SinusoidalEmbedding] and [`RotaryEmbedding`][multimolecule.RotaryEmbedding].

@@ -27,12 +27,7 @@ from transformers import (
 
 from multimolecule.tokenisers.rna import RnaTokenizer
 
-from ..modeling_auto import (
-    AutoModelForContactPrediction,
-    AutoModelForNucleotidePrediction,
-    AutoModelForSequencePrediction,
-    AutoModelForTokenPrediction,
-)
+from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
 from .configuration_rnaernie import RnaErnieConfig
 from .modeling_rnaernie import (
     RnaErnieForContactPrediction,
@@ -62,7 +57,6 @@ AutoConfig.register("rnaernie", RnaErnieConfig)
 AutoBackbone.register(RnaErnieConfig, RnaErnieModel)
 AutoModel.register(RnaErnieConfig, RnaErnieModel)
 AutoModelForContactPrediction.register(RnaErnieConfig, RnaErnieForContactPrediction)
-AutoModelForNucleotidePrediction.register(RnaErnieConfig, RnaErnieForNucleotidePrediction)
 AutoModelForSequencePrediction.register(RnaErnieConfig, RnaErnieForSequencePrediction)
 AutoModelForSequenceClassification.register(RnaErnieConfig, RnaErnieForSequencePrediction)
 AutoModelForTokenPrediction.register(RnaErnieConfig, RnaErnieForTokenPrediction)

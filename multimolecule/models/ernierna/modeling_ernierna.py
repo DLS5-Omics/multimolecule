@@ -39,7 +39,6 @@ from multimolecule.module import (
     Criterion,
     HeadOutput,
     MaskedLMHead,
-    NucleotidePredictionHead,
     SequencePredictionHead,
     SinusoidalEmbedding,
     TokenPredictionHead,
@@ -304,138 +303,6 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         )
 
 
-class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForContactPrediction, RnaTokenizer
-        >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForContactPrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
-    """
-
-    def __init__(self, config: ErnieRnaConfig):
-        super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
-        self.contact_head = ContactPredictionHead(config)
-        self.head_config = self.contact_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=True,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.contact_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaContactPredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class ErnieRnaForNucleotidePrediction(ErnieRnaPreTrainedModel):
-    """
-    Examples:
-        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForNucleotidePrediction, RnaTokenizer
-        >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForNucleotidePrediction(config)
-        >>> tokenizer = RnaTokenizer()
-        >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randn(1, 5, 2))
-        >>> output["logits"].shape
-        torch.Size([1, 5, 2])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
-    """
-
-    def __init__(self, config: ErnieRnaConfig):
-        super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
-        self.nucleotide_head = NucleotidePredictionHead(config)
-        self.head_config = self.nucleotide_head.config
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor,
-        attention_mask: Tensor | None = None,
-        position_ids: Tensor | None = None,
-        head_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_attention_biases: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaNucleotidePredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
-            input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            head_mask=head_mask,
-            inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_attention_biases=output_attention_biases,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-            **kwargs,
-        )
-        output = self.nucleotide_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaNucleotidePredictorOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
 class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
@@ -508,9 +375,9 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         >>> model = ErnieRnaForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer()
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels=torch.randint(2, (1, 7)))
+        >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 7, 2])
+        torch.Size([1, 5, 2])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -564,6 +431,83 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
+        )
+
+
+class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaForContactPrediction, RnaTokenizer
+        >>> config = ErnieRnaConfig()
+        >>> model = ErnieRnaForContactPrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 2])
+        >>> output["loss"]  # doctest:+ELLIPSIS
+        tensor(..., grad_fn=<NllLossBackward0>)
+    """
+
+    def __init__(self, config: ErnieRnaConfig):
+        super().__init__(config)
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.contact_head = ContactPredictionHead(config)
+        self.head_config = self.contact_head.config
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ErnieRnaContactPredictorOutput:
+        if output_attentions is False:
+            warn("output_attentions must be True for contact classification and will be ignored.")
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.ernierna(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            output_attentions=True,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+        output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ErnieRnaContactPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
+class ErnieRnaForNucleotidePrediction(ErnieRnaForTokenPrediction):
+
+    def __init__(self, config: ErnieRnaConfig):
+        super().__init__(config)
+        warn(
+            "`ErnieRnaForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
+            "Please use `CaLmForTokenPrediction` instead.",
+            DeprecationWarning,
         )
 
 
@@ -1366,24 +1310,6 @@ class ErnieRnaBasicResBlock(nn.Module):
 
 
 @dataclass
-class ErnieRnaContactPredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaNucleotidePredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
 class ErnieRnaSequencePredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
@@ -1393,7 +1319,7 @@ class ErnieRnaSequencePredictorOutput(ModelOutput):
 
 
 @dataclass
-class ErnieRnaForMaskedLMOutput(ModelOutput):
+class ErnieRnaTokenPredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
@@ -1402,7 +1328,16 @@ class ErnieRnaForMaskedLMOutput(ModelOutput):
 
 
 @dataclass
-class ErnieRnaTokenPredictorOutput(ModelOutput):
+class ErnieRnaContactPredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaForMaskedLMOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None

@@ -15,10 +15,9 @@ date: 2024-05-04
 
 为了避免这种歧义，MultiMolecule 提供了一系列模型类，这些类的名称清晰、直观，反映了它们的预期用途：
 
-- `multimolecule.AutoModelForContactPrediction`: 接触预测
-- `multimolecule.AutoModelForNucleotidePrediction`: 核苷酸预测
 - `multimolecule.AutoModelForSequencePrediction`: 序列预测
 - `multimolecule.AutoModelForTokenPrediction`: 令牌预测
+- `multimolecule.AutoModelForContactPrediction`: 接触预测
 
 每个模型都支持回归和分类任务，为广泛的应用提供了灵活性和精度。
 

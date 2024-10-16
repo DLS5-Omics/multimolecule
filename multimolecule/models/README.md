@@ -15,10 +15,9 @@ While these classes support both regression and classification tasks, their name
 
 To avoid this ambiguity, MultiMolecule provides a set of model classes with clear, intuitive names that reflect their intended use:
 
-- `multimolecule.AutoModelForContactPrediction`: Contact Prediction
-- `multimolecule.AutoModelForNucleotidePrediction`: Nucleotide Prediction
 - `multimolecule.AutoModelForSequencePrediction`: Sequence Prediction
 - `multimolecule.AutoModelForTokenPrediction`: Token Prediction
+- `multimolecule.AutoModelForContactPrediction`: Contact Prediction
 
 Each of these models supports both regression and classification tasks, offering flexibility and precision for a wide range of applications.
 
