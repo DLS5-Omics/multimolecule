@@ -30,7 +30,7 @@ It further randomly splits the remaining sequences into training, validation, an
 
 ## Disclaimer
 
-This is an UNOFFICIAL release of the bpRNA-spot by Jaswinder Singh, Jack Hanson, Kuldip Paliwal and Yaoqi Zhou.
+This is an UNOFFICIAL release of the bpRNA-spot by Jaswinder Singh, et al.
 
 **The team releasing bpRNA-spot did not write this dataset card for this dataset so this dataset card has been written by the MultiMolecule team.**
 

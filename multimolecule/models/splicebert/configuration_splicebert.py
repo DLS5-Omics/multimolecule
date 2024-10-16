@@ -61,13 +61,10 @@ class SpliceBertConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import SpliceBertModel, SpliceBertConfig
-
         >>> # Initializing a SpliceBERT multimolecule/splicebert style configuration
         >>> configuration = SpliceBertConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/splicebert style configuration
         >>> model = SpliceBertModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

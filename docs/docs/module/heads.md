@@ -12,8 +12,6 @@ date: 2024-05-04
 
 ::: multimolecule.module.heads.sequence
 
-::: multimolecule.module.heads.nucleotide
-
 ::: multimolecule.module.heads.token
 
 ::: multimolecule.module.heads.contact

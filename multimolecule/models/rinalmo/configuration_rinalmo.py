@@ -75,13 +75,10 @@ class RiNALMoConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import RiNALMoModel, RiNALMoConfig
-
         >>> # Initializing a RiNALMo multimolecule/rinalmo style configuration
         >>> configuration = RiNALMoConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/rinalmo style configuration
         >>> model = RiNALMoModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """

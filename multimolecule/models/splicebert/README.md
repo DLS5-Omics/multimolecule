@@ -10,6 +10,19 @@ library_name: multimolecule
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
+  - example_title: "HIV-1"
+    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    output:
+      - label: "U"
+        score: 0.340412974357605
+      - label: "Y"
+        score: 0.13882005214691162
+      - label: "C"
+        score: 0.056610625237226486
+      - label: "H"
+        score: 0.05455885827541351
+      - label: "W"
+        score: 0.05356108024716377
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUGA"
     output:
@@ -113,29 +126,29 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline('fill-mask', model='multimolecule/splicebert')
->>> unmasker("uagc<mask>uaucagacugauguuga")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/splicebert")
+>>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
 
-[{'score': 0.09350304305553436,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'U A G C A U A U C A G A C U G A U G U U G A'},
- {'score': 0.08757384121417999,
-  'token': 14,
-  'token_str': 'W',
-  'sequence': 'U A G C W U A U C A G A C U G A U G U U G A'},
- {'score': 0.08202056586742401,
+[{'score': 0.340412974357605,
   'token': 9,
   'token_str': 'U',
-  'sequence': 'U A G C U U A U C A G A C U G A U G U U G A'},
- {'score': 0.07025782763957977,
+  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.13882005214691162,
+  'token': 12,
+  'token_str': 'Y',
+  'sequence': 'G G U C Y C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.056610625237226486,
+  'token': 7,
+  'token_str': 'C',
+  'sequence': 'G G U C C C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.05455885827541351,
   'token': 19,
   'token_str': 'H',
-  'sequence': 'U A G C H U A U C A G A C U G A U G U U G A'},
- {'score': 0.06502506136894226,
-  'token': 16,
-  'token_str': 'M',
-  'sequence': 'U A G C M U A U C A G A C U G A U G U U G A'}]
+  'sequence': 'G G U C H C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.05356108024716377,
+  'token': 14,
+  'token_str': 'W',
+  'sequence': 'G G U C W C U C U G G U U A G A C C A G A U C U G A G C C U'}]
 ```
 
 ### Downstream Use
@@ -148,11 +161,11 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, SpliceBertModel
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/splicebert')
-model = SpliceBertModel.from_pretrained('multimolecule/splicebert')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
+model = SpliceBertModel.from_pretrained("multimolecule/splicebert")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
 ```
@@ -168,11 +181,11 @@ import torch
 from multimolecule import RnaTokenizer, SpliceBertForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/splicebert')
-model = SpliceBertForSequencePrediction.from_pretrained('multimolecule/splicebert')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
+model = SpliceBertForSequencePrediction.from_pretrained("multimolecule/splicebert")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
 output = model(**input, labels=label)
@@ -189,11 +202,11 @@ import torch
 from multimolecule import RnaTokenizer, SpliceBertForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/splicebert')
-model = SpliceBertForTokenPrediction.from_pretrained('multimolecule/splicebert')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
+model = SpliceBertForTokenPrediction.from_pretrained("multimolecule/splicebert")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
 output = model(**input, labels=label)
@@ -210,11 +223,11 @@ import torch
 from multimolecule import RnaTokenizer, SpliceBertForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained('multimolecule/splicebert')
-model = SpliceBertForContactPrediction.from_pretrained('multimolecule/splicebert')
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
+model = SpliceBertForContactPrediction.from_pretrained("multimolecule/splicebert")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
-input = tokenizer(text, return_tensors='pt')
+input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
 output = model(**input, labels=label)

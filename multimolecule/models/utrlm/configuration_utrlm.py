@@ -75,13 +75,10 @@ class UtrLmConfig(PreTrainedConfig):
 
     Examples:
         >>> from multimolecule import UtrLmModel, UtrLmConfig
-
         >>> # Initializing a UTR-LM multimolecule/utrlm style configuration
         >>> configuration = UtrLmConfig()
-
         >>> # Initializing a model (with random weights) from the multimolecule/utrlm style configuration
         >>> model = UtrLmModel(configuration)
-
         >>> # Accessing the model configuration
         >>> configuration = model.config
     """
