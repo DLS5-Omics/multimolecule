@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.41">
     
     
       
@@ -48,7 +48,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2439,29 +2439,29 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-1-24">24</a></span>
 <span class="normal"><a href="#__codelineno-1-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">multimolecule</span>  <span class="c1"># you must import multimolecule to register models</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s1">&#39;fill-mask&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;multimolecule/calm&#39;</span><span class="p">)</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span><span class="p">(</span><span class="s2">&quot;ctg&lt;mask&gt;aagcggcccacgcggactgacgggcggggg&quot;</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s2">&quot;fill-mask&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span><span class="p">(</span><span class="s2">&quot;agc&lt;mask&gt;cattatggcgaaccttggctgctg&quot;</span><span class="p">)</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="p">[{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010724939405918121</span><span class="p">,</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">73</span><span class="p">,</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;GUG&#39;</span><span class="p">,</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;CUG GUG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010476444847881794</span><span class="p">,</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">77</span><span class="p">,</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;GNC&#39;</span><span class="p">,</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;CUG GNC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010415051132440567</span><span class="p">,</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;AUC&#39;</span><span class="p">,</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;CUG AUC AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010389575734734535</span><span class="p">,</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">68</span><span class="p">,</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;GGG&#39;</span><span class="p">,</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;CUG GGG AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.01017767284065485</span><span class="p">,</span>
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;AAU&#39;</span><span class="p">,</span>
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;CUG AAU AAG CGG CCC ACG CGG ACU GAC GGG CGG GGG&#39;</span><span class="p">}]</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="p">[{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.011160684749484062</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;UUN&#39;</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC UUN CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.01067513320595026</span><span class="p">,</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">117</span><span class="p">,</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;NGC&#39;</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC NGC CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010549729689955711</span><span class="p">,</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;NNC&#39;</span><span class="p">,</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC NNC CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.0103579331189394</span><span class="p">,</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">51</span><span class="p">,</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;CNA&#39;</span><span class="p">,</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC CNA CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010322545655071735</span><span class="p">,</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">77</span><span class="p">,</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;GNC&#39;</span><span class="p">,</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC GNC CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">}]</span>
 </span></code></pre></div></td></tr></table></div>
 <h3 id="downstream-use">Downstream Use<a class="headerlink" href="#downstream-use" title="Permanent link">&para;</a></h3>
 <h4 id="extract-features">Extract Features<a class="headerlink" href="#extract-features" title="Permanent link">&para;</a></h4>
@@ -5575,7 +5575,7 @@ models.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "content.tooltips", "header.autohide", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.prune", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
         <script src="../../javascripts/mathjax.js"></script>
       
