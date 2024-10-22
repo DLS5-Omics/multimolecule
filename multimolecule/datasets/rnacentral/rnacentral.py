@@ -49,7 +49,7 @@ class ConvertConfig(ConvertConfig_):
 
     def post(self):
         if self.max_seq_len is not None:
-            self.output_path = f"{self.output_path}-{self.max_seq_len}"
+            self.output_path = f"{self.output_path}.{self.max_seq_len}"
         super().post()
 
 
