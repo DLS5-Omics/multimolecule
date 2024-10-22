@@ -48,8 +48,7 @@ def convert_dataset_(df: pd.DataFrame):
 
 def convert_dataset(convert_config):
     df = dl.load_pandas(convert_config.dataset_path)
-    fd = convert_dataset_(df)
-    save_dataset(convert_config, {"test": fd})
+    save_dataset(convert_config, convert_dataset_(df), filename="test.parquet")
 
 
 class ConvertConfig(ConvertConfig_):

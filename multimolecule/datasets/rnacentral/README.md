@@ -93,14 +93,14 @@ This is an UNOFFICIAL release of the [RNAcentral](https://rnacentral.org) by the
 
 ## Variations
 
-This dataset is available in five variants:
+This dataset is available in five additional variants:
 
 - [rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral): The main RNAcentral dataset.
-- [rnacentral-512](https://huggingface.co/datasets/multimolecule/rnacentral-1024): RNAcentral dataset with all sequences truncated to 512 nucleotides.
-- [rnacentral-1024](https://huggingface.co/datasets/multimolecule/rnacentral-1024): RNAcentral dataset with all sequences truncated to 1024 nucleotides.
-- [rnacentral-2048](https://huggingface.co/datasets/multimolecule/rnacentral-2048): RNAcentral dataset with all sequences truncated to 2048 nucleotides.
-- [rnacentral-4096](https://huggingface.co/datasets/multimolecule/rnacentral-4096): RNAcentral dataset with all sequences truncated to 4096 nucleotides.
-- [rnacentral-8192](https://huggingface.co/datasets/multimolecule/rnacentral-8192): RNAcentral dataset with all sequences truncated to 8192 nucleotides.
+- [rnacentral.512](https://huggingface.co/datasets/multimolecule/rnacentral.512): RNAcentral dataset with all sequences truncated to 512 nucleotides.
+- [rnacentral.1024](https://huggingface.co/datasets/multimolecule/rnacentral.1024): RNAcentral dataset with all sequences truncated to 1024 nucleotides.
+- [rnacentral.2048](https://huggingface.co/datasets/multimolecule/rnacentral.2048): RNAcentral dataset with all sequences truncated to 2048 nucleotides.
+- [rnacentral.4096](https://huggingface.co/datasets/multimolecule/rnacentral.4096): RNAcentral dataset with all sequences truncated to 4096 nucleotides.
+- [rnacentral.8192](https://huggingface.co/datasets/multimolecule/rnacentral.8192): RNAcentral dataset with all sequences truncated to 8192 nucleotides.
 
 ## Derived Datasets
 
