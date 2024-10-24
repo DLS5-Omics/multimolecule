@@ -42,6 +42,7 @@ This is an UNOFFICIAL release of the bpRNA-new by Kengo Sato, et al.
 
 - [bpRNA-1m](https://huggingface.co/datasets/multimolecule/bprna): A database of single molecule secondary structures annotated using bpRNA.
 - [bpRNA-spot](https://huggingface.co/datasets/multimolecule/bprna-spot): A subset of bpRNA-1m that applies [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) to remove sequences with more than 80% sequence similarity from bpRNA-1m.
+- [ArchiveII](https://huggingface.co/datasets/multimolecule/archiveii): A database of RNA secondary with the same families as RNAStrAlign, usually used for testing.
 
 ## License
 

@@ -44,6 +44,7 @@ This is an UNOFFICIAL release of the bpRNA-spot by Jaswinder Singh, et al.
 
 - [bpRNA-1m](https://huggingface.co/datasets/multimolecule/bprna): A database of single molecule secondary structures annotated using bpRNA.
 - [bpRNA-new](https://huggingface.co/datasets/multimolecule/bprna-new): A dataset of newly discovered RNA families from Rfam 14.2, designed for cross-family validation to assess generalization capability.
+- [RNAStrAlign](https://huggingface.co/datasets/multimolecule/rnastralign): A database of RNA secondary with the same families as ArchiveII, usually used for training.
 
 ## License
 

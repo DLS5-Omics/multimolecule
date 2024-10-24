@@ -25,6 +25,8 @@ date: 2024-05-04
 - [EternaBench-CM](eternabench-cm)
 - [EternaBench-Switch](eternabench-switch)
 - [EternaBench-External](eternabench-external)
+- [RNAStrAlign](rnastralign)
+- [ArchiveII](archiveii)
 
 ## 使用
 

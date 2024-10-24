@@ -22,6 +22,8 @@ nav:
           - bpRNA-1m: datasets/bprna.md
           - bpRNA-spot: datasets/bprna-spot.md
           - bpRNA-new: datasets/bprna-new.md
+          - RNAStrAlign: datasets/rnastralign.md
+          - ArchiveII: datasets/archiveii.md
           - RYOS: datasets/ryos.md
           - EternaBench-CM: datasets/eternabench-cm.md
           - EternaBench-Switch: datasets/eternabench-switch.md
