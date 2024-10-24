@@ -57,6 +57,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/datasets/archiveii/</loc>
+        <lastmod>2024-10-24</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/archiveii/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/archiveii/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/datasets/bprna-new/</loc>
         <lastmod>2024-10-24</lastmod>
         <changefreq>daily</changefreq>
@@ -118,6 +125,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/datasets/rnastralign/</loc>
+        <lastmod>2024-10-24</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnastralign/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnastralign/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/datasets/ryos/</loc>
@@ -330,6 +344,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/archiveii/</loc>
+        <lastmod>2024-10-24</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/archiveii/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/archiveii/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/zh/datasets/bprna-new/</loc>
         <lastmod>2024-10-24</lastmod>
         <changefreq>daily</changefreq>
@@ -391,6 +412,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/datasets/rnastralign/</loc>
+        <lastmod>2024-10-24</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnastralign/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnastralign/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/datasets/ryos/</loc>
