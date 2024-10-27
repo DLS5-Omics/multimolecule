@@ -19,6 +19,7 @@ nav:
       - RNA:
           - RNAcentral: datasets/rnacentral.md
           - Rfam: datasets/rfam.md
+          - RIVAS: datasets/rivas.md
           - bpRNA-1m: datasets/bprna.md
           - bpRNA-spot: datasets/bprna-spot.md
           - bpRNA-new: datasets/bprna-new.md

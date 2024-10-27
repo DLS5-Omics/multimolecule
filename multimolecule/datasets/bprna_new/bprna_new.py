@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import os
 from collections import namedtuple
+from collections.abc import Mapping
 from pathlib import Path
 
 import torch
@@ -30,20 +31,41 @@ torch.manual_seed(1016)
 RNA_SS_data = namedtuple("RNA_SS_data", "seq ss_label length name pairs")
 
 
-def convert_bpseq(bpseq):
-    if isinstance(bpseq, str):
-        bpseq = Path(bpseq)
-    with open(bpseq) as f:
+def convert_bpseq(file) -> Mapping:
+    if not isinstance(file, Path):
+        file = Path(file)
+    with open(file) as f:
         lines = f.read().splitlines()
-    lines = [[int(i) if i.isdigit() else i for i in j.split()] for j in lines]
-    sequence, structure = [], ["."] * len(lines)
-    for row in lines:
-        index, nucleotide, paired_index = row
-        sequence.append(nucleotide)
-        if paired_index > 0 and index < paired_index:
-            structure[index - 1] = "("
-            structure[paired_index - 1] = ")"
-    return {"id": bpseq.stem.split("-")[0], "sequence": "".join(sequence), "secondary_structure": "".join(structure)}
+
+    num_bases = len(lines)
+    sequence = []
+    dot_bracket = ["."] * num_bases
+    pairs = [-1] * num_bases
+
+    for line in lines:
+        parts = line.strip().split()
+        index = int(parts[0]) - 1
+        base = parts[1]
+        paired_index = int(parts[2]) - 1
+
+        sequence.append(base)
+
+        if paired_index >= 0:
+            if paired_index > index:
+                dot_bracket[index] = "("
+                dot_bracket[paired_index] = ")"
+            elif pairs[paired_index] != index:
+                raise ValueError(
+                    f"Inconsistent pairing: Base {index} is paired with {paired_index}, "
+                    f"but {paired_index} is not paired with {index}."
+                )
+            pairs[index] = paired_index
+
+    return {
+        "id": file.stem.split("-")[0],
+        "sequence": "".join(sequence),
+        "secondary_structure": "".join(dot_bracket),
+    }
 
 
 def convert_dataset(convert_config):
