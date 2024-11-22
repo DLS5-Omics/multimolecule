@@ -14,22 +14,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
+import string
+from collections import defaultdict
+
 import numpy as np
 
-dot_bracket_to_contact_map_table = str.maketrans(
-    {",": ".", "_": ".", "[": "(", "]": ")", "{": "(", "}": ")", "<": "(", ">": ")"}
-)
+dot_bracket_pair_table = {"(": ")", "[": "]", "{": "}", "<": ">"}
+dot_bracket_pair_table.update(zip(string.ascii_uppercase, string.ascii_lowercase))
+reverse_dot_bracket_pair_table = {v: k for k, v in dot_bracket_pair_table.items()}
 
 
 def dot_bracket_to_contact_map(dot_bracket: str):
-    dot_bracket = dot_bracket.translate(dot_bracket_to_contact_map_table)
     n = len(dot_bracket)
     contact_map = np.zeros((n, n), dtype=int)
-    stack = []
+
+    stacks: defaultdict[str, list[int]] = defaultdict(list)
     for i, symbol in enumerate(dot_bracket):
-        if symbol == "(":
-            stack.append(i)
-        elif symbol == ")":
-            j = stack.pop()
+        if symbol in dot_bracket_pair_table:
+            stacks[symbol].append(i)
+        elif symbol in reverse_dot_bracket_pair_table:
+            j = stacks[reverse_dot_bracket_pair_table[symbol]].pop()
             contact_map[i, j] = contact_map[j, i] = 1
+        elif symbol not in {".", ",", "_"}:
+            raise ValueError(f"Invalid symbol {symbol} in dot-bracket notation")
     return contact_map
