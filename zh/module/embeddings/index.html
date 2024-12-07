@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.45">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.41">
     
     
       
@@ -294,6 +294,23 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../runners/" class="md-tabs__link">
+        
+  
+    
+  
+  runners
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../data/" class="md-tabs__link">
         
   
@@ -474,6 +491,58 @@
       
         
       
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../runners/runner/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    runners
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
     
     
       
@@ -598,7 +667,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           
@@ -614,14 +683,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             module
           </label>
@@ -1055,11 +1124,6 @@
 
 
 
-
-
-
-
-
   <div class="doc doc-children">
 
 
@@ -1085,7 +1149,7 @@
               Bases: <code><a class="autorefs autorefs-external" title="torch.nn.Module" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module">Module</a></code></p>
 
 
-        <p>Rotary position embeddings based on those in
+      <p>Rotary position embeddings based on those in
 <a href="https://huggingface.co/docs/transformers/model_doc/roformer">RoFormer</a>.</p>
 <p>Query and keys are transformed by rotation
 matrices which depend on their relative positions.</p>
@@ -1100,11 +1164,6 @@ matrices which depend on their relative positions.</p>
   <summary><strong>Sequence Length</strong></summary>
   <p>Rotary Embedding is irrespective of the sequence length and can be used for any sequence length.</p>
 </details>
-
-
-
-
-
               <details class="quote">
                 <summary>Source code in <code>multimolecule/module/embeddings/rotary.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-27">27</a></span>
@@ -1261,7 +1320,7 @@ matrices which depend on their relative positions.</p>
               Bases: <code><a class="autorefs autorefs-external" title="torch.nn.Embedding" href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html#torch.nn.Embedding">Embedding</a></code></p>
 
 
-        <p>Sinusoidal positional embeddings for inputs with any length.</p>
+      <p>Sinusoidal positional embeddings for inputs with any length.</p>
 
 
 <details class="note" open>
@@ -1279,11 +1338,6 @@ They will not be saved in the model&rsquo;s state_dict.</p>
   <summary><strong>Sequence Length</strong></summary>
   <p>These embeddings get automatically extended in forward if more positions is needed.</p>
 </details>
-
-
-
-
-
               <details class="quote">
                 <summary>Source code in <code>multimolecule/module/embeddings/sinusoidal.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-30"> 30</a></span>
@@ -1486,12 +1540,20 @@ They will not be saved in the model&rsquo;s state_dict.</p>
   </span>
 
 <a href="#multimolecule.module.embeddings.SinusoidalEmbedding.get_embedding" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="language-python doc-signature highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">get_embedding</span><span class="p">(</span><span class="n">num_embeddings</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n">padding_idx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="torch.Tensor" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span>
+<div class="language-python doc-signature highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span>
+<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">get_embedding</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>    <span class="n">num_embeddings</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>    <span class="n">embedding_dim</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a>    <span class="n">padding_idx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="torch.Tensor" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span>
 </span></code></pre></div></td></tr></table></div>
 
     <div class="doc doc-contents ">
 
-        <p>Build sinusoidal embeddings.</p>
+      <p>Build sinusoidal embeddings.</p>
 <p>This matches the implementation in tensor2tensor, but differs slightly from the description in Section 3.5 of
 &ldquo;Attention Is All You Need&rdquo;.</p>
 
@@ -1555,7 +1617,7 @@ They will not be saved in the model&rsquo;s state_dict.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Replace non-padding symbols with their position numbers.</p>
+      <p>Replace non-padding symbols with their position numbers.</p>
 <p>Position numbers begin at padding_idx+1. Padding symbols are ignored.</p>
 
             <details class="quote">
