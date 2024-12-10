@@ -76,8 +76,8 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 
 ### Variations
 
-- **[`multimolecule/utrlm.te_el`](https://huggingface.co/multimolecule/utrlm.te_el)**: The UTR-LM model for Translation Efficiency of transcripts and mRNA Expression Level.
-- **[`multimolecule/utrlm.mrl`](https://huggingface.co/multimolecule/utrlm.mrl)**: The UTR-LM model for Mean Ribosome Loading.
+- **[`multimolecule/utrlm-te_el`](https://huggingface.co/multimolecule/utrlm-te_el)**: The UTR-LM model for Translation Efficiency of transcripts and mRNA Expression Level.
+- **[`multimolecule/utrlm-mrl`](https://huggingface.co/multimolecule/utrlm-mrl)**: The UTR-LM model for Mean Ribosome Loading.
 
 ### Model Specification
 
@@ -140,7 +140,7 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline("fill-mask", model="multimolecule/utrlm.te_el")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/utrlm-te_el")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
 
 [{'score': 0.07707168161869049,
@@ -175,8 +175,8 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, UtrLmModel
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm.te_el")
-model = UtrLmModel.from_pretrained("multimolecule/utrlm.te_el")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
+model = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")
@@ -195,8 +195,8 @@ import torch
 from multimolecule import RnaTokenizer, UtrLmForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm.te_el")
-model = UtrLmForSequencePrediction.from_pretrained("multimolecule/utrlm.te_el")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
+model = UtrLmForSequencePrediction.from_pretrained("multimolecule/utrlm-te_el")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")
@@ -216,8 +216,8 @@ import torch
 from multimolecule import RnaTokenizer, UtrLmForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm.te_el")
-model = UtrLmForTokenPrediction.from_pretrained("multimolecule/utrlm.te_el")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
+model = UtrLmForTokenPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")
@@ -237,8 +237,8 @@ import torch
 from multimolecule import RnaTokenizer, UtrLmForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm.te_el")
-model = UtrLmForContactPrediction.from_pretrained("multimolecule/utrlm.te_el")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
+model = UtrLmForContactPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")

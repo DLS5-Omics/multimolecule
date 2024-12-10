@@ -23,7 +23,7 @@ import torch
 from multimolecule.models import ErnieRnaConfig as Config
 from multimolecule.models import ErnieRnaForContactClassification, ErnieRnaForPreTraining
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import get_tokenizer_config, save_checkpoint
+from multimolecule.models.conversion_utils import save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
@@ -126,8 +126,7 @@ def convert_checkpoint(convert_config):
 
     model.load_state_dict(state_dict)
 
-    tokenizer_config = get_tokenizer_config()
-    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
+    save_checkpoint(convert_config, model)
 
 
 class ConvertConfig(ConvertConfig_):

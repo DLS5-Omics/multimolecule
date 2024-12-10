@@ -60,7 +60,7 @@ ERNIE-RNA is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-styl
 ### Variations
 
 - **[`multimolecule/ernierna`](https://huggingface.co/multimolecule/ernierna)**: The ERNIE-RNA model pre-trained on non-coding RNA sequences.
-- **[`multimolecule/ernierna.ss`](https://huggingface.co/multimolecule/ernierna.ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
+- **[`multimolecule/ernierna-ss`](https://huggingface.co/multimolecule/ernierna-ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
 
 ### Model Specification
 
