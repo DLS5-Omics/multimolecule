@@ -98,14 +98,14 @@ class DnaTokenizer(Tokenizer):
         )
         self.replace_U_with_T = replace_U_with_T
         self.nmers = nmers
-        self.condon = codon
+        self.codon = codon
 
     def _tokenize(self, text: str, **kwargs):
         if self.do_upper_case:
             text = text.upper()
         if self.replace_U_with_T:
             text = text.replace("U", "T")
-        if self.condon:
+        if self.codon:
             if len(text) % 3 != 0:
                 raise ValueError(
                     f"length of input sequence must be a multiple of 3 for codon tokenization, but got {len(text)}"

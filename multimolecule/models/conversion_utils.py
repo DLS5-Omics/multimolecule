@@ -41,7 +41,12 @@ def write_model(
     model.save_pretrained(output_path, safe_serialization=False)
     if tokenizer_config is None:
         tokenizer_config = get_tokenizer_config()
-        tokenizer_config["model_max_length"] = getattr(model.config, "max_position_embeddings", None)
+        if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
+            position_embedding_type = getattr(model.config, "position_embedding_type", None)
+            if position_embedding_type == "absolute":
+                tokenizer_config["model_max_length"] = model.config.max_position_embeddings
+            else:
+                tokenizer_config["model_max_length"] = None
     tokenizer = tokenizer_class_from_name(tokenizer_config["tokenizer_class"])(**tokenizer_config)
     tokenizer.save_pretrained(output_path)
 

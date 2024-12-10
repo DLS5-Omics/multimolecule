@@ -61,7 +61,7 @@ ERNIE-RNA is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-styl
 ### Variations
 
 - **[`multimolecule/ernierna`](https://huggingface.co/multimolecule/ernierna)**: The ERNIE-RNA model pre-trained on non-coding RNA sequences.
-- **[`multimolecule/ernierna.ss`](https://huggingface.co/multimolecule/ernierna.ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
+- **[`multimolecule/ernierna-ss`](https://huggingface.co/multimolecule/ernierna-ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
 
 ### Model Specification
 
@@ -93,7 +93,7 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna.ss")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna-ss")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
 
 [{'score': 0.2066272348165512,
@@ -128,8 +128,8 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, ErnieRnaModel
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
-model = ErnieRnaModel.from_pretrained("multimolecule/ernierna.ss")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
+model = ErnieRnaModel.from_pretrained("multimolecule/ernierna-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")
@@ -148,8 +148,8 @@ import torch
 from multimolecule import RnaTokenizer, ErnieRnaForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
-model = ErnieRnaForSequencePrediction.from_pretrained("multimolecule/ernierna.ss")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
+model = ErnieRnaForSequencePrediction.from_pretrained("multimolecule/ernierna-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")
@@ -169,8 +169,8 @@ import torch
 from multimolecule import RnaTokenizer, ErnieRnaForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
-model = ErnieRnaForTokenPrediction.from_pretrained("multimolecule/ernierna.ss")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
+model = ErnieRnaForTokenPrediction.from_pretrained("multimolecule/ernierna-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")
@@ -190,8 +190,8 @@ import torch
 from multimolecule import RnaTokenizer, ErnieRnaForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna.ss")
-model = ErnieRnaForContactPrediction.from_pretrained("multimolecule/ernierna.ss")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
+model = ErnieRnaForContactPrediction.from_pretrained("multimolecule/ernierna-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUGA"
 input = tokenizer(text, return_tensors="pt")

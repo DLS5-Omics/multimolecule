@@ -60,8 +60,8 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
 ### Variations
 
 - **[`multimolecule/splicebert`](https://huggingface.co/multimolecule/splicebert)**: The SpliceBERT model.
-- **[`multimolecule/splicebert.510nt`](https://huggingface.co/multimolecule/splicebert.510nt)**: The intermediate SpliceBERT model.
-- **[`multimolecule/splicebert-human.510nt`](https://huggingface.co/multimolecule/splicebert-human.510nt)**: The intermediate SpliceBERT model pre-trained on human data only.
+- **[`multimolecule/splicebert.510`](https://huggingface.co/multimolecule/splicebert.510)**: The intermediate SpliceBERT model.
+- **[`multimolecule/splicebert-human.510`](https://huggingface.co/multimolecule/splicebert-human.510)**: The intermediate SpliceBERT model pre-trained on human data only.
 
 ### Model Specification
 
@@ -92,12 +92,12 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
     <td>1024</td>
   </tr>
   <tr>
-    <td>splicebert.510nt</td>
+    <td>splicebert.510</td>
     <td rowspan="2">19.45</td>
     <td rowspan="2">510</td>
   </tr>
   <tr>
-    <td>splicebert-human.510nt</td>
+    <td>splicebert-human.510</td>
   </tr>
 </tbody>
 </table>
@@ -270,9 +270,9 @@ SpliceBERT trained model in a two-stage training process:
 1. Pre-train with sequences of a fixed length of 510 nucleotides.
 2. Pre-train with sequences of a variable length between 64 and 1024 nucleotides.
 
-The intermediate model after the first stage is available as `multimolecule/splicebert.510nt`.
+The intermediate model after the first stage is available as `multimolecule/splicebert.510`.
 
-SpliceBERT also pre-trained a model on human data only to validate the contribution of multi-species pre-training. The intermediate model after the first stage is available as `multimolecule/splicebert-human.510nt`.
+SpliceBERT also pre-trained a model on human data only to validate the contribution of multi-species pre-training. The intermediate model after the first stage is available as `multimolecule/splicebert-human.510`.
 
 ## Citation
 
