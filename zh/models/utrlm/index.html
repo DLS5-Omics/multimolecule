@@ -3650,8 +3650,8 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
 </span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">emb_layer_norm_before</span> <span class="o">=</span> <span class="n">emb_layer_norm_before</span>
 </span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">token_dropout</span> <span class="o">=</span> <span class="n">token_dropout</span>
-</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">HeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">head</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{})</span>
-</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lm_head</span> <span class="o">=</span> <span class="n">MaskedLMHeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">lm_head</span> <span class="k">if</span> <span class="n">lm_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{})</span>
+</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">HeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">head</span><span class="p">)</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lm_head</span> <span class="o">=</span> <span class="n">MaskedLMHeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">lm_head</span><span class="p">)</span> <span class="k">if</span> <span class="n">lm_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 </span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ss_head</span> <span class="o">=</span> <span class="n">HeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">ss_head</span><span class="p">)</span> <span class="k">if</span> <span class="n">ss_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 </span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">mfe_head</span> <span class="o">=</span> <span class="n">HeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">mfe_head</span><span class="p">)</span> <span class="k">if</span> <span class="n">mfe_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
@@ -3703,9 +3703,9 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;ACGUN&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 5, 2])</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 5, 1])</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span></code></pre></div>
 
 
@@ -3788,9 +3788,9 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-400"><a id="__codelineno-0-400" name="__codelineno-0-400"></a><span class="sd">        &gt;&gt;&gt; input = tokenizer(&quot;ACGUN&quot;, return_tensors=&quot;pt&quot;)</span>
 </span><span id="__span-0-401"><a id="__codelineno-0-401" name="__codelineno-0-401"></a><span class="sd">        &gt;&gt;&gt; output = model(**input, labels=torch.randint(2, (1, 5, 5)))</span>
 </span><span id="__span-0-402"><a id="__codelineno-0-402" name="__codelineno-0-402"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
-</span><span id="__span-0-403"><a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="sd">        torch.Size([1, 5, 5, 2])</span>
+</span><span id="__span-0-403"><a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="sd">        torch.Size([1, 5, 5, 1])</span>
 </span><span id="__span-0-404"><a id="__codelineno-0-404" name="__codelineno-0-404"></a><span class="sd">        &gt;&gt;&gt; output[&quot;loss&quot;]  # doctest:+ELLIPSIS</span>
-</span><span id="__span-0-405"><a id="__codelineno-0-405" name="__codelineno-0-405"></a><span class="sd">        tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-405"><a id="__codelineno-0-405" name="__codelineno-0-405"></a><span class="sd">        tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span><span id="__span-0-406"><a id="__codelineno-0-406" name="__codelineno-0-406"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-407"><a id="__codelineno-0-407" name="__codelineno-0-407"></a>
 </span><span id="__span-0-408"><a id="__codelineno-0-408" name="__codelineno-0-408"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">UtrLmConfig</span><span class="p">):</span>
@@ -4099,7 +4099,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">torch.Size([1, 7, 26])</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;contact_map&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">torch.Size([1, 5, 5, 2])</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">torch.Size([1, 5, 5, 1])</span>
 </span></code></pre></div>
 
 
@@ -4224,7 +4224,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-555"><a id="__codelineno-0-555" name="__codelineno-0-555"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
 </span><span id="__span-0-556"><a id="__codelineno-0-556" name="__codelineno-0-556"></a><span class="sd">        torch.Size([1, 7, 26])</span>
 </span><span id="__span-0-557"><a id="__codelineno-0-557" name="__codelineno-0-557"></a><span class="sd">        &gt;&gt;&gt; output[&quot;contact_map&quot;].shape</span>
-</span><span id="__span-0-558"><a id="__codelineno-0-558" name="__codelineno-0-558"></a><span class="sd">        torch.Size([1, 5, 5, 2])</span>
+</span><span id="__span-0-558"><a id="__codelineno-0-558" name="__codelineno-0-558"></a><span class="sd">        torch.Size([1, 5, 5, 1])</span>
 </span><span id="__span-0-559"><a id="__codelineno-0-559" name="__codelineno-0-559"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-560"><a id="__codelineno-0-560" name="__codelineno-0-560"></a>
 </span><span id="__span-0-561"><a id="__codelineno-0-561" name="__codelineno-0-561"></a>    <span class="n">_tied_weights_keys</span> <span class="o">=</span> <span class="p">[</span>
@@ -4361,9 +4361,9 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;ACGUN&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">]]))</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 2])</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 1])</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span></code></pre></div>
 
 
@@ -4444,9 +4444,9 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-272"><a id="__codelineno-0-272" name="__codelineno-0-272"></a><span class="sd">        &gt;&gt;&gt; input = tokenizer(&quot;ACGUN&quot;, return_tensors=&quot;pt&quot;)</span>
 </span><span id="__span-0-273"><a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="sd">        &gt;&gt;&gt; output = model(**input, labels=torch.tensor([[1]]))</span>
 </span><span id="__span-0-274"><a id="__codelineno-0-274" name="__codelineno-0-274"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
-</span><span id="__span-0-275"><a id="__codelineno-0-275" name="__codelineno-0-275"></a><span class="sd">        torch.Size([1, 2])</span>
+</span><span id="__span-0-275"><a id="__codelineno-0-275" name="__codelineno-0-275"></a><span class="sd">        torch.Size([1, 1])</span>
 </span><span id="__span-0-276"><a id="__codelineno-0-276" name="__codelineno-0-276"></a><span class="sd">        &gt;&gt;&gt; output[&quot;loss&quot;]  # doctest:+ELLIPSIS</span>
-</span><span id="__span-0-277"><a id="__codelineno-0-277" name="__codelineno-0-277"></a><span class="sd">        tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-277"><a id="__codelineno-0-277" name="__codelineno-0-277"></a><span class="sd">        tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span><span id="__span-0-278"><a id="__codelineno-0-278" name="__codelineno-0-278"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-279"><a id="__codelineno-0-279" name="__codelineno-0-279"></a>
 </span><span id="__span-0-280"><a id="__codelineno-0-280" name="__codelineno-0-280"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">UtrLmConfig</span><span class="p">):</span>
@@ -4545,9 +4545,9 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;ACGUN&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 2])</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 1])</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span></code></pre></div>
 
 
@@ -4628,9 +4628,9 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-336"><a id="__codelineno-0-336" name="__codelineno-0-336"></a><span class="sd">        &gt;&gt;&gt; input = tokenizer(&quot;ACGUN&quot;, return_tensors=&quot;pt&quot;)</span>
 </span><span id="__span-0-337"><a id="__codelineno-0-337" name="__codelineno-0-337"></a><span class="sd">        &gt;&gt;&gt; output = model(**input, labels=torch.randint(2, (1, 5)))</span>
 </span><span id="__span-0-338"><a id="__codelineno-0-338" name="__codelineno-0-338"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
-</span><span id="__span-0-339"><a id="__codelineno-0-339" name="__codelineno-0-339"></a><span class="sd">        torch.Size([1, 5, 2])</span>
+</span><span id="__span-0-339"><a id="__codelineno-0-339" name="__codelineno-0-339"></a><span class="sd">        torch.Size([1, 5, 1])</span>
 </span><span id="__span-0-340"><a id="__codelineno-0-340" name="__codelineno-0-340"></a><span class="sd">        &gt;&gt;&gt; output[&quot;loss&quot;]  # doctest:+ELLIPSIS</span>
-</span><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="sd">        tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="sd">        tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span><span id="__span-0-342"><a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-343"><a id="__codelineno-0-343" name="__codelineno-0-343"></a>
 </span><span id="__span-0-344"><a id="__codelineno-0-344" name="__codelineno-0-344"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">UtrLmConfig</span><span class="p">):</span>

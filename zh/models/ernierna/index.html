@@ -3389,8 +3389,8 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">pairwise_alpha</span> <span class="o">=</span> <span class="n">pairwise_alpha</span>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">is_decoder</span> <span class="o">=</span> <span class="n">is_decoder</span>
 </span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
-</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">HeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">head</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{})</span>
-</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lm_head</span> <span class="o">=</span> <span class="n">MaskedLMHeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">lm_head</span> <span class="k">if</span> <span class="n">lm_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{})</span>
+</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">HeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">head</span><span class="p">)</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lm_head</span> <span class="o">=</span> <span class="n">MaskedLMHeadConfig</span><span class="p">(</span><span class="o">**</span><span class="n">lm_head</span><span class="p">)</span> <span class="k">if</span> <span class="n">lm_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
@@ -3648,9 +3648,9 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;ACGUN&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 5, 2])</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 5, 1])</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span></code></pre></div>
 
 
@@ -3733,9 +3733,9 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-452"><a id="__codelineno-0-452" name="__codelineno-0-452"></a><span class="sd">        &gt;&gt;&gt; input = tokenizer(&quot;ACGUN&quot;, return_tensors=&quot;pt&quot;)</span>
 </span><span id="__span-0-453"><a id="__codelineno-0-453" name="__codelineno-0-453"></a><span class="sd">        &gt;&gt;&gt; output = model(**input, labels=torch.randint(2, (1, 5, 5)))</span>
 </span><span id="__span-0-454"><a id="__codelineno-0-454" name="__codelineno-0-454"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
-</span><span id="__span-0-455"><a id="__codelineno-0-455" name="__codelineno-0-455"></a><span class="sd">        torch.Size([1, 5, 5, 2])</span>
+</span><span id="__span-0-455"><a id="__codelineno-0-455" name="__codelineno-0-455"></a><span class="sd">        torch.Size([1, 5, 5, 1])</span>
 </span><span id="__span-0-456"><a id="__codelineno-0-456" name="__codelineno-0-456"></a><span class="sd">        &gt;&gt;&gt; output[&quot;loss&quot;]  # doctest:+ELLIPSIS</span>
-</span><span id="__span-0-457"><a id="__codelineno-0-457" name="__codelineno-0-457"></a><span class="sd">        tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-457"><a id="__codelineno-0-457" name="__codelineno-0-457"></a><span class="sd">        tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span><span id="__span-0-458"><a id="__codelineno-0-458" name="__codelineno-0-458"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-459"><a id="__codelineno-0-459" name="__codelineno-0-459"></a>
 </span><span id="__span-0-460"><a id="__codelineno-0-460" name="__codelineno-0-460"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ErnieRnaConfig</span><span class="p">):</span>
@@ -4056,7 +4056,7 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;ACGUN&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">)</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 2])</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 1])</span>
 </span></code></pre></div>
 
 
@@ -4137,7 +4137,7 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-321"><a id="__codelineno-0-321" name="__codelineno-0-321"></a><span class="sd">        &gt;&gt;&gt; input = tokenizer(&quot;ACGUN&quot;, return_tensors=&quot;pt&quot;)</span>
 </span><span id="__span-0-322"><a id="__codelineno-0-322" name="__codelineno-0-322"></a><span class="sd">        &gt;&gt;&gt; output = model(**input)</span>
 </span><span id="__span-0-323"><a id="__codelineno-0-323" name="__codelineno-0-323"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
-</span><span id="__span-0-324"><a id="__codelineno-0-324" name="__codelineno-0-324"></a><span class="sd">        torch.Size([1, 2])</span>
+</span><span id="__span-0-324"><a id="__codelineno-0-324" name="__codelineno-0-324"></a><span class="sd">        torch.Size([1, 1])</span>
 </span><span id="__span-0-325"><a id="__codelineno-0-325" name="__codelineno-0-325"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-326"><a id="__codelineno-0-326" name="__codelineno-0-326"></a>
 </span><span id="__span-0-327"><a id="__codelineno-0-327" name="__codelineno-0-327"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ErnieRnaConfig</span><span class="p">):</span>
@@ -4238,9 +4238,9 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;ACGUN&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 2])</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">torch.Size([1, 5, 1])</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span></code></pre></div>
 
 
@@ -4324,9 +4324,9 @@ just in case (e.g., 512 or 1024 or 2048).</p>
 </span><span id="__span-0-385"><a id="__codelineno-0-385" name="__codelineno-0-385"></a><span class="sd">        &gt;&gt;&gt; input = tokenizer(&quot;ACGUN&quot;, return_tensors=&quot;pt&quot;)</span>
 </span><span id="__span-0-386"><a id="__codelineno-0-386" name="__codelineno-0-386"></a><span class="sd">        &gt;&gt;&gt; output = model(**input, labels=torch.randint(2, (1, 5)))</span>
 </span><span id="__span-0-387"><a id="__codelineno-0-387" name="__codelineno-0-387"></a><span class="sd">        &gt;&gt;&gt; output[&quot;logits&quot;].shape</span>
-</span><span id="__span-0-388"><a id="__codelineno-0-388" name="__codelineno-0-388"></a><span class="sd">        torch.Size([1, 5, 2])</span>
+</span><span id="__span-0-388"><a id="__codelineno-0-388" name="__codelineno-0-388"></a><span class="sd">        torch.Size([1, 5, 1])</span>
 </span><span id="__span-0-389"><a id="__codelineno-0-389" name="__codelineno-0-389"></a><span class="sd">        &gt;&gt;&gt; output[&quot;loss&quot;]  # doctest:+ELLIPSIS</span>
-</span><span id="__span-0-390"><a id="__codelineno-0-390" name="__codelineno-0-390"></a><span class="sd">        tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
+</span><span id="__span-0-390"><a id="__codelineno-0-390" name="__codelineno-0-390"></a><span class="sd">        tensor(..., grad_fn=&lt;BinaryCrossEntropyWithLogitsBackward0&gt;)</span>
 </span><span id="__span-0-391"><a id="__codelineno-0-391" name="__codelineno-0-391"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-392"><a id="__codelineno-0-392" name="__codelineno-0-392"></a>
 </span><span id="__span-0-393"><a id="__codelineno-0-393" name="__codelineno-0-393"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ErnieRnaConfig</span><span class="p">):</span>
