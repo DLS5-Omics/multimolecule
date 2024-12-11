@@ -1,14 +1,7 @@
----
-authors:
-  - zyc
-date: 2024-05-04 00:00:00
----
-
 # [MultiMolecule](https://multimolecule.danling.org)
 
-!!! tips ""
-
-    使用机器学习加速分子生物学研究
+> [!TIP]
+> 机器学习加速分子生物学研究
 
 [![Codacy - 代码质量](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy - 测试覆盖](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
@@ -72,7 +65,7 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 
 我们相信开放是研究的基础。
 
-MultiMolecule 在 GNU Affero 通用公共许可证下授权。
+MultiMolecule 在 GNU Affero 通用公共许可证 下授权。
 
 请加入我们，共同建立一个开放的研究社区。
 

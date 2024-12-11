@@ -17,4 +17,7 @@
 from .dataset import Dataset
 from .utils import no_collate
 
-__all__ = ["Dataset", "no_collate"]
+__all__ = [
+    "Dataset",
+    "no_collate",
+]

@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from multimolecule.module import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
 from .calm import (
@@ -127,6 +128,7 @@ from .utrlm import (
 
 __all__ = [
     "PreTrainedConfig",
+    "HeadConfig",
     "DnaTokenizer",
     "RnaTokenizer",
     "ProteinTokenizer",

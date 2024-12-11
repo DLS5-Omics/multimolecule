@@ -119,32 +119,3 @@ def unfold_kmer_embeddings(
             embedding = torch.cat([embedding, tensor[seq_len - 1][None, :]])
         output[index, : seq_len + nmers - 1] = embedding
     return output
-
-
-def rotate_half(x):
-    x1, x2 = x.chunk(2, dim=-1)
-    return torch.cat((-x2, x1), dim=-1)
-
-
-def apply_rotary_pos_emb(x, cos, sin):
-    cos = cos[:, :, : x.shape[-2], :]
-    sin = sin[:, :, : x.shape[-2], :]
-
-    return (x * cos) + (rotate_half(x) * sin)
-
-
-def symmetrize(x):
-    "Make layer symmetric in final two dimensions, used for contact prediction."
-    return x + x.transpose(-1, -2)
-
-
-def average_product_correct(x):
-    "Perform average product correct, used for contact prediction."
-    a1 = x.sum(-1, keepdims=True)
-    a2 = x.sum(-2, keepdims=True)
-    a12 = x.sum((-1, -2), keepdims=True)
-
-    avg = a1 * a2
-    avg.div_(a12)  # in-place to reduce memory
-    normalized = x - avg
-    return normalized

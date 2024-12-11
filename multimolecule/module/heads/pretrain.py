@@ -53,8 +53,8 @@ class MaskedLMHead(nn.Module):
     ):
         super().__init__()
         if head_config is None:
-            head_config = config.lm_head if hasattr(config, "lm_head") else config.head  # type: ignore[assignment]
-        self.config: MaskedLMHeadConfig = head_config  # type: ignore[assignment]
+            head_config = (config.lm_head if hasattr(config, "lm_head") else config.head) or MaskedLMHeadConfig()
+        self.config: MaskedLMHeadConfig = head_config
         if self.config.hidden_size is None:
             self.config.hidden_size = config.hidden_size
         self.num_labels = config.vocab_size
@@ -97,6 +97,6 @@ class MaskedLMHead(nn.Module):
             if isinstance(labels, NestedTensor):
                 if isinstance(output, Tensor):
                     output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, F.cross_entropy(torch.cat(output.storage()), torch.cat(labels.storage())))
+                return HeadOutput(output, F.cross_entropy(output.concat, labels.concat))
             return HeadOutput(output, F.cross_entropy(output.view(-1, self.num_labels), labels.view(-1)))
         return HeadOutput(output)

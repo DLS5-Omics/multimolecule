@@ -116,5 +116,5 @@ class RnaMsmConfig(PreTrainedConfig):
         self.attention_type = attention_type
         self.embed_positions_msa = embed_positions_msa
         self.attention_bias = attention_bias
-        self.head = HeadConfig(**head if head is not None else {})
-        self.lm_head = MaskedLMHeadConfig(**lm_head if lm_head is not None else {})
+        self.head = HeadConfig(**head) if head is not None else None
+        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None

@@ -21,7 +21,7 @@ import danling as dl
 import pytest
 import torch
 
-from multimolecule import Dataset, Task, TaskLevel, TaskType
+from multimolecule import Dataset, Task, TaskLevel, TaskType, defaults
 
 
 class TestRNADataset:
@@ -31,28 +31,34 @@ class TestRNADataset:
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_5utr(self, preprocess: bool):
+        defaults.SEQUENCE_COL_NAME = "input_ids"
         file = os.path.join(self.root, "5utr.csv")
-        dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_cols=True)
+        dataset = Dataset(
+            file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_sequence_col=True
+        )
+        defaults.SEQUENCE_COL_NAME = "sequence"
         task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
         assert isinstance(elem["input_ids"], torch.LongTensor)
-        assert isinstance(elem["labels"], torch.FloatTensor)
+        assert isinstance(elem["label"], torch.FloatTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["input_ids"], dl.NestedTensor)
-        assert isinstance(batch["labels"], torch.FloatTensor)
-        assert dataset.tasks["labels"] == task
+        assert isinstance(batch["label"], torch.FloatTensor)
+        assert dataset.tasks["label"] == task
         assert not dataset.discrete_map
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_ncrna(self, preprocess: bool):
         file = os.path.join(self.root, "ncrna.csv")
-        dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_cols=True)
+        dataset = Dataset(
+            file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_label_col=True
+        )
         task = Task(type=TaskType.MultiClass, level=TaskLevel.Sequence, num_labels=13)
         elem = dataset[0]
-        assert isinstance(elem["input_ids"], torch.LongTensor)
+        assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["labels"], torch.LongTensor)
         batch = dataset[list(range(3))]
-        assert isinstance(batch["input_ids"], dl.NestedTensor)
+        assert isinstance(batch["sequence"], dl.NestedTensor)
         assert isinstance(batch["labels"], torch.LongTensor)
         assert dataset.tasks["labels"] == task
         assert not dataset.discrete_map
@@ -126,7 +132,7 @@ class TestRNADataset:
             feature_cols=feature_cols,
             label_cols=label_cols,
         )
-        task = Task(type=TaskType.Binary, level=TaskLevel.Nucleotide, num_labels=1)
+        task = Task(type=TaskType.Binary, level=TaskLevel.Token, num_labels=1)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["splice_ai"], torch.LongTensor)
@@ -175,20 +181,18 @@ class TestSyntheticDataset:
         assert dataset.tasks["sequence_regression"] == Task(
             type=TaskType.Regression, level=TaskLevel.Sequence, num_labels=1
         )
-        assert dataset.tasks["nucleotide_binary"] == Task(
-            type=TaskType.Binary, level=TaskLevel.Nucleotide, num_labels=1
-        )
+        assert dataset.tasks["nucleotide_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Token, num_labels=1)
         assert dataset.tasks["nucleotide_multiclass"] == Task(
-            type=TaskType.MultiClass, level=TaskLevel.Nucleotide, num_labels=5
+            type=TaskType.MultiClass, level=TaskLevel.Token, num_labels=5
         )
         assert dataset.tasks["nucleotide_multilabel"] == Task(
-            type=TaskType.MultiLabel, level=TaskLevel.Nucleotide, num_labels=5
+            type=TaskType.MultiLabel, level=TaskLevel.Token, num_labels=5
         )
         assert dataset.tasks["nucleotide_multireg"] == Task(
-            type=TaskType.Regression, level=TaskLevel.Nucleotide, num_labels=5
+            type=TaskType.Regression, level=TaskLevel.Token, num_labels=5
         )
         assert dataset.tasks["nucleotide_regression"] == Task(
-            type=TaskType.Regression, level=TaskLevel.Nucleotide, num_labels=1
+            type=TaskType.Regression, level=TaskLevel.Token, num_labels=1
         )
         assert dataset.tasks["contact_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
         assert dataset.tasks["contact_multiclass"] == Task(

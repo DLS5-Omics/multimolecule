@@ -80,10 +80,13 @@ class Dataset(datasets.Dataset):
         preprocess: Whether to preprocess the dataset.
             Preprocessing involves pre-tokenizing the sequences using the tokenizer.
             Defaults to `True`.
-        auto_rename_cols: Whether to automatically rename columns to standard names.
-            Only works when there is exactly one feature column / one label column.
-            You can control the naming through `multimolecule.defaults.SEQUENCE_COL_NAME` and
-            `multimolecule.defaults.LABEL_COL_NAME`.
+        auto_rename_sequence_col: Whether to automatically rename sequence columns to standard name.
+            Only works when there is exactly one sequence column
+            You can control the naming through `multimolecule.defaults.SEQUENCE_COL_NAME`.
+            For more refined control, use `column_names_map`.
+        auto_rename_label_cols: Whether to automatically rename label column to standard name.
+            Only works when there is exactly one label column.
+            You can control the naming through `multimolecule.defaults.LABEL_COL_NAME`.
             For more refined control, use `column_names_map`.
         column_names_map: A mapping of column names to new column names.
             This is useful for renaming columns to inputs that are expected by a model.
@@ -122,7 +125,8 @@ class Dataset(datasets.Dataset):
     _discrete_map: Mapping
 
     preprocess: bool = True
-    auto_rename_cols: bool = False
+    auto_rename_sequence_col: bool = True
+    auto_rename_label_col: bool = False
     column_names_map: Mapping[str, str] | None = None
     ignored_cols: List[str] = []
 
@@ -136,7 +140,8 @@ class Dataset(datasets.Dataset):
         label_cols: List | None = None,
         id_cols: List | None = None,
         preprocess: bool | None = None,
-        auto_rename_cols: bool | None = None,
+        auto_rename_sequence_col: bool | None = None,
+        auto_rename_label_col: bool | None = None,
         column_names_map: Mapping[str, str] | None = None,
         truncation: bool | None = None,
         max_seq_length: int | None = None,
@@ -149,8 +154,9 @@ class Dataset(datasets.Dataset):
         fingerprint: str | None = None,
         ignored_cols: List[str] | None = None,
     ):
+        self._tasks = NestedDict()
         if tasks is not None:
-            self._tasks = NestedDict(tasks)
+            self.tasks = tasks
         if discrete_map is not None:
             self._discrete_map = discrete_map
         arrow_table = self.build_table(
@@ -166,10 +172,12 @@ class Dataset(datasets.Dataset):
             preprocess=preprocess,
             truncation=truncation,
             max_seq_length=max_seq_length,
-            auto_rename_cols=auto_rename_cols,
+            auto_rename_sequence_col=auto_rename_sequence_col,
+            auto_rename_label_col=auto_rename_label_col,
             column_names_map=column_names_map,
         )
         self.ignored_cols = ignored_cols or self.id_cols
+        self.train = split == datasets.Split.TRAIN
 
     def build_table(
         self,
@@ -187,13 +195,13 @@ class Dataset(datasets.Dataset):
                 data = dl.load_pandas(data)
                 if isinstance(data, DataFrame):
                     data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
-                    data = pa.Table.from_pandas(data)
+                    data = pa.Table.from_pandas(data, preserve_index=False)
         elif isinstance(data, dict):
             data = pa.Table.from_pydict(data)
         elif isinstance(data, list):
             data = pa.Table.from_pylist(data)
         elif isinstance(data, DataFrame):
-            data = pa.Table.from_pandas(data)
+            data = pa.Table.from_pandas(data, preserve_index=False)
         if feature_cols is not None and label_cols is not None:
             data = data.select(feature_cols + label_cols)
         data = self.process_nan(data, nan_process=nan_process, fill_value=fill_value)
@@ -206,7 +214,8 @@ class Dataset(datasets.Dataset):
         max_seq_length: int | None = None,
         truncation: bool | None = None,
         preprocess: bool | None = None,
-        auto_rename_cols: bool | None = None,
+        auto_rename_sequence_col: bool | None = None,
+        auto_rename_label_col: bool | None = None,
         column_names_map: Mapping[str, str] | None = None,
     ) -> None:
         r"""
@@ -214,7 +223,8 @@ class Dataset(datasets.Dataset):
 
         It first identifies the special columns (sequence and structure columns) in the dataset.
         Then it sets the feature and label columns based on the input arguments.
-        If `auto_rename_cols` is `True`, it will automatically rename the columns to model inputs.
+        If `auto_rename_sequence_col` is `True`, it will automatically rename the sequence column.
+        If `auto_rename_label_col` is `True`, it will automatically rename the label column.
         Finally, it sets the [`transform`][datasets.Dataset.set_transform] function based on the `preprocess` flag.
         """
         if tokenizer is None:
@@ -237,19 +247,24 @@ class Dataset(datasets.Dataset):
             self.seq_length_offset += 1
         if preprocess is not None:
             self.preprocess = preprocess
-        if auto_rename_cols is not None:
-            self.auto_rename_cols = auto_rename_cols
-        if self.auto_rename_cols:
-            if column_names_map is not None:
-                raise ValueError("auto_rename_cols and column_names_map are mutually exclusive.")
+        if auto_rename_sequence_col is not None:
+            self.auto_rename_sequence_col = auto_rename_sequence_col
+        if auto_rename_label_col is not None:
+            self.auto_rename_label_col = auto_rename_label_col
+        if column_names_map is None:
             column_names_map = {}
-            if len(self.feature_cols) == 1:
-                column_names_map[self.feature_cols[0]] = defaults.SEQUENCE_COL_NAME
-            if len(self.label_cols) == 1:
-                column_names_map[self.label_cols[0]] = defaults.LABEL_COL_NAME
+        if self.auto_rename_sequence_col:
+            if len(self.sequence_cols) != 1:
+                raise ValueError("auto_rename_sequence_col can only be used when there is exactly one sequence column.")
+            column_names_map[self.sequence_cols[0]] = defaults.SEQUENCE_COL_NAME  # type: ignore[index]
+        if self.auto_rename_label_col:
+            if len(self.label_cols) != 1:
+                raise ValueError("auto_rename_label_col can only be used when there is exactly one label column.")
+            column_names_map[self.label_cols[0]] = defaults.LABEL_COL_NAME  # type: ignore[index]
         self.column_names_map = column_names_map
         if self.column_names_map:
             self.rename_columns(self.column_names_map)
+        self.infer_tasks()
 
         if self.preprocess:
             self.update(self.map(self.tokenization))
@@ -258,7 +273,7 @@ class Dataset(datasets.Dataset):
             if self.discrete_map:
                 self.update(self.map(self.map_discrete))
             fn_kwargs = {
-                "columns": [name for name, task in self.tasks.items() if task.level in ["nucleotide", "contact"]],
+                "columns": [name for name, task in self.tasks.items() if task.level in ["token", "contact"]],
                 "max_seq_length": self.max_seq_length - self.seq_length_offset,
             }
             if self.truncation and 0 < self.max_seq_length < 2**32:
@@ -297,20 +312,23 @@ class Dataset(datasets.Dataset):
         except ValueError:
             return NestedTensor(data)
 
-    def infer_tasks(self, tasks: Mapping | None = None, sequence_col: str | None = None) -> NestedDict:
-        self._tasks = tasks or NestedDict()
+    def infer_tasks(self, sequence_col: str | None = None) -> NestedDict:
         for col in self.label_cols:
-            if col not in self.tasks:
-                if col in self.secondary_structure_cols:
-                    task = Task(TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
-                    self._tasks[col] = task  # type: ignore[index]
-                    warn(
-                        f"Secondary structure columns are assumed to be {task}."
-                        " Please explicitly specify the task if this is not the case."
-                    )
-                else:
-                    self._tasks[col] = self.infer_task(col, sequence_col)  # type: ignore[index]
-        return self._tasks
+            if col in self.tasks:
+                continue
+            if col in self.secondary_structure_cols:
+                task = Task(TaskType.Binary, level=TaskLevel.Contact, num_labels=1)
+                self.tasks[col] = task  # type: ignore[index]
+                warn(
+                    f"Secondary structure columns are assumed to be {task}. "
+                    "Please explicitly specify the task if this is not the case."
+                )
+            else:
+                try:
+                    self.tasks[col] = self.infer_task(col, sequence_col)  # type: ignore[index]
+                except ValueError:
+                    raise ValueError(f"Unable to infer task for column {col}.")
+        return self.tasks
 
     def infer_task(self, label_col: str, sequence_col: str | None = None) -> Task:
         if sequence_col is None:
@@ -346,8 +364,8 @@ class Dataset(datasets.Dataset):
         all_cols = self.data.column_names
         self._id_cols = id_cols or [i for i in all_cols if i in defaults.ID_COL_NAMES]
 
-        string_cols = [k for k, v in self.features.items() if k not in self.id_cols and v.dtype == "string"]
-        self._sequence_cols = [i for i in string_cols if i in defaults.SEQUENCE_COL_NAMES]
+        string_cols: list[str] = [k for k, v in self.features.items() if k not in self.id_cols and v.dtype == "string"]
+        self._sequence_cols = [i for i in string_cols if i.lower() in defaults.SEQUENCE_COL_NAMES]
         self._secondary_structure_cols = [i for i in string_cols if i in defaults.SECONDARY_STRUCTURE_COL_NAMES]
 
         data_cols = [i for i in all_cols if i not in self.id_cols]
@@ -404,7 +422,7 @@ class Dataset(datasets.Dataset):
         self._label_cols = [column_mapping.get(i, i) for i in self.label_cols]
         self._sequence_cols = [column_mapping.get(i, i) for i in self.sequence_cols]
         self._secondary_structure_cols = [column_mapping.get(i, i) for i in self.secondary_structure_cols]
-        self._tasks = {column_mapping.get(k, k): v for k, v in self.tasks.items()}
+        self.tasks = {column_mapping.get(k, k): v for k, v in self.tasks.items()}
         return self
 
     def rename_column(
@@ -418,7 +436,7 @@ class Dataset(datasets.Dataset):
         self._secondary_structure_cols = [
             new_column_name if i == original_column_name else i for i in self.secondary_structure_cols
         ]
-        self._tasks = {new_column_name if k == original_column_name else k: v for k, v in self.tasks.items()}
+        self.tasks = {new_column_name if k == original_column_name else k: v for k, v in self.tasks.items()}
         return self
 
     def process_nan(self, data: Table, nan_process: str | None, fill_value: str | int | float = 0) -> Table:
@@ -441,7 +459,7 @@ class Dataset(datasets.Dataset):
                 data = data.fillna(fill_value)
             else:
                 raise ValueError(f"Invalid nan_process: {nan_process}")
-        return pa.Table.from_pandas(data)
+        return pa.Table.from_pandas(data, preserve_index=False)
 
     @property
     def id_cols(self) -> List:
@@ -470,8 +488,17 @@ class Dataset(datasets.Dataset):
     @property
     def tasks(self) -> NestedDict:
         if not hasattr(self, "_tasks"):
+            self._tasks = NestedDict()
             return self.infer_tasks()
         return self._tasks
+
+    @tasks.setter
+    def tasks(self, tasks: Mapping):
+        self._tasks = NestedDict()
+        for name, task in tasks.items():
+            if not isinstance(task, Task):
+                task = Task(**task)
+            self._tasks[name] = task
 
     @property
     def discrete_map(self) -> Mapping:

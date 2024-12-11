@@ -16,15 +16,15 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
-from dataclasses import dataclass
+from typing import Optional
+
+from chanfig import FlatDict
 
 
-class BaseHeadConfig(OrderedDict):
+class BaseHeadConfig(FlatDict):
     pass
 
 
-@dataclass
 class HeadConfig(BaseHeadConfig):
     r"""
     Configuration class for a prediction head.
@@ -35,8 +35,8 @@ class HeadConfig(BaseHeadConfig):
 
             Head should look for [`Config.num_labels`][multimolecule.PreTrainedConfig] if is `None`.
         problem_type:
-            Problem type for `XxxForYyyPrediction` models. Can be one of `"regression"`,
-            `"single_label_classification"` or `"multi_label_classification"`.
+            Problem type for `XxxForYyyPrediction` models. Can be one of `"binary"`, `"regression"`,
+            `"multiclass"` or `"multilabel"`.
 
             Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
         hidden_size:
@@ -55,25 +55,29 @@ class HeadConfig(BaseHeadConfig):
             The activation function of the final prediction output.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
-        output_name (`str`, *optional*):
+        output_name:
             The name of the tensor required in model outputs.
 
             If is `None`, will use the default output name of the corresponding head.
+        type:
+            The type of the head in the model.
+
+            This is used by [`MultiMoleculeModel`][multimolecule.MultiMoleculeModel] to construct heads.
     """
 
-    num_labels: int = None  # type: ignore[assignment]
-    problem_type: str = None  # type: ignore[assignment]
-    hidden_size: int | None = None
+    num_labels: Optional[int] = None
+    problem_type: Optional[str] = None
+    hidden_size: Optional[int] = None
     dropout: float = 0.0
-    transform: str | None = None
-    transform_act: str | None = "gelu"
+    transform: Optional[str] = None
+    transform_act: Optional[str] = "gelu"
     bias: bool = True
-    act: str | None = None
+    act: Optional[str] = None
     layer_norm_eps: float = 1e-12
-    output_name: str | None = None
+    output_name: Optional[str] = None
+    type: Optional[str] = None
 
 
-@dataclass
 class MaskedLMHeadConfig(BaseHeadConfig):
     r"""
     Configuration class for a Masked Language Modeling head.
@@ -95,17 +99,17 @@ class MaskedLMHeadConfig(BaseHeadConfig):
             The activation function of the final prediction output.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
-        output_name (`str`, *optional*):
+        output_name:
             The name of the tensor required in model outputs.
 
             If is `None`, will use the default output name of the corresponding head.
     """
 
-    hidden_size: int | None = None
+    hidden_size: Optional[int] = None
     dropout: float = 0.0
-    transform: str | None = "nonlinear"
-    transform_act: str | None = "gelu"
+    transform: Optional[str] = "nonlinear"
+    transform_act: Optional[str] = "gelu"
     bias: bool = True
-    act: str | None = None
+    act: Optional[str] = None
     layer_norm_eps: float = 1e-12
-    output_name: str | None = None
+    output_name: Optional[str] = None

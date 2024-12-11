@@ -21,14 +21,8 @@ from .output import HeadOutput
 from .pretrain import MaskedLMHead
 from .registry import HeadRegistry
 from .sequence import SequencePredictionHead
-from .token import TokenHeadRegistryHF, TokenKMerHead, TokenPredictionHead
-from .transform import (
-    HeadTransformRegistry,
-    HeadTransformRegistryHF,
-    IdentityTransform,
-    LinearTransform,
-    NonLinearTransform,
-)
+from .token import TokenKMerHead, TokenPredictionHead
+from .transform import HeadTransformRegistry, IdentityTransform, LinearTransform, NonLinearTransform
 
 __all__ = [
     "BaseHeadConfig",
@@ -37,14 +31,12 @@ __all__ = [
     "HeadRegistry",
     "PredictionHead",
     "SequencePredictionHead",
-    "TokenHeadRegistryHF",
     "TokenPredictionHead",
     "TokenKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
     "HeadOutput",
     "HeadTransformRegistry",
-    "HeadTransformRegistryHF",
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",

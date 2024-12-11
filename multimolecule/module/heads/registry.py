@@ -14,6 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from chanfig import Registry
+from chanfig import ConfigRegistry as Registry_
+from torch import nn
+
+
+class Registry(Registry_):  # pylint: disable=too-few-public-methods
+    key = "type"
+
+    def build(self, config, head_config) -> nn.Module:  # type: ignore[override]
+        name = getattr(head_config, self.getattr("key"))
+        return self.init(self.lookup(name), config, head_config)  # type: ignore[arg-type]
+
 
 HeadRegistry = Registry(default_factory=Registry, fallback=True)

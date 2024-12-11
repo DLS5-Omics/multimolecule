@@ -17,8 +17,8 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from warnings import warn
 
-import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
@@ -26,10 +26,13 @@ from torch.nn import functional as F
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
+from .registry import CriterionRegistry
 
+
+@CriterionRegistry.register(default=True)
 class Criterion(nn.Module):
 
-    problem_types = ["regression", "single_label_classification", "multi_label_classification"]
+    problem_types = ["regression", "binary", "multiclass", "multilabel"]
 
     def __init__(self, config: HeadConfig) -> None:
         super().__init__()
@@ -41,21 +44,31 @@ class Criterion(nn.Module):
         if labels is None:
             return None
         if self.problem_type is None:
-            if self.num_labels == 1:
+            if labels.is_floating_point():
                 self.problem_type = "regression"
-            elif self.num_labels > 1 and labels.dtype in (torch.long, torch.int):
-                self.problem_type = "single_label_classification"
+            elif self.num_labels == 1:
+                self.problem_type = "binary"
+            elif labels.unique().numel() == 2:
+                self.problem_type = "multilabel"
             else:
-                self.problem_type = "multi_label_classification"
+                self.problem_type = "multiclass"
+            warn(
+                f"`problem_type` is not set. Assuming {self.problem_type}. \n"
+                "This can lead to unexpected behavior. Please set `problem_type` explicitly."
+            )
             self.config.problem_type = self.problem_type
         if self.problem_type == "regression":
             labels = labels.to(logits.dtype)
             if self.num_labels == 1:
                 return F.mse_loss(logits.squeeze(), labels.squeeze())
             logits, labels = logits.view(-1, self.num_labels), labels.view(-1, self.num_labels)
-            return sum(F.mse_loss(logits[:, i], labels[:, i]).sqrt() for i in range(self.num_labels))
-        if self.problem_type == "single_label_classification":
+            return sum(F.mse_loss(logits[:, i], labels[:, i]).sqrt() for i in range(self.num_labels))  # type: ignore
+        if self.problem_type == "multiclass":
             return F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
-        if self.problem_type == "multi_label_classification":
-            return F.binary_cross_entropy_with_logits(logits, labels)
+        if self.problem_type == "binary":
+            if logits.ndim == labels.ndim + 1:
+                logits = logits.squeeze(-1)
+            return F.binary_cross_entropy_with_logits(logits, labels.to(logits.dtype))
+        if self.problem_type == "multilabel":
+            return F.multilabel_soft_margin_loss(logits, labels.to(logits.dtype))
         raise ValueError(f"problem_type should be one of {self.problem_types}, but got {self.problem_type}")

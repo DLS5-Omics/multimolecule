@@ -321,7 +321,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
         >>> output["logits"].shape
-        torch.Size([1, 2])
+        torch.Size([1, 1])
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -385,9 +385,9 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 2])
+        torch.Size([1, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -452,9 +452,9 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
         >>> output["logits"].shape
-        torch.Size([1, 5, 5, 2])
+        torch.Size([1, 5, 5, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
+        tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -1183,17 +1183,17 @@ class ErnieRnaContactClassificationHead(nn.Module):
     def __init__(self, config: ErnieRnaConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
-            head_config = config.head
+            head_config = config.head or HeadConfig()
         self.config = head_config
-        self.bos_token_id = config.bos_token_id
-        self.eos_token_id = config.eos_token_id
-        self.pad_token_id = config.pad_token_id
         self.conv1 = nn.Conv2d(1, 8, 7, 1, 3)
         self.relu = nn.ReLU(inplace=True)
         self.dropout = nn.Dropout(p=0.3)
         self.conv2 = nn.Conv2d(8, 63, 7, 1, 3)
         self.resnet = ErnieRnaResNet()
         self.criterion = Criterion(self.config)
+        self.bos_token_id = config.bos_token_id
+        self.eos_token_id = config.eos_token_id
+        self.pad_token_id = config.pad_token_id
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,

@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .criterions import Criterion
-from .embeddings import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF, RotaryEmbedding, SinusoidalEmbedding
+from .criterions import Criterion, CriterionRegistry
+from .embeddings import PositionEmbeddingRegistry, RotaryEmbedding, SinusoidalEmbedding
 from .heads import (
     BaseHeadConfig,
     ContactPredictionHead,
@@ -23,7 +23,6 @@ from .heads import (
     HeadOutput,
     HeadRegistry,
     HeadTransformRegistry,
-    HeadTransformRegistryHF,
     IdentityTransform,
     LinearTransform,
     MaskedLMHead,
@@ -31,15 +30,18 @@ from .heads import (
     NonLinearTransform,
     PredictionHead,
     SequencePredictionHead,
-    TokenHeadRegistryHF,
     TokenKMerHead,
     TokenPredictionHead,
 )
+from .model import MultiMoleculeModel
+from .registry import ModelRegistry
 
 __all__ = [
+    "ModelRegistry",
+    "MultiMoleculeModel",
+    "CriterionRegistry",
     "Criterion",
     "PositionEmbeddingRegistry",
-    "PositionEmbeddingRegistryHF",
     "RotaryEmbedding",
     "SinusoidalEmbedding",
     "BaseHeadConfig",
@@ -48,14 +50,12 @@ __all__ = [
     "HeadRegistry",
     "PredictionHead",
     "SequencePredictionHead",
-    "TokenHeadRegistryHF",
     "TokenPredictionHead",
     "TokenKMerHead",
     "ContactPredictionHead",
     "MaskedLMHead",
     "HeadOutput",
     "HeadTransformRegistry",
-    "HeadTransformRegistryHF",
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",

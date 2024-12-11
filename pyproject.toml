@@ -16,7 +16,7 @@ keywords = [
   "Protein",
   "RNA",
 ]
-license = {file = "LICENSE"}
+license = {file = "LICENSE.md"}
 maintainers = [
     {name = "Zhiyuan Chen", email = "this@zyc.ai"},
 ]
@@ -46,8 +46,9 @@ dynamic = [
 dependencies = [
   "accelerate",
   "chanfig>=0.0.105",
-  "danling>=0.3.11",
+  "danling[torch]>=0.3.11",
   "datasets",
+  'StrEnum; python_version < "3.11"',
   "torch",
   "transformers",
 ]

@@ -1,14 +1,7 @@
----
-authors:
-  - zyc
-date: 2024-05-04 00:00:00
----
-
 # [MultiMolecule](https://multimolecule.danling.org)
 
-!!! tips ""
-
-    Accelerate Molecular Biology Research with Machine Learning
+> [!TIP]
+> Accelerate Molecular Biology Research with Machine Learning
 
 [![Codacy - 代码质量](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy - Coverage](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
