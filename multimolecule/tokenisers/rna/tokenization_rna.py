@@ -98,14 +98,14 @@ class RnaTokenizer(Tokenizer):
         )
         self.replace_T_with_U = replace_T_with_U
         self.nmers = nmers
-        self.condon = codon
+        self.codon = codon
 
     def _tokenize(self, text: str, **kwargs):
         if self.do_upper_case:
             text = text.upper()
         if self.replace_T_with_U:
             text = text.replace("T", "U")
-        if self.condon:
+        if self.codon:
             if len(text) % 3 != 0:
                 raise ValueError(
                     f"length of input sequence must be a multiple of 3 for codon tokenization, but got {len(text)}"
