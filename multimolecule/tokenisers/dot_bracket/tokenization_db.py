@@ -88,10 +88,10 @@ class DotBracketTokenizer(Tokenizer):
             **kwargs,
         )
         self.nmers = nmers
-        self.condon = codon
+        self.codon = codon
 
     def _tokenize(self, text: str, **kwargs):
-        if self.condon:
+        if self.codon:
             if len(text) % 3 != 0:
                 raise ValueError(
                     f"length of input sequence must be a multiple of 3 for codon tokenization, but got {len(text)}"
