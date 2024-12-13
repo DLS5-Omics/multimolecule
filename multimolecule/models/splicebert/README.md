@@ -109,7 +109,7 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
 - **Paper**: [Self-supervised learning on millions of pre-mRNA sequences improves sequence-based RNA splicing prediction](https://doi.org/10.1101/2023.01.31.526427)
 - **Developed by**: Ken Chen, Yue Zhou, Maolin Ding, Yu Wang, Zhixiang Ren, Yuedong Yang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [FlashAttention](https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention)
-- **Original Repository**: [https://github.com/chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT)
+- **Original Repository**: [chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT)
 
 ## Usage
 

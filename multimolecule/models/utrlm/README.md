@@ -123,7 +123,7 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 - **Paper**: [A 5’ UTR Language Model for Decoding Untranslated Regions of mRNA and Function Predictions](http://doi.org/10.1038/s41467-021-24436-7)
 - **Developed by**: Yanyi Chu, Dan Yu, Yupeng Li, Kaixuan Huang, Yue Shen, Le Cong, Jason Zhang, Mengdi Wang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
-- **Original Repository**: [https://github.com/a96123155/UTR-LM](https://github.com/a96123155/UTR-LM)
+- **Original Repository**: [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM)
 
 ## Usage
 

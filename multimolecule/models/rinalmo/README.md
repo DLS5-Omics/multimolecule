@@ -74,7 +74,7 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 - **Paper**: [RiNALMo: General-Purpose RNA Language Models Can Generalize Well on Structure Prediction Tasks](https://doi.org/10.48550/arXiv.2403.00043)
 - **Developed by**: Rafael Josip Penić, Tin Vlašić, Roland G. Huber, Yue Wan, Mile Šikić
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased)
-- **Original Repository**: [https://github.com/lbcb-sci/RiNALMo](https://github.com/lbcb-sci/RiNALMo)
+- **Original Repository**: [lbcb-sci/RiNALMo](https://github.com/lbcb-sci/RiNALMo)
 
 ## Usage
 

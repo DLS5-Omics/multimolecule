@@ -75,7 +75,7 @@ CaLM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style mod
 - **Paper**: [Codon language embeddings provide strong signals for use in protein engineering](https://doi.org/10.1101/2022.12.15.519894)
 - **Developed by**: Carlos Outeiral, Charlotte M. Deane
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
-- **Original Repository**: [https://github.com/oxpig/CaLM](https://github.com/oxpig/CaLM)
+- **Original Repository**: [oxpig/CaLM](https://github.com/oxpig/CaLM)
 
 ## Usage
 

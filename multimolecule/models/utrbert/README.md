@@ -114,7 +114,7 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 - **Paper**: [Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning](https://doi.org/10.1101/2023.09.08.556883)
 - **Developed by**: Yuning Yang, Gen Li, Kuan Pang, Wuxinhao Cao, Xiangtao Li, Zhaolei Zhang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [FlashAttention](https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention)
-- **Original Repository**: [https://github.com/yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT)
+- **Original Repository**: [yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT)
 
 ## Usage
 

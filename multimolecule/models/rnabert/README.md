@@ -79,7 +79,7 @@ RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 - **Paper**: [Informative RNA-base embedding for functional RNA clustering and structural alignment](https://doi.org/10.1093/nargab/lqac012)
 - **Developed by**: JManato Akiyama and Yasubumi Sakakibara
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased)
-- **Original Repository**: [https://github.com/mana438/RNABERT](https://github.com/mana438/RNABERT)
+- **Original Repository**: [mana438/RNABERT](https://github.com/mana438/RNABERT)
 
 ## Usage
 

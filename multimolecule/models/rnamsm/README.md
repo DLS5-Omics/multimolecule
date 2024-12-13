@@ -81,7 +81,7 @@ RNA-MSM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 - **Paper**: [Multiple sequence alignment-based RNA language model and its application to structural inference](https://doi.org/10.1093/nar/gkad1031)
 - **Developed by**: Yikun Zhang, Mei Lang, Jiuhong Jiang, Zhiqiang Gao, Fan Xu, Thomas Litfin, Ke Chen, Jaswinder Singh, Xiansong Huang, Guoli Song, Yonghong Tian, Jian Zhan, Jie Chen, Yaoqi Zhou
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [MSA](https://doi.org/10.1101/2021.02.12.430858)
-- **Original Repository**: [https://github.com/yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM)
+- **Original Repository**: [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM)
 
 ## Usage
 
