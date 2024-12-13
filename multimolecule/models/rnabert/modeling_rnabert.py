@@ -1,12 +1,14 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
@@ -14,9 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
+
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Tuple
 from warnings import warn
@@ -279,7 +286,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -343,7 +350,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -407,9 +414,10 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -427,8 +435,10 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnabert(
             input_ids,
@@ -436,7 +446,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -491,6 +501,12 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -556,7 +572,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.pretrain = RnaBertPreTrainingHeads(config)
 
         # Initialize weights and apply final processing
@@ -750,7 +766,7 @@ class RnaBertLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = RnaBertAttention(config)
+            self.crossattention = RnaBertAttention(config, position_embedding_type="absolute")
         self.intermediate = RnaBertIntermediate(config)
         self.output = RnaBertOutput(config)
 
@@ -1025,13 +1041,13 @@ class RnaBertIntermediate(nn.Module):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
         if isinstance(config.hidden_act, str):
-            self.intermediate_act_fn = ACT2FN[config.hidden_act]
+            self.activation = ACT2FN[config.hidden_act]
         else:
-            self.intermediate_act_fn = config.hidden_act
+            self.activation = config.hidden_act
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
-        hidden_states = self.intermediate_act_fn(hidden_states)
+        hidden_states = self.activation(hidden_states)
         return hidden_states
 
 
@@ -1049,6 +1065,7 @@ class RnaBertOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaBertPooler(nn.Module):
     def __init__(self, config: RnaBertConfig):
         super().__init__()
@@ -1075,7 +1092,7 @@ class RnaBertPreTrainingHeads(nn.Module):
 
     def forward(
         self,
-        outputs: ModelOutput | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         labels_mlm: Tensor | None = None,
         labels_ss: Tensor | None = None,
         labels_sal: Tensor | None = None,

@@ -24,18 +24,18 @@ widget:
       - label: "."
         score: 0.06993662565946579
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
-      - label: "U"
-        score: 0.22777850925922394
       - label: "A"
-        score: 0.21105751395225525
-      - label: "C"
-        score: 0.18962091207504272
+        score: 0.28607121109962463
+      - label: "U"
+        score: 0.24161304533481598
       - label: "G"
-        score: 0.11191495507955551
-      - label: "."
-        score: 0.09583593904972076
+        score: 0.12279549986124039
+      - label: "C"
+        score: 0.10425350069999695
+      - label: "-"
+        score: 0.09150994569063187
 ---
 
 # ERNIE-RNA
@@ -59,23 +59,23 @@ ERNIE-RNA is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-styl
 
 ### Variations
 
-- **[`multimolecule/ernierna`](https://huggingface.co/multimolecule/ernierna)**: The ERNIE-RNA model pre-trained on non-coding RNA sequences.
-- **[`multimolecule/ernierna-ss`](https://huggingface.co/multimolecule/ernierna-ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
+- **[multimolecule/ernierna](https://huggingface.co/multimolecule/ernierna)**: The ERNIE-RNA model pre-trained on non-coding RNA sequences.
+- **[multimolecule/ernierna-ss](https://huggingface.co/multimolecule/ernierna-ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
 
 ### Model Specification
 
 | Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
 | ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 12         | 768         | 12        | 3072              | 85.67              | 22.36     | 11.17    | 1024           |
+| 12         | 768         | 12        | 3072              | 85.67              | 22.37     | 11.18    | 1024           |
 
 ### Links
 
 - **Code**: [multimolecule.ernierna](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ernierna)
-- **Data**: [RNAcentral](https://rnacentral.org)
+- **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: [ERNIE-RNA: An RNA Language Model with Structure-enhanced Representations](https://doi.org/10.1101/2024.03.17.585376)
 - **Developed by**: Weijie Yin, Zhaoyu Zhang, Liang He, Rui Jiang, Shuo Zhang, Gan Liu, Xuegong Zhang, Tao Qin, Zhen Xie
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ERNIE](https://huggingface.co/nghuyong/ernie-3.0-base-zh)
-- **Original Repository**: [https://github.com/Bruce-ywj/ERNIE-RNA](https://github.com/Bruce-ywj/ERNIE-RNA)
+- **Original Repository**: [Bruce-ywj/ERNIE-RNA](https://github.com/Bruce-ywj/ERNIE-RNA)
 
 ## Usage
 
@@ -92,9 +92,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-
 [{'score': 0.32839149236679077,
   'token': 6,
   'token_str': 'A',
@@ -130,7 +130,7 @@ from multimolecule import RnaTokenizer, ErnieRnaModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna")
 model = ErnieRnaModel.from_pretrained("multimolecule/ernierna")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -138,7 +138,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -150,7 +151,7 @@ from multimolecule import RnaTokenizer, ErnieRnaForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna")
 model = ErnieRnaForSequencePrediction.from_pretrained("multimolecule/ernierna")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -159,7 +160,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -171,7 +173,7 @@ from multimolecule import RnaTokenizer, ErnieRnaForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna")
 model = ErnieRnaForTokenPrediction.from_pretrained("multimolecule/ernierna")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -180,7 +182,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -192,7 +195,7 @@ from multimolecule import RnaTokenizer, ErnieRnaForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna")
 model = ErnieRnaForContactPrediction.from_pretrained("multimolecule/ernierna")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -205,7 +208,7 @@ ERNIE-RNA used Masked Language Modeling (MLM) as the pre-training objective: tak
 
 ### Training Data
 
-The ERNIE-RNA model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+The ERNIE-RNA model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral).
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 ERNIE-RNA applied [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral, resulting 25 million unique sequences. Sequences longer than 1024 nucleotides were subsequently excluded. The final dataset contains 20.4 million non-redundant RNA sequences.
@@ -224,7 +227,7 @@ ERNIE-RNA used masked language modeling (MLM) as the pre-training objective. The
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on 24 NVIDIA V100 GPUs with 32GiB memories.
 

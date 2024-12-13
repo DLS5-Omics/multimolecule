@@ -1,1 +1,1 @@
---8<-- "LICENSE.zh.md"
+--8<-- "license.zh.md"

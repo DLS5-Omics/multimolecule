@@ -34,7 +34,7 @@ This is an UNOFFICIAL release of the [EternaBench-External](https://github.com/e
 ## Dataset Description
 
 - **Homepage**: https://multimolecule.danling.org/datasets/eternabench_external
-- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das/)
+- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das)
 
 This dataset includes RNA sequences from various biological origins, including viral genomes and mRNAs, and covers a wide range of probing methods like SHAPE-CE and icSHAPE.
 Each dataset entry provides sequence information, reactivity profiles, and RNA secondary structure data.

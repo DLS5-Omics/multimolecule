@@ -1,1 +1,1 @@
---8<-- "about/license-faq.zh.md"
+--8<-- "license-faq.zh.md"
