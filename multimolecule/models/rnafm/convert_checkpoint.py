@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -180,11 +186,14 @@ original_vocabs = {
 
 
 def convert_checkpoint(convert_config):
-    mranfm = not convert_config.output_path.lower().startswith("rnafm")
-    if mranfm:
+    path = convert_config.checkpoint_path.lower()
+    mrnafm = "mrna" in path or "cds" in path
+    if mrnafm:
         config = Config(num_labels=1, hidden_size=1280, emb_layer_norm_before=False)
         vocab_list = get_alphabet(nmers=3).vocabulary
         original_vocab_list = original_vocabs["3mer"]
+        convert_config.output_path = "mrnafm"
+        convert_config.repo_id = "multimolecule/mrnafm"
     else:
         config = Config(num_labels=1)
         config.codon = True
@@ -206,7 +215,7 @@ def convert_checkpoint(convert_config):
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
-    if mranfm:
+    if mrnafm:
         tokenizer_config["codon"] = True
 
     save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)

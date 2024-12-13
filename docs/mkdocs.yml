@@ -15,20 +15,24 @@ nav:
   - datasets:
       - datasets/index.md
       - DNA:
-          - GENCODE: datasets/gencode.md
+          - Sequences:
+              - GENCODE: datasets/gencode.md
       - RNA:
-          - RNAcentral: datasets/rnacentral.md
-          - Rfam: datasets/rfam.md
-          - RIVAS: datasets/rivas.md
-          - bpRNA-1m: datasets/bprna.md
-          - bpRNA-spot: datasets/bprna-spot.md
-          - bpRNA-new: datasets/bprna-new.md
-          - RNAStrAlign: datasets/rnastralign.md
-          - ArchiveII: datasets/archiveii.md
-          - RYOS: datasets/ryos.md
-          - EternaBench-CM: datasets/eternabench-cm.md
-          - EternaBench-Switch: datasets/eternabench-switch.md
-          - EternaBench-External: datasets/eternabench-external.md
+          - Sequences:
+              - RNAcentral: datasets/rnacentral.md
+              - Rfam: datasets/rfam.md
+          - Secondary Structures:
+              - RIVAS: datasets/rivas.md
+              - bpRNA-1m: datasets/bprna_1m.md
+              - bpRNA-spot: datasets/bprna_spot.md
+              - bpRNA-new: datasets/bprna_new.md
+              - RNAStrAlign: datasets/rnastralign.md
+              - ArchiveII: datasets/archiveii.md
+          - Structures:
+              - RYOS: datasets/ryos.md
+              - EternaBench-CM: datasets/eternabench_cm.md
+              - EternaBench-Switch: datasets/eternabench_switch.md
+              - EternaBench-External: datasets/eternabench_external.md
   - module:
       - module/index.md
       - heads: module/heads.md
@@ -186,6 +190,10 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - redirects:
+      redirect_maps:
+        'license.md': 'about/license.md'
+        'license-faq.md': 'about/license-faq.md'
   - git-committers
   - mkdocstrings:
       handlers:

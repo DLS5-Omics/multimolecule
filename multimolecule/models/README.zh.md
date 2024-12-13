@@ -40,7 +40,7 @@ date: 2024-05-04
 ### 使用 `multimolecule.AutoModel` 构建
 
 ```python
---8<-- "demo/models/multimolecule-automodel.py:17:"
+--8<-- "examples/models/multimolecule-automodel.py:23:"
 ```
 
 ### 直接访问
@@ -48,7 +48,7 @@ date: 2024-05-04
 所有模型可以通过 `from_pretrained` 方法直接加载。
 
 ```python
---8<-- "demo/models/direct-access.py:17:"
+--8<-- "examples/models/direct-access.py:23:"
 ```
 
 ### 使用 [`transformers.AutoModel`][] 构建
@@ -56,7 +56,7 @@ date: 2024-05-04
 虽然我们为模型类使用了不同的命名约定，但模型仍然注册到相应的 [`transformers.AutoModel`][] 中。
 
 ```python
---8<-- "demo/models/transformers-automodel.py:17:"
+--8<-- "examples/models/transformers-automodel.py:23:"
 ```
 
 !!! danger "使用前先 `import multimolecule`"
@@ -75,23 +75,5 @@ date: 2024-05-04
 你也可以使用模型类初始化一个基础模型。
 
 ```python
---8<-- "demo/models/vanilla.py:17:"
+--8<-- "examples/models/vanilla.py:23:"
 ```
-
-## 可用模型
-
-### 脱氧核糖核酸（DNA）
-
-- [CaLM](calm)
-
-### 核糖核酸（RNA）
-
-- [ERNIE-RNA](ernierna)
-- [RiNALMo](rinalmo)
-- [RNABERT](rnabert)
-- [RNAErnie](rnaernie)
-- [RNA-FM](rnafm)
-- [RNA-MSM](rnamsm)
-- [SpliceBERT](splicebert)
-- [3UTRBERT](utrbert)
-- [UTR-LM](utrlm)
