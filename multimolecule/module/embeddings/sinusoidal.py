@@ -3,18 +3,24 @@
 # Copyright (C) 2020 The Facebook AI Research Team Authors
 # Copyright (C) 2020 The HuggingFace Inc. team.
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -77,7 +83,7 @@ class SinusoidalEmbedding(nn.Embedding):
         return emb
 
     @staticmethod
-    def get_position_ids(tensor, padding_idx: int | None = None):
+    def get_position_ids(tensor: Tensor, padding_idx: int | None = None):
         """
         Replace non-padding symbols with their position numbers.
 
@@ -88,18 +94,18 @@ class SinusoidalEmbedding(nn.Embedding):
         # prefers ints, cumsum defaults to output longs, and ONNX doesn't know
         # how to handle the dtype kwarg in cumsum.
         if padding_idx is None:
-            return torch.cumsum(tensor.new_ones(tensor.size(1)).long(), dim=0) - 1
-        mask = tensor.ne(padding_idx).int()
-        return (torch.cumsum(mask, dim=1).type_as(mask) * mask).long() + padding_idx
+            return torch.cumsum(tensor.new_ones(tensor.size(1), dtype=torch.long), dim=0) - 1
+        mask = tensor.ne(padding_idx).long()
+        return torch.cumsum(mask, dim=1, dtype=torch.long) * mask + padding_idx
 
     def forward(self, input_ids: Tensor) -> Tensor:
-        _, seq_len = input_ids.shape[:2]
+        _, seq_length = input_ids.shape[:2]
         # expand embeddings if needed
-        max_pos = seq_len + self.bias + 1
+        max_position = seq_length + self.bias + 1
         if self.padding_idx is not None:
-            max_pos += self.padding_idx
-        if max_pos > self.weight.size(0):
-            self.update_weight(max_pos, self.embedding_dim, self.padding_idx)
+            max_position += self.padding_idx
+        if max_position > self.weight.size(0):
+            self.update_weight(max_position, self.embedding_dim, self.padding_idx)
         # Need to shift the position ids by the padding index
         position_ids = self.get_position_ids(input_ids, self.padding_idx) + self.bias
         return super().forward(position_ids)

@@ -24,18 +24,18 @@ widget:
       - label: "W"
         score: 0.05356108024716377
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "A"
-        score: 0.09350304305553436
+        score: 0.09153486788272858
       - label: "W"
-        score: 0.08757384121417999
+        score: 0.08465325832366943
       - label: "U"
-        score: 0.08202056586742401
+        score: 0.07828908413648605
       - label: "H"
-        score: 0.07025782763957977
+        score: 0.06861720234155655
       - label: "M"
-        score: 0.06502506136894226
+        score: 0.0642390251159668
 ---
 
 # SpliceBERT
@@ -59,9 +59,9 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
 
 ### Variations
 
-- **[`multimolecule/splicebert`](https://huggingface.co/multimolecule/splicebert)**: The SpliceBERT model.
-- **[`multimolecule/splicebert.510`](https://huggingface.co/multimolecule/splicebert.510)**: The intermediate SpliceBERT model.
-- **[`multimolecule/splicebert-human.510`](https://huggingface.co/multimolecule/splicebert-human.510)**: The intermediate SpliceBERT model pre-trained on human data only.
+- **[multimolecule/splicebert](https://huggingface.co/multimolecule/splicebert)**: The SpliceBERT model.
+- **[multimolecule/splicebert.510](https://huggingface.co/multimolecule/splicebert.510)**: The intermediate SpliceBERT model.
+- **[multimolecule/splicebert-human.510](https://huggingface.co/multimolecule/splicebert-human.510)**: The intermediate SpliceBERT model pre-trained on human data only.
 
 ### Model Specification
 
@@ -109,7 +109,7 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
 - **Paper**: [Self-supervised learning on millions of pre-mRNA sequences improves sequence-based RNA splicing prediction](https://doi.org/10.1101/2023.01.31.526427)
 - **Developed by**: Ken Chen, Yue Zhou, Maolin Ding, Yu Wang, Zhixiang Ren, Yuedong Yang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [FlashAttention](https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention)
-- **Original Repository**: [https://github.com/chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT)
+- **Original Repository**: [chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT)
 
 ## Usage
 
@@ -126,9 +126,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/splicebert")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-
 [{'score': 0.340412974357605,
   'token': 9,
   'token_str': 'U',
@@ -164,7 +164,7 @@ from multimolecule import RnaTokenizer, SpliceBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertModel.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -172,7 +172,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -184,7 +185,7 @@ from multimolecule import RnaTokenizer, SpliceBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForSequencePrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -193,7 +194,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -205,7 +207,7 @@ from multimolecule import RnaTokenizer, SpliceBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForTokenPrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -214,7 +216,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -226,7 +229,7 @@ from multimolecule import RnaTokenizer, SpliceBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForContactPrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -257,13 +260,13 @@ SpliceBERT used masked language modeling (MLM) as the pre-training objective. Th
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on 8 NVIDIA V100 GPUs.
 
+- Optimizer: AdamW
 - Learning rate: 1e-4
 - Learning rate scheduler: ReduceLROnPlateau(patience=3)
-- Optimizer: AdamW
 
 SpliceBERT trained model in a two-stage training process:
 

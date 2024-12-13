@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -93,9 +99,15 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def get_input_embeddings(self):
+        return self.embeddings.word_embeddings
+
+    def set_input_embeddings(self, value):
+        self.embeddings.word_embeddings = value
+
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
@@ -122,19 +134,36 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
         if input_ids is not None:
             self.warn_if_padding_and_no_attention_mask(input_ids, attention_mask)
-        elif inputs_embeds is None:
+            input_shape = input_ids.size()
+        elif inputs_embeds is not None:
+            input_shape = inputs_embeds.size()[:-1]
+        else:
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
-        if attention_mask is None:
-            attention_mask = (
-                input_ids.ne(self.pad_token_id) if self.pad_token_id is not None else torch.ones_like(input_ids)
-            )
+        batch_size, seq_length = input_shape
+        device = input_ids.device if input_ids is not None else inputs_embeds.device  # type: ignore[union-attr]
 
-        unsqueeze_input = input_ids.ndim == 2
+        if attention_mask is None:
+            if input_ids is not None and self.pad_token_id is not None:
+                attention_mask = input_ids.ne(self.pad_token_id)
+            else:
+                attention_mask = torch.ones(((batch_size, seq_length)), device=device)
+                warn(
+                    "attention_mask is not specified, and cannot be inferred from input_ids."
+                    "Assuming all tokens are not masked."
+                )
+
+        # Automatically unsqueeze input for single sequence inputs
+        # RNA-MSM expects inputs with MSA
+        unsqueeze_input = inputs_embeds.ndim == 3 if inputs_embeds is not None else input_ids.ndim == 2  # type: ignore
         if unsqueeze_input:
-            input_ids = input_ids.unsqueeze(1)
-        if attention_mask.ndim == 2:
-            attention_mask = attention_mask.unsqueeze(1)
+            warn("Single sequence input detected, RNA-MSM works best with MSA inputs.")
+            if input_ids is not None:
+                input_ids = input_ids.unsqueeze(1)
+            if inputs_embeds is not None:
+                inputs_embeds = inputs_embeds.unsqueeze(1)
+            if attention_mask.ndim == 2:
+                attention_mask = attention_mask.unsqueeze(1)
 
         embedding_output = self.embeddings(
             input_ids=input_ids,
@@ -183,7 +212,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -192,7 +221,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
@@ -246,7 +275,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -255,7 +284,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
@@ -309,17 +338,18 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
         head_config = HeadConfig(output_name="row_attentions")
         self.contact_head = ContactPredictionHead(config, head_config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -330,8 +360,10 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
@@ -339,7 +371,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -396,9 +428,15 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
+
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
@@ -465,13 +503,14 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         super().__init__(config)
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
         self.pretrain = RnaMsmPreTrainingHeads(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+        self.require_attentions = self.pretrain.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
@@ -482,15 +521,17 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -547,27 +588,21 @@ class RnaMsmEmbeddings(nn.Module):
             input_shape = inputs_embeds.size()[:-1]  # type: ignore[union-attr]
         _, num_alignments, seq_length = input_shape
 
-        if attention_mask is None:
-            if isinstance(input_ids, NestedTensor):
-                input_ids, attention_mask = input_ids.tensor, input_ids.mask
-            elif isinstance(inputs_embeds, NestedTensor):
-                inputs_embeds, attention_mask = inputs_embeds.tensor, inputs_embeds.mask
-            elif input_ids is not None and self.pad_token_id is not None:
-                attention_mask = input_ids.ne(self.pad_token_id)
-            else:
-                raise ValueError("attention_mask is not passed and can not be inferred from input_ids or inputs_embeds")
-
         if inputs_embeds is None:
-            inputs_embeds = self.word_embeddings(input_ids.long())
+            if input_ids is None:
+                raise ValueError("input_ids must be provided when inputs_embeds is not provided")
+            inputs_embeds = self.word_embeddings(input_ids)
 
         if position_ids is None:
-            position_ids = self.position_ids[:, :seq_length] * attention_mask.long()
+            position_ids = self.position_ids[:, :seq_length]
+            if attention_mask is not None:
+                position_ids = position_ids * attention_mask
         position_embeddings = self.position_embeddings(position_ids)
 
         embeddings = inputs_embeds + position_embeddings
 
         if self.msa_embeddings is not None:
-            if input_ids.size(1) > self.max_position_embeddings:
+            if num_alignments > self.max_position_embeddings:
                 raise RuntimeError(
                     "Using model with MSA position embedding trained on maximum MSA "
                     f"depth of {self.max_position_embeddings}, but received {num_alignments} alignments."
@@ -576,7 +611,8 @@ class RnaMsmEmbeddings(nn.Module):
 
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
-        embeddings = (embeddings * attention_mask.unsqueeze(-1)).to(embeddings.dtype)
+        if attention_mask is not None:
+            embeddings = embeddings * attention_mask.unsqueeze(-1)
         return embeddings
 
 
@@ -1212,7 +1248,7 @@ class MultiheadAttention(nn.Module):
         # attention_probs = attention_probs.type_as(attention_scores)
         attention_probs = attention_scores.softmax(-1)
         attention_probs = F.dropout(
-            attention_probs.type_as(attention_scores),
+            attention_probs,
             p=self.dropout_prob,
             training=self.training,
         )
@@ -1311,6 +1347,7 @@ class FeedForwardNetwork(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaMsmPooler(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()

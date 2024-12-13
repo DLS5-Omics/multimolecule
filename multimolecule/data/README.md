@@ -17,11 +17,17 @@ The `data` package is designed to complement [`datasets`](https://huggingface.co
 ### Load from local data file
 
 ```python
---8<-- "demo/data/local-file.py:17:"
+--8<-- "examples/data/local-file.py:23:"
 ```
 
 ### Load from :hugs: [`datasets`](https://huggingface.co/docs/datasets)
 
 ```python
---8<-- "demo/data/huggingface-datasets.py:17:"
+--8<-- "examples/data/huggingface-datasets.py:23:"
+```
+
+### Construct from local data
+
+```python
+--8<-- "examples/data/python-dict.py:23:"
 ```

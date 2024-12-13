@@ -24,18 +24,18 @@ widget:
       - label: "S"
         score: 0.07325706630945206
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
-      - label: "G"
-        score: 0.09372635930776596
-      - label: "R"
-        score: 0.08816102892160416
       - label: "A"
-        score: 0.08292599022388458
-      - label: "<eos>"
-        score: 0.07841548323631287
+        score: 0.08444530516862869
+      - label: "R"
+        score: 0.07878861576318741
+      - label: "G"
+        score: 0.07351073622703552
       - label: "V"
-        score: 0.073448047041893
+        score: 0.07145819813013077
+      - label: "M"
+        score: 0.07045349478721619
 ---
 
 # RNAErnie
@@ -81,17 +81,17 @@ Note that during the conversion process, additional tokens such as `[IND]` and n
 
 | Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
 | ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 12         | 768         | 12        | 3072              | 86.06              | 22.36     | 11.17    | 512            |
+| 12         | 768         | 12        | 3072              | 86.06              | 22.37     | 11.17    | 512            |
 
 ### Links
 
 - **Code**: [multimolecule.rnaernie](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnaernie)
-- **Weights**: [`multimolecule/rnaernie`](https://huggingface.co/multimolecule/rnaernie)
-- **Data**: [RNAcentral](https://rnacentral.org)
+- **Weights**: [multimolecule/rnaernie](https://huggingface.co/multimolecule/rnaernie)
+- **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: Multi-purpose RNA language modelling with motif-aware pretraining and type-guided fine-tuning
 - **Developed by**: Ning Wang, Jiang Bian, Yuchen Li, Xuhong Li, Shahid Mumtaz, Linghe Kong, Haoyi Xiong.
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ERNIE](https://huggingface.co/nghuyong/ernie-3.0-base-zh)
-- **Original Repository**: [https://github.com/CatIIIIIIII/RNAErnie](https://github.com/CatIIIIIIII/RNAErnie)
+- **Original Repository**: [CatIIIIIIII/RNAErnie](https://github.com/CatIIIIIIII/RNAErnie)
 
 ## Usage
 
@@ -108,9 +108,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/rnaernie")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-
 [{'score': 0.09252794831991196,
   'token': 8,
   'token_str': 'G',
@@ -146,7 +146,7 @@ from multimolecule import RnaTokenizer, RnaErnieModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnaernie")
 model = RnaErnieModel.from_pretrained("multimolecule/rnaernie")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -154,7 +154,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -166,7 +167,7 @@ from multimolecule import RnaTokenizer, RnaErnieForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnaernie")
 model = RnaErnieForSequencePrediction.from_pretrained("multimolecule/rnaernie")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -175,7 +176,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -187,7 +189,7 @@ from multimolecule import RnaTokenizer, RnaErnieForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnaernie")
 model = RnaErnieForTokenPrediction.from_pretrained("multimolecule/rnaernie")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -196,7 +198,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -208,7 +211,7 @@ from multimolecule import RnaTokenizer, RnaErnieForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnaernie")
 model = RnaErnieForContactPrediction.from_pretrained("multimolecule/rnaernie")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -221,7 +224,7 @@ RNAErnie used Masked Language Modeling (MLM) as the pre-training objective: taki
 
 ### Training Data
 
-The RNAErnie model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+The RNAErnie model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral).
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 RNAErnie used a subset of RNAcentral for pre-training. The subset contains 23 million sequences.
@@ -240,9 +243,9 @@ RNAErnie used masked language modeling (MLM) as the pre-training objective. The 
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
-RNAErnie uses a special 3-stage training pipeline to pre-train the model, each with a different masking strategy:
+RNAErnie used a special 3-stage training pipeline to pre-train the model, each with a different masking strategy:
 
 Base-level Masking: The masking applies to each nucleotide in the sequence.
 Subsequence-level Masking: The masking applies to subsequences of 4-8bp in the sequence.
@@ -251,13 +254,13 @@ Motif-level Masking: The model is trained on motif datasets.
 The model was trained on 4 NVIDIA V100 GPUs with 32GiB memories.
 
 - Batch size: 50
-- Learning rate: 1e-4
-- Weight decay: 0.01
-- Optimizer: AdamW
 - Steps: 2,580,000
+- Optimizer: AdamW
+- Learning rate: 1e-4
 - Learning rate warm-up: 129,000 steps
 - Learning rate cool-down: 129,000 steps
 - Minimum learning rate: 5e-5
+- Weight decay: 0.01
 
 ## Citation
 

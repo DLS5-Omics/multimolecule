@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -91,8 +97,8 @@ def unfold_kmer_embeddings(
     batch_size, seq_length, hidden_size = embeddings.size()
     last_valid_indices = attention_mask.sum(dim=-1)
     output = torch.zeros(batch_size, seq_length + nmers - 1, hidden_size, device=embeddings.device)
-    for index, (tensor, seq_len) in enumerate(zip(embeddings, last_valid_indices)):
-        embedding = tensor[:seq_len]
+    for index, (tensor, seq_length) in enumerate(zip(embeddings, last_valid_indices)):
+        embedding = tensor[:seq_length]
         if bos_token_id is not None:
             embedding = embedding[1:]
         if eos_token_id is not None:
@@ -116,6 +122,6 @@ def unfold_kmer_embeddings(
         if bos_token_id is not None:
             embedding = torch.cat([tensor[0][None, :], embedding])
         if eos_token_id is not None:
-            embedding = torch.cat([embedding, tensor[seq_len - 1][None, :]])
-        output[index, : seq_len + nmers - 1] = embedding
+            embedding = torch.cat([embedding, tensor[seq_length - 1][None, :]])
+        output[index, : seq_length + nmers - 1] = embedding
     return output

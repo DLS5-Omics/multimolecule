@@ -17,11 +17,17 @@ date: 2024-05-04
 ### 从本地数据文件加载
 
 ```python
---8<-- "demo/data/local-file.py:17:"
+--8<-- "examples/data/local-file.py:23:"
 ```
 
 ### 从:hugs: [`datasets`](https://huggingface.co/docs/datasets)加载
 
 ```python
---8<-- "demo/data/huggingface-datasets.py:17:"
+--8<-- "examples/data/huggingface-datasets.py:23:"
+```
+
+### 从本地数据构建
+
+```python
+--8<-- "examples/data/python-dict.py:23:"
 ```

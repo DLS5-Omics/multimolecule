@@ -24,18 +24,18 @@ widget:
       - label: "A"
         score: 0.08898332715034485
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "."
-        score: 0.23545819520950317
+        score: 0.2275155633687973
       - label: "*"
-        score: 0.1889132708311081
+        score: 0.18255384266376495
       - label: "I"
-        score: 0.15300516784191132
+        score: 0.14644214510917664
       - label: "A"
-        score: 0.12081773579120636
+        score: 0.1262909322977066
       - label: "U"
-        score: 0.10451140254735947
+        score: 0.12270607799291611
 ---
 
 # RNA-FM
@@ -59,8 +59,8 @@ RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 
 ### Variations
 
-- **[`multimolecule/rnafm`](https://huggingface.co/multimolecule/rnafm)**: The RNA-FM model pre-trained on non-coding RNA sequences.
-- **[`multimolecule/mrnafm`](https://huggingface.co/multimolecule/mrnafm)**: The RNA-FM model pre-trained on mRNA coding sequences.
+- **[multimolecule/rnafm](https://huggingface.co/multimolecule/rnafm)**: The RNA-FM model pre-trained on non-coding RNA sequences.
+- **[multimolecule/mrnafm](https://huggingface.co/multimolecule/mrnafm)**: The RNA-FM model pre-trained on mRNA coding sequences.
 
 ### Model Specification
 
@@ -103,11 +103,11 @@ RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 ### Links
 
 - **Code**: [multimolecule.rnafm](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnafm)
-- **Data**: [RNAcentral](https://rnacentral.org)
+- **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: [Interpretable RNA Foundation Model from Unannotated Data for Highly Accurate RNA Structure and Function Predictions](https://doi.org/10.1101/2022.08.06.503062)
 - **Developed by**: Jiayang Chen, Zhihang Hu, Siqi Sun, Qingxiong Tan, Yixuan Wang, Qinze Yu, Licheng Zong, Liang Hong, Jin Xiao, Tao Shen, Irwin King, Yu Li
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
-- **Original Repository**: [https://github.com/ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM)
+- **Original Repository**: [ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM)
 
 ## Usage
 
@@ -124,9 +124,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/rnafm")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-
 [{'score': 0.2752501964569092,
   'token': 21,
   'token_str': '.',
@@ -162,7 +162,7 @@ from multimolecule import RnaTokenizer, RnaFmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmModel.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -170,7 +170,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -182,7 +183,7 @@ from multimolecule import RnaTokenizer, RnaFmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmForSequencePrediction.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -191,7 +192,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -203,7 +205,7 @@ from multimolecule import RnaTokenizer, RnaFmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmForTokenPrediction.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -212,7 +214,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -224,7 +227,7 @@ from multimolecule import RnaTokenizer, RnaFmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmForContactPrediction.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -237,7 +240,7 @@ RNA-FM used Masked Language Modeling (MLM) as the pre-training objective: taking
 
 ### Training Data
 
-The RNA-FM model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+The RNA-FM model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral).
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 RNA-FM applied [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.
@@ -257,14 +260,14 @@ RNA-FM used masked language modeling (MLM) as the pre-training objective. The ma
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on 8 NVIDIA A100 GPUs with 80GiB memories.
 
 - Learning rate: 1e-4
-- Weight decay: 0.01
-- Learning rate scheduler: inverse square root
+- Learning rate scheduler: Inverse square root
 - Learning rate warm-up: 10,000 steps
+- Weight decay: 0.01
 
 ## Citation
 

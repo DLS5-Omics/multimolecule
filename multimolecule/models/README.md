@@ -40,7 +40,7 @@ Similar to [Token Classification](https://huggingface.co/docs/transformers/en/ta
 ### Build with `multimolecule.AutoModel`s
 
 ```python
---8<-- "demo/models/multimolecule-automodel.py:17:"
+--8<-- "examples/models/multimolecule-automodel.py:23:"
 ```
 
 ### Direct Access
@@ -48,7 +48,7 @@ Similar to [Token Classification](https://huggingface.co/docs/transformers/en/ta
 All models can be directly loaded with the `from_pretrained` method.
 
 ```python
---8<-- "demo/models/direct-access.py:17:"
+--8<-- "examples/models/direct-access.py:23:"
 ```
 
 ### Build with [`transformers.AutoModel`][]s
@@ -56,7 +56,7 @@ All models can be directly loaded with the `from_pretrained` method.
 While we use a different naming convention for model classes, the models are still registered to corresponding [`transformers.AutoModel`][]s.
 
 ```python
---8<-- "demo/models/transformers-automodel.py:17:"
+--8<-- "examples/models/transformers-automodel.py:23:"
 ```
 
 !!! danger "`import multimolecule` before use"
@@ -75,23 +75,5 @@ While we use a different naming convention for model classes, the models are sti
 You can also initialize a vanilla model using the model class.
 
 ```python
---8<-- "demo/models/vanilla.py:17:"
+--8<-- "examples/models/vanilla.py:23:"
 ```
-
-## Available Models
-
-### DeoxyriboNucleic Acid (DNA)
-
-- [CaLM](calm)
-
-### RiboNucleic Acid (RNA)
-
-- [ERNIE-RNA](ernierna)
-- [RiNALMo](rinalmo)
-- [RNABERT](rnabert)
-- [RNAErnie](rnaernie)
-- [RNA-FM](rnafm)
-- [RNA-MSM](rnamsm)
-- [SpliceBERT](splicebert)
-- [3UTRBERT](utrbert)
-- [UTR-LM](utrlm)

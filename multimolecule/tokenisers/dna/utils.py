@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -27,12 +33,12 @@ from ..utils import convert_word_embeddings as convert_word_embeddings_
 torch.manual_seed(1016)
 
 
-def get_alphabet(alphabet: List[str] | str | None = None, nmers: int = 1) -> Alphabet:
+def get_alphabet(alphabet: List[str] | str | None = None, nmers: int = 1, **kwargs) -> Alphabet:
     if alphabet is None:
         alphabet = STANDARD_ALPHABET if nmers <= 1 else STREAMLINE_ALPHABET
     elif isinstance(alphabet, str):
         alphabet = ALPHABETS[alphabet]
-    return Alphabet(alphabet, nmers=nmers)
+    return Alphabet(alphabet, nmers=nmers, **kwargs)
 
 
 def get_vocab_mapping():
@@ -76,15 +82,11 @@ def convert_word_embeddings(
 
 STANDARD_ALPHABET = list("ACGTNRYSWKMBDHV.X*-")
 
-
 IUPAC_ALPHABET = list("ACGTNRYSWKMBDHV.")
-
 
 STREAMLINE_ALPHABET = list("ACGTN")
 
-
 NUCLEOBASE_ALPHABET = list("ACGT")
-
 
 ALPHABETS = {
     "standard": STANDARD_ALPHABET,
@@ -92,7 +94,6 @@ ALPHABETS = {
     "streamline": STREAMLINE_ALPHABET,
     "nucleobase": NUCLEOBASE_ALPHABET,
 }
-
 
 VOCAB_MAPPING = {
     "R": "AG",

@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -84,7 +90,7 @@ class BERTNeck(nn.Module):
             raise ValueError("sequence should not be None.")
         if sequence.dim() == 2:
             sequence = sequence[:, None]
-        batch_size, seq_len, _ = sequence.shape
+        batch_size, seq_length, _ = sequence.shape
         output = sequence
         if discrete is not None:
             cls_token_dis = self.cls_token_dis.expand(batch_size, 1, -1)
@@ -96,7 +102,7 @@ class BERTNeck(nn.Module):
         if all_len > self.pos_embed.shape[1]:
             raise ValueError("sequence length is out of range.")
         output = output + self.pos_embed[:, 0:all_len, :]
-        output = self.bert(output)[0][:, 0:seq_len, :]
-        if seq_len == 1:
+        output = self.bert(output)[0][:, 0:seq_length, :]
+        if seq_length == 1:
             output = output.squeeze(1)
         return output

@@ -16,14 +16,14 @@ keywords = [
   "Protein",
   "RNA",
 ]
-license = {file = "LICENSE.md"}
+license = { file = "license.md" }
 maintainers = [
-    {name = "Zhiyuan Chen", email = "this@zyc.ai"},
+  { name = "Zhiyuan Chen", email = "this@zyc.ai" },
 ]
 authors = [
-    {name = "Zhiyuan Chen", email = "this@zyc.ai"},
+  { name = "Zhiyuan Chen", email = "this@zyc.ai" },
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 2 - Pre-Alpha ",
   "Intended Audience :: Developers",
@@ -32,12 +32,12 @@ classifiers = [
   "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dynamic = [
@@ -48,17 +48,16 @@ dependencies = [
   "chanfig>=0.0.105",
   "danling[torch]>=0.3.11",
   "datasets",
-  'StrEnum; python_version < "3.11"',
+  "strenum; python_version<'3.11'",
   "torch",
   "transformers",
 ]
-[project.urls]
-documentation = "https://multimolecule.danling.org"
-homepage = "https://multimolecule.danling.org"
-repository = "https://github.com/DLS5-Omics/multimolecule"
+urls.documentation = "https://multimolecule.danling.org"
+urls.homepage = "https://multimolecule.danling.org"
+urls.repository = "https://github.com/DLS5-Omics/multimolecule"
 
 [tool.setuptools]
-packages = ["multimolecule"]
+packages = [ "multimolecule" ]
 
 [tool.setuptools_scm]
 write_to = "multimolecule/_version.py"
@@ -95,10 +94,10 @@ addopts = "--doctest-modules --cov"
 
 [tool.coverage.run]
 branch = true
-include = ["multimolecule/**"]
+include = [ "multimolecule/**" ]
 
 [tool.coverage.paths]
-source = ["multimolecule"]
+source = [ "multimolecule" ]
 
 [tool.coverage.xml]
 output = "coverage.xml"

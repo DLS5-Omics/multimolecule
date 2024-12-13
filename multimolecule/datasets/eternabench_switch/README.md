@@ -34,7 +34,7 @@ This is an UNOFFICIAL release of the [EternaBench-Switch](https://github.com/ete
 
 - **Homepage**: https://multimolecule.danling.org/datasets/eternabench_switch
 - **datasets**: https://huggingface.co/datasets/multimolecule/eternabench-switch
-- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das/)
+- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das)
 
 The dataset includes synthetic RNA sequences designed to act as riboswitches. These molecules can adopt different structural states in response to ligand binding, and the dataset provides detailed information on the binding affinities for various ligands, along with metrics on the RNA’s ability to switch between conformations. With over 7,000 entries, this dataset is highly useful for studying RNA folding, ligand interaction, and RNA structural dynamics.
 

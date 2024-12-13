@@ -60,7 +60,7 @@ Note that we use `.` to represent a gap in the sequence.
 
 ## Streamline Alphabet
 
-The streamline alphabet includes one additional symbol to the [nucleobase alphabet](#nucleobase-alphabet), `N` to represent unknown nucleobase.
+The streamline alphabet includes one additional symbol to the [dot-bracket alphabet](#dot-bracket-alphabet), `+` to represent nick between strand.
 
 | Code | Represents                             |
 | ---- | -------------------------------------- |
@@ -68,3 +68,11 @@ The streamline alphabet includes one additional symbol to the [nucleobase alphab
 | (    | internal helices of all terminal stems |
 | )    | internal helices of all terminal stems |
 | +    | nick between strand                    |
+
+## Dot-Bracket Alphabet
+
+| Code | Represents                             |
+| ---- | -------------------------------------- |
+| .    | unpaired                               |
+| (    | internal helices of all terminal stems |
+| )    | internal helices of all terminal stems |

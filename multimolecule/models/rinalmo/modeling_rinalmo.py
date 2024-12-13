@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -117,7 +123,7 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -196,11 +202,14 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
         past_key_values_length = past_key_values[0][0].shape[2] if past_key_values is not None else 0
 
         if attention_mask is None:
-            attention_mask = (
-                input_ids.ne(self.pad_token_id)
-                if self.pad_token_id is not None
-                else torch.ones(((batch_size, seq_length + past_key_values_length)), device=device)
-            )
+            if input_ids is not None and self.pad_token_id is not None:
+                attention_mask = input_ids.ne(self.pad_token_id)
+            else:
+                attention_mask = torch.ones(((batch_size, seq_length + past_key_values_length)), device=device)
+                warn(
+                    "attention_mask is not specified, and cannot be inferred from input_ids."
+                    "Assuming all tokens are not masked."
+                )
 
         # We can provide a self-attention mask of dimensions [batch_size, from_seq_length, to_seq_length]
         # ourselves in which case we just need to make it broadcastable to all heads.
@@ -276,7 +285,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.rinalmo = RiNALMoModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -285,7 +294,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -340,7 +349,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -349,7 +358,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -404,16 +413,17 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -424,8 +434,10 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rinalmo(
             input_ids,
@@ -433,7 +445,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -494,9 +506,15 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
+
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -583,17 +601,7 @@ class RiNALMoEmbeddings(nn.Module):
             else:
                 position_ids = self.create_position_ids_from_inputs_embeds(inputs_embeds)
             # This is a bug in the original implementation
-            position_ids += 1
-
-        if attention_mask is None:
-            if isinstance(input_ids, NestedTensor):
-                input_ids, attention_mask = input_ids.tensor, input_ids.mask
-            elif isinstance(inputs_embeds, NestedTensor):
-                inputs_embeds, attention_mask = inputs_embeds.tensor, inputs_embeds.mask
-            elif input_ids is not None and self.pad_token_id is not None:
-                attention_mask = input_ids.ne(self.pad_token_id)
-            else:
-                raise ValueError("attention_mask is not passed and can not be inferred from input_ids or inputs_embeds")
+            position_ids = position_ids + 1
 
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
@@ -605,11 +613,9 @@ class RiNALMoEmbeddings(nn.Module):
                 raise ValueError("Token dropout is only supported when input_ids are provided")
             embeddings = embeddings.masked_fill((input_ids == self.mask_token_id).unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RiNALMo model training runs
-            src_lengths = attention_mask.sum(-1)
+            src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
             mask_ratio_observed = (input_ids == self.mask_token_id).sum(-1).float() / src_lengths
-            embeddings = (embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]).to(
-                embeddings.dtype
-            )
+            embeddings = (embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]).to(embeddings)
 
         if self.position_embedding_type == "absolute":
             position_embeddings = self.position_embeddings(position_ids)
@@ -743,7 +749,7 @@ class RiNALMoLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = RiNALMoAttention(config)
+            self.crossattention = RiNALMoAttention(config, position_embedding_type="absolute")
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.intermediate = RiNALMoIntermediate(config)
         self.output = RiNALMoOutput(config)
@@ -821,9 +827,9 @@ class RiNALMoLayer(nn.Module):
 
 
 class RiNALMoAttention(nn.Module):
-    def __init__(self, config: RiNALMoConfig):
+    def __init__(self, config: RiNALMoConfig, position_embedding_type: str | None = None):
         super().__init__()
-        self.self = RiNALMoSelfAttention(config)
+        self.self = RiNALMoSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = RiNALMoSelfOutput(config)
         self.pruned_heads: set = set()
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
@@ -1075,5 +1081,7 @@ def create_position_ids_from_input_ids(input_ids, padding_idx, past_key_values_l
     """
     # The series of casts and type-conversions here are carefully balanced to both work with ONNX export and XLA.
     mask = input_ids.ne(padding_idx).int()
-    incremental_indices = (torch.cumsum(mask, dim=1).type_as(mask) + past_key_values_length) * mask
+    incremental_indices = (
+        (torch.cumsum(mask, dim=1, dtype=mask.dtype) + past_key_values_length) * mask + past_key_values_length
+    ) * mask
     return incremental_indices.long() + padding_idx

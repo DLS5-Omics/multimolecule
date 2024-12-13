@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -84,7 +90,7 @@ class Dataset(datasets.Dataset):
             Only works when there is exactly one sequence column
             You can control the naming through `multimolecule.defaults.SEQUENCE_COL_NAME`.
             For more refined control, use `column_names_map`.
-        auto_rename_label_cols: Whether to automatically rename label column to standard name.
+        auto_rename_label_col: Whether to automatically rename label column to standard name.
             Only works when there is exactly one label column.
             You can control the naming through `multimolecule.defaults.LABEL_COL_NAME`.
             For more refined control, use `column_names_map`.

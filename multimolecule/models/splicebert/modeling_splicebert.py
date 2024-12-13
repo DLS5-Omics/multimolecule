@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -123,7 +129,7 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -202,11 +208,14 @@ class SpliceBertModel(SpliceBertPreTrainedModel):
         past_key_values_length = past_key_values[0][0].shape[2] if past_key_values is not None else 0
 
         if attention_mask is None:
-            attention_mask = (
-                input_ids.ne(self.pad_token_id)
-                if self.pad_token_id is not None
-                else torch.ones(((batch_size, seq_length + past_key_values_length)), device=device)
-            )
+            if input_ids is not None and self.pad_token_id is not None:
+                attention_mask = input_ids.ne(self.pad_token_id)
+            else:
+                attention_mask = torch.ones(((batch_size, seq_length + past_key_values_length)), device=device)
+                warn(
+                    "attention_mask is not specified, and cannot be inferred from input_ids."
+                    "Assuming all tokens are not masked."
+                )
 
         # We can provide a self-attention mask of dimensions [batch_size, from_seq_length, to_seq_length]
         # ourselves in which case we just need to make it broadcastable to all heads.
@@ -281,7 +290,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.splicebert = SpliceBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -290,7 +299,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -345,7 +354,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -354,7 +363,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -409,16 +418,17 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -429,8 +439,10 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.splicebert(
             input_ids,
@@ -438,7 +450,7 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -507,7 +519,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
 
     def forward(
         self,
-        input_ids: Tensor | NestedTensor,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         head_mask: Tensor | None = None,
@@ -910,9 +922,9 @@ class SpliceBertSelfAttention(nn.Module):
             past_key_value = (key_layer, value_layer)
 
         if self.flash:
-            # query_layer, key_layer shape: (batch_size, num_heads, seq_len, head_size)
-            # value_layer shape: (batch_size, num_heads, seq_len, head_size)
-            query_layer = query_layer.permute(0, 2, 1, 3).contiguous()  # (batch_size, seq_len, num_heads, head_size)
+            # query_layer, key_layer shape: (batch_size, num_heads, seq_length, head_size)
+            # value_layer shape: (batch_size, num_heads, seq_length, head_size)
+            query_layer = query_layer.permute(0, 2, 1, 3).contiguous()  # (batch_size, seq_length, num_heads, head_size)
             key_layer = key_layer.permute(0, 2, 1, 3).contiguous()  # type: ignore[attr-defined]
             value_layer = value_layer.permute(0, 2, 1, 3).contiguous()  # type: ignore[attr-defined]
             p = self.dropout.p if self.training else 0.0
@@ -994,13 +1006,13 @@ class SpliceBertIntermediate(nn.Module):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
         if isinstance(config.hidden_act, str):
-            self.intermediate_act_fn = ACT2FN[config.hidden_act]
+            self.activation = ACT2FN[config.hidden_act]
         else:
-            self.intermediate_act_fn = config.hidden_act
+            self.activation = config.hidden_act
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
-        hidden_states = self.intermediate_act_fn(hidden_states)
+        hidden_states = self.activation(hidden_states)
         return hidden_states
 
 
@@ -1018,6 +1030,7 @@ class SpliceBertOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class SpliceBertPooler(nn.Module):
     def __init__(self, config: SpliceBertConfig):
         super().__init__()

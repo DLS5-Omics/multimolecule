@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -52,18 +58,18 @@ class RotaryEmbedding(nn.Module):
         self._sin_cached = None
 
     def forward(self, q: Tensor, k: Tensor) -> Tuple[Tensor, Tensor]:
-        self._update_cos_sin_tables(k, seq_dimension=-2)
+        self._update_cos_sin_tables(k, seq_len_dim=-2)
 
         return (self.apply_rotary_pos_emb(q), self.apply_rotary_pos_emb(k))
 
-    def _update_cos_sin_tables(self, x, seq_dimension=2):
-        seq_len = x.shape[seq_dimension]
+    def _update_cos_sin_tables(self, x, seq_len_dim=2):
+        seq_length = x.shape[seq_len_dim]
 
         # Reset the tables if the sequence length has changed,
         # or if we're on a new device (possibly due to tracing for instance)
-        if seq_len != self._seq_len_cached or self._cos_cached.device != x.device:
-            self._seq_len_cached = seq_len
-            t = torch.arange(x.shape[seq_dimension], device=x.device).type_as(self.inv_freq)
+        if seq_length != self._seq_len_cached or self._cos_cached.device != x.device:
+            self._seq_len_cached = seq_length
+            t = torch.arange(x.shape[seq_len_dim], device=x.device, dtype=self.inv_freq.dtype)
             freqs = torch.outer(t, self.inv_freq)
             emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
 

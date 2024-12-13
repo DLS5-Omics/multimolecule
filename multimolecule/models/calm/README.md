@@ -2,7 +2,7 @@
 language: dna
 tags:
   - Biology
-  - RNA
+  - DNA
 license: agpl-3.0
 datasets:
   - multimolecule/ena
@@ -75,7 +75,7 @@ CaLM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style mod
 - **Paper**: [Codon language embeddings provide strong signals for use in protein engineering](https://doi.org/10.1101/2022.12.15.519894)
 - **Developed by**: Carlos Outeiral, Charlotte M. Deane
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
-- **Original Repository**: [https://github.com/oxpig/CaLM](https://github.com/oxpig/CaLM)
+- **Original Repository**: [oxpig/CaLM](https://github.com/oxpig/CaLM)
 
 ## Usage
 
@@ -92,9 +92,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/calm")
 >>> unmasker("agc<mask>cattatggcgaaccttggctgctg")
-
 [{'score': 0.011160684749484062,
   'token': 100,
   'token_str': 'UUN',
@@ -138,7 +138,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -159,7 +160,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -180,7 +182,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -231,16 +234,16 @@ CaLM used masked language modeling (MLM) as the pre-training objective. The mask
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on 4 NVIDIA Quadro RTX4000 GPUs with 8GiB memories.
 
-- Learning rate: 1e-4
-- Optimizer: AdamW
-- Learning rate scheduler: cosine
-- Learning rate warm-up: 1,000 steps
-- Epochs: 14
 - Batch Size: 1,000
+- Epochs: 14
+- Optimizer: AdamW
+- Learning rate: 1e-4
+- Learning rate scheduler: Cosine
+- Learning rate warm-up: 1,000 steps
 
 ## Citation
 

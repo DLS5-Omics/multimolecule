@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -27,12 +33,12 @@ from ..utils import convert_word_embeddings as convert_word_embeddings_
 torch.manual_seed(1016)
 
 
-def get_alphabet(alphabet: List[str] | str | None = None) -> Alphabet:
+def get_alphabet(alphabet: List[str] | str | None = None, **kwargs) -> Alphabet:
     if alphabet is None:
         alphabet = STANDARD_ALPHABET
     elif isinstance(alphabet, str):
         alphabet = ALPHABETS[alphabet]
-    return Alphabet(alphabet)
+    return Alphabet(alphabet, **kwargs)
 
 
 def get_vocab_mapping():
@@ -76,19 +82,18 @@ def convert_word_embeddings(
 
 STANDARD_ALPHABET = list("ACDEFGHIKLMNPQRSTVWYXZBJUO.*-")
 
-
 IUPAC_ALPHABET = list("ACDEFGHIKLMNPQRSTVWYXZB")
-
 
 STREAMLINE_ALPHABET = list("ACDEFGHIKLMNPQRSTVWYX")
 
+AMINO_ACID_ALPHABET = list("CDEFGHIKLMNPQRSTVWY")
 
 ALPHABETS = {
     "standard": STANDARD_ALPHABET,
     "iupac": IUPAC_ALPHABET,
     "streamline": STREAMLINE_ALPHABET,
+    "amino_acid": AMINO_ACID_ALPHABET,
 }
-
 
 VOCAB_MAPPING = {
     "X": "ACDEFGHIKLMNPQRSTVWY",

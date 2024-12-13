@@ -11,7 +11,7 @@ pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
   - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    text: "GGUC<mask><mask><mask>CUCUGGUUAGACCAGAUCUGAGCCU"
     output:
       - label: "CUC"
         score: 0.40745577216148376
@@ -24,18 +24,18 @@ widget:
       - label: "CAU"
         score: 0.0008025980787351727
   - example_title: "microRNA-21"
-    text: "UAGC<mask><mask><mask>UCAGACUGAUGUUGA"
+    text: "UAG<mask><mask><mask>UAUCAGACUGAUGUUG"
     output:
-      - label: "GAC"
-        score: 0.6499986052513123
-      - label: "GUC"
-        score: 0.07012350112199783
-      - label: "CAC"
-        score: 0.06567499041557312
-      - label: "GCC"
-        score: 0.06494498997926712
-      - label: "GGC"
-        score: 0.06052926927804947
+      - label: "GAU"
+        score: 0.34961459040641785
+      - label: "GUU"
+        score: 0.29494708776474
+      - label: "GGU"
+        score: 0.17784686386585236
+      - label: "GCU"
+        score: 0.15021035075187683
+      - label: "AUU"
+        score: 0.0039286804385483265
 ---
 
 # 3UTRBERT
@@ -59,10 +59,10 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 
 ### Variations
 
-- **[`multimolecule/utrbert-3mer`](https://huggingface.co/multimolecule/utrbert-3mer)**: The 3UTRBERT model pre-trained on 3-mer data.
-- **[`multimolecule/utrbert-4mer`](https://huggingface.co/multimolecule/utrbert-4mer)**: The 3UTRBERT model pre-trained on 4-mer data.
-- **[`multimolecule/utrbert-5mer`](https://huggingface.co/multimolecule/utrbert-5mer)**: The 3UTRBERT model pre-trained on 5-mer data.
-- **[`multimolecule/utrbert-6mer`](https://huggingface.co/multimolecule/utrbert-6mer)**: The 3UTRBERT model pre-trained on 6-mer data.
+- **[multimolecule/utrbert-3mer](https://huggingface.co/multimolecule/utrbert-3mer)**: The 3UTRBERT model pre-trained on 3-mer data.
+- **[multimolecule/utrbert-4mer](https://huggingface.co/multimolecule/utrbert-4mer)**: The 3UTRBERT model pre-trained on 4-mer data.
+- **[multimolecule/utrbert-5mer](https://huggingface.co/multimolecule/utrbert-5mer)**: The 3UTRBERT model pre-trained on 5-mer data.
+- **[multimolecule/utrbert-6mer](https://huggingface.co/multimolecule/utrbert-6mer)**: The 3UTRBERT model pre-trained on 6-mer data.
 
 ### Model Specification
 
@@ -110,11 +110,11 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 ### Links
 
 - **Code**: [multimolecule.utrbert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/utrbert)
-- **Data**: [GENCODE](https://gencodegenes.org)
+- **Data**: [multimolecule/gencode-human](https://huggingface.co/datasets/multimolecule/gencode-human)
 - **Paper**: [Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning](https://doi.org/10.1101/2023.09.08.556883)
 - **Developed by**: Yuning Yang, Gen Li, Kuan Pang, Wuxinhao Cao, Xiangtao Li, Zhaolei Zhang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [FlashAttention](https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention)
-- **Original Repository**: [https://github.com/yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT)
+- **Original Repository**: [yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT)
 
 ## Usage
 
@@ -133,6 +133,7 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/utrbert-3mer")
 >>> unmasker("gguc<mask><mask><mask>cugguuagaccagaucugagccu")[1]
 
@@ -171,7 +172,7 @@ from multimolecule import RnaTokenizer, UtrBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertModel.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -179,7 +180,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -191,7 +193,7 @@ from multimolecule import RnaTokenizer, UtrBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertForSequencePrediction.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -200,7 +202,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -212,7 +215,7 @@ from multimolecule import RnaTokenizer, UtrBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertForTokenPrediction.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -221,7 +224,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -233,7 +237,7 @@ from multimolecule import RnaTokenizer, UtrBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertForContactPrediction.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -268,17 +272,17 @@ Since 3UTRBERT used k-mer tokenizer, it masks the entire k-mer instead of indivi
 
 For example, if the k-mer is 3, the sequence `"UAGCGUAU"` will be tokenized as `["UAG", "AGC", "GCG", "CGU", "GUA", "UAU"]`. If the nucleotide `"C"` is masked, the adjacent tokens will also be masked, resulting `["UAG", "<mask>", "<mask>", "<mask>", "GUA", "UAU"]`.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on 4 NVIDIA Quadro RTX 6000 GPUs with 24GiB memories.
 
 - Batch size: 128
-- Learning rate: 3e-4
-- Weight decay: 0.01
-- Optimizer: AdamW(β1=0.9, β2=0.98, e=1e-6)
 - Steps: 200,000
+- Optimizer: AdamW(β1=0.9, β2=0.98, e=1e-6)
+- Learning rate: 3e-4
 - Learning rate scheduler: Linear
 - Learning rate warm-up: 10,000 steps
+- Weight decay: 0.01
 
 ## Citation
 
