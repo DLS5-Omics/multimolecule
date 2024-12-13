@@ -24,18 +24,18 @@ widget:
       - label: "A"
         score: 0.05737845227122307
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "U"
-        score: 0.2819758355617523
+        score: 0.36363866925239563
       - label: "K"
-        score: 0.25282594561576843
+        score: 0.2319803684949875
       - label: "G"
-        score: 0.22668947279453278
+        score: 0.14799022674560547
       - label: "D"
-        score: 0.06814167648553848
+        score: 0.062339700758457184
       - label: "W"
-        score: 0.03735977038741112
+        score: 0.04046041890978813
 ---
 
 # RNA-MSM
@@ -48,13 +48,13 @@ This is an UNOFFICIAL implementation of the [Multiple sequence alignment-based R
 
 The OFFICIAL repository of RNA-MSM is at [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM).
 
-> [!CAUTION]
+> [!WARNING]
 > The MultiMolecule team is aware of a potential risk in reproducing the results of RNA-MSM.
 >
 > The original implementation of RNA-MSM used a custom tokenizer that does not append `<eos>` token to the end of the input sequence in consistent to MSA Transformer.
 > This should not affect the performance of the model in most cases, but it can lead to unexpected behavior in some cases.
 >
-> Please set `eos_token=None` explicitly in the tokenizer if you want the exact behavior of the original implementation.
+> Please set `eos_token = None` in the tokenizer and set `eos_token_id=None` in the model configuration if you want the exact behavior of the original implementation.
 >
 > See more at [issue #10](https://github.com/yikunpku/RNA-MSM/issues/10)
 
@@ -77,11 +77,11 @@ RNA-MSM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 
 - **Code**: [multimolecule.rnamsm](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnamsm)
 - **Weights**: [multimolecule/rnamsm](https://huggingface.co/multimolecule/rnamsm)
-- **Data**: [Rfam](https://rfam.org)
+- **Data**: [multimolecule/rfam](https://huggingface.co/datasets/multimolecule/rfam)
 - **Paper**: [Multiple sequence alignment-based RNA language model and its application to structural inference](https://doi.org/10.1093/nar/gkad1031)
 - **Developed by**: Yikun Zhang, Mei Lang, Jiuhong Jiang, Zhiqiang Gao, Fan Xu, Thomas Litfin, Ke Chen, Jaswinder Singh, Xiansong Huang, Guoli Song, Yonghong Tian, Jian Zhan, Jie Chen, Yaoqi Zhou
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [MSA](https://doi.org/10.1101/2021.02.12.430858)
-- **Original Repository**: [https://github.com/yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM)
+- **Original Repository**: [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM)
 
 ## Usage
 
@@ -98,9 +98,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/rnamsm")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-
 [{'score': 0.25111356377601624,
   'token': 9,
   'token_str': 'U',
@@ -136,7 +136,7 @@ from multimolecule import RnaTokenizer, RnaMsmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmModel.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -144,7 +144,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -156,7 +157,7 @@ from multimolecule import RnaTokenizer, RnaMsmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmForSequencePrediction.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -165,7 +166,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -177,7 +179,7 @@ from multimolecule import RnaTokenizer, RnaMsmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmForNucleotidPrediction.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -186,7 +188,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -198,7 +201,7 @@ from multimolecule import RnaTokenizer, RnaMsmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmForContactPrediction.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -234,7 +237,7 @@ RNA-MSM used masked language modeling (MLM) as the pre-training objective. The m
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on 8 NVIDIA V100 GPUs with 32GiB memories.
 
@@ -261,7 +264,7 @@ The model was trained on 8 NVIDIA V100 GPUs with 32GiB memories.
     year = {2023},
     month = {11},
     abstract = "{Compared with proteins, DNA and RNA are more difficult languages to interpret because four-letter coded DNA/RNA sequences have less information content than 20-letter coded protein sequences. While BERT (Bidirectional Encoder Representations from Transformers)-like language models have been developed for RNA, they are ineffective at capturing the evolutionary information from homologous sequences because unlike proteins, RNA sequences are less conserved. Here, we have developed an unsupervised multiple sequence alignment-based RNA language model (RNA-MSM) by utilizing homologous sequences from an automatic pipeline, RNAcmap, as it can provide significantly more homologous sequences than manually annotated Rfam. We demonstrate that the resulting unsupervised, two-dimensional attention maps and one-dimensional embeddings from RNA-MSM contain structural information. In fact, they can be directly mapped with high accuracy to 2D base pairing probabilities and 1D solvent accessibilities, respectively. Further fine-tuning led to significantly improved performance on these two downstream tasks compared with existing state-of-the-art techniques including SPOT-RNA2 and RNAsnap2. By comparison, RNA-FM, a BERT-based RNA language model, performs worse than one-hot encoding with its embedding in base pair and solvent-accessible surface area prediction. We anticipate that the pre-trained RNA-MSM model can be fine-tuned on many other tasks related to RNA structure and function.}",
-    issn = {0305-1048},
+    iPre-training-1048},
     doi = {10.1093/nar/gkad1031},
     url = {https://doi.org/10.1093/nar/gkad1031},
     eprint = {https://academic.oup.com/nar/article-pdf/52/1/e3/55443207/gkad1031.pdf},

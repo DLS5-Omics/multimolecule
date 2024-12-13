@@ -2,17 +2,17 @@ default_language_version:
   python: python3
 repos:
   - repo: https://github.com/PSF/black
-    rev: 24.3.0
+    rev: 25.1.0
     hooks:
       - id: black
         args: [--safe, --quiet]
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 6.0.1
     hooks:
       - id: isort
         name: isort
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.0.0
+    rev: 7.1.2
     hooks:
       - id: flake8
         additional_dependencies:
@@ -20,23 +20,23 @@ repos:
           - flake8-comprehensions
           - flake8-simplify
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.19.1
     hooks:
       - id: pyupgrade
         args: [--keep-runtime-typing]
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 1.7.0
+    rev: v2.5.1
     hooks:
       - id: pyproject-fmt
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
+    rev: v1.15.0
     hooks:
       - id: mypy
         files: multimolecule
         additional_dependencies:
           - types-PyYaml
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.4.1
     hooks:
       - id: codespell
         args: [--ignore-words=.codespell-whitelist.txt]
@@ -47,7 +47,7 @@ repos:
         files: multimolecule
         exclude: multimolecule/datasets/.*/README.md
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
         files: multimolecule
