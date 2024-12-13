@@ -77,21 +77,3 @@ date: 2024-05-04
 ```python
 --8<-- "demo/models/vanilla.py:17:"
 ```
-
-## 可用模型
-
-### 脱氧核糖核酸（DNA）
-
-- [CaLM](calm)
-
-### 核糖核酸（RNA）
-
-- [ERNIE-RNA](ernierna)
-- [RiNALMo](rinalmo)
-- [RNABERT](rnabert)
-- [RNAErnie](rnaernie)
-- [RNA-FM](rnafm)
-- [RNA-MSM](rnamsm)
-- [SpliceBERT](splicebert)
-- [3UTRBERT](utrbert)
-- [UTR-LM](utrlm)

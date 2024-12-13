@@ -35,7 +35,7 @@ This is an UNOFFICIAL release of the [EternaBench-CM](https://github.com/eternag
 
 - **Homepage**: https://multimolecule.danling.org/datasets/eternabench_cm
 - **datasets**: https://huggingface.co/datasets/multimolecule/eternabench-cm
-- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das/)
+- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das)
 
 The dataset includes a large set of synthetic RNA sequences with experimental chemical mapping data, which provides a quantitative readout of RNA nucleotide reactivity. These data are ensemble-averaged and serve as a critical benchmark for evaluating secondary structure prediction algorithms in their ability to model RNA folding dynamics.
 

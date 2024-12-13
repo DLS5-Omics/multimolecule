@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -279,7 +285,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.rnafm = RnaFmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -343,7 +349,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.rnafm = RnaFmModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -407,9 +413,10 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.rnafm = RnaFmModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -427,8 +434,10 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnafm(
             input_ids,
@@ -436,7 +445,7 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -496,6 +505,12 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -576,6 +591,7 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
             )
         self.rnafm = RnaFmModel(config, add_pooling_layer=False)
         self.pretrain = RnaFmPreTrainingHeads(config)
+        self.require_attentions = self.pretrain.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -602,8 +618,10 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnafm(
             input_ids,
@@ -613,7 +631,7 @@ class RnaFmForPreTraining(RnaFmPreTrainedModel):
             inputs_embeds=inputs_embeds,
             encoder_hidden_states=encoder_hidden_states,
             encoder_attention_mask=encoder_attention_mask,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -843,7 +861,7 @@ class RnaFmLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = RnaFmAttention(config)
+            self.crossattention = RnaFmAttention(config, position_embedding_type="absolute")
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.intermediate = RnaFmIntermediate(config)
         self.output = RnaFmOutput(config)
@@ -921,9 +939,9 @@ class RnaFmLayer(nn.Module):
 
 
 class RnaFmAttention(nn.Module):
-    def __init__(self, config: RnaFmConfig):
+    def __init__(self, config: RnaFmConfig, position_embedding_type: str | None = None):
         super().__init__()
-        self.self = RnaFmSelfAttention(config)
+        self.self = RnaFmSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = RnaFmSelfOutput(config)
         self.pruned_heads: set = set()
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
@@ -1126,13 +1144,13 @@ class RnaFmIntermediate(nn.Module):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
         if isinstance(config.hidden_act, str):
-            self.intermediate_act_fn = ACT2FN[config.hidden_act]
+            self.activation = ACT2FN[config.hidden_act]
         else:
-            self.intermediate_act_fn = config.hidden_act
+            self.activation = config.hidden_act
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
-        hidden_states = self.intermediate_act_fn(hidden_states)
+        hidden_states = self.activation(hidden_states)
         return hidden_states
 
 

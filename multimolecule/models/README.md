@@ -77,21 +77,3 @@ You can also initialize a vanilla model using the model class.
 ```python
 --8<-- "demo/models/vanilla.py:17:"
 ```
-
-## Available Models
-
-### DeoxyriboNucleic Acid (DNA)
-
-- [CaLM](calm)
-
-### RiboNucleic Acid (RNA)
-
-- [ERNIE-RNA](ernierna)
-- [RiNALMo](rinalmo)
-- [RNABERT](rnabert)
-- [RNAErnie](rnaernie)
-- [RNA-FM](rnafm)
-- [RNA-MSM](rnamsm)
-- [SpliceBERT](splicebert)
-- [3UTRBERT](utrbert)
-- [UTR-LM](utrlm)

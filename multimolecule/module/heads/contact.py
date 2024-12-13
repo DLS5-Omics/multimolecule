@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -51,7 +57,7 @@ class ContactHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -94,7 +100,7 @@ class ContactPredictionHead(PredictionHead):
     output_name: str = "attentions"
     r"""The default output to use for the head."""
 
-    requires_attention: bool = True
+    require_attentions: bool = True
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -114,7 +120,7 @@ class ContactPredictionHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -192,7 +198,7 @@ class ContactLogitsHead(PredictionHead):
     output_name: str = "last_hidden_state"
     r"""The default output to use for the head."""
 
-    requires_attention: bool = False
+    require_attentions: bool = False
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -211,7 +217,7 @@ class ContactLogitsHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,

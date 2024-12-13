@@ -7,8 +7,8 @@
 [![Codacy - 测试覆盖](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![CodeCov - 测试覆盖](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
 
-[![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule/)
-[![PyPI - Python版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule/)
+[![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule)
+[![PyPI - Python版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule)
 [![下载统计](https://static.pepy.tech/badge/multimolecule/month)](https://multimolecule.danling.org)
 
 [![授权：AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
@@ -65,7 +65,9 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 
 我们相信开放是研究的基础。
 
-MultiMolecule 在 GNU Affero 通用公共许可证 下授权。
+MultiMolecule 在 [GNU Affero 通用公共许可证](license.md) 下授权。
+
+对于额外条款和澄清，请参阅我们的[许可协议常见问题解答](license-faq.md)。
 
 请加入我们，共同建立一个开放的研究社区。
 

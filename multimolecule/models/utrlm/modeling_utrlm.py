@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -279,7 +285,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config, add_pooling_layer=True)
+        self.utrlm = UtrLmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -343,7 +349,7 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config, add_pooling_layer=True)
+        self.utrlm = UtrLmModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -407,9 +413,10 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config, add_pooling_layer=True)
+        self.utrlm = UtrLmModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -427,8 +434,10 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.utrlm(
             input_ids,
@@ -436,7 +445,7 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -496,6 +505,12 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -576,6 +591,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             )
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
         self.pretrain = UtrLmPreTrainingHeads(config)
+        self.require_attentions = self.pretrain.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -604,8 +620,10 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | UtrLmForPreTrainingOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.utrlm(
             input_ids,
@@ -615,7 +633,7 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             inputs_embeds=inputs_embeds,
             encoder_hidden_states=encoder_hidden_states,
             encoder_attention_mask=encoder_attention_mask,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -853,7 +871,7 @@ class UtrLmLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = UtrLmAttention(config)
+            self.crossattention = UtrLmAttention(config, position_embedding_type="absolute")
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.intermediate = UtrLmIntermediate(config)
         self.output = UtrLmOutput(config)
@@ -931,9 +949,9 @@ class UtrLmLayer(nn.Module):
 
 
 class UtrLmAttention(nn.Module):
-    def __init__(self, config: UtrLmConfig):
+    def __init__(self, config: UtrLmConfig, position_embedding_type: str | None = None):
         super().__init__()
-        self.self = UtrLmSelfAttention(config)
+        self.self = UtrLmSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = UtrLmSelfOutput(config)
         self.pruned_heads: set = set()
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
@@ -1136,13 +1154,13 @@ class UtrLmIntermediate(nn.Module):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
         if isinstance(config.hidden_act, str):
-            self.intermediate_act_fn = ACT2FN[config.hidden_act]
+            self.activation = ACT2FN[config.hidden_act]
         else:
-            self.intermediate_act_fn = config.hidden_act
+            self.activation = config.hidden_act
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
-        hidden_states = self.intermediate_act_fn(hidden_states)
+        hidden_states = self.activation(hidden_states)
         return hidden_states
 
 
@@ -1208,7 +1226,7 @@ class UtrLmPreTrainingHeads(nn.Module):
         ss_logits = output_ss.logits if output_ss is not None else None
         if output_mfe is not None and output_mfe.loss is not None:
             losses.append(output_mfe.loss)
-        mfe_logits = output_ss.logits if output_mfe is not None else None
+        mfe_logits = output_ss.logits if output_mfe is not None else None  # type: ignore[union-attr]
         total_loss = sum(losses) if losses else None
 
         return total_loss, output_mlm.logits, output_contact.logits, ss_logits, mfe_logits
