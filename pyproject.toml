@@ -16,7 +16,7 @@ keywords = [
   "Protein",
   "RNA",
 ]
-license = {file = "LICENSE.md"}
+license = {file = "license.md"}
 maintainers = [
     {name = "Zhiyuan Chen", email = "this@zyc.ai"},
 ]

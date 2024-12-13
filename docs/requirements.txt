@@ -10,6 +10,7 @@ mkdocs-git-revision-date-localized-plugin
 mkdocs-literate-nav
 mkdocs-material
 mkdocs-material-extensions-2
+mkdocs-redirects
 mkdocs-rss-plugin
 mkdocs-section-index
 mkdocs-static-i18n

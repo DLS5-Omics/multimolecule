@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -92,6 +98,12 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_input_embeddings(self):
+        return self.embeddings.word_embeddings
+
+    def set_input_embeddings(self, value):
+        self.embeddings.word_embeddings = value
 
     def forward(
         self,
@@ -183,7 +195,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -246,7 +258,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -309,10 +321,11 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         head_config = HeadConfig(output_name="row_attentions")
         self.contact_head = ContactPredictionHead(config, head_config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -330,8 +343,10 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
@@ -339,7 +354,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -395,6 +410,12 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -465,6 +486,7 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         super().__init__(config)
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
         self.pretrain = RnaMsmPreTrainingHeads(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+        self.require_attentions = self.pretrain.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -482,15 +504,17 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnamsm(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -1311,6 +1335,7 @@ class FeedForwardNetwork(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaMsmPooler(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()

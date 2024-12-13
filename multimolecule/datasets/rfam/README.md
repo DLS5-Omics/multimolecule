@@ -27,7 +27,7 @@ The seed alignments are hand curated and aligned using available sequence and st
 
 The full regions list is created by searching the RFAMSEQ database using the covariance model, and then listing all hits above a family specific threshold to the model.
 
-Rfam is maintained by a consortium of researchers at the [European Bioinformatics Institute](http://www.ebi.ac.uk/), [Sean Eddy's laboratory](http://eddylab.org) and [Eric Nawrocki](https://github.com/nawrockie).
+Rfam is maintained by a consortium of researchers at the [European Bioinformatics Institute](http://www.ebi.ac.uk), [Sean Eddy's laboratory](http://eddylab.org) and [Eric Nawrocki](https://github.com/nawrockie).
 
 ## Disclaimer
 
@@ -40,7 +40,7 @@ This is an UNOFFICIAL release of the [Rfam](https://rfam.org) by Ioanna Kalvari,
 - **Homepage**: https://multimolecule.danling.org/datasets/rfam
 - **Documentation**: https://docs.rfam.org/
 - **datasets**: https://huggingface.co/datasets/multimolecule/rfam
-- **Point of Contact**: [Blake Sweeney](https://www.ebi.ac.uk/people/person/blake-sweeney/)
+- **Point of Contact**: [Blake Sweeney](https://www.ebi.ac.uk/people/person/blake-sweeney)
 - **Original URL**: https://rfam.org
 
 ## License
@@ -52,7 +52,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 ```
 
 > [!TIP]
-> The original Rfam dataset is licensed under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) license and is available at [Rfam](https://rfam.org).
+> The original Rfam dataset is licensed under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0) license and is available at [Rfam](https://rfam.org).
 
 ## Citation
 

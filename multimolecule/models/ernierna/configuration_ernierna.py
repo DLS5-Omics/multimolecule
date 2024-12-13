@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -47,6 +53,9 @@ class ErnieRnaConfig(PreTrainedConfig):
             Number of attention heads for each attention layer in the Transformer encoder.
         intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
+        hidden_act:
+            The non-linear activation function (function or string) in the encoder and pooler. If string, `"gelu"`,
+            `"relu"`, `"silu"` and `"gelu_new"` are supported.
         hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
         attention_dropout:
@@ -58,9 +67,25 @@ class ErnieRnaConfig(PreTrainedConfig):
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
+        position_embedding_type:
+            Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query"`,
+            `"sinusoidal"`.
+            For positional embeddings use `"absolute"`. For more information on `"relative_key"`, please refer to
+            [Self-Attention with Relative Position Representations (Shaw et al.)](https://arxiv.org/abs/1803.02155).
+            For more information on `"relative_key_query"`, please refer to *Method 4* in [Improve Transformer Models
+            with Better Relative Position Embeddings (Huang et al.)](https://arxiv.org/abs/2009.13658).
+        is_decoder:
+            Whether the model is used as a decoder or not. If `False`, the model is used as an encoder.
+        use_cache:
+            Whether or not the model should return the last key/values attentions (not used by all models). Only
+            relevant if `config.is_decoder=True`.
+        head:
+            The configuration of the head.
+        lm_head:
+            The configuration of the masked language model head.
 
     Examples:
-        >>> from multimolecule import ErnieRnaModel, ErnieRnaConfig
+        >>> from multimolecule import ErnieRnaConfig, ErnieRnaModel
         >>> # Initializing a ERNIE-RNA multimolecule/ernierna style configuration
         >>> configuration = ErnieRnaConfig()
         >>> # Initializing a model (with random weights) from the multimolecule/ernierna style configuration
@@ -93,7 +118,6 @@ class ErnieRnaConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-
         self.vocab_size = vocab_size
         self.type_vocab_size = 2
         self.hidden_size = hidden_size

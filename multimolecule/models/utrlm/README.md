@@ -24,18 +24,18 @@ widget:
       - label: "Y"
         score: 0.06385370343923569
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "*"
-        score: 0.08083827048540115
+        score: 0.07969731837511063
       - label: "<null>"
-        score: 0.07966958731412888
+        score: 0.07818876206874847
       - label: "A"
-        score: 0.0771222859621048
+        score: 0.07302683591842651
       - label: "N"
-        score: 0.06853719055652618
-      - label: "."
-        score: 0.06666938215494156
+        score: 0.06714905053377151
+      - label: "W"
+        score: 0.0667526125907898
 ---
 
 # UTR-LM
@@ -62,7 +62,7 @@ This is an UNOFFICIAL implementation of the [A 5’ UTR Language Model for Decod
 
 The OFFICIAL repository of UTR-LM is at [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM).
 
-> [!WARNING]
+> [!CAUTION]
 > The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 > This is because
 >
@@ -76,8 +76,8 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 
 ### Variations
 
-- **[`multimolecule/utrlm-te_el`](https://huggingface.co/multimolecule/utrlm-te_el)**: The UTR-LM model for Translation Efficiency of transcripts and mRNA Expression Level.
-- **[`multimolecule/utrlm-mrl`](https://huggingface.co/multimolecule/utrlm-mrl)**: The UTR-LM model for Mean Ribosome Loading.
+- **[multimolecule/utrlm-te_el](https://huggingface.co/multimolecule/utrlm-te_el)**: The UTR-LM model for Translation Efficiency of transcripts and mRNA Expression Level.
+- **[multimolecule/utrlm-mrl](https://huggingface.co/multimolecule/utrlm-mrl)**: The UTR-LM model for Mean Ribosome Loading.
 
 ### Model Specification
 
@@ -123,7 +123,7 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 - **Paper**: [A 5’ UTR Language Model for Decoding Untranslated Regions of mRNA and Function Predictions](http://doi.org/10.1038/s41467-021-24436-7)
 - **Developed by**: Yanyi Chu, Dan Yu, Yupeng Li, Kaixuan Huang, Yue Shen, Le Cong, Jason Zhang, Mengdi Wang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
-- **Original Repository**: [https://github.com/a96123155/UTR-LM](https://github.com/a96123155/UTR-LM)
+- **Original Repository**: [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM)
 
 ## Usage
 
@@ -140,9 +140,9 @@ You can use this model directly with a pipeline for masked language modeling:
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
+
 >>> unmasker = pipeline("fill-mask", model="multimolecule/utrlm-te_el")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-
 [{'score': 0.07707168161869049,
   'token': 23,
   'token_str': '*',
@@ -178,7 +178,7 @@ from multimolecule import RnaTokenizer, UtrLmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -186,7 +186,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -198,7 +199,7 @@ from multimolecule import RnaTokenizer, UtrLmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForSequencePrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -207,7 +208,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -219,7 +221,7 @@ from multimolecule import RnaTokenizer, UtrLmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForTokenPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -228,7 +230,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -240,7 +243,7 @@ from multimolecule import RnaTokenizer, UtrLmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForContactPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -283,7 +286,7 @@ UTR-LM used masked language modeling (MLM) as one of the pre-training objectives
 - In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
 - In the 10% remaining cases, the masked tokens are left as is.
 
-#### PreTraining
+#### Pre-training
 
 The model was trained on two clusters:
 
@@ -305,7 +308,7 @@ The model was trained on two clusters:
 	abstract = {The 5{\textquoteright} UTR, a regulatory region at the beginning of an mRNA molecule, plays a crucial role in regulating the translation process and impacts the protein expression level. Language models have showcased their effectiveness in decoding the functions of protein and genome sequences. Here, we introduced a language model for 5{\textquoteright} UTR, which we refer to as the UTR-LM. The UTR-LM is pre-trained on endogenous 5{\textquoteright} UTRs from multiple species and is further augmented with supervised information including secondary structure and minimum free energy. We fine-tuned the UTR-LM in a variety of downstream tasks. The model outperformed the best-known benchmark by up to 42\% for predicting the Mean Ribosome Loading, and by up to 60\% for predicting the Translation Efficiency and the mRNA Expression Level. The model also applies to identifying unannotated Internal Ribosome Entry Sites within the untranslated region and improves the AUPR from 0.37 to 0.52 compared to the best baseline. Further, we designed a library of 211 novel 5{\textquoteright} UTRs with high predicted values of translation efficiency and evaluated them via a wet-lab assay. Experiment results confirmed that our top designs achieved a 32.5\% increase in protein production level relative to well-established 5{\textquoteright} UTR optimized for therapeutics.Competing Interest StatementThe authors have declared no competing interest.},
 	URL = {https://www.biorxiv.org/content/early/2023/10/14/2023.10.11.561938},
 	eprint = {https://www.biorxiv.org/content/early/2023/10/14/2023.10.11.561938.full.pdf},
-	journal = {bioRxiv}
+	jourPre-trainingxiv}
 }
 ```
 
