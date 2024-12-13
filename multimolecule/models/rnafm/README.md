@@ -107,7 +107,7 @@ RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 - **Paper**: [Interpretable RNA Foundation Model from Unannotated Data for Highly Accurate RNA Structure and Function Predictions](https://doi.org/10.1101/2022.08.06.503062)
 - **Developed by**: Jiayang Chen, Zhihang Hu, Siqi Sun, Qingxiong Tan, Yixuan Wang, Qinze Yu, Licheng Zong, Liang Hong, Jin Xiao, Tao Shen, Irwin King, Yu Li
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
-- **Original Repository**: [https://github.com/ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM)
+- **Original Repository**: [ml4bio/RNA-FM](https://github.com/ml4bio/RNA-FM)
 
 ## Usage
 

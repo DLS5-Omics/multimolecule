@@ -65,7 +65,9 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 
 我们相信开放是研究的基础。
 
-MultiMolecule 在 GNU Affero 通用公共许可证 下授权。
+MultiMolecule 在 [GNU Affero 通用公共许可证](license.md) 下授权。
+
+对于额外条款和澄清，请参阅我们的[许可协议常见问题解答](license-faq.md)。
 
 请加入我们，共同建立一个开放的研究社区。
 

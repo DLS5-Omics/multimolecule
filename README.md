@@ -65,7 +65,9 @@ If you use MultiMolecule in your research, please cite us as follows:
 
 We believe openness is the Foundation of Research.
 
-MultiMolecule is licensed under the GNU Affero General Public License.
+MultiMolecule is licensed under the [GNU Affero General Public License](license.md).
+
+For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 
 Please join us in building an open research community.
 

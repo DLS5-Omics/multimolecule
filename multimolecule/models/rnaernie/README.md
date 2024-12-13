@@ -91,7 +91,7 @@ Note that during the conversion process, additional tokens such as `[IND]` and n
 - **Paper**: Multi-purpose RNA language modelling with motif-aware pretraining and type-guided fine-tuning
 - **Developed by**: Ning Wang, Jiang Bian, Yuchen Li, Xuhong Li, Shahid Mumtaz, Linghe Kong, Haoyi Xiong.
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ERNIE](https://huggingface.co/nghuyong/ernie-3.0-base-zh)
-- **Original Repository**: [https://github.com/CatIIIIIIII/RNAErnie](https://github.com/CatIIIIIIII/RNAErnie)
+- **Original Repository**: [CatIIIIIIII/RNAErnie](https://github.com/CatIIIIIIII/RNAErnie)
 
 ## Usage
 
