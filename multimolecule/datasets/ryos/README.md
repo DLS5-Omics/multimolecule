@@ -49,7 +49,7 @@ This is an UNOFFICIAL release of the [RYOS](https://www.kaggle.com/competitions/
 ## Dataset Description
 
 - **Homepage**: https://multimolecule.danling.org/datasets/ryos
-- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das/)
+- **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das)
 - **Kaggle Challenge**: https://www.kaggle.com/competitions/stanford-covid-vaccine
 - **Eterna Round 1**: https://eternagame.org/labs/9830365
 - **Eterna Round 2**: https://eternagame.org/labs/10207059

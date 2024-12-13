@@ -186,6 +186,10 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - redirects:
+      redirect_maps:
+        'license.md': 'about/license.md'
+        'license-faq.md': 'about/license-faq.md'
   - git-committers
   - mkdocstrings:
       handlers:

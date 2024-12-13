@@ -7,4 +7,4 @@ date: 2022-05-04
 
 # MultiMolecule
 
---8<-- "README.md"
+--8<-- "README.md:2:"

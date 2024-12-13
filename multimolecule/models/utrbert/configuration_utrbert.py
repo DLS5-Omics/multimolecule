@@ -1,18 +1,24 @@
 # MultiMolecule
 # Copyright (C) 2024-Present  MultiMolecule
 
-# This program is free software: you can redistribute it and/or modify
+# This file is part of MultiMolecule.
+
+# MultiMolecule is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
 
-# This program is distributed in the hope that it will be useful,
+# MultiMolecule is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For additional terms and clarifications, please refer to our License FAQ at:
+# <https://multimolecule.danling.org/about/license-faq>.
+
 
 from __future__ import annotations
 
@@ -36,10 +42,10 @@ class UtrBertConfig(PreTrainedConfig):
 
     Args:
         vocab_size:
-            Vocabulary size of the UTRBERT model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`BertModel`].
+            Vocabulary size of the 3UTRBERT model. Defines the number of different tokens that can be represented by the
+            `inputs_ids` passed when calling [`UtrBertModel`].
         nmers:
-            kmer size of the UTRBERT model. Defines the vocabulary size of the model.
+            kmer size of the 3UTRBERT model. Defines the vocabulary size of the model.
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -73,10 +79,14 @@ class UtrBertConfig(PreTrainedConfig):
         use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
+        head:
+            The configuration of the head.
+        lm_head:
+            The configuration of the masked language model head.
 
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertModel
-        >>> # Initializing a UtrBERT multimolecule/utrbert style configuration
+        >>> # Initializing a 3UTRBERT multimolecule/utrbert style configuration
         >>> configuration = UtrBertConfig(vocab_size=26, nmers=1)
         >>> # Initializing a model (with random weights) from the multimolecule/utrbert style configuration
         >>> model = UtrBertModel(configuration)
@@ -108,7 +118,6 @@ class UtrBertConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-
         self.vocab_size = vocab_size
         self.type_vocab_size = 2
         self.nmers = nmers
