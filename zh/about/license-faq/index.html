@@ -884,7 +884,7 @@
         <li class="md-nav__item">
   <a href="#2" class="md-nav__link">
     <span class="md-ellipsis">
-      2. 我需要开源我微调后的模型权重吗？
+      2. 我是否需要开源我微调后的模型？
     </span>
   </a>
   
@@ -1028,7 +1028,7 @@
         <li class="md-nav__item">
   <a href="#2" class="md-nav__link">
     <span class="md-ellipsis">
-      2. 我需要开源我微调后的模型权重吗？
+      2. 我是否需要开源我微调后的模型？
     </span>
   </a>
   
@@ -1152,8 +1152,10 @@
 </ul>
 <p>相反，训练过程中生成的**模型权重**被视为“目标代码”。</p>
 <p>这种区分确保了训练和修改模型所需的所有必要组件都是可访问的，而训练后的模型权重则被视为目标代码，这与我们为社区提供最大自由度的承诺一致。</p>
-<h2 id="2">2. 我需要开源我微调后的模型权重吗？<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
-<p>是的，如果你使用 MultiMolecule 的预训练模型并随后对其进行微调，你需要根据 <em><a href="../license/">许可协议</a></em> 开源你的修改后的模型权重。这确保了任何改进或修改都能免费供社区使用，促进协作和持续改进。</p>
+<h2 id="2">2. 我是否需要开源我微调后的模型？<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>是的，如果您使用了来自 MultiMolecule 模型中心的预训练模型并对其进行了微调，您必须根据 <em><a href="../license/">许可协议</a></em> 开源您微调后的模型权重。</p>
+<p>在 MultiMolecule 中，模型权重被视为目标代码（object code）。因此，除了分享微调后的模型权重，您还必须开源所有用于再现该模型的必要材料，包括训练数据、配置文件以及任何用于微调的脚本。</p>
+<p>即使您使用第三方的预训练模型，只要您使用了 MultiMolecule 的代码，您仍有义务根据 <em><a href="../license/">许可协议</a></em> 开源您的修改以及所有相关的源代码。</p>
 <h2 id="3-multimolecule">3. 我可以使用 MultiMolecule 发表研究论文吗？<a class="headerlink" href="#3-multimolecule" title="Permanent link">&para;</a></h2>
 <div class="admonition success">
 <p class="admonition-title">开放获取</p>
