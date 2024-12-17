@@ -68,7 +68,7 @@ def copy_readme(root: str, output_path: str):
     shutil.copy2(os.path.join(root, readme), output_path)
 
 
-def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "dataset"):
+def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "dataset", revision: str = "main"):
     if convert_config.push_to_hub:
         if HfApi is None:
             raise ImportError("Please install huggingface_hub to push to the hub.")
@@ -77,7 +77,11 @@ def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str 
             api.delete_repo(convert_config.repo_id, token=convert_config.token, missing_ok=True)
         api.create_repo(convert_config.repo_id, token=convert_config.token, exist_ok=True, repo_type=repo_type)
         api.upload_folder(
-            repo_id=convert_config.repo_id, folder_path=output_path, token=convert_config.token, repo_type=repo_type
+            repo_id=convert_config.repo_id,
+            folder_path=output_path,
+            token=convert_config.token,
+            repo_type=repo_type,
+            revision=revision,
         )
 
 
@@ -109,6 +113,7 @@ class ConvertConfig(Config):
     delete_existing: bool = False
     repo_id: str | None = None
     token: str | None = None
+    revision: str = "main"
 
     def post(self):
         if self.repo_id is None:
