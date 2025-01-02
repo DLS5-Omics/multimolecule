@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import math
 import os
 from functools import cached_property, partial
 from typing import Any, Tuple
@@ -28,7 +27,6 @@ from danling import MultiTaskMetricMeters, MultiTaskMetrics
 from datasets import disable_progress_bars, get_dataset_split_names
 from lazy_imports import try_import
 from torch import nn
-from torch.nn import functional as F
 from torch.utils import data
 from tqdm import tqdm
 from transformers import AutoTokenizer
@@ -79,7 +77,6 @@ class BaseRunner(dl.BaseRunner):
             self.config.optim.pretrained_ratio = pretrained_ratio
             if self.config.sched:
                 self.scheduler = dl.optim.LRScheduler(self.optimizer, total_steps=self.total_steps, **self.config.sched)
-        self.balance = self.config.get("balance", "ew")
         self.train_metrics = self.build_train_metrics()
         self.evaluate_metrics = self.build_evaluate_metrics()
 
@@ -99,16 +96,14 @@ class BaseRunner(dl.BaseRunner):
 
     def train_step(self, data) -> Tuple[Any, torch.Tensor]:
         with self.autocast(), self.accumulate():
-            pred = self.model(**data)
-            loss = self.loss_fn(pred, data)
+            pred, loss = self.model(**data)
             self.advance(loss)
             self.metric_fn(pred, data)
         return pred, loss
 
     def evaluate_step(self, data) -> Tuple[Any, torch.Tensor]:
         model = self.ema or self.model
-        pred = model(**data)
-        loss = self.loss_fn(pred, data)
+        pred, loss = model(**data)
         self.metric_fn(pred, data)
         return pred, loss
 
@@ -143,6 +138,8 @@ class BaseRunner(dl.BaseRunner):
         model = self.ema or self.model
         for _, data in tqdm(enumerate(loader), total=len(loader)):  # noqa: F402
             pred = model(**data)
+            if isinstance(pred, tuple):
+                pred, loss = pred
             for task, p in pred.items():
                 preds[task].extend(p["logits"].squeeze(-1).tolist())
                 if task in data:
@@ -161,17 +158,6 @@ class BaseRunner(dl.BaseRunner):
         if len(preds) == 1:
             return next(iter(preds.values()))
         return preds
-
-    def loss_fn(self, pred, data):
-        if self.balance == "rlw":
-            loss = torch.stack([p["loss"] for p in pred.values()])
-            weight = F.softmax(torch.randn(len(pred), device=loss.device, dtype=loss.dtype), dim=-1)
-            return loss.T @ weight
-        if self.balance == "gls":
-            return math.prod(p["loss"] for p in pred.values()) ** (1 / len(pred))
-        if self.balance != "ew":
-            warn(f"Unknown balance method {self.balance}, using equal weighting.")
-        return sum(p["loss"] for p in pred.values()) / len(pred)
 
     def metric_fn(self, pred, data):
         metric = self.metrics[data["dataset"]] if "dataset" in data else self.metrics
