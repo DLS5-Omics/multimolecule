@@ -156,7 +156,7 @@ class Dataset(datasets.Dataset):
         nan_process: str = "ignore",
         fill_value: str | int | float = 0,
         info: datasets.DatasetInfo | None = None,
-        indices_table: Table | None = None,
+        indices: Sequence | Table | None = None,
         fingerprint: str | None = None,
         ignored_cols: List[str] | None = None,
     ):
@@ -168,8 +168,10 @@ class Dataset(datasets.Dataset):
         arrow_table = self.build_table(
             data, split, feature_cols, label_cols, nan_process=nan_process, fill_value=fill_value
         )
+        if indices is not None and not isinstance(indices, (Table, pa.Table)):
+            indices = pa.Table.from_arrays([pa.array(indices, type=pa.uint32())], names=["index"])
         super().__init__(
-            arrow_table=arrow_table, split=split, info=info, indices_table=indices_table, fingerprint=fingerprint
+            arrow_table=arrow_table, split=split, info=info, indices_table=indices, fingerprint=fingerprint
         )
         self.identify_special_cols(feature_cols=feature_cols, label_cols=label_cols, id_cols=id_cols)
         self.post(
