@@ -24,18 +24,18 @@ widget:
       - label: "A"
         score: 0.08898332715034485
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "."
-        score: 0.23545819520950317
+        score: 0.2275155633687973
       - label: "*"
-        score: 0.1889132708311081
+        score: 0.18255384266376495
       - label: "I"
-        score: 0.15300516784191132
+        score: 0.14644214510917664
       - label: "A"
-        score: 0.12081773579120636
+        score: 0.1262909322977066
       - label: "U"
-        score: 0.10451140254735947
+        score: 0.12270607799291611
 ---
 
 # RNA-FM
@@ -162,7 +162,7 @@ from multimolecule import RnaTokenizer, RnaFmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmModel.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -182,7 +182,7 @@ from multimolecule import RnaTokenizer, RnaFmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmForSequencePrediction.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -203,7 +203,7 @@ from multimolecule import RnaTokenizer, RnaFmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmForTokenPrediction.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -224,7 +224,7 @@ from multimolecule import RnaTokenizer, RnaFmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
 model = RnaFmForContactPrediction.from_pretrained("multimolecule/rnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

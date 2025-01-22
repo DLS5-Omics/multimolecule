@@ -24,18 +24,18 @@ widget:
       - label: "Y"
         score: 0.06385370343923569
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "*"
-        score: 0.08083827048540115
+        score: 0.07969731837511063
       - label: "<null>"
-        score: 0.07966958731412888
+        score: 0.07818876206874847
       - label: "A"
-        score: 0.0771222859621048
+        score: 0.07302683591842651
       - label: "N"
-        score: 0.06853719055652618
-      - label: "."
-        score: 0.06666938215494156
+        score: 0.06714905053377151
+      - label: "W"
+        score: 0.0667526125907898
 ---
 
 # UTR-LM
@@ -178,7 +178,7 @@ from multimolecule import RnaTokenizer, UtrLmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -198,7 +198,7 @@ from multimolecule import RnaTokenizer, UtrLmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForSequencePrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -219,7 +219,7 @@ from multimolecule import RnaTokenizer, UtrLmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForTokenPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -240,7 +240,7 @@ from multimolecule import RnaTokenizer, UtrLmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForContactPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
