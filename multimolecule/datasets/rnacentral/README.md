@@ -76,7 +76,7 @@ library_name: multimolecule
 
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
-The development of RNAcentral is coordinated by [European Bioinformatics Institute](http://www.ebi.ac.uk/) and is supported by [Wellcome](https://wellcome.ac.uk/). Initial funding was provided by [BBSRC](https://bbsrc.ukri.org/).
+The development of RNAcentral is coordinated by [European Bioinformatics Institute](http://www.ebi.ac.uk) and is supported by [Wellcome](https://wellcome.ac.uk). Initial funding was provided by [BBSRC](https://bbsrc.ukri.org).
 
 ## Disclaimer
 
@@ -88,7 +88,7 @@ This is an UNOFFICIAL release of the [RNAcentral](https://rnacentral.org) by the
 
 - **Homepage**: https://multimolecule.danling.org/datasets/rnacentral
 - **datasets**: https://huggingface.co/datasets/multimolecule/rnacentral
-- **Point of Contact**: [Blake Sweeney](https://www.ebi.ac.uk/people/person/blake-sweeney/)
+- **Point of Contact**: [Blake Sweeney](https://www.ebi.ac.uk/people/person/blake-sweeney)
 - **Original URL**: https://rnacentral.org
 
 ## Variations
@@ -118,7 +118,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 ```
 
 > [!TIP]
-> The original RNAcentral dataset is licensed under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) license and is available at [RNAcentral](https://rnacentral.org).
+> The original RNAcentral dataset is licensed under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0) license and is available at [RNAcentral](https://rnacentral.org).
 
 ## Citation
 

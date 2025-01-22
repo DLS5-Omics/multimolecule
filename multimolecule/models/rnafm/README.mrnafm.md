@@ -149,7 +149,7 @@ from multimolecule import RnaTokenizer, RnaFmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmModel.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -169,7 +169,7 @@ from multimolecule import RnaTokenizer, RnaFmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmForSequencePrediction.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -190,7 +190,7 @@ from multimolecule import RnaTokenizer, RnaFmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmForTokenPrediction.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -211,7 +211,7 @@ from multimolecule import RnaTokenizer, RnaFmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmForContactPrediction.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -224,7 +224,7 @@ RNA-FM used Masked Language Modeling (MLM) as the pre-training objective: taking
 
 ### Training Data
 
-The RNA-FM model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+The RNA-FM model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral).
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 RNA-FM applied [CD-HIT (CD-HIT-EST)](https://sites.google.com/view/cd-hit) with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.

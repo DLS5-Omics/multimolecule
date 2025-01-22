@@ -283,7 +283,7 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.calm = CaLmModel(config, add_pooling_layer=True)
+        self.calm = CaLmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -347,7 +347,7 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.calm = CaLmModel(config, add_pooling_layer=True)
+        self.calm = CaLmModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -411,9 +411,10 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.calm = CaLmModel(config, add_pooling_layer=True)
+        self.calm = CaLmModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -431,8 +432,10 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.calm(
             input_ids,
@@ -440,7 +443,7 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -500,6 +503,12 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -757,7 +766,7 @@ class CaLmLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = CaLmAttention(config)
+            self.crossattention = CaLmAttention(config, position_embedding_type="absolute")
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.intermediate = CaLmIntermediate(config)
         self.output = CaLmOutput(config)
@@ -836,9 +845,9 @@ class CaLmLayer(nn.Module):
 
 class CaLmAttention(nn.Module):
 
-    def __init__(self, config: CaLmConfig):
+    def __init__(self, config: CaLmConfig, position_embedding_type: str | None = None):
         super().__init__()
-        self.self = CaLmSelfAttention(config)
+        self.self = CaLmSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = CaLmSelfOutput(config)
         self.pruned_heads: set = set()
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)

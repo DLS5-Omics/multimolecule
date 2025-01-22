@@ -42,10 +42,10 @@ class UtrBertConfig(PreTrainedConfig):
 
     Args:
         vocab_size:
-            Vocabulary size of the UTRBERT model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`BertModel`].
+            Vocabulary size of the 3UTRBERT model. Defines the number of different tokens that can be represented by the
+            `inputs_ids` passed when calling [`UtrBertModel`].
         nmers:
-            kmer size of the UTRBERT model. Defines the vocabulary size of the model.
+            kmer size of the 3UTRBERT model. Defines the vocabulary size of the model.
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -79,10 +79,14 @@ class UtrBertConfig(PreTrainedConfig):
         use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
+        head:
+            The configuration of the head.
+        lm_head:
+            The configuration of the masked language model head.
 
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertModel
-        >>> # Initializing a UtrBERT multimolecule/utrbert style configuration
+        >>> # Initializing a 3UTRBERT multimolecule/utrbert style configuration
         >>> configuration = UtrBertConfig(vocab_size=26, nmers=1)
         >>> # Initializing a model (with random weights) from the multimolecule/utrbert style configuration
         >>> model = UtrBertModel(configuration)
@@ -114,7 +118,6 @@ class UtrBertConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-
         self.vocab_size = vocab_size
         self.type_vocab_size = 2
         self.nmers = nmers

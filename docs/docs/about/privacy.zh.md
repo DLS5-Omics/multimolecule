@@ -292,7 +292,7 @@
 
 您可以通过[广告设置](https://adssettings.google.com)和移动应用的广告设置来选择退出Google Analytics广告功能。
 
-其他退出方式包括[http://optout.networkadvertising.org/](http://optout.networkadvertising.org/)和[http://www.networkadvertising.org/mobile-choice](http://www.networkadvertising.org/mobile-choice)。
+其他退出方式包括[http://optout.networkadvertising.org/](http://optout.networkadvertising.org)和[http://www.networkadvertising.org/mobile-choice](http://www.networkadvertising.org/mobile-choice)。
 
 有关Google隐私做法的更多信息，请访问[Google隐私与条款](https://policies.google.com/privacy)。
 
@@ -356,16 +356,16 @@
 
 如果您认为我们非法处理您的个人信息，您可以联系您所在管辖区的相关数据保护监管机构、州总检察长或其他有权机构。
 
-| 居住地               | 机构                                                                                                   |
-|-------------------|------------------------------------------------------------------------------------------------------|
-| 欧洲经济区             | [成员国的数据保护监督机构](https://edpb.europa.eu/about-edpb/board/members_en)                                   |
-| 英国                | [信息专员办公室](https://ico.org.uk/make-a-complaint/)                                                      |
-| 澳大利亚              | [澳大利亚信息专员办公室](https://www.oaic.gov.au/privacy/privacy-complaints/)                                   |
-| 新西兰               | [新西兰隐私专员办公室](https://www.privacy.org.nz/your-rights/making-a-complaint-to-the-privacy-commissioner/) |
-| 加拿大               | [加拿大隐私专员办公室](https://www.priv.gc.ca/en/)                                                             |
-| 美国加利福尼亚州          | [加利福尼亚隐私保护机构](https://cppa.ca.gov/webapplications/complaint/)                                        |
-| 瑞士                | [联邦数据保护和信息专员](https://www.edoeb.admin.ch/edoeb/en/home/the-fdpic/contact.html)                       |
-| 南非                | [信息监管机构](https://inforegulator.org.za/training/wp/complaints/)                                       |
+| 居住地               | 机构                                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| 欧洲经济区             | [成员国的数据保护监督机构](https://edpb.europa.eu/about-edpb/board/members_en)                                  |
+| 英国                | [信息专员办公室](https://ico.org.uk/make-a-complaint)                                                      |
+| 澳大利亚              | [澳大利亚信息专员办公室](https://www.oaic.gov.au/privacy/privacy-complaints)                                   |
+| 新西兰               | [新西兰隐私专员办公室](https://www.privacy.org.nz/your-rights/making-a-complaint-to-the-privacy-commissioner) |
+| 加拿大               | [加拿大隐私专员办公室](https://www.priv.gc.ca/en)                                                             |
+| 美国加利福尼亚州          | [加利福尼亚隐私保护机构](https://cppa.ca.gov/webapplications/complaint)                                        |
+| 瑞士                | [联邦数据保护和信息专员](https://www.edoeb.admin.ch/edoeb/en/home/the-fdpic/contact.html)                      |
+| 南非                | [信息监管机构](https://inforegulator.org.za/training/wp/complaints)                                       |
 
 
 #### 撤回您的同意

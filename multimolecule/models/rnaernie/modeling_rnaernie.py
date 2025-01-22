@@ -347,7 +347,7 @@ class RnaErnieForTokenPrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=True)
+        self.rnaernie = RnaErnieModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -411,9 +411,10 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=True)
+        self.rnaernie = RnaErnieModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -431,8 +432,10 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.rnaernie(
             input_ids,
@@ -440,7 +443,7 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -555,7 +558,7 @@ class RnaErnieForPreTraining(RnaErnieForMaskedLM):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=True)
+        self.rnaernie = RnaErnieModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -1010,6 +1013,7 @@ class RnaErnieOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaErniePooler(nn.Module):
     def __init__(self, config: RnaErnieConfig):
         super().__init__()

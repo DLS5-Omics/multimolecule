@@ -7,8 +7,8 @@
 [![Codacy - 测试覆盖](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![CodeCov - 测试覆盖](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
 
-[![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule/)
-[![PyPI - Python版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule/)
+[![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule)
+[![PyPI - Python版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule)
 [![下载统计](https://static.pepy.tech/badge/multimolecule/month)](https://multimolecule.danling.org)
 
 [![授权：AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)

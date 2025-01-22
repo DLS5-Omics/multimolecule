@@ -44,6 +44,9 @@ class CaLmConfig(PreTrainedConfig):
         vocab_size:
             Vocabulary size of the CaLM model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`CaLmModel`].
+            Defaults to 131 if `codon=True` else 26.
+        codon:
+            Whether to use codon tokenization.
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -52,6 +55,9 @@ class CaLmConfig(PreTrainedConfig):
             Number of attention heads for each attention layer in the Transformer encoder.
         intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
+        hidden_act:
+            The non-linear activation function (function or string) in the encoder and pooler. If string, `"gelu"`,
+            `"relu"`, `"silu"` and `"gelu_new"` are supported.
         hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
         attention_dropout:
@@ -64,7 +70,8 @@ class CaLmConfig(PreTrainedConfig):
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
         position_embedding_type:
-            Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query", "rotary"`.
+            Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query"`,
+            `"rotary"`.
             For positional embeddings use `"absolute"`. For more information on `"relative_key"`, please refer to
             [Self-Attention with Relative Position Representations (Shaw et al.)](https://arxiv.org/abs/1803.02155).
             For more information on `"relative_key_query"`, please refer to *Method 4* in [Improve Transformer Models
@@ -78,9 +85,13 @@ class CaLmConfig(PreTrainedConfig):
             Whether to apply layer normalization after embeddings but before the main stem of the network.
         token_dropout:
             When this is enabled, masked tokens are treated as if they had been dropped out by input dropout.
+        head:
+            The configuration of the head.
+        lm_head:
+            The configuration of the masked language model head.
 
     Examples:
-        >>> from multimolecule import CaLmModel, CaLmConfig
+        >>> from multimolecule import CaLmConfig, CaLmModel
         >>> # Initializing a CaLM multimolecule/calm style configuration
         >>> configuration = CaLmConfig()
         >>> # Initializing a model (with random weights) from the multimolecule/calm style configuration
@@ -93,7 +104,7 @@ class CaLmConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size: int = 131,
+        vocab_size: int | None = None,
         codon: bool = True,
         hidden_size: int = 768,
         num_hidden_layers: int = 12,
@@ -115,7 +126,8 @@ class CaLmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-
+        if vocab_size is None:
+            vocab_size = 131 if codon else 26
         self.vocab_size = vocab_size
         self.codon = codon
         self.hidden_size = hidden_size

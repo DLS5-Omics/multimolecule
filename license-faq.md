@@ -77,7 +77,7 @@ In addition, if you use our code, our data, or our models for any purpose, you a
 You are permitted to publish research papers in fully open access journals, conferences, or platforms that do not charge fees to either authors or readers, provided that all published manuscripts are made available under one of the following licenses that permits the sharing of manuscripts:
 
 - [GNU Free Documentation License (GFDL)](https://www.gnu.org/licenses/fdl.html)
-- [Creative Commons Licenses](https://creativecommons.org/licenses/)
+- [Creative Commons Licenses](https://creativecommons.org/licenses)
 - [OSI-Approved Licenses](https://opensource.org/licenses)
 
 !!! warning "Non-Profit"
@@ -106,7 +106,7 @@ While not mandatory, we recommend citing the MultiMolecule project in your resea
 
 We believe that free and open access to research is a cornerstone of the machine learning community. Inspired by the [Statement on Nature Machine Intelligence](https://openaccess.engineering.oregonstate.edu), and by the ongoing culture of [zero-cost open access](https://diamasproject.eu), we hold that research should be universally accessible without barriers to authors or readers.
 
-[Nature Machine Intelligence](https://www.nature.com/natmachintell/) adopts a closed-access or author-fee model that contradicts these fundamental values. We view such practices as a regressive step in the evolution of machine learning research dissemination, one that undermines community efforts to foster open collaboration and knowledge sharing.
+[Nature Machine Intelligence](https://www.nature.com/natmachintell) adopts a closed-access or author-fee model that contradicts these fundamental values. We view such practices as a regressive step in the evolution of machine learning research dissemination, one that undermines community efforts to foster open collaboration and knowledge sharing.
 
 MultiMolecule strictly prohibits the use of its code, data, models, or any related artifacts in works submitted to or published by Nature Machine Intelligence. This prohibition overrides and supersedes any prior waivers, exemptions, or permissions. Unless an additional term explicitly states that it preempts this section, no use of MultiMolecule in Nature Machine Intelligence publications is permitted.
 
@@ -120,10 +120,10 @@ If you prefer to use MultiMolecule for commercial purposes without open-sourcing
 
 YES! If you are affiliated with an organization that has a separate license agreement with us, you may be subject to different license terms.
 
-Members of the following organizations automatically receive a non-redistributable [MIT License](https://mit-license.org/) to use MultiMolecule:
+Members of the following organizations automatically receive a non-redistributable [MIT License](https://mit-license.org) to use MultiMolecule:
 
-- [Microsoft Research AI for Science](https://www.microsoft.com/en-us/research/lab/microsoft-research-ai-for-science/)
-- [DP Technology](https://dp.tech/)
+- [Microsoft Research AI for Science](https://www.microsoft.com/en-us/research/lab/microsoft-research-ai-for-science)
+- [DP Technology](https://dp.tech)
 
 This permission is granted as a special exemption under Section 7 of the _[License](license.md)_. Key points include:
 

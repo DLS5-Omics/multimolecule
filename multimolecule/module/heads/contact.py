@@ -57,7 +57,7 @@ class ContactHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -100,7 +100,7 @@ class ContactPredictionHead(PredictionHead):
     output_name: str = "attentions"
     r"""The default output to use for the head."""
 
-    requires_attention: bool = True
+    require_attentions: bool = True
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -120,7 +120,7 @@ class ContactPredictionHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -198,7 +198,7 @@ class ContactLogitsHead(PredictionHead):
     output_name: str = "last_hidden_state"
     r"""The default output to use for the head."""
 
-    requires_attention: bool = False
+    require_attentions: bool = False
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
@@ -217,7 +217,7 @@ class ContactLogitsHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Mapping | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,

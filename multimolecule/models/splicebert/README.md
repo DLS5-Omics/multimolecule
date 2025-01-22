@@ -24,18 +24,18 @@ widget:
       - label: "W"
         score: 0.05356108024716377
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "A"
-        score: 0.09350304305553436
+        score: 0.09153486788272858
       - label: "W"
-        score: 0.08757384121417999
+        score: 0.08465325832366943
       - label: "U"
-        score: 0.08202056586742401
+        score: 0.07828908413648605
       - label: "H"
-        score: 0.07025782763957977
+        score: 0.06861720234155655
       - label: "M"
-        score: 0.06502506136894226
+        score: 0.0642390251159668
 ---
 
 # SpliceBERT
@@ -164,7 +164,7 @@ from multimolecule import RnaTokenizer, SpliceBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertModel.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -184,7 +184,7 @@ from multimolecule import RnaTokenizer, SpliceBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForSequencePrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -205,7 +205,7 @@ from multimolecule import RnaTokenizer, SpliceBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForTokenPrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -226,7 +226,7 @@ from multimolecule import RnaTokenizer, SpliceBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForContactPrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

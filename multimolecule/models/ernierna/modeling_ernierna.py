@@ -399,7 +399,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.ernierna = ErnieRnaModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -465,9 +465,10 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.ernierna = ErnieRnaModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -485,8 +486,10 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ErnieRnaContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ernierna(
             input_ids,
@@ -494,7 +497,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -546,7 +549,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `BertForMaskedLM` make sure `config.is_decoder=False` for "
+                "If you want to use `ErnieRnaForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
@@ -611,7 +614,7 @@ class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.ernierna = ErnieRnaModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -631,6 +634,7 @@ class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.ss_head = ErnieRnaContactClassificationHead(config)
+        self.require_attentions = True
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -650,15 +654,17 @@ class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
         return_dict: bool | None = None,
         **kwargs,
     ) -> Tuple[Tensor, ...] | ErnieRnaForContactClassificationOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
         outputs = self.ernierna(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
+            output_attentions=output_attentions,
             output_attention_biases=output_attention_biases,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -1155,6 +1161,7 @@ class ErnieRnaIntermediate(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertOutput with Bert->Ernie
 class ErnieRnaOutput(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
@@ -1169,6 +1176,7 @@ class ErnieRnaOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class ErnieRnaPooler(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
