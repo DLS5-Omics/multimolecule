@@ -11,7 +11,7 @@ pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
   - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
+    text: "GGUC<mask><mask><mask>CUCUGGUUAGACCAGAUCUGAGCCU"
     output:
       - label: "CUC"
         score: 0.40745577216148376
@@ -24,18 +24,18 @@ widget:
       - label: "CAU"
         score: 0.0008025980787351727
   - example_title: "microRNA-21"
-    text: "UAGC<mask><mask><mask>UCAGACUGAUGUUGA"
+    text: "UAG<mask><mask><mask>UAUCAGACUGAUGUUG"
     output:
-      - label: "GAC"
-        score: 0.6499986052513123
-      - label: "GUC"
-        score: 0.07012350112199783
-      - label: "CAC"
-        score: 0.06567499041557312
-      - label: "GCC"
-        score: 0.06494498997926712
-      - label: "GGC"
-        score: 0.06052926927804947
+      - label: "GAU"
+        score: 0.34961459040641785
+      - label: "GUU"
+        score: 0.29494708776474
+      - label: "GGU"
+        score: 0.17784686386585236
+      - label: "GCU"
+        score: 0.15021035075187683
+      - label: "AUU"
+        score: 0.0039286804385483265
 ---
 
 # 3UTRBERT
@@ -171,7 +171,7 @@ from multimolecule import RnaTokenizer, UtrBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertModel.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -191,7 +191,7 @@ from multimolecule import RnaTokenizer, UtrBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertForSequencePrediction.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -212,7 +212,7 @@ from multimolecule import RnaTokenizer, UtrBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertForTokenPrediction.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -233,7 +233,7 @@ from multimolecule import RnaTokenizer, UtrBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrbert-3mer")
 model = UtrBertForContactPrediction.from_pretrained("multimolecule/utrbert-3mer")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

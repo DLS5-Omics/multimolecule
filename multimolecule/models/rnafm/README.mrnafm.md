@@ -149,7 +149,7 @@ from multimolecule import RnaTokenizer, RnaFmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmModel.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -169,7 +169,7 @@ from multimolecule import RnaTokenizer, RnaFmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmForSequencePrediction.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -190,7 +190,7 @@ from multimolecule import RnaTokenizer, RnaFmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmForTokenPrediction.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -211,7 +211,7 @@ from multimolecule import RnaTokenizer, RnaFmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/mrnafm")
 model = RnaFmForContactPrediction.from_pretrained("multimolecule/mrnafm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

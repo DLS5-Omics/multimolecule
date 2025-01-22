@@ -287,7 +287,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.splicebert = SpliceBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -351,7 +351,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.splicebert = SpliceBertModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -415,7 +415,7 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=True)
+        self.splicebert = SpliceBertModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
 
@@ -1024,6 +1024,7 @@ class SpliceBertOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class SpliceBertPooler(nn.Module):
     def __init__(self, config: SpliceBertConfig):
         super().__init__()

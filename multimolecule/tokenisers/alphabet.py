@@ -43,9 +43,9 @@ class Alphabet:
         if isinstance(tokens, Alphabet):
             tokens = tokens.tokens
         self.tokens = tuple(tokens)
-        if prepend_tokens:
+        if prepend_tokens is not None:
             self.prepend_tokens = tuple(prepend_tokens)
-        if append_tokens:
+        if append_tokens is not None:
             self.append_tokens = tuple(append_tokens)
         self.nmers = nmers
 

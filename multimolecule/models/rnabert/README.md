@@ -24,18 +24,18 @@ widget:
       - label: "<null>"
         score: 0.038484156131744385
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "N"
-        score: 0.0385337695479393
+        score: 0.03855736553668976
       - label: "I"
-        score: 0.03851701319217682
+        score: 0.03851182386279106
       - label: "<unk>"
-        score: 0.03850541263818741
+        score: 0.038497816771268845
       - label: "<null>"
-        score: 0.03850402310490608
-      - label: "<cls>"
-        score: 0.03848475590348244
+        score: 0.03848177567124367
+      - label: "-"
+        score: 0.038468137383461
 ---
 
 # RNABERT
@@ -134,7 +134,7 @@ from multimolecule import RnaTokenizer, RnaBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertModel.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -154,7 +154,7 @@ from multimolecule import RnaTokenizer, RnaBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertForSequencePrediction.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -175,7 +175,7 @@ from multimolecule import RnaTokenizer, RnaBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertForTokenPrediction.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -196,7 +196,7 @@ from multimolecule import RnaTokenizer, RnaBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertForContactPrediction.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

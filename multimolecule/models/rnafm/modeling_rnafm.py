@@ -285,7 +285,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.rnafm = RnaFmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -349,7 +349,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.rnafm = RnaFmModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -413,7 +413,7 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=True)
+        self.rnafm = RnaFmModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
 
@@ -502,6 +502,12 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -849,7 +855,7 @@ class RnaFmLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = RnaFmAttention(config)
+            self.crossattention = RnaFmAttention(config, position_embedding_type="absolute")
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.intermediate = RnaFmIntermediate(config)
         self.output = RnaFmOutput(config)
@@ -927,9 +933,9 @@ class RnaFmLayer(nn.Module):
 
 
 class RnaFmAttention(nn.Module):
-    def __init__(self, config: RnaFmConfig):
+    def __init__(self, config: RnaFmConfig, position_embedding_type: str | None = None):
         super().__init__()
-        self.self = RnaFmSelfAttention(config)
+        self.self = RnaFmSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = RnaFmSelfOutput(config)
         self.pruned_heads: set = set()
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)

@@ -399,7 +399,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.ernierna = ErnieRnaModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -465,7 +465,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.ernierna = ErnieRnaModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
 
@@ -546,7 +546,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `BertForMaskedLM` make sure `config.is_decoder=False` for "
+                "If you want to use `ErnieRnaForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
@@ -611,7 +611,7 @@ class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=True)
+        self.ernierna = ErnieRnaModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -1155,6 +1155,7 @@ class ErnieRnaIntermediate(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertOutput with Bert->Ernie
 class ErnieRnaOutput(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
@@ -1169,6 +1170,7 @@ class ErnieRnaOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class ErnieRnaPooler(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()

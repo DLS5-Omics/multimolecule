@@ -282,7 +282,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.rinalmo = RiNALMoModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -346,7 +346,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.rinalmo = RiNALMoModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -410,7 +410,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=True)
+        self.rinalmo = RiNALMoModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
 
@@ -499,6 +499,12 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -749,7 +755,7 @@ class RiNALMoLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = RiNALMoAttention(config)
+            self.crossattention = RiNALMoAttention(config, position_embedding_type="absolute")
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.intermediate = RiNALMoIntermediate(config)
         self.output = RiNALMoOutput(config)
@@ -827,9 +833,9 @@ class RiNALMoLayer(nn.Module):
 
 
 class RiNALMoAttention(nn.Module):
-    def __init__(self, config: RiNALMoConfig):
+    def __init__(self, config: RiNALMoConfig, position_embedding_type: str | None = None):
         super().__init__()
-        self.self = RiNALMoSelfAttention(config)
+        self.self = RiNALMoSelfAttention(config, position_embedding_type=position_embedding_type)
         self.output = RiNALMoSelfOutput(config)
         self.pruned_heads: set = set()
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)

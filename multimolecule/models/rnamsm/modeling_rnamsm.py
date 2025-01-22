@@ -99,6 +99,12 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def get_input_embeddings(self):
+        return self.embeddings.word_embeddings
+
+    def set_input_embeddings(self, value):
+        self.embeddings.word_embeddings = value
+
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
@@ -189,7 +195,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -252,7 +258,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -315,7 +321,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=True)
+        self.rnamsm = RnaMsmModel(config)
         head_config = HeadConfig(output_name="row_attentions")
         self.contact_head = ContactPredictionHead(config, head_config)
         self.head_config = self.contact_head.config
@@ -401,6 +407,12 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
 
     def forward(
         self,
@@ -1317,6 +1329,7 @@ class FeedForwardNetwork(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaMsmPooler(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()

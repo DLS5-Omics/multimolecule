@@ -285,7 +285,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -349,7 +349,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -413,7 +413,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
 
@@ -498,6 +498,12 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def get_output_embeddings(self):
+        return self.lm_head.decoder
+
+    def set_output_embeddings(self, new_embeddings):
+        self.lm_head.decoder = new_embeddings
+
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
@@ -562,7 +568,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=True)
+        self.rnabert = RnaBertModel(config)
         self.pretrain = RnaBertPreTrainingHeads(config)
 
         # Initialize weights and apply final processing
@@ -756,7 +762,7 @@ class RnaBertLayer(nn.Module):
         if self.add_cross_attention:
             if not self.is_decoder:
                 raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
-            self.crossattention = RnaBertAttention(config)
+            self.crossattention = RnaBertAttention(config, position_embedding_type="absolute")
         self.intermediate = RnaBertIntermediate(config)
         self.output = RnaBertOutput(config)
 
@@ -1055,6 +1061,7 @@ class RnaBertOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaBertPooler(nn.Module):
     def __init__(self, config: RnaBertConfig):
         super().__init__()

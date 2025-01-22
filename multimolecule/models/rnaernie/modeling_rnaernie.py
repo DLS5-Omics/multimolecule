@@ -347,7 +347,7 @@ class RnaErnieForTokenPrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=True)
+        self.rnaernie = RnaErnieModel(config)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -411,7 +411,7 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=True)
+        self.rnaernie = RnaErnieModel(config)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
 
@@ -555,7 +555,7 @@ class RnaErnieForPreTraining(RnaErnieForMaskedLM):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=True)
+        self.rnaernie = RnaErnieModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -1010,6 +1010,7 @@ class RnaErnieOutput(nn.Module):
         return hidden_states
 
 
+# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaErniePooler(nn.Module):
     def __init__(self, config: RnaErnieConfig):
         super().__init__()

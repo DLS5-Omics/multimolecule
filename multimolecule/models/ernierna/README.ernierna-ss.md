@@ -25,18 +25,18 @@ widget:
       - label: "."
         score: 0.10200861096382141
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "U"
-        score: 0.20929744839668274
-      - label: "C"
-        score: 0.1741773933172226
-      - label: "G"
-        score: 0.16430608928203583
+        score: 0.23881851136684418
       - label: "A"
-        score: 0.1348584145307541
-      - label: "."
-        score: 0.11933524906635284
+        score: 0.2219424843788147
+      - label: "G"
+        score: 0.133585587143898
+      - label: "C"
+        score: 0.11793075501918793
+      - label: "-"
+        score: 0.10667591542005539
 ---
 
 # ERNIE-RNA
@@ -131,7 +131,7 @@ from multimolecule import RnaTokenizer, ErnieRnaModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
 model = ErnieRnaModel.from_pretrained("multimolecule/ernierna-ss")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -151,7 +151,7 @@ from multimolecule import RnaTokenizer, ErnieRnaForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
 model = ErnieRnaForSequencePrediction.from_pretrained("multimolecule/ernierna-ss")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -172,7 +172,7 @@ from multimolecule import RnaTokenizer, ErnieRnaForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
 model = ErnieRnaForTokenPrediction.from_pretrained("multimolecule/ernierna-ss")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -193,7 +193,7 @@ from multimolecule import RnaTokenizer, ErnieRnaForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
 model = ErnieRnaForContactPrediction.from_pretrained("multimolecule/ernierna-ss")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
