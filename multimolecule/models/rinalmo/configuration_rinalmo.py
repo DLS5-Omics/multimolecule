@@ -52,6 +52,9 @@ class RiNALMoConfig(PreTrainedConfig):
             Number of attention heads for each attention layer in the Transformer encoder.
         intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
+        hidden_act:
+            The non-linear activation function (function or string) in the encoder and pooler. If string, `"gelu"`,
+            `"relu"`, `"silu"` and `"gelu_new"` are supported.
         hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
         attention_dropout:
@@ -64,7 +67,8 @@ class RiNALMoConfig(PreTrainedConfig):
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
         position_embedding_type:
-            Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query", "rotary"`.
+            Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query"`,
+            `"rotary"`.
             For positional embeddings use `"absolute"`. For more information on `"relative_key"`, please refer to
             [Self-Attention with Relative Position Representations (Shaw et al.)](https://arxiv.org/abs/1803.02155).
             For more information on `"relative_key_query"`, please refer to *Method 4* in [Improve Transformer Models
@@ -78,9 +82,13 @@ class RiNALMoConfig(PreTrainedConfig):
             Whether to apply layer normalization after embeddings but before the main stem of the network.
         token_dropout:
             When this is enabled, masked tokens are treated as if they had been dropped out by input dropout.
+        head:
+            The configuration of the head.
+        lm_head:
+            The configuration of the masked language model head.
 
     Examples:
-        >>> from multimolecule import RiNALMoModel, RiNALMoConfig
+        >>> from multimolecule import RiNALMoConfig, RiNALMoModel
         >>> # Initializing a RiNALMo multimolecule/rinalmo style configuration
         >>> configuration = RiNALMoConfig()
         >>> # Initializing a model (with random weights) from the multimolecule/rinalmo style configuration

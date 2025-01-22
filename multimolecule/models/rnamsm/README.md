@@ -24,18 +24,18 @@ widget:
       - label: "A"
         score: 0.05737845227122307
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "U"
-        score: 0.2819758355617523
+        score: 0.36363866925239563
       - label: "K"
-        score: 0.25282594561576843
+        score: 0.2319803684949875
       - label: "G"
-        score: 0.22668947279453278
+        score: 0.14799022674560547
       - label: "D"
-        score: 0.06814167648553848
+        score: 0.062339700758457184
       - label: "W"
-        score: 0.03735977038741112
+        score: 0.04046041890978813
 ---
 
 # RNA-MSM
@@ -48,7 +48,7 @@ This is an UNOFFICIAL implementation of the [Multiple sequence alignment-based R
 
 The OFFICIAL repository of RNA-MSM is at [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM).
 
-> [!CAUTION]
+> [!WARNING]
 > The MultiMolecule team is aware of a potential risk in reproducing the results of RNA-MSM.
 >
 > The original implementation of RNA-MSM used a custom tokenizer that does not append `<eos>` token to the end of the input sequence in consistent to MSA Transformer.
@@ -136,7 +136,7 @@ from multimolecule import RnaTokenizer, RnaMsmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmModel.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -144,7 +144,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -156,7 +157,7 @@ from multimolecule import RnaTokenizer, RnaMsmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmForSequencePrediction.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -165,7 +166,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -177,7 +179,7 @@ from multimolecule import RnaTokenizer, RnaMsmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmForNucleotidPrediction.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -186,7 +188,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -198,7 +201,7 @@ from multimolecule import RnaTokenizer, RnaMsmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnamsm")
 model = RnaMsmForContactPrediction.from_pretrained("multimolecule/rnamsm")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

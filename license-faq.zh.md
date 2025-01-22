@@ -86,7 +86,7 @@
 你被允许在不向作者或读者收取费用的完全开放获取的期刊、会议或平台上发表研究论文，前提是所有发表的手稿均以以下许可协议之一下提供以允许共享手稿：
 
 - [GNU 自由文档许可证 (GFDL)](https://www.gnu.org/licenses/fdl.html)
-- [Creative Commons 许可证](https://creativecommons.org/licenses/)
+- [Creative Commons 许可证](https://creativecommons.org/licenses)
 - [OSI 认证许可证](https://opensource.org/licenses)
 
 !!! warning "非盈利"
@@ -115,7 +115,7 @@
 
 我们相信，自由与开放获取研究成果是机器学习社区的基石。受到[有关 Nature Machine Intelligence 的声明](https://openaccess.engineering.oregonstate.edu)的启发，以及在推进的[零成本开放获取](https://diamasproject.eu)文化的鼓舞，我们坚信研究应当在不对作者或读者设置门槛的情况下普及与传播。
 
-[《Nature Machine Intelligence》](https://www.nature.com/natmachintell/)采用闭源访问或作者付费模式，这违背了这些基本价值观。我们认为，这样的做法是对机器学习研究成果传播方式的倒退，破坏了社区一直以来为促进开放合作与知识共享所付出的努力。
+[《Nature Machine Intelligence》](https://www.nature.com/natmachintell)采用闭源访问或作者付费模式，这违背了这些基本价值观。我们认为，这样的做法是对机器学习研究成果传播方式的倒退，破坏了社区一直以来为促进开放合作与知识共享所付出的努力。
 
 MultiMolecule 严格禁止在提交给《Nature Machine Intelligence》或在其上发表的作品中使用我们的代码、数据、模型或相关作品。此禁令的效力高于任何先前授予的豁免、特许或许可。除非有额外条款明确声明可取代本条规定，否则在《Nature Machine Intelligence》上使用 MultiMolecule 的任何行为均不被允许。
 
@@ -129,10 +129,10 @@ MultiMolecule 严格禁止在提交给《Nature Machine Intelligence》或在其
 
 是的！如果你与一个与我们有单独许可协议的组织相关联，你可能会受到不同的许可条款的约束。
 
-以下组织的成员自动获得一个不可再分发的 [MIT 许可协议](https://mit-license.org/) 以使用 MultiMolecule：
+以下组织的成员自动获得一个不可再分发的 [MIT 许可协议](https://mit-license.org) 以使用 MultiMolecule：
 
-- [微软科学智能研究院](https://www.microsoft.com/en-us/research/lab/microsoft-research-ai-for-science/)
-- [深势科技](https://dp.tech/)
+- [微软科学智能研究院](https://www.microsoft.com/en-us/research/lab/microsoft-research-ai-for-science)
+- [深势科技](https://dp.tech)
 
 此许可作为 _[许可协议](license.zh.md)_ 第7条的特别豁免被授予。主要要点包括：
 

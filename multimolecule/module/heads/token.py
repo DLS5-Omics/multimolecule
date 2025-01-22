@@ -64,7 +64,7 @@ class TokenPredictionHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -123,7 +123,7 @@ class TokenKMerHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,

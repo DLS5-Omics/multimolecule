@@ -80,7 +80,7 @@ class MultiMoleculeModel(nn.Module):
             if "hidden_size" not in head or head["hidden_size"] is None:
                 head["hidden_size"] = out_channels
         self.heads = nn.ModuleDict({name: HeadRegistry.build(backbone, head) for name, head in heads.items()})
-        if any(getattr(h, "requires_attention", False) for h in self.heads.values()):
+        if any(getattr(h, "require_attentions", False) for h in self.heads.values()):
             self.backbone.sequence.config.output_attentions = True
 
         if probing:

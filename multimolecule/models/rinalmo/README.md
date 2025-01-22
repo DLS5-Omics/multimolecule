@@ -27,18 +27,18 @@ widget:
       - label: "G"
         score: 0.0408296100795269
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "A"
-        score: 0.2931748032569885
+        score: 0.27524828910827637
       - label: "U"
-        score: 0.2710167169570923
+        score: 0.27015420794487
       - label: "X"
-        score: 0.18341825902462006
+        score: 0.1874540150165558
       - label: "C"
-        score: 0.16714636981487274
+        score: 0.16866911947727203
       - label: "G"
-        score: 0.08522326499223709
+        score: 0.09844783693552017
 ---
 
 # RiNALMo
@@ -129,7 +129,7 @@ from multimolecule import RnaTokenizer, RiNALMoModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo")
 model = RiNALMoModel.from_pretrained("multimolecule/rinalmo")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -137,7 +137,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -149,7 +150,7 @@ from multimolecule import RnaTokenizer, RiNALMoForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo")
 model = RiNALMoForSequencePrediction.from_pretrained("multimolecule/rinalmo")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -158,7 +159,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -170,7 +172,7 @@ from multimolecule import RnaTokenizer, RiNALMoForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo")
 model = RiNALMoForTokenPrediction.from_pretrained("multimolecule/rinalmo")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -179,7 +181,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -191,7 +194,7 @@ from multimolecule import RnaTokenizer, RiNALMoForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo")
 model = RiNALMoForContactPrediction.from_pretrained("multimolecule/rinalmo")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

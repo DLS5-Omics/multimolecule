@@ -24,18 +24,18 @@ widget:
       - label: "Y"
         score: 0.06385370343923569
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "*"
-        score: 0.08083827048540115
+        score: 0.07969731837511063
       - label: "<null>"
-        score: 0.07966958731412888
+        score: 0.07818876206874847
       - label: "A"
-        score: 0.0771222859621048
+        score: 0.07302683591842651
       - label: "N"
-        score: 0.06853719055652618
-      - label: "."
-        score: 0.06666938215494156
+        score: 0.06714905053377151
+      - label: "W"
+        score: 0.0667526125907898
 ---
 
 # UTR-LM
@@ -62,7 +62,7 @@ This is an UNOFFICIAL implementation of the [A 5’ UTR Language Model for Decod
 
 The OFFICIAL repository of UTR-LM is at [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM).
 
-> [!WARNING]
+> [!CAUTION]
 > The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
 > This is because
 >
@@ -178,7 +178,7 @@ from multimolecule import RnaTokenizer, UtrLmModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -186,7 +186,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -198,7 +199,7 @@ from multimolecule import RnaTokenizer, UtrLmForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForSequencePrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -207,7 +208,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -219,7 +221,7 @@ from multimolecule import RnaTokenizer, UtrLmForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForTokenPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -228,7 +230,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -240,7 +243,7 @@ from multimolecule import RnaTokenizer, UtrLmForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
 model = UtrLmForContactPrediction.from_pretrained("multimolecule/utrlm-te_el")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 

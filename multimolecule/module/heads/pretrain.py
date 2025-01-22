@@ -77,7 +77,10 @@ class MaskedLMHead(nn.Module):
             self.output_name = head_config.output_name
 
     def forward(
-        self, outputs: ModelOutput | Tuple[Tensor, ...], labels: Tensor | None = None, output_name: str | None = None
+        self,
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
+        labels: Tensor | None = None,
+        output_name: str | None = None,
     ) -> HeadOutput:
         r"""
         Forward pass of the MaskedLMHead.

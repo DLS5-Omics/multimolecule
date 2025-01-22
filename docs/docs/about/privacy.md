@@ -282,7 +282,7 @@ The Google Analytics Advertising Features that we may use include:
 To opt out of being tracked by Google Analytics across the Services, visit [https://tools.google.com/dlpage/gaoptout](https://tools.google.com/dlpage/gaoptout).
 You can opt out of Google Analytics Advertising Features through [Ads Settings](https://adssettings.google.com) and Ad Settings for mobile apps.
 
-Other opt out means include [http://optout.networkadvertising.org/](http://optout.networkadvertising.org/) and [http://www.networkadvertising.org/mobile-choice](http://www.networkadvertising.org/mobile-choice).
+Other opt out means include [http://optout.networkadvertising.org/](http://optout.networkadvertising.org) and [http://www.networkadvertising.org/mobile-choice](http://www.networkadvertising.org/mobile-choice).
 
 For more information on the privacy practices of Google, please visit the [Google Privacy & Terms](https://policies.google.com/privacy).
 
@@ -346,16 +346,16 @@ We are unable to reply to and act on data subject access request as we do not sa
 
 If you believe we are unlawfully processing your personal information, you can contact the relevant data protection regulator, state attorney general, or other competent authority in your jurisdiction.
 
-| Residency                       | Authority                                                                                                                            |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| European Economic Area          | [Member State's data protection supervisory authority](https://edpb.europa.eu/about-edpb/board/members_en)                           |
-| United Kingdom                  | [Information Commissioner's Office](https://ico.org.uk/make-a-complaint/)                                                            |
-| Australia                       | [Office of the Australian Information Commissioner](https://www.oaic.gov.au/privacy/privacy-complaints/)                             |
-| New Zealand                     | [Office of New Zealand Privacy Commissioner](https://www.privacy.org.nz/your-rights/making-a-complaint-to-the-privacy-commissioner/) |
-| Canada                          | [Office of the Privacy Commissioner of Canada](https://www.priv.gc.ca/en/)                                                           |
-| California of the United States | [California Privacy Protection Agency](https://cppa.ca.gov/webapplications/complaint/)                                               |
-| Switzerland                     | [Federal Data Protection and Information Commissioner](https://www.edoeb.admin.ch/edoeb/en/home/the-fdpic/contact.html)              |
-| South Africa                    | [Information Regulator](https://inforegulator.org.za/training/wp/complaints/)                                                        |
+| Residency                       | Authority                                                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| European Economic Area          | [Member State's data protection supervisory authority](https://edpb.europa.eu/about-edpb/board/members_en)                          |
+| United Kingdom                  | [Information Commissioner's Office](https://ico.org.uk/make-a-complaint)                                                            |
+| Australia                       | [Office of the Australian Information Commissioner](https://www.oaic.gov.au/privacy/privacy-complaints)                             |
+| New Zealand                     | [Office of New Zealand Privacy Commissioner](https://www.privacy.org.nz/your-rights/making-a-complaint-to-the-privacy-commissioner) |
+| Canada                          | [Office of the Privacy Commissioner of Canada](https://www.priv.gc.ca/en)                                                           |
+| California of the United States | [California Privacy Protection Agency](https://cppa.ca.gov/webapplications/complaint)                                               |
+| Switzerland                     | [Federal Data Protection and Information Commissioner](https://www.edoeb.admin.ch/edoeb/en/home/the-fdpic/contact.html)             |
+| South Africa                    | [Information Regulator](https://inforegulator.org.za/training/wp/complaints)                                                        |
 
 #### Withdraw your consent
 

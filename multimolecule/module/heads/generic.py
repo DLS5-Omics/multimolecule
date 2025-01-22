@@ -50,7 +50,7 @@ class PredictionHead(nn.Module):
     """
 
     num_labels: int
-    requires_attention: bool = False
+    require_attentions: bool = False
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
@@ -110,7 +110,7 @@ class PredictionHead(nn.Module):
             raise ValueError(
                 f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
             )
-        return input_ids.ne(self.pad_token_id)
+        return input_ids.ne(self.pad_token_id).int()
 
     def _remove_special_tokens(
         self, output: Tensor, attention_mask: Tensor, input_ids: Tensor | None

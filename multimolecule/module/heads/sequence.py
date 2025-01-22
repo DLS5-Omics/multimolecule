@@ -57,7 +57,7 @@ class SequencePredictionHead(PredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ModelOutput | Tuple[Tensor, ...],
+        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         labels: Tensor | None = None,
         output_name: str | None = None,
         **kwargs,

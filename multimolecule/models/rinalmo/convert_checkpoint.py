@@ -107,7 +107,7 @@ def convert_checkpoint(convert_config):
     config = Config()
     vocab_list = get_alphabet().vocabulary
     config.vocab_size = len(vocab_list)
-    config.architectures = ["RnaFmModel"]
+    config.architectures = ["RiNALMoModel"]
 
     model = Model(config)
 

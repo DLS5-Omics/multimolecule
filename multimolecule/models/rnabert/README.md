@@ -24,18 +24,18 @@ widget:
       - label: "<null>"
         score: 0.038484156131744385
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "N"
-        score: 0.0385337695479393
+        score: 0.03855736553668976
       - label: "I"
-        score: 0.03851701319217682
+        score: 0.03851182386279106
       - label: "<unk>"
-        score: 0.03850541263818741
+        score: 0.038497816771268845
       - label: "<null>"
-        score: 0.03850402310490608
-      - label: "<cls>"
-        score: 0.03848475590348244
+        score: 0.03848177567124367
+      - label: "-"
+        score: 0.038468137383461
 ---
 
 # RNABERT
@@ -48,7 +48,7 @@ This is an UNOFFICIAL implementation of the [Informative RNA-base embedding for 
 
 The OFFICIAL repository of RNABERT is at [mana438/RNABERT](https://github.com/mana438/RNABERT).
 
-> [!CAUTION]
+> [!WARNING]
 > The MultiMolecule team is aware of a potential risk in reproducing the results of RNABERT.
 >
 > The original implementation of RNABERT does not prepend `<cls>` and append `<eos>` tokens to the input sequence.
@@ -134,7 +134,7 @@ from multimolecule import RnaTokenizer, RnaBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertModel.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -142,7 +142,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -154,7 +155,7 @@ from multimolecule import RnaTokenizer, RnaBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertForSequencePrediction.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -163,7 +164,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -175,7 +177,7 @@ from multimolecule import RnaTokenizer, RnaBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertForTokenPrediction.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -184,7 +186,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -196,7 +199,7 @@ from multimolecule import RnaTokenizer, RnaBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnabert")
 model = RnaBertForContactPrediction.from_pretrained("multimolecule/rnabert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
@@ -212,7 +215,7 @@ RNABERT has two pre-training objectives: masked language modeling (MLM) and stru
 
 ### Training Data
 
-The RNABERT model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral/).
+The RNABERT model was pre-trained on [RNAcentral](https://multimolecule.danling.org/datasets/rnacentral).
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of [Expert Databases](https://rnacentral.org/expert-databases) representing a broad range of organisms and RNA types.
 
 RNABERT used a subset of 76, 237 human ncRNA sequences from RNAcentral for pre-training.

@@ -24,18 +24,18 @@ widget:
       - label: "W"
         score: 0.05356108024716377
   - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUGA"
+    text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "A"
-        score: 0.09350304305553436
+        score: 0.09153486788272858
       - label: "W"
-        score: 0.08757384121417999
+        score: 0.08465325832366943
       - label: "U"
-        score: 0.08202056586742401
+        score: 0.07828908413648605
       - label: "H"
-        score: 0.07025782763957977
+        score: 0.06861720234155655
       - label: "M"
-        score: 0.06502506136894226
+        score: 0.0642390251159668
 ---
 
 # SpliceBERT
@@ -164,7 +164,7 @@ from multimolecule import RnaTokenizer, SpliceBertModel
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertModel.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 
 output = model(**input)
@@ -172,7 +172,8 @@ output = model(**input)
 
 #### Sequence Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -184,7 +185,7 @@ from multimolecule import RnaTokenizer, SpliceBertForSequencePrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForSequencePrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.tensor([1])
 
@@ -193,7 +194,8 @@ output = model(**input, labels=label)
 
 #### Token Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for nucleotide classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for token classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a nucleotide-level task in PyTorch:
 
@@ -205,7 +207,7 @@ from multimolecule import RnaTokenizer, SpliceBertForTokenPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForTokenPrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), ))
 
@@ -214,7 +216,8 @@ output = model(**input, labels=label)
 
 #### Contact Classification / Regression
 
-**Note**: This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
+> [!NOTE]
+> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for contact classification or regression.
 
 Here is how to use this model as backbone to fine-tune for a contact-level task in PyTorch:
 
@@ -226,7 +229,7 @@ from multimolecule import RnaTokenizer, SpliceBertForContactPrediction
 tokenizer = RnaTokenizer.from_pretrained("multimolecule/splicebert")
 model = SpliceBertForContactPrediction.from_pretrained("multimolecule/splicebert")
 
-text = "UAGCUUAUCAGACUGAUGUUGA"
+text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
 label = torch.randint(2, (len(text), len(text)))
 
