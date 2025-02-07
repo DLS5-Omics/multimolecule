@@ -41,8 +41,14 @@ def dot_bracket_to_contact_map(dot_bracket: str):
         if symbol in dot_bracket_pair_table:
             stacks[symbol].append(i)
         elif symbol in reverse_dot_bracket_pair_table:
-            j = stacks[reverse_dot_bracket_pair_table[symbol]].pop()
+            try:
+                j = stacks[reverse_dot_bracket_pair_table[symbol]].pop()
+            except IndexError:
+                raise ValueError(f"Unmatched symbol {symbol} in dot-bracket notation")
             contact_map[i, j] = contact_map[j, i] = 1
         elif symbol not in {".", ",", "_"}:
             raise ValueError(f"Invalid symbol {symbol} in dot-bracket notation")
+    for stack in stacks.values():
+        if stack:
+            raise ValueError(f"Unmatched symbol {stack[0]} in dot-bracket notation")
     return contact_map
