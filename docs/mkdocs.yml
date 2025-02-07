@@ -12,6 +12,7 @@ nav:
   - data:
       - data/index.md
       - Dataset: data/dataset.md
+      - functional: data/functional.md
   - datasets:
       - datasets/index.md
       - DNA:
@@ -206,6 +207,7 @@ plugins:
           import:
             - https://docs.python.org/3/objects.inv
             - https://pytorch.org/docs/stable/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
             - https://huggingface.co/docs/transformers/master/en/objects.inv
             - https://huggingface.co/docs/datasets/master/en/objects.inv
             - https://pandas.pydata.org/docs/objects.inv
