@@ -2936,13 +2936,13 @@
 <p><code>heads</code> 提供了一系列的模型预测头，用于处理不同的任务。</p>
 <p><code>heads</code> 接受 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a>、<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a> 或 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a> 作为输入。
 它会自动查找预测所需的模型输出并相应地处理。</p>
-<p>一些预测头可能需要额外的信息，例如 <code>attention_mask</code> 或 <code>input_ids</code>，例如 <a class="autorefs autorefs-internal" href="../../../module/heads/#multimolecule.module.heads.contact.ContactPredictionHead"><code>ContactPredictionHead</code></a>。
+<p>一些预测头可能需要额外的信息，例如 <code>attention_mask</code> 或 <code>input_ids</code>，例如 <a class="autorefs autorefs-internal" href="#multimolecule.module.heads.contact.ContactPredictionHead"><code>ContactPredictionHead</code></a>。
 这些额外的参数可以作为参数/关键字参数传入。</p>
 <p>请注意，<code>heads</code> 使用与 <img alt="🤗" class="gemoji" src="https://github.githubassets.com/images/icons/emoji/unicode/1f917.png" title=":hugs:" /> Transformers 相同的 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 约定。
 如果模型输出是一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple"><code>tuple</code></a>，我们将第一个元素视为 <code>pooler_output</code>，第二个元素视为 <code>last_hidden_state</code>，最后一个元素视为 <code>attention_map</code>。
 用户有责任确保模型输出格式正确。</p>
-<p>如果模型输出是一个 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 或一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>，<code>heads</code> 将从模型输出中查找 <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig"><code>HeadConfig.output_name</code></a>。
-你可以在 <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig"><code>HeadConfig</code></a> 中指定 <code>output_name</code>，以确保 <code>heads</code> 可以正确定位所需的张量。</p>
+<p>如果模型输出是一个 <a href="https://huggingface.co/docs/transformers/en/main_classes/output"><code>ModelOutupt</code></a> 或一个 <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>，<code>heads</code> 将从模型输出中查找 <a class="autorefs autorefs-internal" href="#multimolecule.module.heads.config.HeadConfig"><code>HeadConfig.output_name</code></a>。
+你可以在 <a class="autorefs autorefs-internal" href="#multimolecule.module.heads.config.HeadConfig"><code>HeadConfig</code></a> 中指定 <code>output_name</code>，以确保 <code>heads</code> 可以正确定位所需的张量。</p>
 
 
 <div class="doc doc-object doc-module">
@@ -3012,7 +3012,7 @@
             <td>
               <div class="doc-md-description">
                 <p>Number of labels to use in the last layer added to the model, typically for a classification task.</p>
-<p>Head should look for <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.num_labels</code></a> if is <code>None</code>.</p>
+<p>Head should look for <a class="autorefs autorefs-internal" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.num_labels</code></a> if is <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -3029,7 +3029,7 @@
               <div class="doc-md-description">
                 <p>Problem type for <code>XxxForYyyPrediction</code> models. Can be one of <code>"binary"</code>, <code>"regression"</code>,
 <code>"multiclass"</code> or <code>"multilabel"</code>.</p>
-<p>Head should look for <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.problem_type</code></a> if is <code>None</code>.</p>
+<p>Head should look for <a class="autorefs autorefs-internal" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.problem_type</code></a> if is <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -3045,7 +3045,7 @@
             <td>
               <div class="doc-md-description">
                 <p>Dimensionality of the encoder layers and the pooler layer.</p>
-<p>Head should look for <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a> if is <code>None</code>.</p>
+<p>Head should look for <a class="autorefs autorefs-internal" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a> if is <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -3347,7 +3347,7 @@
             <td>
               <div class="doc-md-description">
                 <p>Dimensionality of the encoder layers and the pooler layer.</p>
-<p>Head should look for <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a> if is <code>None</code>.</p>
+<p>Head should look for <a class="autorefs autorefs-internal" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>Config.hidden_size</code></a> if is <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -3634,7 +3634,7 @@
 <h4 id="multimolecule.module.heads.sequence.SequencePredictionHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.sequence.SequencePredictionHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3998,7 +3998,7 @@ Defaults to <code>self.output_name</code>.</p>
 <h4 id="multimolecule.module.heads.token.TokenPredictionHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.token.TokenPredictionHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4407,7 +4407,7 @@ Defaults to <code>self.output_name</code>.</p>
 <h4 id="multimolecule.module.heads.token.TokenKMerHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.token.TokenKMerHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4866,7 +4866,7 @@ Defaults to <code>self.output_name</code>.</p>
 <h4 id="multimolecule.module.heads.contact.ContactPredictionHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.contact.ContactPredictionHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5420,7 +5420,7 @@ Defaults to <code>self.output_name</code>.</p>
 <h4 id="multimolecule.module.heads.contact.ContactLogitsHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.contact.ContactLogitsHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5974,7 +5974,7 @@ Defaults to <code>self.output_name</code>.</p>
 <h4 id="multimolecule.module.heads.pretrain.MaskedLMHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.pretrain.MaskedLMHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -6408,7 +6408,7 @@ Defaults to <code>self.output_name</code>.</p>
 <h4 id="multimolecule.module.heads.generic.PredictionHead(config)" class="doc doc-heading doc-heading-parameter">                  <code>config</code>
 <a href="#multimolecule.module.heads.generic.PredictionHead(config)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
+                  <code><a class="autorefs autorefs-internal" title="multimolecule.models.PreTrainedConfig" href="../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code>
             </td>
             <td>
               <div class="doc-md-description">

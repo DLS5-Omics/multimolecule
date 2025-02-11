@@ -2769,7 +2769,7 @@
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of <a href="https://rnacentral.org/expert-databases">Expert Databases</a> representing a broad range of organisms and RNA types.</p>
 <p>RNA-FM applied <a href="https://sites.google.com/view/cd-hit">CD-HIT (CD-HIT-EST)</a> with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.</p>
 <p>RNA-FM preprocessed all tokens by replacing &ldquo;U&rdquo;s with &ldquo;T&rdquo;s.</p>
-<p>Note that during model conversions, &ldquo;T&rdquo; is replaced with &ldquo;U&rdquo;. <a class="autorefs autorefs-internal" href="../calm/#multimolecule.models.calm.RnaTokenizer"><code>RnaTokenizer</code></a> will convert &ldquo;T&rdquo;s to &ldquo;U&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
+<p>Note that during model conversions, &ldquo;T&rdquo; is replaced with &ldquo;U&rdquo;. <a class="autorefs autorefs-internal" href="#multimolecule.models.rnafm.RnaTokenizer"><code>RnaTokenizer</code></a> will convert &ldquo;T&rdquo;s to &ldquo;U&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
 <h3 id="training-procedure">Training Procedure<a class="headerlink" href="#training-procedure" title="Permanent link">&para;</a></h3>
 <h4 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h4>
 <p>RNA-FM used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:</p>

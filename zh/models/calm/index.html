@@ -2792,7 +2792,7 @@ This is because</p>
 </ul>
 <p>To reduce redundancy, CaLM grouped the entries by organism, and apply CD-HIT (CD-HIT-EST) with a cut-off at 40% sequence identity to the translated protein sequences.</p>
 <p>The final dataset contains 9,858,385 cDNA sequences.</p>
-<p>Note that the alphabet in the original implementation is RNA instead of DNA, therefore, we use <a class="autorefs autorefs-internal" href="../../../models/calm/#multimolecule.models.calm.RnaTokenizer"><code>RnaTokenizer</code></a> to tokenize the sequences. <code>RnaTokenizer</code> of <code>multimolecule</code> will convert &ldquo;U&rdquo;s to &ldquo;T&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
+<p>Note that the alphabet in the original implementation is RNA instead of DNA, therefore, we use <a class="autorefs autorefs-internal" href="#multimolecule.models.calm.RnaTokenizer"><code>RnaTokenizer</code></a> to tokenize the sequences. <code>RnaTokenizer</code> of <code>multimolecule</code> will convert &ldquo;U&rdquo;s to &ldquo;T&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
 <h3 id="training-procedure">Training Procedure<a class="headerlink" href="#training-procedure" title="Permanent link">&para;</a></h3>
 <h4 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h4>
 <p>CaLM used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:</p>
@@ -3261,12 +3261,12 @@ This is because</p>
               Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.configuration_utils.PreTrainedConfig" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
 
 
-        <p>This is the configuration class to store the configuration of a <a class="autorefs autorefs-internal" href="../../../models/calm/#multimolecule.models.calm.CaLmModel"><code>CaLmModel</code></a>. It
+        <p>This is the configuration class to store the configuration of a <a class="autorefs autorefs-internal" href="#multimolecule.models.calm.CaLmModel"><code>CaLmModel</code></a>. It
 is used to instantiate a CaLM model according to the specified arguments, defining the model architecture.
 Instantiating a configuration with the defaults will yield a similar configuration to that of the CaLM
 <a href="https://github.com/oxpig/CaLM">oxpig/CaLM</a> architecture.</p>
-<p>Configuration objects inherit from <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a> and can be used to
-control the model outputs. Read the documentation from <a class="autorefs autorefs-internal" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a>
+<p>Configuration objects inherit from <a class="autorefs autorefs-internal" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a> and can be used to
+control the model outputs. Read the documentation from <a class="autorefs autorefs-internal" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a>
 for more information.</p>
 
 
@@ -3893,7 +3893,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="../../../models/calm/#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
 
 
 
@@ -4090,7 +4090,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="../../../models/calm/#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
 
 
 
@@ -4303,7 +4303,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="../../../models/calm/#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
 
 
 
@@ -4496,7 +4496,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="../../../models/calm/#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
 
 
 
@@ -4689,7 +4689,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="../../../models/calm/#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="multimolecule.models.calm.modeling_calm.CaLmPreTrainedModel" href="#multimolecule.models.calm.CaLmPreTrainedModel">CaLmPreTrainedModel</a></code></p>
 
 
 

@@ -2737,7 +2737,7 @@
 The training data contains 36 million unique ncRNA sequences.</p>
 <p>To ensure sequence diversity in each training batch, RiNALMo clustered the sequences with <a href="https://github.com/soedinglab/MMseqs2">MMSeqs2</a> into 17 million clusters and then sampled each sequence in the batch from a different cluster.</p>
 <p>RiNALMo preprocessed all tokens by replacing &ldquo;U&rdquo;s with &ldquo;T&rdquo;s.</p>
-<p>Note that during model conversions, &ldquo;T&rdquo; is replaced with &ldquo;U&rdquo;. <a class="autorefs autorefs-internal" href="../calm/#multimolecule.models.calm.RnaTokenizer"><code>RnaTokenizer</code></a> will convert &ldquo;T&rdquo;s to &ldquo;U&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
+<p>Note that during model conversions, &ldquo;T&rdquo; is replaced with &ldquo;U&rdquo;. <a class="autorefs autorefs-internal" href="#multimolecule.models.rinalmo.RnaTokenizer"><code>RnaTokenizer</code></a> will convert &ldquo;T&rdquo;s to &ldquo;U&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
 <h3 id="training-procedure">Training Procedure<a class="headerlink" href="#training-procedure" title="Permanent link">&para;</a></h3>
 <h4 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h4>
 <p>RiNALMo used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:</p>

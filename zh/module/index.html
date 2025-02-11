@@ -918,14 +918,14 @@
 <p><code>module</code> 包旨在提供简单、可重用的模块，这些模块在多个模型中保持一致。这种方法最大程度地减少了代码重复，并促进了干净、易于维护的代码。</p>
 <h2 id="_1">核心特性<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <ul>
-<li>可重用性：<code>module</code> 包括一些在不同模型中常用的组件，例如 <a class="autorefs autorefs-internal" href="../../module/heads/#multimolecule.module.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>。这减少了冗余，并简化了开发过程。</li>
+<li>可重用性：<code>module</code> 包括一些在不同模型中常用的组件，例如 <a class="autorefs autorefs-internal" href="heads/#multimolecule.module.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>。这减少了冗余，并简化了开发过程。</li>
 <li>一致性：通过集中常见模块，我们确保更新和改进在所有模型中一致应用，提高了可靠性和性能。</li>
 <li>灵活性：虽然变换网络编码器等模块被广泛使用，但它们在实现细节上经常有所不同（例如，前-归一化 vs. 后-归一化，不同的残差连接策略）。<code>module</code> 包专注于更简单的组件，将复杂的、特定于模型的变化留给每个模型的 <code>modeling.py</code> 中定义。</li>
 </ul>
 <h2 id="modules">Modules<a class="headerlink" href="#modules" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="heads">heads</a>: 包括多种预测头，比如<a class="autorefs autorefs-internal" href="../../module/heads/#multimolecule.module.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>、<a class="autorefs autorefs-internal" href="../../module/heads/#multimolecule.module.heads.token.TokenPredictionHead"><code>TokenPredictionHead</code></a>和<a class="autorefs autorefs-internal" href="../../module/heads/#multimolecule.module.heads.contact.ContactPredictionHead"><code>ContactPredictionHead</code></a>。</li>
-<li><a href="embeddings">embeddings</a>：包括多种位置编码，比如<a class="autorefs autorefs-internal" href="../../module/embeddings/#multimolecule.module.embeddings.SinusoidalEmbedding"><code>SinusoidalEmbedding</code></a>和 <a class="autorefs autorefs-internal" href="../../module/embeddings/#multimolecule.module.embeddings.RotaryEmbedding"><code>RotaryEmbedding</code></a>。</li>
+<li><a href="heads">heads</a>: 包括多种预测头，比如<a class="autorefs autorefs-internal" href="heads/#multimolecule.module.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>、<a class="autorefs autorefs-internal" href="heads/#multimolecule.module.heads.token.TokenPredictionHead"><code>TokenPredictionHead</code></a>和<a class="autorefs autorefs-internal" href="heads/#multimolecule.module.heads.contact.ContactPredictionHead"><code>ContactPredictionHead</code></a>。</li>
+<li><a href="embeddings">embeddings</a>：包括多种位置编码，比如<a class="autorefs autorefs-internal" href="embeddings/#multimolecule.module.embeddings.SinusoidalEmbedding"><code>SinusoidalEmbedding</code></a>和 <a class="autorefs autorefs-internal" href="embeddings/#multimolecule.module.embeddings.RotaryEmbedding"><code>RotaryEmbedding</code></a>。</li>
 </ul>
 
 
