@@ -87,6 +87,7 @@ date: 2024-05-04
 ### 核糖核酸（RNA）
 
 - [ERNIE-RNA](ernierna)
+- [RibonanzaNet](ribonanzanet)
 - [RiNALMo](rinalmo)
 - [RNABERT](rnabert)
 - [RNAErnie](rnaernie)
