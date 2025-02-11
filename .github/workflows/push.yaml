@@ -31,11 +31,13 @@ jobs:
       - name: pytest
         run: pytest --cov=materialx --cov-report=xml --cov-report=html .
       - name: Upload coverage report for documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.12'
         with:
           name: coverage
           path: htmlcov
           retention-days: 5
+          overwrite: true
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -71,7 +73,7 @@ jobs:
       - run: pip install -r docs/requirements.txt
       - run: pip install -e .
       - name: Download coverage report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage
           path: htmlcov
