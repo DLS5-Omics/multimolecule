@@ -51,6 +51,14 @@ from .modeling_auto import (
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
+from .ribonanzanet import (
+    RibonanzaNetConfig,
+    RibonanzaNetForContactPrediction,
+    RibonanzaNetForPreTraining,
+    RibonanzaNetForSequencePrediction,
+    RibonanzaNetForTokenPrediction,
+    RibonanzaNetModel,
+)
 from .rinalmo import (
     RiNALMoConfig,
     RiNALMoForContactPrediction,
@@ -158,6 +166,12 @@ __all__ = [
     "ErnieRnaForTokenPrediction",
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
+    "RibonanzaNetConfig",
+    "RibonanzaNetModel",
+    "RibonanzaNetForContactPrediction",
+    "RibonanzaNetForSequencePrediction",
+    "RibonanzaNetForTokenPrediction",
+    "RibonanzaNetForPreTraining",
     "RiNALMoConfig",
     "RiNALMoModel",
     "RiNALMoForContactPrediction",
