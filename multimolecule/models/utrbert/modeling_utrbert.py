@@ -976,10 +976,12 @@ class UtrBertIntermediate(nn.Module):
             self.intermediate_act_fn = ACT2FN[config.hidden_act]
         else:
             self.intermediate_act_fn = config.hidden_act
+        self.dropout = nn.Dropout(config.hidden_dropout)
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
         hidden_states = self.intermediate_act_fn(hidden_states)
+        hidden_states = self.dropout(hidden_states)
         return hidden_states
 
 
