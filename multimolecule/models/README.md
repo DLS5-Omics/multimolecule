@@ -87,6 +87,7 @@ You can also initialize a vanilla model using the model class.
 ### RiboNucleic Acid (RNA)
 
 - [ERNIE-RNA](ernierna)
+- [RibonanzaNet](ribonanzanet)
 - [RiNALMo](rinalmo)
 - [RNABERT](rnabert)
 - [RNAErnie](rnaernie)
