@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Tuple
 from warnings import warn
@@ -41,6 +42,7 @@ from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable
 from transformers.utils import logging
 
 from multimolecule.module import (
+    BasePredictionHead,
     ContactPredictionHead,
     Criterion,
     HeadOutput,
@@ -50,8 +52,7 @@ from multimolecule.module import (
     TokenPredictionHead,
 )
 
-from ..configuration_utils import HeadConfig
-from .configuration_ernierna import ErnieRnaConfig
+from .configuration_ernierna import ErnieRnaConfig, ErnieRnaSecondaryStructureHeadConfig
 
 logger = logging.get_logger(__name__)
 
@@ -623,12 +624,12 @@ class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
         self.post_init()
 
 
-class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
+class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
     """
     Examples:
-        >>> from multimolecule.models import ErnieRnaConfig, ErnieRnaForContactClassification, RnaTokenizer
+        >>> from multimolecule.models import ErnieRnaConfig, ErnieRnaForSecondaryStructurePrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
-        >>> model = ErnieRnaForContactClassification(config)
+        >>> model = ErnieRnaForSecondaryStructurePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
@@ -636,13 +637,13 @@ class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ss_head = ErnieRnaContactClassificationHead(config)
+        self.ss_head = ErnieRnaSecondaryStructurePredictionHead(config)
         self.require_attentions = True
 
         # Initialize weights and apply final processing
         self.post_init()
 
-    def forward(  # type: ignore[override]  # pylint: disable=W0221
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
         input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
@@ -656,11 +657,12 @@ class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
-    ) -> Tuple[Tensor, ...] | ErnieRnaForContactClassificationOutput:
+    ) -> Tuple[Tensor, ...] | ErnieRnaForSecondaryStructurePredictorOutput:
         if self.require_attentions:
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ernierna(
             input_ids,
             attention_mask=attention_mask,
@@ -673,18 +675,14 @@ class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
             return_dict=return_dict,
             **kwargs,
         )
-        output_lm = self.lm_head(outputs, labels_lm)
-        output_ss = self.ss_head(outputs[-1][-1], attention_mask, input_ids, labels_ss)
-        logits_lm, loss_lm = output_lm.logits, output_lm.loss
-        logits_ss, loss_ss = output_ss.logits, output_ss.loss
 
-        loss = None
-        if loss_lm is not None and loss_ss is not None:
-            loss = loss_lm + loss_ss
-        elif loss_lm is not None:
-            loss = loss_lm
-        elif loss_ss is not None:
-            loss = loss_ss
+        output_lm = self.lm_head(outputs, labels_lm)
+        logits_lm, loss_lm = output_lm.logits, output_lm.loss
+
+        output_ss = self.ss_head(outputs, attention_mask, input_ids, labels_ss)
+        logits_ss, loss_ss = output_ss.logits, output_ss.loss
+        losses = tuple(l for l in (loss_lm, loss_ss) if l is not None)  # noqa: E741
+        loss = torch.mean(torch.tensor(losses)) if losses else None
 
         if not return_dict:
             output = outputs[2:]
@@ -692,7 +690,7 @@ class ErnieRnaForContactClassification(ErnieRnaForPreTraining):
             output = ((logits_lm, loss_lm) + output) if loss_lm is not None else ((logits_lm,) + output)
             return ((loss,) + output) if loss is not None else output
 
-        return ErnieRnaForContactClassificationOutput(
+        return ErnieRnaForSecondaryStructurePredictorOutput(
             loss=loss,
             logits_lm=logits_lm,
             loss_lm=loss_lm,
@@ -1195,50 +1193,54 @@ class ErnieRnaPooler(nn.Module):
         return pooled_output
 
 
-class ErnieRnaContactClassificationHead(nn.Module):
+class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
-    def __init__(self, config: ErnieRnaConfig, head_config: HeadConfig | None = None):
-        super().__init__()
+    output_name: str = "attentions"
+
+    def __init__(self, config: ErnieRnaConfig, head_config: ErnieRnaSecondaryStructureHeadConfig | None = None):
         if head_config is None:
-            head_config = config.head or HeadConfig()
-        self.config = head_config
-        self.conv1 = nn.Conv2d(1, 8, 7, 1, 3)
+            head_config = (
+                ErnieRnaSecondaryStructureHeadConfig(config.head, num_labels=1)
+                if config.head is not None
+                else ErnieRnaSecondaryStructureHeadConfig()
+            )
+        super().__init__(config, head_config)
+        intermediate_channels = round(self.config.channels**0.5)
+        self.conv1 = nn.Conv2d(1, intermediate_channels, self.config.kernel_size, padding=self.config.kernel_size // 2)
         self.relu = nn.ReLU(inplace=True)
-        self.dropout = nn.Dropout(p=0.3)
-        self.conv2 = nn.Conv2d(8, 63, 7, 1, 3)
-        self.resnet = ErnieRnaResNet()
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.conv2 = nn.Conv2d(
+            intermediate_channels,
+            self.config.channels - 1,
+            self.config.kernel_size,
+            padding=self.config.kernel_size // 2,
+        )
+        self.resnet = ErnieRnaResNet(self.config)
         self.criterion = Criterion(self.config)
-        self.bos_token_id = config.bos_token_id
-        self.eos_token_id = config.eos_token_id
-        self.pad_token_id = config.pad_token_id
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        attention: Tensor,
+        outputs: ErnieRnaModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
     ) -> HeadOutput:
-        if attention_mask is None:
-            if isinstance(input_ids, NestedTensor):
-                input_ids, attention_mask = input_ids.tensor, input_ids.mask
-            else:
-                if input_ids is None:
-                    raise ValueError(
-                        f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
-                    )
-                if self.pad_token_id is None:
-                    raise ValueError(
-                        f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
-                    )
-                attention_mask = input_ids.ne(self.pad_token_id)
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            attentions = outputs["attentions"]
+        elif isinstance(outputs, tuple):
+            attentions = outputs[-1]
+        attention = attentions[-1][:, 5:6, :, :]  # Mysterious magic head 5
+
         # In the original model, attention for padding tokens are completely zeroed out.
         # This makes no difference most of the time because the other tokens won't attend to them,
         # but it does for the contact prediction task, which takes attention as input,
         # so we have to mimic that here.
+        if attention_mask is None:
+            attention_mask = self._get_attention_mask(input_ids)
         attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
         attention = attention * attention_mask[:, None, :, :]
-        # remove bos token attentions
+
+        # remove bos token attention
         if self.bos_token_id is not None:
             attention = attention[..., 1:, 1:]
             attention_mask = attention_mask[..., 1:, 1:]
@@ -1248,7 +1250,7 @@ class ErnieRnaContactClassificationHead(nn.Module):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(attention)
-                input_ids = input_ids[..., 1:]
+                input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
@@ -1258,7 +1260,6 @@ class ErnieRnaContactClassificationHead(nn.Module):
             attention = attention[..., :-1, :-1]
             attention_mask = attention_mask[..., :-1, :-1]
 
-        attention = attention[:, 5:6, :, :]  # Mysterious magic number 5
         out = self.conv1(attention)
         out = self.dropout(out)
         out = self.relu(out)
@@ -1274,64 +1275,89 @@ class ErnieRnaContactClassificationHead(nn.Module):
 
 
 class ErnieRnaResNet(nn.Sequential):
-    def __init__(
-        self,
-        num_layers: int = 8,
-        inplanes: int = 64,
-        planes: int = 64,
-        dilation: int = 1,
-    ) -> None:
-        self.num_layers = num_layers
+    def __init__(self, config: ErnieRnaSecondaryStructureHeadConfig) -> None:
         layers = []
-        for i in range(self.num_layers):
-            dilation = pow(2, (i % 3))
-            layers.append(ErnieRnaBasicResBlock(inplanes=inplanes, planes=planes, dilation=dilation))
-        layers.append(nn.Conv2d(64, 1, kernel_size=3, padding=1))
+        for i in range(config.num_layers):
+            layers.append(
+                ErnieRnaBasicResBlock(
+                    config.channels,
+                    dilation=pow(2, (i % 3)),
+                    dropout=config.dropout,
+                    activation=config.activation,
+                    bias=config.bias,
+                )
+            )
+        layers.append(nn.Conv2d(config.channels, config.num_labels, kernel_size=3, padding=1))
         super().__init__(*layers)
 
 
 class ErnieRnaBasicResBlock(nn.Module):
     def __init__(
         self,
-        inplanes: int,
-        planes: int,
+        channels: int,
+        kernel_size: int = 3,
         stride: int = 1,
-        groups: int = 1,
-        base_width: int = 64,
         dilation: int = 1,
+        dropout: float = 0.3,
+        activation: str = "relu",
+        bias: bool = False,
     ) -> None:
         super().__init__()
-        if groups != 1 or base_width != 64:
-            raise ValueError("BasicBlock only supports groups=1 and base_width=64")
 
-        self.bn1 = nn.BatchNorm2d(inplanes)
-        self.relu1 = nn.ReLU(inplace=True)
-        self.conv1 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1, bias=False)
-        self.dropout = nn.Dropout(p=0.3)
-        self.relu2 = nn.ReLU(inplace=True)
+        self.norm = nn.BatchNorm2d(channels)
+        self.activation = ACT2FN[activation]
+        self.conv1 = nn.Conv2d(channels, channels, kernel_size, padding=1, bias=bias)
+        self.dropout = nn.Dropout(dropout)
         self.conv2 = nn.Conv2d(
-            planes,
-            planes,
-            kernel_size=3,
+            channels,
+            channels,
+            kernel_size,
             stride=stride,
             padding=dilation,
-            groups=groups,
-            bias=False,
             dilation=dilation,
+            bias=bias,
         )
-        self.stride = stride
 
     def forward(self, x):
         residual = x
 
-        out = self.bn1(x)
-        out = self.relu1(out)
+        out = self.norm(x)
+        out = self.activation(out)
         out = self.conv1(out)
         out = self.dropout(out)
-        out = self.relu2(out)
+        out = self.activation(out)
         out = self.conv2(out)
 
         return out + residual
+
+
+@dataclass
+class ErnieRnaModelOutput(ModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaModelOutputWithPoolingAndCrossAttentions(ModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    pooler_output: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    past_key_values: Tuple[Tuple[torch.FloatTensor, ...]] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    cross_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaModelOutputWithPastAndCrossAttentions(ModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    past_key_values: Tuple[Tuple[torch.FloatTensor, ...]] | None = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    cross_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
@@ -1371,41 +1397,12 @@ class ErnieRnaForMaskedLMOutput(ModelOutput):
 
 
 @dataclass
-class ErnieRnaForContactClassificationOutput(ModelOutput):
+class ErnieRnaForSecondaryStructurePredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits_lm: torch.FloatTensor = None
     loss_lm: torch.FloatTensor = None
     logits_ss: torch.FloatTensor = None
     loss_ss: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaModelOutputWithPoolingAndCrossAttentions(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    pooler_output: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    past_key_values: Tuple[Tuple[torch.FloatTensor, ...]] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    cross_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaModelOutputWithPastAndCrossAttentions(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    past_key_values: Tuple[Tuple[torch.FloatTensor, ...]] | None = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    cross_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaModelOutput(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
     attention_biases: Tuple[torch.FloatTensor, ...] | None = None

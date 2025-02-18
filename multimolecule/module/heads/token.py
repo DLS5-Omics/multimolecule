@@ -59,8 +59,6 @@ class TokenPredictionHead(PredictionHead):
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
-        if head_config is not None and head_config.output_name is not None:
-            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -115,8 +113,7 @@ class TokenKMerHead(PredictionHead):
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.nmers = config.nmers
-        if head_config is not None and head_config.output_name is not None:
-            self.output_name = head_config.output_name
+
         # Do not pass bos_token_id and eos_token_id to unfold_kmer_embeddings
         # As they will be removed in preprocess
         self.unfold_kmer_embeddings = partial(unfold_kmer_embeddings, nmers=self.nmers)
