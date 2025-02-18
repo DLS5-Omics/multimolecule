@@ -52,8 +52,6 @@ class SequencePredictionHead(PredictionHead):
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
-        if head_config is not None and head_config.output_name is not None:
-            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,

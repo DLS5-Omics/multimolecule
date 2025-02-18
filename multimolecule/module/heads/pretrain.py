@@ -32,6 +32,7 @@ from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
 from .config import MaskedLMHeadConfig
+from .generic import BasePredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .transform import HeadTransformRegistryHF
@@ -41,7 +42,7 @@ if TYPE_CHECKING:
 
 
 @HeadRegistry.register("masked_lm")
-class MaskedLMHead(nn.Module):
+class MaskedLMHead(BasePredictionHead):
     r"""
     Head for masked language modeling.
 
@@ -57,13 +58,10 @@ class MaskedLMHead(nn.Module):
     def __init__(
         self, config: PreTrainedConfig, weight: Tensor | None = None, head_config: MaskedLMHeadConfig | None = None
     ):
-        super().__init__()
         if head_config is None:
             head_config = (config.lm_head if hasattr(config, "lm_head") else config.head) or MaskedLMHeadConfig()
-        self.config: MaskedLMHeadConfig = head_config
-        if self.config.hidden_size is None:
-            self.config.hidden_size = config.hidden_size
-        self.num_labels = config.vocab_size
+        head_config.num_labels = config.vocab_size
+        super().__init__(config, head_config)
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = HeadTransformRegistryHF.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=False)
@@ -73,8 +71,6 @@ class MaskedLMHead(nn.Module):
             self.bias = nn.Parameter(torch.zeros(self.num_labels))
             self.decoder.bias = self.bias
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        if head_config is not None and head_config.output_name is not None:
-            self.output_name = head_config.output_name
 
     def forward(
         self,
