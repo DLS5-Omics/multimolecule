@@ -88,6 +88,29 @@ pip install multimolecule
 
 ### Direct Use
 
+You can use this model directly to predict secondary structure:
+
+```python
+>>> from multimolecule import RnaTokenizer, ErnieRnaForSecondaryStructurePrediction
+>>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/ernierna-ss")
+>>> model = ErnieRnaForSecondaryStructurePrediction.from_pretrained("multimolecule/ernierna-ss")
+
+>>> text = "UAGCUUAUC"
+>>> input = tokenizer(text, return_tensors="pt")
+>>> output = model(**input)
+>>> output.logits_ss.sigmoid() > 0.5
+
+tensor([[[False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False, False]]])
+```
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python

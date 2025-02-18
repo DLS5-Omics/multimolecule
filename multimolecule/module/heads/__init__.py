@@ -22,7 +22,7 @@
 
 from .config import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 from .contact import ContactPredictionHead
-from .generic import PredictionHead
+from .generic import BasePredictionHead, PredictionHead
 from .output import HeadOutput
 from .pretrain import MaskedLMHead
 from .registry import HeadRegistry
@@ -35,6 +35,7 @@ __all__ = [
     "HeadConfig",
     "MaskedLMHeadConfig",
     "HeadRegistry",
+    "BasePredictionHead",
     "PredictionHead",
     "SequencePredictionHead",
     "TokenPredictionHead",

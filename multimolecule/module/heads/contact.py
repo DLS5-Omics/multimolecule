@@ -115,8 +115,6 @@ class ContactPredictionHead(PredictionHead):
             num_channels=num_channels,
             num_labels=self.num_labels,
         )
-        if head_config is not None and head_config.output_name is not None:
-            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -164,6 +162,7 @@ class ContactPredictionHead(PredictionHead):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
+                input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1)
                 seq_length = attention_mask.size(-1)
@@ -171,6 +170,7 @@ class ContactPredictionHead(PredictionHead):
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
             attentions = attentions * eos_mask[:, None, None, :, :]
             attentions = attentions[..., :-1, :-1]
+            attention_mask = attention_mask[..., :-1, :-1]
 
         # features: batch x channels x input_ids x input_ids (symmetric)
         batch_size, layers, heads, seqlen, _ = attentions.size()
@@ -212,8 +212,6 @@ class ContactLogitsHead(PredictionHead):
             num_channels=num_channels,
             num_labels=self.num_labels,
         )
-        if head_config is not None and head_config.output_name is not None:
-            self.output_name = head_config.output_name
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
