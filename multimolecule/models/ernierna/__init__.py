@@ -36,11 +36,11 @@ from multimolecule.tokenisers.rna import RnaTokenizer
 from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
 from .configuration_ernierna import ErnieRnaConfig
 from .modeling_ernierna import (
-    ErnieRnaForContactClassification,
     ErnieRnaForContactPrediction,
     ErnieRnaForMaskedLM,
     ErnieRnaForNucleotidePrediction,
     ErnieRnaForPreTraining,
+    ErnieRnaForSecondaryStructurePrediction,
     ErnieRnaForSequencePrediction,
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
@@ -58,7 +58,7 @@ __all__ = [
     "ErnieRnaForTokenPrediction",
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
-    "ErnieRnaForContactClassification",
+    "ErnieRnaForSecondaryStructurePrediction",
 ]
 
 AutoConfig.register("ernierna", ErnieRnaConfig)
