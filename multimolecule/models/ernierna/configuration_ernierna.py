@@ -22,9 +22,11 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 from transformers.utils import logging
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 
 logger = logging.get_logger(__name__)
 
@@ -115,6 +117,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        output_attention_biases: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -136,3 +139,32 @@ class ErnieRnaConfig(PreTrainedConfig):
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.output_attention_biases = output_attention_biases
+
+
+class ErnieRnaSecondaryStructureHeadConfig(BaseHeadConfig):
+    r"""
+    Configuration class for a prediction head.
+
+    Args:
+        num_labels:
+            Number of labels to use in the last layer added to the model, typically for a classification task.
+
+            Head should look for [`Config.num_labels`][multimolecule.PreTrainedConfig] if is `None`.
+        problem_type:
+            Problem type for `XxxForYyyPrediction` models. Can be one of `"binary"`, `"regression"`,
+            `"multiclass"` or `"multilabel"`.
+
+            Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
+        dropout:
+            The dropout ratio for the hidden states.
+    """
+
+    num_labels: int = 1
+    problem_type: Optional[str] = None
+    dropout: float = 0.3
+    kernel_size: int = 7
+    num_layers: int = 8
+    channels: int = 64
+    bias: bool = False
+    activation: str = "relu"

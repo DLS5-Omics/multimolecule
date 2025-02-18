@@ -36,11 +36,11 @@ from .calm import (
 from .configuration_utils import PreTrainedConfig
 from .ernierna import (
     ErnieRnaConfig,
-    ErnieRnaForContactClassification,
     ErnieRnaForContactPrediction,
     ErnieRnaForMaskedLM,
     ErnieRnaForNucleotidePrediction,
     ErnieRnaForPreTraining,
+    ErnieRnaForSecondaryStructurePrediction,
     ErnieRnaForSequencePrediction,
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
@@ -158,6 +158,7 @@ __all__ = [
     "ErnieRnaForTokenPrediction",
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
+    "ErnieRnaForSecondaryStructurePrediction",
     "RiNALMoConfig",
     "RiNALMoModel",
     "RiNALMoForContactPrediction",
@@ -222,5 +223,4 @@ __all__ = [
     "UtrLmForTokenPrediction",
     "UtrLmForMaskedLM",
     "UtrLmForPreTraining",
-    "ErnieRnaForContactClassification",
 ]
