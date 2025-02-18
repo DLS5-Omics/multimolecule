@@ -8,7 +8,7 @@ datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 base_model: multimolecule/ernierna
-pipeline_tag: fill-mask
+pipeline_tag: rna-secondary-structure
 mask_token: "<mask>"
 widget:
   - example_title: "HIV-1"
@@ -88,34 +88,22 @@ pip install multimolecule
 
 ### Direct Use
 
-You can use this model directly with a pipeline for masked language modeling:
+You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
->>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna-ss")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
+>>> predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
+>>> predictor("ggucuc")
 
-[{'score': 0.2066272348165512,
-  'token': 8,
-  'token_str': 'G',
-  'sequence': 'G G U C G C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.1811930239200592,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.17954225838184357,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.12186982482671738,
-  'token': 24,
-  'token_str': '-',
-  'sequence': 'G G U C - C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.10200861096382141,
-  'token': 21,
-  'token_str': '.',
-  'sequence': 'G G U C. C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+{'sequence': 'G G U C U C',
+ 'secondary_structure': '......',
+ 'contact_map': [[0.0017799473134800792, 4.70897748527932e-06, 1.6405482483605738e-07, 2.554114786335049e-08, 1.4068781695186772e-08, 1.2161588074377505e-06],
+  [4.70897748527932e-06, 1.4281877902533324e-09, 1.9235878515044824e-11, 1.972082436588196e-12, 2.8209797778983026e-12, 3.7981145339927025e-08],
+  [1.6405482483605738e-07, 1.9235878515044824e-11, 2.490592096709293e-13, 3.803097973261588e-14, 1.5183071000544196e-13, 1.345097633276282e-08],
+  [2.554114786335049e-08, 1.972082436588196e-12, 3.803097973261588e-14, 1.2516861665526867e-14, 1.227608103062175e-13, 2.6007175080167144e-08],
+  [1.4068781695186772e-08, 2.8209797778983026e-12, 1.5183071000544196e-13, 1.227608103062175e-13, 1.9663133968284008e-12, 3.3797411447267223e-07],
+  [1.2161588074377505e-06, 3.7981145339927025e-08, 1.345097633276282e-08, 2.6007175080167144e-08, 3.3797411447267223e-07, 0.0020079337991774082]]}
 ```
 
 ### Downstream Use
