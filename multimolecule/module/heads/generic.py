@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
 
-class PredictionHead(nn.Module):
+class BasePredictionHead(nn.Module):
     r"""
     Head for all-level of tasks.
 
@@ -50,7 +50,22 @@ class PredictionHead(nn.Module):
     """
 
     num_labels: int
+    r"""Number of labels for the head."""
+
+    output_name: str | None
+    r"""The default output to use for the head."""
+
     require_attentions: bool = False
+    r"""Whether the head requires attentions from the model."""
+
+    bos_token_id: int | None = None
+    r"""The ID of the beginning-of-sequence token. Usually is an alias of `cls_token_id`."""
+
+    pad_token_id: int | None = None
+    r"""The ID of the padding token."""
+
+    eos_token_id: int | None = None
+    r"""The ID of the end-of-sequence token. In rare cases, it is an alias of `sep_token_id`."""
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
@@ -59,45 +74,16 @@ class PredictionHead(nn.Module):
         elif head_config.num_labels is None:
             head_config.num_labels = config.num_labels
         self.config = head_config
-        if self.config.hidden_size is None:
+        if getattr(config, "hidden_size", None) is not None:
             self.config.hidden_size = config.hidden_size
-        if self.config.problem_type is None:
+        if getattr(config, "problem_type", None) is not None:
             self.config.problem_type = config.problem_type
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
         self.num_labels = self.config.num_labels  # type: ignore[assignment]
-        self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
-        self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
-        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        self.criterion = CriterionRegistry.build(self.config)
-
-    def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
-        r"""
-        Forward pass of the PredictionHead.
-
-        Args:
-            embeddings: The embeddings to be passed through the head.
-            labels: The labels for the head.
-        """
-        if kwargs:
-            warn(
-                f"The following arguments are not applicable to {self.__class__.__name__}"
-                f"and will be ignored: {kwargs.keys()}"
-            )
-        output = self.dropout(embeddings)
-        output = self.transform(output)
-        output = self.decoder(output)
-        if self.activation is not None:
-            output = self.activation(output)
-        if labels is not None:
-            if isinstance(labels, NestedTensor):
-                if isinstance(output, Tensor):
-                    output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
-            return HeadOutput(output, self.criterion(output, labels))
-        return HeadOutput(output)
+        if getattr(self.config, "output_name", None) is not None:
+            self.output_name = self.config.output_name
 
     def _get_attention_mask(self, input_ids: NestedTensor | Tensor) -> Tensor:
         if isinstance(input_ids, NestedTensor):
@@ -134,3 +120,48 @@ class PredictionHead(nn.Module):
             output = output[..., :-1, :]
             attention_mask = attention_mask[..., 1:]
         return output, attention_mask, input_ids
+
+
+class PredictionHead(BasePredictionHead):
+    r"""
+    Head for all-level of tasks.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+    """
+
+    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
+        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
+        self.criterion = CriterionRegistry.build(self.config)
+
+    def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
+        r"""
+        Forward pass of the PredictionHead.
+
+        Args:
+            embeddings: The embeddings to be passed through the head.
+            labels: The labels for the head.
+        """
+        if kwargs:
+            warn(
+                f"The following arguments are not applicable to {self.__class__.__name__}"
+                f"and will be ignored: {kwargs.keys()}"
+            )
+        output = self.dropout(embeddings)
+        output = self.transform(output)
+        output = self.decoder(output)
+        if self.activation is not None:
+            output = self.activation(output)
+        if labels is not None:
+            if isinstance(labels, NestedTensor):
+                if isinstance(output, Tensor):
+                    output = labels.nested_like(output, strict=False)
+                return HeadOutput(output, self.criterion(output.concat, labels.concat))
+            return HeadOutput(output, self.criterion(output, labels))
+        return HeadOutput(output)

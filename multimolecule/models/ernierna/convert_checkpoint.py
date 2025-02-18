@@ -27,7 +27,7 @@ import os
 import torch
 
 from multimolecule.models import ErnieRnaConfig as Config
-from multimolecule.models import ErnieRnaForContactClassification, ErnieRnaForPreTraining
+from multimolecule.models import ErnieRnaForPreTraining, ErnieRnaForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
@@ -66,6 +66,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("module", "ss_head")
         key = key.replace("proj.resnet", "resnet")
         key = key.replace("proj.final", "resnet.8")
+        key = key.replace("bn1", "norm")
         state_dict[key] = value
 
     state_dict.pop("ernierna.embeddings.position_embeddings._float_tensor", None)
@@ -118,7 +119,7 @@ def convert_checkpoint(convert_config):
 
     Model = ErnieRnaForPreTraining
     if "ss" in convert_config.checkpoint_path:
-        Model = ErnieRnaForContactClassification
+        Model = ErnieRnaForSecondaryStructurePrediction
         convert_config.output_path += "-ss"
         convert_config.repo_id += "-ss"
 

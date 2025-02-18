@@ -24,6 +24,7 @@ from .criterions import Criterion, CriterionRegistry
 from .embeddings import PositionEmbeddingRegistry, RotaryEmbedding, SinusoidalEmbedding
 from .heads import (
     BaseHeadConfig,
+    BasePredictionHead,
     ContactPredictionHead,
     HeadConfig,
     HeadOutput,
@@ -54,6 +55,7 @@ __all__ = [
     "HeadConfig",
     "MaskedLMHeadConfig",
     "HeadRegistry",
+    "BasePredictionHead",
     "PredictionHead",
     "SequencePredictionHead",
     "TokenPredictionHead",
