@@ -463,17 +463,6 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
         )
 
 
-class CaLmForNucleotidePrediction(CaLmForTokenPrediction):
-
-    def __init__(self, config: CaLmConfig):
-        super().__init__(config)
-        warn(
-            "`CaLmForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `CaLmForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class CaLmForMaskedLM(CaLmPreTrainedModel):
     """
     Examples:

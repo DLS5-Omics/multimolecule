@@ -457,16 +457,6 @@ class UtrBertForContactPrediction(UtrBertPreTrainedModel):
         )
 
 
-class UtrBertForNucleotidePrediction(UtrBertForTokenPrediction):
-    def __init__(self, config: UtrBertConfig):
-        super().__init__(config)
-        warn(
-            "`UtrBertForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `UtrBertForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class UtrBertForMaskedLM(UtrBertPreTrainedModel):
     """
     Examples:

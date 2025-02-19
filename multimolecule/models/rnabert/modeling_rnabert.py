@@ -465,17 +465,6 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
         )
 
 
-class RnaBertForNucleotidePrediction(RnaBertForTokenPrediction):
-
-    def __init__(self, config: RnaBertConfig):
-        super().__init__(config)
-        warn(
-            "`RnaBertForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `RnaBertForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class RnaBertForMaskedLM(RnaBertPreTrainedModel):
     """
     Examples:
