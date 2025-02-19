@@ -38,7 +38,6 @@ from .configuration_utrlm import UtrLmConfig
 from .modeling_utrlm import (
     UtrLmForContactPrediction,
     UtrLmForMaskedLM,
-    UtrLmForNucleotidePrediction,
     UtrLmForPreTraining,
     UtrLmForSequencePrediction,
     UtrLmForTokenPrediction,
@@ -53,7 +52,6 @@ __all__ = [
     "UtrLmPreTrainedModel",
     "RnaTokenizer",
     "UtrLmForContactPrediction",
-    "UtrLmForNucleotidePrediction",
     "UtrLmForSequencePrediction",
     "UtrLmForTokenPrediction",
     "UtrLmForMaskedLM",

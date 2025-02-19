@@ -38,7 +38,6 @@ from .configuration_rnafm import RnaFmConfig
 from .modeling_rnafm import (
     RnaFmForContactPrediction,
     RnaFmForMaskedLM,
-    RnaFmForNucleotidePrediction,
     RnaFmForPreTraining,
     RnaFmForSequencePrediction,
     RnaFmForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "RnaFmModel",
     "RnaFmPreTrainedModel",
     "RnaFmForContactPrediction",
-    "RnaFmForNucleotidePrediction",
     "RnaFmForSequencePrediction",
     "RnaFmForTokenPrediction",
     "RnaFmForMaskedLM",

@@ -38,7 +38,6 @@ from .configuration_rnaernie import RnaErnieConfig
 from .modeling_rnaernie import (
     RnaErnieForContactPrediction,
     RnaErnieForMaskedLM,
-    RnaErnieForNucleotidePrediction,
     RnaErnieForPreTraining,
     RnaErnieForSequencePrediction,
     RnaErnieForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "RnaErnieModel",
     "RnaErniePreTrainedModel",
     "RnaErnieForContactPrediction",
-    "RnaErnieForNucleotidePrediction",
     "RnaErnieForSequencePrediction",
     "RnaErnieForTokenPrediction",
     "RnaErnieForMaskedLM",

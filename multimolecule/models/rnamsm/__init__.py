@@ -38,7 +38,6 @@ from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
     RnaMsmForContactPrediction,
     RnaMsmForMaskedLM,
-    RnaMsmForNucleotidePrediction,
     RnaMsmForPreTraining,
     RnaMsmForSequencePrediction,
     RnaMsmForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "RnaMsmModel",
     "RnaMsmPreTrainedModel",
     "RnaMsmForContactPrediction",
-    "RnaMsmForNucleotidePrediction",
     "RnaMsmForSequencePrediction",
     "RnaMsmForTokenPrediction",
     "RnaMsmForMaskedLM",

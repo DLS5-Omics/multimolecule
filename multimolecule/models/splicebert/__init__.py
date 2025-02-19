@@ -38,7 +38,6 @@ from .configuration_splicebert import SpliceBertConfig
 from .modeling_splicebert import (
     SpliceBertForContactPrediction,
     SpliceBertForMaskedLM,
-    SpliceBertForNucleotidePrediction,
     SpliceBertForPreTraining,
     SpliceBertForSequencePrediction,
     SpliceBertForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "SpliceBertModel",
     "SpliceBertPreTrainedModel",
     "SpliceBertForContactPrediction",
-    "SpliceBertForNucleotidePrediction",
     "SpliceBertForSequencePrediction",
     "SpliceBertForTokenPrediction",
     "SpliceBertForMaskedLM",
