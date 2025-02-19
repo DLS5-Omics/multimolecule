@@ -466,17 +466,6 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
         )
 
 
-class RnaErnieForNucleotidePrediction(RnaErnieForTokenPrediction):
-
-    def __init__(self, config: RnaErnieConfig):
-        super().__init__(config)
-        warn(
-            "`RnaErnieForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `RnaErnieForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
     """
     Examples:

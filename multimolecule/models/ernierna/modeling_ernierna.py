@@ -521,17 +521,6 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
         )
 
 
-class ErnieRnaForNucleotidePrediction(ErnieRnaForTokenPrediction):
-
-    def __init__(self, config: ErnieRnaConfig):
-        super().__init__(config)
-        warn(
-            "`ErnieRnaForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `CaLmForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
     """
     Examples:
@@ -1260,14 +1249,14 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
             attention = attention[..., :-1, :-1]
             attention_mask = attention_mask[..., :-1, :-1]
 
-        out = self.conv1(attention)
-        out = self.dropout(out)
-        out = self.relu(out)
-        out = self.conv2(out)
-        out = torch.cat((out, attention), dim=1)
-        out = self.resnet(out)
+        output = self.conv1(attention)
+        output = self.dropout(output)
+        output = self.relu(output)
+        output = self.conv2(output)
+        output = torch.cat((output, attention), dim=1)
+        output = self.resnet(output)
 
-        output = (out + out.permute(0, 1, 3, 2)).squeeze(1)
+        output = (output + output.permute(0, 1, 3, 2)).squeeze(1)
 
         if labels is not None:
             return HeadOutput(output, self.criterion(output, labels))
@@ -1318,17 +1307,17 @@ class ErnieRnaBasicResBlock(nn.Module):
             bias=bias,
         )
 
-    def forward(self, x):
-        residual = x
+    def forward(self, input: Tensor) -> Tensor:
+        residual = input
 
-        out = self.norm(x)
-        out = self.activation(out)
-        out = self.conv1(out)
-        out = self.dropout(out)
-        out = self.activation(out)
-        out = self.conv2(out)
+        output = self.norm(input)
+        output = self.activation(output)
+        output = self.conv1(output)
+        output = self.dropout(output)
+        output = self.activation(output)
+        output = self.conv2(output)
 
-        return out + residual
+        return output + residual
 
 
 @dataclass
