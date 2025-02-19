@@ -43,7 +43,6 @@ from .configuration_ernierna import ErnieRnaConfig
 from .modeling_ernierna import (
     ErnieRnaForContactPrediction,
     ErnieRnaForMaskedLM,
-    ErnieRnaForNucleotidePrediction,
     ErnieRnaForPreTraining,
     ErnieRnaForSecondaryStructurePrediction,
     ErnieRnaForSequencePrediction,
@@ -58,7 +57,6 @@ __all__ = [
     "ErnieRnaModel",
     "ErnieRnaPreTrainedModel",
     "ErnieRnaForContactPrediction",
-    "ErnieRnaForNucleotidePrediction",
     "ErnieRnaForSequencePrediction",
     "ErnieRnaForTokenPrediction",
     "ErnieRnaForMaskedLM",

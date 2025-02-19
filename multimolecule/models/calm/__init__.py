@@ -38,7 +38,6 @@ from .configuration_calm import CaLmConfig
 from .modeling_calm import (
     CaLmForContactPrediction,
     CaLmForMaskedLM,
-    CaLmForNucleotidePrediction,
     CaLmForPreTraining,
     CaLmForSequencePrediction,
     CaLmForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "CaLmModel",
     "CaLmPreTrainedModel",
     "CaLmForContactPrediction",
-    "CaLmForNucleotidePrediction",
     "CaLmForSequencePrediction",
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
