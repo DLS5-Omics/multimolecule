@@ -466,17 +466,6 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
         )
 
 
-class RnaFmForNucleotidePrediction(RnaFmForTokenPrediction):
-
-    def __init__(self, config: RnaFmConfig):
-        super().__init__(config)
-        warn(
-            "`RnaFmForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `RnaFmForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class RnaFmForMaskedLM(RnaFmPreTrainedModel):
     """
     Examples:
