@@ -467,17 +467,6 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
         )
 
 
-class SpliceBertForNucleotidePrediction(SpliceBertForTokenPrediction):
-
-    def __init__(self, config: SpliceBertConfig):
-        super().__init__(config)
-        warn(
-            "`SpliceBertForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `SpliceBertForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
     """
     Examples:
