@@ -380,17 +380,6 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForNucleotidePrediction(RnaMsmForTokenPrediction):
-
-    def __init__(self, config: RnaMsmConfig):
-        super().__init__(config)
-        warn(
-            "`RnaMsmForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `RnaMsmForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     """
     Examples:
