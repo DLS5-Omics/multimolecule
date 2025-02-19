@@ -38,7 +38,6 @@ from .configuration_rnabert import RnaBertConfig
 from .modeling_rnabert import (
     RnaBertForContactPrediction,
     RnaBertForMaskedLM,
-    RnaBertForNucleotidePrediction,
     RnaBertForPreTraining,
     RnaBertForSequencePrediction,
     RnaBertForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "RnaBertModel",
     "RnaBertPreTrainedModel",
     "RnaBertForContactPrediction",
-    "RnaBertForNucleotidePrediction",
     "RnaBertForSequencePrediction",
     "RnaBertForTokenPrediction",
     "RnaBertForMaskedLM",
