@@ -38,7 +38,6 @@ from .configuration_utrbert import UtrBertConfig
 from .modeling_utrbert import (
     UtrBertForContactPrediction,
     UtrBertForMaskedLM,
-    UtrBertForNucleotidePrediction,
     UtrBertForPreTraining,
     UtrBertForSequencePrediction,
     UtrBertForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "UtrBertModel",
     "UtrBertPreTrainedModel",
     "UtrBertForContactPrediction",
-    "UtrBertForNucleotidePrediction",
     "UtrBertForSequencePrediction",
     "UtrBertForTokenPrediction",
     "UtrBertForMaskedLM",

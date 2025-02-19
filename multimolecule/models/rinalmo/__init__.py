@@ -38,7 +38,6 @@ from .configuration_rinalmo import RiNALMoConfig
 from .modeling_rinalmo import (
     RiNALMoForContactPrediction,
     RiNALMoForMaskedLM,
-    RiNALMoForNucleotidePrediction,
     RiNALMoForPreTraining,
     RiNALMoForSequencePrediction,
     RiNALMoForTokenPrediction,
@@ -52,7 +51,6 @@ __all__ = [
     "RiNALMoModel",
     "RiNALMoPreTrainedModel",
     "RiNALMoForContactPrediction",
-    "RiNALMoForNucleotidePrediction",
     "RiNALMoForSequencePrediction",
     "RiNALMoForTokenPrediction",
     "RiNALMoForMaskedLM",

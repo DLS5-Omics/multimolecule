@@ -465,17 +465,6 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
         )
 
 
-class RiNALMoForNucleotidePrediction(RiNALMoForTokenPrediction):
-
-    def __init__(self, config: RiNALMoConfig):
-        super().__init__(config)
-        warn(
-            "`RiNALMoForNucleotidePrediction` is deprecated and will be removed in 0.0.6. "
-            "Please use `RiNALMoForTokenPrediction` instead.",
-            DeprecationWarning,
-        )
-
-
 class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
     """
     Examples:
