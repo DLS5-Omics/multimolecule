@@ -2765,7 +2765,7 @@
 <h2 id="training-details">Training Details<a class="headerlink" href="#training-details" title="Permanent link">&para;</a></h2>
 <p>RNA-FM used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.</p>
 <h3 id="training-data">Training Data<a class="headerlink" href="#training-data" title="Permanent link">&para;</a></h3>
-<p>The RNA-FM model was pre-trained on <a href="https://multimolecule.danling.org/datasets/rnacentral/">RNAcentral</a>.
+<p>The RNA-FM model was pre-trained on <a href="https://multimolecule.danling.org/datasets/rnacentral">RNAcentral</a>.
 RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of <a href="https://rnacentral.org/expert-databases">Expert Databases</a> representing a broad range of organisms and RNA types.</p>
 <p>RNA-FM applied <a href="https://sites.google.com/view/cd-hit">CD-HIT (CD-HIT-EST)</a> with a cut-off at 100% sequence identity to remove redundancy from the RNAcentral. The final dataset contains 23.7 million non-redundant RNA sequences.</p>
 <p>RNA-FM preprocessed all tokens by replacing &ldquo;U&rdquo;s with &ldquo;T&rdquo;s.</p>
