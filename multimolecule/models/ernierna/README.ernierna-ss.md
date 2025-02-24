@@ -8,7 +8,7 @@ datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 base_model: multimolecule/ernierna
-pipeline_tag: rna-secondary-structure
+pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
   - example_title: "HIV-1"

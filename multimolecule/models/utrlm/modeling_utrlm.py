@@ -43,6 +43,7 @@ from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable
 from transformers.utils import logging
 
 from multimolecule.module import (
+    ContactAttentionLinearHead,
     ContactPredictionHead,
     MaskedLMHead,
     RotaryEmbedding,
@@ -271,7 +272,7 @@ class UtrLmModel(UtrLmPreTrainedModel):
 class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
+        >>> from multimolecule import UtrLmConfig, UtrLmForSequencePrediction, RnaTokenizer
         >>> config = UtrLmConfig()
         >>> model = UtrLmForSequencePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
@@ -335,7 +336,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
 class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
+        >>> from multimolecule import UtrLmConfig, UtrLmForTokenPrediction, RnaTokenizer
         >>> config = UtrLmConfig()
         >>> model = UtrLmForTokenPrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
@@ -414,9 +415,9 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
         self.utrlm = UtrLmModel(config)
-        self.contact_head = ContactPredictionHead(config)
-        self.head_config = self.contact_head.config
-        self.require_attentions = self.contact_head.require_attentions
+        self.ss_head = ContactPredictionHead(config)
+        self.head_config = self.ss_head.config
+        self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -450,7 +451,7 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        output = self.ss_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
         if not return_dict:
@@ -479,7 +480,7 @@ class UtrLmForNucleotidePrediction(UtrLmForTokenPrediction):
 class UtrLmForMaskedLM(UtrLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
+        >>> from multimolecule import UtrLmConfig, UtrLmForMaskedLM, RnaTokenizer
         >>> config = UtrLmConfig()
         >>> model = UtrLmForMaskedLM(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
@@ -559,48 +560,45 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
 class UtrLmForPreTraining(UtrLmPreTrainedModel):
     """
     Examples:
-        >>> from multimolecule import UtrLmConfig, UtrLmModel, RnaTokenizer
+        >>> from multimolecule import UtrLmConfig, UtrLmForPreTraining, RnaTokenizer
         >>> config = UtrLmConfig()
         >>> model = UtrLmForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output = model(**input, labels_lm=input["input_ids"])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<AddBackward0>)
-        >>> output["logits"].shape
+        tensor(..., grad_fn=<MeanBackward0>)
+        >>> output["logits_lm"].shape
         torch.Size([1, 7, 26])
-        >>> output["contact_map"].shape
+        >>> output["logits_ss"].shape
         torch.Size([1, 5, 5, 1])
     """
 
     _tied_weights_keys = [
         "lm_head.decoder.weight",
         "lm_head.decoder.bias",
-        "pretrain.predictions.decoder.weight",
-        "pretrain.predictions.decoder.bias",
-        "pretrain.predictions_ss.decoder.weight",
-        "pretrain.predictions_ss.decoder.bias",
     ]
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
         if config.is_decoder:
             logger.warning(
-                "If you want to use `UtrLmForPreTraining` make sure `config.is_decoder=False` for "
+                "If you want to use `UtrLmForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.pretrain = UtrLmPreTrainingHeads(config)
-        self.require_attentions = self.pretrain.contact_head.require_attentions
+        self.lm_head = MaskedLMHead(config)
+        self.ss_head = ContactAttentionLinearHead(config)
+        self.structure_head = None
+        if config.structure_head is not None:
+            self.structure_head = TokenPredictionHead(config, config.structure_head)
+        self.mfe_head = None
+        if config.mfe_head is not None:
+            self.mfe_head = SequencePredictionHead(config, config.mfe_head)
+        self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
-
-    def get_output_embeddings(self):
-        return self.pretrain.predictions.decoder
-
-    def set_output_embeddings(self, embeddings):
-        self.pretrain.predictions.decoder = embeddings
 
     def forward(
         self,
@@ -611,9 +609,9 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         encoder_hidden_states: Tensor | None = None,
         encoder_attention_mask: Tensor | None = None,
-        labels_mlm: Tensor | None = None,
-        labels_contact: Tensor | None = None,
+        labels_lm: Tensor | None = None,
         labels_ss: Tensor | None = None,
+        labels_structure: Tensor | None = None,
         labels_mfe: Tensor | None = None,
         output_attentions: bool | None = None,
         output_hidden_states: bool | None = None,
@@ -638,26 +636,123 @@ class UtrLmForPreTraining(UtrLmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        total_loss, logits, contact_map, secondary_structure, minimum_free_energy = self.pretrain(
-            outputs,
-            attention_mask,
-            input_ids,
-            labels_mlm=labels_mlm,
-            labels_contact=labels_contact,
-            labels_ss=labels_ss,
-            labels_mfe=labels_mfe,
+
+        output_lm = self.lm_head(outputs, labels=labels_lm)
+        logits_lm, loss_lm = output_lm.logits, output_lm.loss
+
+        output_ss = self.ss_head(outputs, attention_mask, input_ids, labels=labels_ss)
+        logits_ss, loss_ss = output_ss.logits, output_ss.loss
+
+        if self.structure_head is not None:
+            output_structure = self.structure_head(outputs, labels=labels_structure)
+            logits_structure, loss_structure = output_structure.logits, output_structure.loss
+        else:
+            logits_structure, loss_structure = None, None
+
+        if self.mfe_head is not None:
+            output_mfe = self.mfe_head(outputs, labels=labels_mfe)
+            logits_mfe, loss_mfe = output_mfe.logits, output_mfe.loss
+        else:
+            logits_mfe, loss_mfe = None, None
+
+        losses = tuple(l for l in (loss_lm, loss_ss, loss_structure, loss_mfe) if l is not None)  # noqa: E741
+        loss = torch.mean(torch.stack(losses)) if losses else None
+
+        if not return_dict:
+            output = outputs[2:]
+            if logits_structure is not None:
+                output = (
+                    ((logits_structure, loss_structure) + output)
+                    if loss_structure is not None
+                    else ((logits_structure,) + output)
+                )
+            if logits_mfe is not None:
+                output = ((logits_mfe, loss_mfe) + output) if loss_mfe is not None else ((logits_mfe,) + output)
+            output = ((logits_ss, loss_ss) + output) if loss_ss is not None else ((logits_ss,) + output)
+            output = ((logits_lm, loss_lm) + output) if loss_lm is not None else ((logits_lm,) + output)
+            return ((loss,) + output) if loss is not None else output
+
+        return UtrLmForPreTrainingOutput(
+            loss=loss,
+            logits_lm=logits_lm,
+            loss_lm=loss_lm,
+            logits_ss=logits_ss,
+            loss_ss=loss_ss,
+            logits_structure=logits_structure,
+            loss_structure=loss_structure,
+            logits_mfe=logits_mfe,
+            loss_mfe=loss_mfe,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
         )
+
+
+class UtrLmForSecondaryStructurePrediction(UtrLmPreTrainedModel):
+    """
+    Examples:
+        >>> from multimolecule import UtrLmConfig, UtrLmForSecondaryStructurePrediction, RnaTokenizer
+        >>> config = UtrLmConfig()
+        >>> model = UtrLmForSecondaryStructurePrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input)
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 1])
+    """
+
+    def __init__(self, config: UtrLmConfig):
+        super().__init__(config)
+        self.utrlm = UtrLmModel(config, add_pooling_layer=False)
+        self.ss_head = ContactAttentionLinearHead(config)
+        self.require_attentions = self.ss_head.require_attentions
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.utrlm(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+
+        output = self.ss_head(outputs, attention_mask, input_ids, labels=labels)
+        logits, loss = output.logits, output.loss
 
         if not return_dict:
             output = (logits,) + outputs[2:]
-            return ((total_loss,) + output) if total_loss is not None else output
+            return ((loss,) + output) if loss is not None else output
 
-        return UtrLmForPreTrainingOutput(
-            loss=total_loss,
+        return ContactPredictorOutput(
+            loss=loss,
             logits=logits,
-            contact_map=contact_map,
-            secondary_structure=secondary_structure,
-            minimum_free_energy=minimum_free_energy,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
@@ -1193,52 +1288,17 @@ class UtrLmPooler(nn.Module):
         return pooled_output
 
 
-class UtrLmPreTrainingHeads(nn.Module):
-    def __init__(self, config: UtrLmConfig):
-        super().__init__()
-        self.predictions = MaskedLMHead(config)
-        self.contact_head = ContactPredictionHead(config)
-        self.ss_head = None
-        if config.ss_head is not None:
-            self.ss_head = TokenPredictionHead(config, config.ss_head)
-        self.mfe_head = None
-        if config.mfe_head is not None:
-            self.mfe_head = SequencePredictionHead(config, config.mfe_head)
-
-    def forward(
-        self,
-        outputs: BaseModelOutputWithPastAndCrossAttentions | Tuple[Tensor, ...],
-        attention_mask: Tensor | None = None,
-        input_ids: Tensor | NestedTensor | None = None,
-        labels_mlm: Tensor | None = None,
-        labels_contact: Tensor | None = None,
-        labels_ss: Tensor | None = None,
-        labels_mfe: Tensor | None = None,
-    ) -> Tuple[Tensor | None, Tensor, Tensor, Tensor | None, Tensor | None]:
-        output_mlm = self.predictions(outputs, labels=labels_mlm)
-        output_contact = self.contact_head(outputs, attention_mask, input_ids, labels=labels_contact)
-        output_ss = self.ss_head(outputs, labels=labels_ss) if self.ss_head is not None else None
-        output_mfe = self.mfe_head(outputs, labels=labels_mfe) if self.mfe_head is not None else None
-
-        losses = [output.loss for output in (output_mlm, output_contact) if output.loss is not None]
-        if output_ss is not None and output_ss.loss is not None:
-            losses.append(output_ss.loss)
-        ss_logits = output_ss.logits if output_ss is not None else None
-        if output_mfe is not None and output_mfe.loss is not None:
-            losses.append(output_mfe.loss)
-        mfe_logits = output_ss.logits if output_mfe is not None else None  # type: ignore[union-attr]
-        total_loss = sum(losses) if losses else None
-
-        return total_loss, output_mlm.logits, output_contact.logits, ss_logits, mfe_logits
-
-
 @dataclass
 class UtrLmForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    contact_map: torch.FloatTensor | None = None
-    secondary_structure: torch.FloatTensor | None = None
-    minimum_free_energy: torch.FloatTensor | None = None
+    logits_lm: torch.FloatTensor = None
+    loss_lm: torch.FloatTensor | None = None
+    logits_ss: torch.FloatTensor = None
+    loss_ss: torch.FloatTensor | None = None
+    logits_structure: torch.FloatTensor = None
+    loss_structure: torch.FloatTensor | None = None
+    logits_mfe: torch.FloatTensor = None
+    loss_mfe: torch.FloatTensor | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
 
