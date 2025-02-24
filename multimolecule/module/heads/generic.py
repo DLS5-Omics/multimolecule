@@ -67,17 +67,22 @@ class BasePredictionHead(nn.Module):
     eos_token_id: int | None = None
     r"""The ID of the end-of-sequence token. In rare cases, it is an alias of `sep_token_id`."""
 
+    requires_attention: bool = False
+    r"""Whether the head requires attentions from the model."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
             head_config = config.head or HeadConfig(num_labels=config.num_labels)
-        elif head_config.num_labels is None:
+        if not isinstance(head_config, HeadConfig):
+            head_config = HeadConfig(head_config)
+        if not head_config.num_labels:
             head_config.num_labels = config.num_labels
+        if not head_config.hidden_size:
+            head_config.hidden_size = config.hidden_size
+        if not head_config.problem_type:
+            head_config.problem_type = config.problem_type
         self.config = head_config
-        if getattr(config, "hidden_size", None) is not None:
-            self.config.hidden_size = config.hidden_size
-        if getattr(config, "problem_type", None) is not None:
-            self.config.problem_type = config.problem_type
         self.bos_token_id = config.bos_token_id
         self.eos_token_id = config.eos_token_id
         self.pad_token_id = config.pad_token_id
@@ -118,7 +123,7 @@ class BasePredictionHead(nn.Module):
                 eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
             output = output * eos_mask[:, :, None]
             output = output[..., :-1, :]
-            attention_mask = attention_mask[..., 1:]
+            attention_mask = attention_mask[..., :-1]
         return output, attention_mask, input_ids
 
 

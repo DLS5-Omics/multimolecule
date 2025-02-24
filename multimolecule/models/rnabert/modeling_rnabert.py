@@ -23,7 +23,6 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Tuple
 from warnings import warn
@@ -553,30 +552,32 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         >>> model = RnaBertForPreTraining(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
-        >>> output = model(**input, labels_mlm=input["input_ids"])
+        >>> output = model(**input, labels_lm_seq=input["input_ids"])
         >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<AddBackward0>)
-        >>> output["logits_mlm"].shape
+        tensor(..., grad_fn=<MeanBackward0>)
+        >>> output["logits_lm"].shape
         torch.Size([1, 7, 26])
         >>> output["logits_ss"].shape
         torch.Size([1, 7, 8])
-        >>> output["logits_sal"].shape
+        >>> output["logits_sa"].shape
         torch.Size([1, 2])
     """
 
     _tied_weights_keys = [
         "lm_head.decoder.weight",
         "lm_head.decoder.bias",
-        "pretrain.predictions.decoder.weight",
-        "pretrain.predictions.decoder.bias",
-        "pretrain.predictions_ss.decoder.weight",
-        "pretrain.predictions_ss.decoder.bias",
+        "ss_head.decoder.weight",
+        "ss_head.decoder.bias",
     ]
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
         self.rnabert = RnaBertModel(config)
-        self.pretrain = RnaBertPreTrainingHeads(config)
+        self.lm_head = MaskedLMHead(config)
+        vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
+        self.ss_head = MaskedLMHead(config)
+        config.vocab_size = vocab_size
+        self.sa_head = SequencePredictionHead(config, HeadConfig(num_labels=2))
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -585,9 +586,9 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
-        labels_mlm: Tensor | None = None,
-        labels_ss: Tensor | None = None,
-        labels_sal: Tensor | None = None,
+        labels_lm_seq: Tensor | None = None,
+        labels_lm_ss: Tensor | None = None,
+        labels_sa: Tensor | None = None,
         output_attentions: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -602,19 +603,34 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        total_loss, logits_mlm, logits_ss, logits_sal = self.pretrain(
-            outputs, labels_mlm=labels_mlm, labels_ss=labels_ss, labels_sal=labels_sal
-        )
+
+        output_lm = self.lm_head(outputs, labels=labels_lm_seq)
+        logits_lm, loss_lm = output_lm.logits, output_lm.loss
+
+        output_ss = self.ss_head(outputs, labels=labels_lm_ss)
+        logits_ss, loss_ss = output_ss.logits, output_ss.loss
+
+        output_sa = self.sa_head(outputs, labels=labels_sa)
+        logits_sa, loss_sa = output_sa.logits, output_sa.loss
+
+        losses = tuple(l for l in (loss_lm, loss_ss, loss_sa) if l is not None)  # noqa: E741
+        loss = torch.mean(torch.stack(losses)) if losses else None
 
         if not return_dict:
-            output = (logits_mlm, logits_ss, logits_sal) + outputs[2:]
-            return ((total_loss,) + output) if total_loss is not None else output
+            output = outputs[2:]
+            output = ((logits_sa, loss_sa) + output) if loss_sa is not None else ((logits_sa,) + output)
+            output = ((logits_ss, loss_ss) + output) if loss_ss is not None else ((logits_ss,) + output)
+            output = ((logits_lm, loss_lm) + output) if loss_lm is not None else ((logits_lm,) + output)
+            return ((loss,) + output) if loss is not None else output
 
         return RnaBertForPreTrainingOutput(
-            loss=total_loss,
-            logits_mlm=logits_mlm,
+            loss=loss,
+            logits_lm=logits_lm,
+            loss_lm=loss_lm,
             logits_ss=logits_ss,
-            logits_sal=logits_sal,
+            loss_ss=loss_ss,
+            logits_sa=logits_sa,
+            loss_sa=loss_sa,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
@@ -1084,38 +1100,15 @@ class RnaBertPooler(nn.Module):
         return pooled_output
 
 
-class RnaBertPreTrainingHeads(nn.Module):
-    def __init__(self, config: RnaBertConfig):
-        super().__init__()
-        self.predictions = MaskedLMHead(config)
-        vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
-        self.predictions_ss = MaskedLMHead(config)
-        config.vocab_size = vocab_size
-        self.seq_relationship = SequencePredictionHead(config, HeadConfig(num_labels=2))
-
-    def forward(
-        self,
-        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
-        labels_mlm: Tensor | None = None,
-        labels_ss: Tensor | None = None,
-        labels_sal: Tensor | None = None,
-    ) -> Tuple[Tensor | None, Tensor, Tensor, Tensor]:
-        output_mlm = self.predictions(outputs, labels_mlm)
-        output_ss = self.predictions_ss(outputs, labels_ss)
-        output_sal = self.seq_relationship(outputs, labels_sal)
-
-        losses = [output.loss for output in (output_mlm, output_ss, output_sal) if output.loss is not None]
-        total_loss = sum(losses) if losses else None
-
-        return total_loss, output_mlm.logits, output_ss.logits, output_sal.logits
-
-
 @dataclass
 class RnaBertForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
-    logits_mlm: torch.FloatTensor = None  # type: ignore[assignment]
+    logits_lm: torch.FloatTensor = None  # type: ignore[assignment]
+    loss_lm: torch.FloatTensor | None = None
     logits_ss: torch.FloatTensor = None  # type: ignore[assignment]
-    logits_sal: torch.FloatTensor = None  # type: ignore[assignment]
+    loss_ss: torch.FloatTensor | None = None
+    logits_sa: torch.FloatTensor = None  # type: ignore[assignment]
+    loss_sa: torch.FloatTensor | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
 

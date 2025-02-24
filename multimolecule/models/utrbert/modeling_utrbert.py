@@ -556,9 +556,6 @@ class UtrBertForPreTraining(UtrBertForMaskedLM):
         super().__init__(config)
         self.utrbert = UtrBertModel(config)
 
-        # Initialize weights and apply final processing
-        self.post_init()
-
 
 class UtrBertEmbeddings(nn.Module):
     """
