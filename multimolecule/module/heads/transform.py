@@ -56,7 +56,7 @@ class NonLinearTransform(nn.Module):
 class LinearTransform(nn.Module):
     def __init__(self, config: HeadConfig):
         super().__init__()
-        self.dense = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(self, hidden_states: Tensor) -> Tensor:
@@ -65,8 +65,8 @@ class LinearTransform(nn.Module):
         return hidden_states
 
 
-@HeadTransformRegistry.register(None)
-@HeadTransformRegistryHF.register(None)
+@HeadTransformRegistry.register("identity", default=True)
+@HeadTransformRegistryHF.register("identity", default=True)
 class IdentityTransform(nn.Identity):
     def __init__(self, config: HeadConfig):  # pylint: disable=unused-argument
         super().__init__()
