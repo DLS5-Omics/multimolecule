@@ -23,7 +23,6 @@
 from __future__ import annotations
 
 import os
-from copy import deepcopy
 
 import chanfig
 import torch
@@ -61,26 +60,26 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
         key = key.replace("regression", "decoder")
-        key = key.replace("utrlm.lm_head", "pretrain.predictions")
-        key = key.replace("predictions.dense", "predictions.transform.dense")
-        key = key.replace("predictions.layer_norm", "predictions.transform.layer_norm")
-        key = key.replace("predictions.weight", "predictions.decoder.weight")
-        key = key.replace("utrlm.contact_head", "pretrain.contact_head")
-        key = key.replace("utrlm.structure_linear", "pretrain.ss_head.decoder")
-        key = key.replace("utrlm.supervised_linear", "pretrain.mfe_head.decoder")
+        key = key.replace("utrlm.lm_head", "lm_head")
+        key = key.replace("lm_head.dense", "lm_head.transform.dense")
+        key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
+        key = key.replace("lm_head.weight", "lm_head.decoder.weight")
+        key = key.replace("utrlm.contact_head", "ss_head")
+        key = key.replace("utrlm.structure_linear", "structure_head.decoder")
+        key = key.replace("utrlm.supervised_linear", "mfe_head.decoder")
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
         state_dict["utrlm.embeddings.word_embeddings.weight"],
-        state_dict["pretrain.predictions.decoder.weight"],
-        state_dict["pretrain.predictions.bias"],
+        state_dict["lm_head.decoder.weight"],
+        state_dict["lm_head.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
     state_dict["utrlm.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["pretrain.predictions.decoder.weight"] = decoder_weight
-    state_dict["pretrain.predictions.decoder.bias"] = state_dict["pretrain.predictions.bias"] = decoder_bias
+    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 
 
@@ -88,7 +87,7 @@ def convert_checkpoint(convert_config):
     config = chanfig.FlatDict(num_labels=1)
     config.mfe_head = {"num_labels": 1}
     if "4.1" in convert_config.checkpoint_path:
-        config.ss_head = {"num_labels": 3}
+        config.structure_head = {"num_labels": 3}
     vocab_list = get_alphabet().vocabulary
     original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
     config = Config.from_dict(config)
@@ -100,8 +99,6 @@ def convert_checkpoint(convert_config):
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)
-
-    model.lm_head = deepcopy(model.pretrain.predictions)
 
     save_checkpoint(convert_config, model)
 
