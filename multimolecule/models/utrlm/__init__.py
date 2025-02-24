@@ -33,13 +33,19 @@ from transformers import (
 
 from multimolecule.tokenisers import RnaTokenizer
 
-from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
+from ..modeling_auto import (
+    AutoModelForContactPrediction,
+    AutoModelForRnaSecondaryStructurePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_utrlm import UtrLmConfig
 from .modeling_utrlm import (
     UtrLmForContactPrediction,
     UtrLmForMaskedLM,
     UtrLmForNucleotidePrediction,
     UtrLmForPreTraining,
+    UtrLmForSecondaryStructurePrediction,
     UtrLmForSequencePrediction,
     UtrLmForTokenPrediction,
     UtrLmModel,
@@ -51,13 +57,13 @@ __all__ = [
     "UtrLmConfig",
     "UtrLmModel",
     "UtrLmPreTrainedModel",
-    "RnaTokenizer",
     "UtrLmForContactPrediction",
     "UtrLmForNucleotidePrediction",
     "UtrLmForSequencePrediction",
     "UtrLmForTokenPrediction",
     "UtrLmForMaskedLM",
     "UtrLmForPreTraining",
+    "UtrLmForSecondaryStructurePrediction",
 ]
 
 AutoConfig.register("utrlm", UtrLmConfig)
@@ -70,4 +76,5 @@ AutoModelForTokenPrediction.register(UtrLmConfig, UtrLmForTokenPrediction)
 AutoModelForTokenClassification.register(UtrLmConfig, UtrLmForTokenPrediction)
 AutoModelForMaskedLM.register(UtrLmConfig, UtrLmForMaskedLM)
 AutoModelForPreTraining.register(UtrLmConfig, UtrLmForPreTraining)
+AutoModelForRnaSecondaryStructurePrediction.register(UtrLmConfig, UtrLmForSecondaryStructurePrediction)
 AutoTokenizer.register(UtrLmConfig, RnaTokenizer)

@@ -33,13 +33,19 @@ from transformers import (
 
 from multimolecule.tokenisers import RnaTokenizer
 
-from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
+from ..modeling_auto import (
+    AutoModelForContactPrediction,
+    AutoModelForRnaSecondaryStructurePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_rnafm import RnaFmConfig
 from .modeling_rnafm import (
     RnaFmForContactPrediction,
     RnaFmForMaskedLM,
     RnaFmForNucleotidePrediction,
     RnaFmForPreTraining,
+    RnaFmForSecondaryStructurePrediction,
     RnaFmForSequencePrediction,
     RnaFmForTokenPrediction,
     RnaFmModel,
@@ -57,6 +63,7 @@ __all__ = [
     "RnaFmForTokenPrediction",
     "RnaFmForMaskedLM",
     "RnaFmForPreTraining",
+    "RnaFmForSecondaryStructurePrediction",
 ]
 
 AutoConfig.register("rnafm", RnaFmConfig)
@@ -69,4 +76,5 @@ AutoModelForTokenPrediction.register(RnaFmConfig, RnaFmForTokenPrediction)
 AutoModelForTokenClassification.register(RnaFmConfig, RnaFmForTokenPrediction)
 AutoModelForMaskedLM.register(RnaFmConfig, RnaFmForMaskedLM)
 AutoModelForPreTraining.register(RnaFmConfig, RnaFmForPreTraining)
+AutoModelForRnaSecondaryStructurePrediction.register(RnaFmConfig, RnaFmForSecondaryStructurePrediction)
 AutoTokenizer.register(RnaFmConfig, RnaTokenizer)
