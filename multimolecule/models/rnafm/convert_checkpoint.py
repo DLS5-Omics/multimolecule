@@ -23,7 +23,6 @@
 from __future__ import annotations
 
 import os
-from copy import deepcopy
 
 import chanfig
 import torch
@@ -58,24 +57,24 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
         key = key.replace("regression", "decoder")
-        key = key.replace("rnafm.encoder.lm_head", "pretrain.predictions")
-        key = key.replace("predictions.dense", "predictions.transform.dense")
-        key = key.replace("predictions.layer_norm", "predictions.transform.layer_norm")
-        key = key.replace("predictions.weight", "predictions.decoder.weight")
-        key = key.replace("rnafm.encoder.contact_head", "pretrain.contact_head")
+        key = key.replace("rnafm.encoder.lm_head", "lm_head")
+        key = key.replace("lm_head.dense", "lm_head.transform.dense")
+        key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
+        key = key.replace("lm_head.weight", "lm_head.decoder.weight")
+        key = key.replace("rnafm.encoder.contact_head", "ss_head")
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
         state_dict["rnafm.embeddings.word_embeddings.weight"],
-        state_dict["pretrain.predictions.decoder.weight"],
-        state_dict["pretrain.predictions.bias"],
+        state_dict["lm_head.decoder.weight"],
+        state_dict["lm_head.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
     state_dict["rnafm.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["pretrain.predictions.decoder.weight"] = decoder_weight
-    state_dict["pretrain.predictions.decoder.bias"] = state_dict["pretrain.predictions.bias"] = decoder_bias
+    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 
 
@@ -209,9 +208,6 @@ def convert_checkpoint(convert_config):
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)
-
-    model.lm_head = deepcopy(model.pretrain.predictions)
-    model.contact_head = deepcopy(model.pretrain.contact_head)
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
