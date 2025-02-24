@@ -135,6 +135,8 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
@@ -163,6 +165,26 @@ You can use this model directly with a pipeline for masked language modeling:
   'token': 12,
   'token_str': 'Y',
   'sequence': 'G G U C Y C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+```
+
+#### RNA Secondary Structure Prediction
+
+You can use this model to predict the secondary structure of an RNA sequence:
+
+```python
+>>> import multimolecule  # you must import multimolecule to register models
+>>> from transformers import pipeline
+>>> predictor = pipeline("rna-secondary-structure", model="multimolecule/utrlm-mrl")
+>>> predictor("ggucuc")
+
+{'sequence': 'G G U C U C',
+ 'secondary_structure': '......',
+ 'contact_map': [[0.4812554121017456, 0.47794032096862793, 0.4789176285266876, 0.48823264241218567, 0.474841445684433, 0.4968946874141693],
+  [0.47794032096862793, 0.49345624446868896, 0.48480257391929626, 0.4933702051639557, 0.4595194160938263, 0.48904451727867126],
+  [0.4789176285266876, 0.48480257391929626, 0.489326536655426, 0.49098923802375793, 0.48537197709083557, 0.4686800539493561],
+  [0.48823264241218567, 0.4933702051639557, 0.49098923802375793, 0.4644699990749359, 0.49569272994995117, 0.4653873145580292],
+  [0.474841445684433, 0.4595194160938263, 0.48537197709083557, 0.49569272994995117, 0.48744988441467285, 0.4952647387981415],
+  [0.4968946874141693, 0.48904451727867126, 0.4686800539493561, 0.4653873145580292, 0.4952647387981415, 0.4828569293022156]]}
 ```
 
 ### Downstream Use

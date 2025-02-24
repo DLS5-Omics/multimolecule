@@ -65,7 +65,12 @@ The OFFICIAL repository of RNA-MSM is at [yikunpku/RNA-MSM](https://github.com/y
 
 ## Model Details
 
-RNA-MSM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
+RNA-MSM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model.
+RNA-MSM follows the [MSA](https://doi.org/10.1101/2021.02.12.430858) architecture, where it uses a column-wise attention and a row-wise attention to reduce the computational complexity over conventional self-attention.
+
+RNA-MSM is pre-trained on a large corpus of non-coding RNA sequences with multiple sequence alignment (MSA) in a self-supervised fashion.
+This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts.
+Please refer to the [Training Details](#training-details) section for more information on the training process.
 
 ### Model Specification
 
@@ -92,6 +97,8 @@ pip install multimolecule
 ```
 
 ### Direct Use
+
+#### Masked Language Modeling
 
 You can use this model directly with a pipeline for masked language modeling:
 
@@ -121,6 +128,26 @@ You can use this model directly with a pipeline for masked language modeling:
   'token': 6,
   'token_str': 'A',
   'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+```
+
+#### RNA Secondary Structure Prediction
+
+You can use this model directly with a pipeline for secondary structure prediction:
+
+```python
+>>> import multimolecule  # you must import multimolecule to register models
+>>> from transformers import pipeline
+>>> predictor = pipeline("rna-secondary-structure", model="multimolecule/rnamsm")
+>>> predictor("ggucuc")
+
+{'sequence': 'G G U C U C',
+ 'secondary_structure': '......',
+ 'contact_map': [[0.0026149682234972715, 0.0022659720852971077, 0.0036333396565169096, 0.003973185084760189, 0.003466179594397545, 0.002944374457001686],
+  [0.0022659720852971077, 0.002837300067767501, 0.0037222092505544424, 0.0034382310695946217, 0.003498981473967433, 0.0030326175037771463],
+  [0.0036333396565169096, 0.0037222092505544424, 0.0026848132256418467, 0.002787569770589471, 0.0028246091678738594, 0.0030541368760168552],
+  [0.003973185084760189, 0.0034382310695946217, 0.002787569770589471, 0.0028833665419369936, 0.0027405559085309505, 0.0029016658663749695],
+  [0.003466179594397545, 0.003498981473967433, 0.0028246091678738594, 0.0027405559085309505, 0.002930475864559412, 0.003173925681039691],
+  [0.002944374457001686, 0.0030326175037771463, 0.0030541368760168552, 0.0029016658663749695, 0.003173925681039691, 0.003476994577795267]]}
 ```
 
 ### Downstream Use
@@ -254,20 +281,7 @@ The model was trained on 8 NVIDIA V100 GPUs with 32GiB memories.
 **BibTeX**:
 
 ```bibtex
-@article{zhang2023multiple,
-    author = {Zhang, Yikun and Lang, Mei and Jiang, Jiuhong and Gao, Zhiqiang and Xu, Fan and Litfin, Thomas and Chen, Ke and Singh, Jaswinder and Huang, Xiansong and Song, Guoli and Tian, Yonghong and Zhan, Jian and Chen, Jie and Zhou, Yaoqi},
-    title = "{Multiple sequence alignment-based RNA language model and its application to structural inference}",
-    journal = {Nucleic Acids Research},
-    volume = {52},
-    number = {1},
-    pages = {e3-e3},
-    year = {2023},
-    month = {11},
-    abstract = "{Compared with proteins, DNA and RNA are more difficult languages to interpret because four-letter coded DNA/RNA sequences have less information content than 20-letter coded protein sequences. While BERT (Bidirectional Encoder Representations from Transformers)-like language models have been developed for RNA, they are ineffective at capturing the evolutionary information from homologous sequences because unlike proteins, RNA sequences are less conserved. Here, we have developed an unsupervised multiple sequence alignment-based RNA language model (RNA-MSM) by utilizing homologous sequences from an automatic pipeline, RNAcmap, as it can provide significantly more homologous sequences than manually annotated Rfam. We demonstrate that the resulting unsupervised, two-dimensional attention maps and one-dimensional embeddings from RNA-MSM contain structural information. In fact, they can be directly mapped with high accuracy to 2D base pairing probabilities and 1D solvent accessibilities, respectively. Further fine-tuning led to significantly improved performance on these two downstream tasks compared with existing state-of-the-art techniques including SPOT-RNA2 and RNAsnap2. By comparison, RNA-FM, a BERT-based RNA language model, performs worse than one-hot encoding with its embedding in base pair and solvent-accessible surface area prediction. We anticipate that the pre-trained RNA-MSM model can be fine-tuned on many other tasks related to RNA structure and function.}",
-    issn = {0305-1048},
-    doi = {10.1093/nar/gkad1031},
-    url = {https://doi.org/10.1093/nar/gkad1031},
-    eprint = {https://academic.oup.com/nar/article-pdf/52/1/e3/55443207/gkad1031.pdf},
+@article{zhang2023multiple,  author = {Zhang, Yikun and Lang, Mei and Jiang, Jiuhong and Gao, Zhiqiang and Xu, Fan and Litfin, Thomas and Chen, Ke and Singh, Jaswinder and Huang, Xiansong and Song, Guoli and Tian, Yonghong and Zhan, Jian and Chen, Jie and Zhou, Yaoqi},  title = "{Multiple sequence alignment-based RNA language model and its application to structural inference}",  journal = {Nucleic Acids Research},  volume = {52},  number = {1},  pages = {e3-e3},  year = {2023},  month = {11},  abstract = "{Compared with proteins, DNA and RNA are more difficult languages to interpret because four-letter coded DNA/RNA sequences have less information content than 20-letter coded protein sequences. While BERT (Bidirectional Encoder Representations from Transformers)-like language models have been developed for RNA, they are ineffective at capturing the evolutionary information from homologous sequences because unlike proteins, RNA sequences are less conserved. Here, we have developed an unsupervised multiple sequence alignment-based RNA language model (RNA-MSM) by utilizing homologous sequences from an automatic pipeline, RNAcmap, as it can provide significantly more homologous sequences than manually annotated Rfam. We demonstrate that the resulting unsupervised, two-dimensional attention maps and one-dimensional embeddings from RNA-MSM contain structural information. In fact, they can be directly mapped with high accuracy to 2D base pairing probabilities and 1D solvent accessibilities, respectively. Further fine-tuning led to significantly improved performance on these two downstream tasks compared with existing state-of-the-art techniques including SPOT-RNA2 and RNAsnap2. By comparison, RNA-FM, a BERT-based RNA language model, performs worse than one-hot encoding with its embedding in base pair and solvent-accessible surface area prediction. We anticipate that the pre-trained RNA-MSM model can be fine-tuned on many other tasks related to RNA structure and function.}",  issn = {0305-1048},  doi = {10.1093/nar/gkad1031},  url = {https://doi.org/10.1093/nar/gkad1031},  eprint = {https://academic.oup.com/nar/article-pdf/52/1/e3/55443207/gkad1031.pdf},
 }
 ```
 

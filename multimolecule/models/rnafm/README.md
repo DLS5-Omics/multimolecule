@@ -60,7 +60,7 @@ RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 ### Variations
 
 - **[`multimolecule/rnafm`](https://huggingface.co/multimolecule/rnafm)**: The RNA-FM model pre-trained on non-coding RNA sequences.
-- **[`multimolecule/mrnafm`](https://huggingface.co/multimolecule/mrnafm)**: The RNA-FM model pre-trained on mRNA coding sequences.
+- **[`multimolecule/mrnafm`](https://huggingface.co/multimolecule/mrnafm)**: The RNA-FM model pre-trained on messenger RNA sequences.
 
 ### Model Specification
 
@@ -119,6 +119,8 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
@@ -147,6 +149,26 @@ You can use this model directly with a pipeline for masked language modeling:
   'token': 6,
   'token_str': 'A',
   'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+```
+
+#### RNA Secondary Structure Prediction
+
+You can use this model directly with a pipeline for secondary structure prediction:
+
+```python
+>>> import multimolecule  # you must import multimolecule to register models
+>>> from transformers import pipeline
+>>> predictor = pipeline("rna-secondary-structure", model="multimolecule/rnafm")
+>>> predictor("ggucuc")
+
+{'sequence': 'G G U C U C',
+ 'secondary_structure': '([(].)',
+ 'contact_map': [[0.5174561142921448, 0.49224206805229187, 0.5099285244941711, 0.4873944818973541, 0.4782561957836151, 0.49956777691841125],
+  [0.49224206805229187, 0.5018295645713806, 0.4795883297920227, 0.5186688303947449, 0.4944656491279602, 0.4980457127094269],
+  [0.5099285244941711, 0.4795883297920227, 0.5018683671951294, 0.4938940703868866, 0.4913065433502197, 0.5082612633705139],
+  [0.4873944818973541, 0.5186688303947449, 0.4938940703868866, 0.4948427081108093, 0.479320764541626, 0.5107203722000122],
+  [0.4782561957836151, 0.4944656491279602, 0.4913065433502197, 0.479320764541626, 0.5626780986785889, 0.47851765155792236],
+  [0.49956777691841125, 0.4980457127094269, 0.5082612633705139, 0.5107203722000122, 0.47851765155792236, 0.48973602056503296]]}
 ```
 
 ### Downstream Use
