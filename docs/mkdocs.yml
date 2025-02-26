@@ -61,6 +61,8 @@ nav:
       - RNA: tokenisers/rna.md
       - Protein: tokenisers/protein.md
       - DotBracket: tokenisers/dot_bracket.md
+  - pipelines:
+      - pipelines/index.md
   - about:
       - about/index.md
       - License: about/license.md
