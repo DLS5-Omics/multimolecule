@@ -130,6 +130,7 @@ from .module import (
     TokenKMerHead,
     TokenPredictionHead,
 )
+from .pipelines import RnaSecondaryStructurePipeline
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
@@ -253,6 +254,7 @@ __all__ = [
     "RotaryEmbedding",
     "SinusoidalEmbedding",
     "Criterion",
+    "RnaSecondaryStructurePipeline",
     "count_parameters",
     "Task",
     "TaskLevel",
