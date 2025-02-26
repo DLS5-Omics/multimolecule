@@ -64,6 +64,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/data/functional/</loc>
+        <lastmod>2025-02-26</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/functional/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/functional/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/datasets/</loc>
         <lastmod>2025-02-26</lastmod>
         <changefreq>daily</changefreq>
@@ -377,6 +384,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/dataset/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/data/functional/</loc>
+        <lastmod>2025-02-26</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/functional/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/functional/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/datasets/</loc>
