@@ -47,3 +47,7 @@ class AutoModelForNucleotidePrediction(AutoModelForTokenPrediction):
 
 class AutoModelForContactPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForRnaSecondaryStructurePrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
