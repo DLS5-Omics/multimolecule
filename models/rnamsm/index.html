@@ -1202,9 +1202,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2078,9 +2078,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2518,7 +2518,7 @@ Please refer to the <a href="#training-details">Training Details</a> section for
 <ul>
 <li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnamsm">multimolecule.rnamsm</a></li>
 <li><strong>Weights</strong>: <a href="https://huggingface.co/multimolecule/rnamsm">multimolecule/rnamsm</a></li>
-<li><strong>Data</strong>: <a href="https://rfam.org">Rfam</a></li>
+<li><strong>Data</strong>: <a href="https://huggingface.co/datasets/multimolecule/rfam">multimolecule/rfam</a></li>
 <li><strong>Paper</strong>: <a href="https://doi.org/10.1093/nar/gkad1031">Multiple sequence alignment-based RNA language model and its application to structural inference</a></li>
 <li><strong>Developed by</strong>: Yikun Zhang, Mei Lang, Jiuhong Jiang, Zhiqiang Gao, Fan Xu, Thomas Litfin, Ke Chen, Jaswinder Singh, Xiansong Huang, Guoli Song, Yonghong Tian, Jian Zhan, Jie Chen, Yaoqi Zhou</li>
 <li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a> - <a href="https://doi.org/10.1101/2021.02.12.430858">MSA</a></li>
@@ -2741,7 +2741,7 @@ RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.</p>
 <li>In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.</li>
 <li>In the 10% remaining cases, the masked tokens are left as is.</li>
 </ul>
-<h4 id="pretraining">PreTraining<a class="headerlink" href="#pretraining" title="Permanent link">&para;</a></h4>
+<h4 id="pre-training">Pre-training<a class="headerlink" href="#pre-training" title="Permanent link">&para;</a></h4>
 <p>The model was trained on 8 NVIDIA V100 GPUs with 32GiB memories.</p>
 <ul>
 <li>Learning rate: 3e-4</li>
@@ -2754,9 +2754,33 @@ RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.</p>
 </ul>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">&para;</a></h2>
 <p><strong>BibTeX</strong>:</p>
-<div class="language-bibtex highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">BibTeX</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
-<span class="normal"><a href="#__codelineno-7-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nc">@article</span><span class="p">{</span><span class="nl">zhang2023multiple</span><span class="p">,</span><span class="w">  </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Zhang, Yikun and Lang, Mei and Jiang, Jiuhong and Gao, Zhiqiang and Xu, Fan and Litfin, Thomas and Chen, Ke and Singh, Jaswinder and Huang, Xiansong and Song, Guoli and Tian, Yonghong and Zhan, Jian and Chen, Jie and Zhou, Yaoqi}</span><span class="p">,</span><span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;{Multiple sequence alignment-based RNA language model and its application to structural inference}&quot;</span><span class="p">,</span><span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Nucleic Acids Research}</span><span class="p">,</span><span class="w">  </span><span class="na">volume</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{52}</span><span class="p">,</span><span class="w">  </span><span class="na">number</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{1}</span><span class="p">,</span><span class="w">  </span><span class="na">pages</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{e3-e3}</span><span class="p">,</span><span class="w">  </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span><span class="p">,</span><span class="w">  </span><span class="na">month</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{11}</span><span class="p">,</span><span class="w">  </span><span class="na">abstract</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;{Compared with proteins, DNA and RNA are more difficult languages to interpret because four-letter coded DNA/RNA sequences have less information content than 20-letter coded protein sequences. While BERT (Bidirectional Encoder Representations from Transformers)-like language models have been developed for RNA, they are ineffective at capturing the evolutionary information from homologous sequences because unlike proteins, RNA sequences are less conserved. Here, we have developed an unsupervised multiple sequence alignment-based RNA language model (RNA-MSM) by utilizing homologous sequences from an automatic pipeline, RNAcmap, as it can provide significantly more homologous sequences than manually annotated Rfam. We demonstrate that the resulting unsupervised, two-dimensional attention maps and one-dimensional embeddings from RNA-MSM contain structural information. In fact, they can be directly mapped with high accuracy to 2D base pairing probabilities and 1D solvent accessibilities, respectively. Further fine-tuning led to significantly improved performance on these two downstream tasks compared with existing state-of-the-art techniques including SPOT-RNA2 and RNAsnap2. By comparison, RNA-FM, a BERT-based RNA language model, performs worse than one-hot encoding with its embedding in base pair and solvent-accessible surface area prediction. We anticipate that the pre-trained RNA-MSM model can be fine-tuned on many other tasks related to RNA structure and function.}&quot;</span><span class="p">,</span><span class="w">  </span><span class="na">issn</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{0305-1048}</span><span class="p">,</span><span class="w">  </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.1093/nar/gkad1031}</span><span class="p">,</span><span class="w">  </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.1093/nar/gkad1031}</span><span class="p">,</span><span class="w">  </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://academic.oup.com/nar/article-pdf/52/1/e3/55443207/gkad1031.pdf}</span><span class="p">,</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="p">}</span>
+<div class="language-bibtex highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">BibTeX</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nc">@article</span><span class="p">{</span><span class="nl">zhang2023multiple</span><span class="p">,</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">    </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Zhang, Yikun and Lang, Mei and Jiang, Jiuhong and Gao, Zhiqiang and Xu, Fan and Litfin, Thomas and Chen, Ke and Singh, Jaswinder and Huang, Xiansong and Song, Guoli and Tian, Yonghong and Zhan, Jian and Chen, Jie and Zhou, Yaoqi}</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;{Multiple sequence alignment-based RNA language model and its application to structural inference}&quot;</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Nucleic Acids Research}</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="na">volume</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{52}</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="na">number</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{1}</span><span class="p">,</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">    </span><span class="na">pages</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{e3-e3}</span><span class="p">,</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">    </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span><span class="p">,</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">    </span><span class="na">month</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{11}</span><span class="p">,</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">    </span><span class="na">abstract</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;{Compared with proteins, DNA and RNA are more difficult languages to interpret because four-letter coded DNA/RNA sequences have less information content than 20-letter coded protein sequences. While BERT (Bidirectional Encoder Representations from Transformers)-like language models have been developed for RNA, they are ineffective at capturing the evolutionary information from homologous sequences because unlike proteins, RNA sequences are less conserved. Here, we have developed an unsupervised multiple sequence alignment-based RNA language model (RNA-MSM) by utilizing homologous sequences from an automatic pipeline, RNAcmap, as it can provide significantly more homologous sequences than manually annotated Rfam. We demonstrate that the resulting unsupervised, two-dimensional attention maps and one-dimensional embeddings from RNA-MSM contain structural information. In fact, they can be directly mapped with high accuracy to 2D base pairing probabilities and 1D solvent accessibilities, respectively. Further fine-tuning led to significantly improved performance on these two downstream tasks compared with existing state-of-the-art techniques including SPOT-RNA2 and RNAsnap2. By comparison, RNA-FM, a BERT-based RNA language model, performs worse than one-hot encoding with its embedding in base pair and solvent-accessible surface area prediction. We anticipate that the pre-trained RNA-MSM model can be fine-tuned on many other tasks related to RNA structure and function.}&quot;</span><span class="p">,</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="w">    </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.1093/nar/gkad1031}</span><span class="p">,</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="w">    </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.1093/nar/gkad1031}</span><span class="p">,</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="w">    </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://academic.oup.com/nar/article-pdf/52/1/e3/55443207/gkad1031.pdf}</span><span class="p">,</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">&para;</a></h2>
 <p>Please use GitHub issues of <a href="https://github.com/DLS5-Omics/multimolecule/issues">MultiMolecule</a> for any questions or comments on the model card.</p>

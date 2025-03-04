@@ -1189,9 +1189,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2171,9 +2171,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2645,8 +2645,8 @@
 <p>RNA-FM is a <a href="https://huggingface.co/google-bert/bert-base-uncased">bert</a>-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the <a href="#training-details">Training Details</a> section for more information on the training process.</p>
 <h3 id="variations">Variations<a class="headerlink" href="#variations" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong><a href="https://huggingface.co/multimolecule/rnafm"><code>multimolecule/rnafm</code></a></strong>: The RNA-FM model pre-trained on non-coding RNA sequences.</li>
-<li><strong><a href="https://huggingface.co/multimolecule/mrnafm"><code>multimolecule/mrnafm</code></a></strong>: The RNA-FM model pre-trained on messenger RNA sequences.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/rnafm">multimolecule/rnafm</a></strong>: The RNA-FM model pre-trained on non-coding RNA sequences.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/mrnafm">multimolecule/mrnafm</a></strong>: The RNA-FM model pre-trained on messenger RNA sequences.</li>
 </ul>
 <h3 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permanent link">&para;</a></h3>
 <table>
@@ -2688,7 +2688,7 @@
 <h3 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnafm">multimolecule.rnafm</a></li>
-<li><strong>Data</strong>: <a href="https://rnacentral.org">RNAcentral</a></li>
+<li><strong>Data</strong>: <a href="https://huggingface.co/datasets/multimolecule/rnacentral">multimolecule/rnacentral</a></li>
 <li><strong>Paper</strong>: <a href="https://doi.org/10.1101/2022.08.06.503062">Interpretable RNA Foundation Model from Unannotated Data for Highly Accurate RNA Structure and Function Predictions</a></li>
 <li><strong>Developed by</strong>: Jiayang Chen, Zhihang Hu, Siqi Sun, Qingxiong Tan, Yixuan Wang, Qinze Yu, Licheng Zong, Liang Hong, Jin Xiao, Tao Shen, Irwin King, Yu Li</li>
 <li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a> - <a href="https://huggingface.co/facebook/esm2_t48_15B_UR50D">ESM</a></li>
@@ -2909,7 +2909,7 @@ RNAcentral is a free, public resource that offers integrated access to a compreh
 <li>In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.</li>
 <li>In the 10% remaining cases, the masked tokens are left as is.</li>
 </ul>
-<h4 id="pretraining">PreTraining<a class="headerlink" href="#pretraining" title="Permanent link">&para;</a></h4>
+<h4 id="pre-training">Pre-training<a class="headerlink" href="#pre-training" title="Permanent link">&para;</a></h4>
 <p>The model was trained on 8 NVIDIA A100 GPUs with 80GiB memories.</p>
 <ul>
 <li>Learning rate: 1e-4</li>

@@ -1231,9 +1231,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2105,9 +2105,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2561,10 +2561,10 @@
 <p>3UTRBERT is a <a href="https://huggingface.co/google-bert/bert-base-uncased">bert</a>-style model pre-trained on a large corpus of 3’ untranslated regions (3’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the <a href="#training-details">Training Details</a> section for more information on the training process.</p>
 <h3 id="variations">Variations<a class="headerlink" href="#variations" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong><a href="https://huggingface.co/multimolecule/utrbert-3mer"><code>multimolecule/utrbert-3mer</code></a></strong>: The 3UTRBERT model pre-trained on 3-mer data.</li>
-<li><strong><a href="https://huggingface.co/multimolecule/utrbert-4mer"><code>multimolecule/utrbert-4mer</code></a></strong>: The 3UTRBERT model pre-trained on 4-mer data.</li>
-<li><strong><a href="https://huggingface.co/multimolecule/utrbert-5mer"><code>multimolecule/utrbert-5mer</code></a></strong>: The 3UTRBERT model pre-trained on 5-mer data.</li>
-<li><strong><a href="https://huggingface.co/multimolecule/utrbert-6mer"><code>multimolecule/utrbert-6mer</code></a></strong>: The 3UTRBERT model pre-trained on 6-mer data.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/utrbert-3mer">multimolecule/utrbert-3mer</a></strong>: The 3UTRBERT model pre-trained on 3-mer data.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/utrbert-4mer">multimolecule/utrbert-4mer</a></strong>: The 3UTRBERT model pre-trained on 4-mer data.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/utrbert-5mer">multimolecule/utrbert-5mer</a></strong>: The 3UTRBERT model pre-trained on 5-mer data.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/utrbert-6mer">multimolecule/utrbert-6mer</a></strong>: The 3UTRBERT model pre-trained on 6-mer data.</li>
 </ul>
 <h3 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permanent link">&para;</a></h3>
 <table>
@@ -2611,7 +2611,7 @@
 <h3 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/utrbert">multimolecule.utrbert</a></li>
-<li><strong>Data</strong>: <a href="https://gencodegenes.org">GENCODE</a></li>
+<li><strong>Data</strong>: <a href="https://huggingface.co/datasets/multimolecule/gencode-human">multimolecule/gencode-human</a></li>
 <li><strong>Paper</strong>: <a href="https://doi.org/10.1101/2023.09.08.556883">Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning</a></li>
 <li><strong>Developed by</strong>: Yuning Yang, Gen Li, Kuan Pang, Wuxinhao Cao, Xiangtao Li, Zhaolei Zhang</li>
 <li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a> - <a href="https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention">FlashAttention</a></li>
@@ -2805,7 +2805,7 @@ GENCODE aims to identify all gene features in the human genome using a combinati
 </ul>
 <p>Since 3UTRBERT used k-mer tokenizer, it masks the entire k-mer instead of individual nucleotides to avoid information leakage.</p>
 <p>For example, if the k-mer is 3, the sequence <code>"UAGCGUAU"</code> will be tokenized as <code>["UAG", "AGC", "GCG", "CGU", "GUA", "UAU"]</code>. If the nucleotide <code>"C"</code> is masked, the adjacent tokens will also be masked, resulting <code>["UAG", "&lt;mask&gt;", "&lt;mask&gt;", "&lt;mask&gt;", "GUA", "UAU"]</code>.</p>
-<h4 id="pretraining">PreTraining<a class="headerlink" href="#pretraining" title="Permanent link">&para;</a></h4>
+<h4 id="pre-training">Pre-training<a class="headerlink" href="#pre-training" title="Permanent link">&para;</a></h4>
 <p>The model was trained on 4 NVIDIA Quadro RTX 6000 GPUs with 24GiB memories.</p>
 <ul>
 <li>Batch size: 128</li>

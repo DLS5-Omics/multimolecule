@@ -1145,9 +1145,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2098,9 +2098,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
     </span>
   </a>
   
@@ -2577,7 +2577,7 @@ This is because</p>
 <td>12</td>
 <td>3072</td>
 <td>86.06</td>
-<td>22.36</td>
+<td>22.37</td>
 <td>11.17</td>
 <td>512</td>
 </tr>
@@ -2586,8 +2586,8 @@ This is because</p>
 <h3 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnaernie">multimolecule.rnaernie</a></li>
-<li><strong>Weights</strong>: <a href="https://huggingface.co/multimolecule/rnaernie"><code>multimolecule/rnaernie</code></a></li>
-<li><strong>Data</strong>: <a href="https://rnacentral.org">RNAcentral</a></li>
+<li><strong>Weights</strong>: <a href="https://huggingface.co/multimolecule/rnaernie">multimolecule/rnaernie</a></li>
+<li><strong>Data</strong>: <a href="https://huggingface.co/datasets/multimolecule/rnacentral">multimolecule/rnacentral</a></li>
 <li><strong>Paper</strong>: Multi-purpose RNA language modelling with motif-aware pretraining and type-guided fine-tuning</li>
 <li><strong>Developed by</strong>: Ning Wang, Jiang Bian, Yuchen Li, Xuhong Li, Shahid Mumtaz, Linghe Kong, Haoyi Xiong.</li>
 <li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a> - <a href="https://huggingface.co/nghuyong/ernie-3.0-base-zh">ERNIE</a></li>
@@ -2779,7 +2779,7 @@ RNAErnie preprocessed all tokens by replacing &ldquo;T&rdquo;s with &ldquo;S&rdq
 <li>In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.</li>
 <li>In the 10% remaining cases, the masked tokens are left as is.</li>
 </ul>
-<h4 id="pretraining">PreTraining<a class="headerlink" href="#pretraining" title="Permanent link">&para;</a></h4>
+<h4 id="pre-training">Pre-training<a class="headerlink" href="#pre-training" title="Permanent link">&para;</a></h4>
 <p>RNAErnie uses a special 3-stage training pipeline to pre-train the model, each with a different masking strategy:</p>
 <p>Base-level Masking: The masking applies to each nucleotide in the sequence.
 Subsequence-level Masking: The masking applies to subsequences of 4-8bp in the sequence.

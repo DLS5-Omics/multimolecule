@@ -1085,18 +1085,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#preprocessing" class="md-nav__link">
+  <a href="#initial-training" class="md-nav__link">
     <span class="md-ellipsis">
-      Preprocessing
+      Initial Training
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#final-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      Final Training
     </span>
   </a>
   
@@ -2128,18 +2137,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#preprocessing" class="md-nav__link">
+  <a href="#initial-training" class="md-nav__link">
     <span class="md-ellipsis">
-      Preprocessing
+      Initial Training
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pretraining" class="md-nav__link">
+  <a href="#pre-training" class="md-nav__link">
     <span class="md-ellipsis">
-      PreTraining
+      Pre-training
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#final-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      Final Training
     </span>
   </a>
   
@@ -2645,8 +2663,8 @@ Please refer to the <a href="#training-details">Training Details</a> section for
 <td>8</td>
 <td>1024</td>
 <td>11.37</td>
-<td>107.31</td>
-<td>53.32</td>
+<td>53.65</td>
+<td>26.66</td>
 <td>inf</td>
 </tr>
 </tbody>
@@ -2654,8 +2672,8 @@ Please refer to the <a href="#training-details">Training Details</a> section for
 <h3 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ribonanzanet">multimolecule.ribonanzanet</a></li>
-<li><strong>Weights</strong>: <a href="https://huggingface.co/multimolecule/ribonanzanet"><code>multimolecule/ribonanzanet</code></a></li>
-<li><strong>Data</strong>: <a href="https://multimolecule.danling.org/datasets/ribonanza">Ribonanza</a></li>
+<li><strong>Weights</strong>: <a href="https://huggingface.co/multimolecule/ribonanzanet">multimolecule/ribonanzanet</a></li>
+<li><strong>Data</strong>: <a href="https://multimolecule.danling.org/datasets/ribonanza">multimolecule/ribonanza</a></li>
 <li><strong>Paper</strong>: <a href="https://doi.org/10.1101/2024.02.24.581671">Ribonanza: deep learning of RNA structure through dual crowdsourcing</a></li>
 <li><strong>Developed by</strong>: Shujun He, Rui Huang, Jill Townley, Rachael C. Kretsch, Thomas G. Karagianes, David B.T. Cox, Hamish Blair, Dmitry Penzar, Valeriy Vyaltsev, Elizaveta Aristova, Arsenii Zinkevich, Artemy Bakulin, Hoyeol Sohn, Daniel Krstevski, Takaaki Fukui, Fumiya Tatematsu, Yusuke Uchida, Donghoon Jang, Jun Seong Lee, Roger Shieh, Tom Ma, Eduard Martynov, Maxim V. Shugaev, Habib S.T. Bukhari, Kazuki Fujikawa, Kazuki Onodera, Christof Henkel, Shlomo Ron, Jonathan Romano, John J. Nicol, Grace P. Nye, Yuan Wu, Christian Choe, Walter Reade, Eterna participants, Rhiju Das</li>
 <li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a></li>
@@ -2798,15 +2816,29 @@ Please refer to the <a href="#training-details">Training Details</a> section for
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="training-details">Training Details<a class="headerlink" href="#training-details" title="Permanent link">&para;</a></h2>
-<p>TODO</p>
+<p>RibonanzaNet used chemical mapping data as the training objective. The model takes an RNA sequence as input and predicts the chemical reactivity of each nucleotide.</p>
 <h3 id="training-data">Training Data<a class="headerlink" href="#training-data" title="Permanent link">&para;</a></h3>
-<p>TODO</p>
+<p>The RibonanzaNet model was trained on the Ribonanza dataset. Ribonanza is a dataset of chemical mapping measurements on two million diverse RNA sequences. The data was collected from the crowdsourced initiative Eterna, as well as expert databases such as <a href="https://huggingface.co/datasets/multimolecule/rfam">Rfam</a>, the PDB archive, Pseudobase, and the RNA Mapping Database.</p>
 <h3 id="training-procedure">Training Procedure<a class="headerlink" href="#training-procedure" title="Permanent link">&para;</a></h3>
-<h4 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h4>
-<p>TODO</p>
-<h4 id="pretraining">PreTraining<a class="headerlink" href="#pretraining" title="Permanent link">&para;</a></h4>
+<p>RibonanzaNet was trained using a three-stage process:</p>
+<h4 id="initial-training">Initial Training<a class="headerlink" href="#initial-training" title="Permanent link">&para;</a></h4>
+<p>The initial model was trained using sequences that had either or both 2A3/DMS profiles with a signal-to-noise ratio (SNR) above 1.0. This dataset comprised 214,831 training sequences.</p>
+<h4 id="pre-training">Pre-training<a class="headerlink" href="#pre-training" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Noisy Training Data:
+   The model was first pre-trained on the data with a signal-to-noise ratio (SNR) below 1.0 using predictions from top 3 Kaggle models as pseudo-labels. This dataset comprised 563,796 sequences.</li>
+<li>Experimental Determined Data:
+   The model was then further trained for 10 epochs using only the true labels of sequences with high SNR (either 2A3 or DMS profiles).</li>
+</ol>
+<h4 id="final-training">Final Training<a class="headerlink" href="#final-training" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Noisy Training Data:
+   The model was first pre-trained on all training and testing data using predictions from top 3 Kaggle models as pseudo-labels. This dataset comprised 1,907,619 sequences.</li>
+<li>Experimental Determined Data:
+   The model was then further annelaed on the true training labels.</li>
+</ol>
 <p>The model was trained on 10 NVIDIA L40S GPUs with 48GiB memories.</p>
-<p>TODO</p>
+<p>Sequence flip augmentation was applied to the training data.</p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">&para;</a></h2>
 <p><strong>BibTeX</strong>:</p>
 <div class="language-bibtex highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">BibTeX</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
