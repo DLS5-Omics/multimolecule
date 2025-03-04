@@ -2473,7 +2473,7 @@
 <p>The MultiMolecule team is aware of a potential risk in reproducing the results of RNA-MSM.</p>
 <p>The original implementation of RNA-MSM used a custom tokenizer that does not append <code>&lt;eos&gt;</code> token to the end of the input sequence in consistent to MSA Transformer.
 This should not affect the performance of the model in most cases, but it can lead to unexpected behavior in some cases.</p>
-<p>Please set <code>eos_token=None</code> explicitly in the tokenizer if you want the exact behavior of the original implementation.</p>
+<p>Please set <code>eos_token = None</code> in the tokenizer and set <code>eos_token_id=None</code> in the model configuration if you want the exact behavior of the original implementation.</p>
 <p>See more at <a href="https://github.com/yikunpku/RNA-MSM/issues/10">issue #10</a></p>
 </div>
 <div class="admonition tip">

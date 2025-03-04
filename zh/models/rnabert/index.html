@@ -2541,7 +2541,7 @@
 <p>The MultiMolecule team is aware of a potential risk in reproducing the results of RNABERT.</p>
 <p>The original implementation of RNABERT does not prepend <code>&lt;cls&gt;</code> and append <code>&lt;eos&gt;</code> tokens to the input sequence.
 This should not affect the performance of the model in most cases, but it can lead to unexpected behavior in some cases.</p>
-<p>Please set <code>cls_token=None</code> and <code>eos_token=None</code> explicitly in the tokenizer if you want the exact behavior of the original implementation.</p>
+<p>Please set <code>bos_token=None, cls_token=None, eos_token = None</code> in the tokenizer and set <code>bos_token_id=None, cls_token_id=None, eos_token_id=None</code> in the model configuration if you want the exact behavior of the original implementation.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
