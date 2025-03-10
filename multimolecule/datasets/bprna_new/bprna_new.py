@@ -69,7 +69,7 @@ def convert_bpseq(file) -> Mapping:
 
     return {
         "id": file.stem.split("-")[0],
-        "sequence": "".join(sequence),
+        "sequence": "".join(sequence).upper().replace("T", "U"),
         "secondary_structure": "".join(dot_bracket),
     }
 
