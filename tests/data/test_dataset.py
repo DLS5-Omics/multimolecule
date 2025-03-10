@@ -32,16 +32,13 @@ from multimolecule import Dataset, Task, TaskLevel, TaskType, defaults
 
 class TestRNADataset:
 
-    pretrained = "multimolecule/rna"
     root = os.path.join("data", "rna")
 
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_5utr(self, preprocess: bool):
         defaults.SEQUENCE_COL_NAME = "input_ids"
         file = os.path.join(self.root, "5utr.csv")
-        dataset = Dataset(
-            file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_sequence_col=True
-        )
+        dataset = Dataset(file, split="train", preprocess=preprocess, auto_rename_sequence_col=True)
         defaults.SEQUENCE_COL_NAME = "sequence"
         task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
@@ -56,9 +53,7 @@ class TestRNADataset:
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_ncrna(self, preprocess: bool):
         file = os.path.join(self.root, "ncrna.csv")
-        dataset = Dataset(
-            file, split="train", pretrained=self.pretrained, preprocess=preprocess, auto_rename_label_col=True
-        )
+        dataset = Dataset(file, split="train", preprocess=preprocess, auto_rename_label_col=True)
         task = Task(type=TaskType.MultiClass, level=TaskLevel.Sequence, num_labels=13)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
@@ -73,7 +68,7 @@ class TestRNADataset:
     def test_rnaswitches(self, preprocess: bool):
         file = os.path.join(self.root, "rnaswitches.csv")
         label_cols = ["ON", "OFF", "ON_OFF"]
-        dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess, label_cols=label_cols)
+        dataset = Dataset(file, split="train", preprocess=preprocess, label_cols=label_cols)
         task = Task(type=TaskType.Regression, level=TaskLevel.Sequence)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
@@ -89,7 +84,7 @@ class TestRNADataset:
     @pytest.mark.parametrize("preprocess", [True, False])
     def test_modifications(self, preprocess: bool):
         file = os.path.join(self.root, "modifications.json")
-        dataset = Dataset(file, split="train", pretrained=self.pretrained, preprocess=preprocess)
+        dataset = Dataset(file, split="train", preprocess=preprocess)
         task = Task(type=TaskType.MultiLabel, level=TaskLevel.Sequence, num_labels=12)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
@@ -108,7 +103,6 @@ class TestRNADataset:
         dataset = Dataset(
             file,
             split="train",
-            pretrained=self.pretrained,
             preprocess=preprocess,
             feature_cols=feature_cols,
             label_cols=label_cols,
@@ -133,7 +127,6 @@ class TestRNADataset:
         dataset = Dataset(
             file,
             split="train",
-            pretrained=self.pretrained,
             preprocess=preprocess,
             feature_cols=feature_cols,
             label_cols=label_cols,
@@ -152,16 +145,13 @@ class TestRNADataset:
 
 class TestSyntheticDataset:
 
-    pretrained = "multimolecule/rna"
     root = os.path.join("data", "synthetic")
 
     def test_null(self):
         file = os.path.join(self.root, "null.csv")
-        dataset_factory = partial(Dataset, file, split="train", pretrained=self.pretrained)
+        dataset_factory = partial(Dataset, file, split="train")
         dataset = dataset_factory(nan_process="ignore")
         assert len(dataset) == 67
-        with pytest.raises(RuntimeError):
-            dataset[0]
         with pytest.raises(ValueError):
             dataset = dataset_factory(nan_process="raise")
         dataset = dataset_factory(nan_process="fill", fill_value=0)
@@ -173,7 +163,7 @@ class TestSyntheticDataset:
 
     def test_rna_task_recognition_json(self):
         file = os.path.join(self.root, "rna.json")
-        dataset = Dataset(file, split="train", pretrained=self.pretrained)
+        dataset = Dataset(file, split="train")
         assert dataset.tasks["sequence_binary"] == Task(type=TaskType.Binary, level=TaskLevel.Sequence, num_labels=1)
         assert dataset.tasks["sequence_multiclass"] == Task(
             type=TaskType.MultiClass, level=TaskLevel.Sequence, num_labels=7
@@ -217,12 +207,11 @@ class TestSyntheticDataset:
 
 class TestHuggingFaceDataset:
 
-    pretrained = "multimolecule/rna"
     root = "multimolecule/"
 
     def test_bprna_spot(self):
         file = os.path.join(self.root, "bprna-spot")
-        dataset = Dataset(file, split="test", pretrained=self.pretrained, preprocess=True)
+        dataset = Dataset(file, split="test", preprocess=True)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
         assert isinstance(elem["secondary_structure"], torch.LongTensor)

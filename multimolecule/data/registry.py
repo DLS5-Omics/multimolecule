@@ -20,6 +20,23 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from multimolecule.data import Dataset
+from __future__ import annotations
 
-data = Dataset("data/rna/5utr.csv")
+from chanfig import Registry as Registry_
+from datasets import Dataset as HFDataset
+from torch.utils.data import Dataset as TorchDataset
+
+
+class Registry(Registry_):  # pylint: disable=too-few-public-methods
+    def build(
+        self, *args, ratio: float | int | None = None, type: str | None = None, **kwargs
+    ) -> TorchDataset | HFDataset:
+        dataset = super().build(type, *args, **kwargs)
+        if ratio is not None:
+            from .dataset import SampleDataset
+
+            dataset = SampleDataset(dataset, ratio=ratio)
+        return dataset
+
+
+DATASETS = Registry()
