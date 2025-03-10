@@ -98,13 +98,13 @@ def dot_bracket_to_contact_map(dot_bracket: str) -> np.ndarray:
             try:
                 j = stacks[reverse_dot_bracket_pair_table[symbol]].pop()
             except IndexError:
-                raise ValueError(f"Unmatched symbol {symbol} in dot-bracket notation")
+                raise ValueError(f"Unmatched symbol {symbol} at position {i} in sequence {dot_bracket}")
             contact_map[i, j] = contact_map[j, i] = 1
         elif symbol not in {".", ",", "_"}:
-            raise ValueError(f"Invalid symbol {symbol} in dot-bracket notation")
-    for stack in stacks.values():
+            raise ValueError(f"Invalid symbol {symbol} at position {i} in sequence {dot_bracket}")
+    for symbol, stack in stacks.items():
         if stack:
-            raise ValueError(f"Unmatched symbol {stack[0]} in dot-bracket notation")
+            raise ValueError(f"Unmatched symbol {symbol} at position {stack[0]} in sequence {dot_bracket}")
     return contact_map
 
 
@@ -174,22 +174,25 @@ def contact_map_to_dot_bracket(contact_map: np.ndarray | list | Tensor, unsafe: 
         contact_map = np.array(contact_map)
     elif isinstance(contact_map, Tensor):
         contact_map = contact_map.detach().cpu().numpy()
-
+    contact_map = contact_map.astype(int)
     n = contact_map.shape[0]
 
-    if not unsafe and not np.array_equal(contact_map, contact_map.T):
-        raise ValueError("Contact map must be symmetric")
-    elif unsafe and not np.array_equal(contact_map, contact_map.T):
-        warn("Contact map is not symmetric. Using only the upper triangular part.")
-        upper_tri = np.triu(contact_map)
-        contact_map = upper_tri + upper_tri.T
+    if not np.array_equal(contact_map, contact_map.T):
+        if not unsafe:
+            raise ValueError("Contact map is not symmetric.\nPass `unsafe=True` if this is expected.")
+        warn("Contact map is not symmetric.\nUsing only the upper triangular part.")
+        triu = np.triu(contact_map)
+        contact_map = triu + triu.T
 
     if not np.all(np.diag(contact_map) == 0):
         if unsafe:
-            warn("Contact map diagonal is not zero. Setting diagonal to zero.")
+            warn("Contact map diagonal is not zero (bases cannot pair with themselves).\nSetting diagonal to zero.")
             np.fill_diagonal(contact_map, 0)
         else:
-            raise ValueError("Contact map diagonal must be zero (bases cannot pair with themselves)")
+            raise ValueError(
+                "Contact map diagonal must be zero (bases cannot pair with themselves).\n"
+                "Pass `unsafe=True` if this is expected."
+            )
 
     dot_bracket = ["." for _ in range(n)]
     bracket_types = list(dot_bracket_pair_table.items())
@@ -219,10 +222,13 @@ def contact_map_to_dot_bracket(contact_map: np.ndarray | list | Tensor, unsafe: 
     if np.count_nonzero(remaining_contacts) > 0:
         if unsafe:
             warn(
-                "Could not represent all base pairs in the contact map with available bracket types. "
+                "Could not represent all base pairs in the contact map with available bracket types.\n"
                 f"Omitting {np.count_nonzero(remaining_contacts) // 2} pairs."
             )
         else:
-            raise ValueError("Could not represent all base pairs in the contact map with available bracket types")
+            raise ValueError(
+                "Could not represent all base pairs in the contact map with available bracket types.\n"
+                "Pass `unsafe=True` if this is expected."
+            )
 
     return "".join(dot_bracket)
