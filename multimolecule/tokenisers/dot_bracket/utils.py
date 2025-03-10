@@ -59,11 +59,13 @@ EXTENDED_ALPHABET = list(".()+,[]{}|<>")
 
 STREAMLINE_ALPHABET = list(".()+")
 
+DOT_BRACKET_ALPHABET = list(".()")
 
 ALPHABETS = {
     "standard": STANDARD_ALPHABET,
     "extended": EXTENDED_ALPHABET,
     "streamline": STREAMLINE_ALPHABET,
+    "dot_bracket": DOT_BRACKET_ALPHABET,
 }
 
 TOKENIZER_CONFIG = {
