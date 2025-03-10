@@ -20,9 +20,15 @@
 # https://multimolecule.danling.org/about/license-faq
 
 from .dataset import Dataset
+from .functional import (
+    contact_map_to_dot_bracket,
+    dot_bracket_to_contact_map,
+)
 from .utils import no_collate
 
 __all__ = [
     "Dataset",
     "no_collate",
+    "dot_bracket_to_contact_map",
+    "contact_map_to_dot_bracket",
 ]
