@@ -20,7 +20,7 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .data import Dataset
+from .data import Dataset, contact_map_to_dot_bracket, dot_bracket_to_contact_map
 from .models import (
     AutoModelForContactPrediction,
     AutoModelForNucleotidePrediction,
@@ -147,6 +147,8 @@ __all__ = [
     "modeling_auto",
     "modeling_outputs",
     "Dataset",
+    "dot_bracket_to_contact_map",
+    "contact_map_to_dot_bracket",
     "MultiMoleculeConfig",
     "MultiMoleculeRunner",
     "PreTrainedConfig",
