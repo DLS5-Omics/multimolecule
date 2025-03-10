@@ -82,15 +82,11 @@ def convert_word_embeddings(
 
 STANDARD_ALPHABET = list("ACGUNRYSWKMBDHV.X*-I")
 
-
 IUPAC_ALPHABET = list("ACGUNRYSWKMBDHV.")
-
 
 STREAMLINE_ALPHABET = list("ACGUN")
 
-
 NUCLEOBASE_ALPHABET = list("ACGU")
-
 
 ALPHABETS = {
     "standard": STANDARD_ALPHABET,
@@ -98,7 +94,6 @@ ALPHABETS = {
     "streamline": STREAMLINE_ALPHABET,
     "nucleobase": NUCLEOBASE_ALPHABET,
 }
-
 
 VOCAB_MAPPING = {
     "R": "AG",
