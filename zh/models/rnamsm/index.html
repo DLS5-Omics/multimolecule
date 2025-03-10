@@ -2733,7 +2733,7 @@ RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.</p>
 <p>To avoid potential overfitting in structural inference, RNA-MSM excluded families with experimentally determined structures, such as ribosomal RNAs, transfer RNAs, and small nuclear RNAs. The final dataset contains 3,932 RNA families. The median value for the number of MSA sequences for these families by RNAcmap3 is 2,184.</p>
 <p>To increase the number of homologous sequences, RNA-MSM used an automatic pipeline, RNAcmap3, for homolog search and sequence alignment. RNAcmap3 is a pipeline that combines the BLAST-N, INFERNAL, Easel, RNAfold and evolutionary coupling tools to generate homologous sequences.</p>
 <p>RNA-MSM preprocessed all tokens by replacing &ldquo;T&rdquo;s with &ldquo;U&rdquo;s and substituting &ldquo;R&rdquo;, &ldquo;Y&rdquo;, &ldquo;K&rdquo;, &ldquo;M&rdquo;, &ldquo;S&rdquo;, &ldquo;W&rdquo;, &ldquo;B&rdquo;, &ldquo;D&rdquo;, &ldquo;H&rdquo;, &ldquo;V&rdquo;, &ldquo;N&rdquo; with &ldquo;X&rdquo;.</p>
-<p>Note that <a class="autorefs autorefs-internal" href="#multimolecule.models.rnamsm.RnaTokenizer"><code>RnaTokenizer</code></a> will convert &ldquo;T&rdquo;s to &ldquo;U&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>. <code>RnaTokenizer</code> does not perform other substitutions.</p>
+<p>Note that <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaTokenizer&lt;/span&gt;" href="#multimolecule.models.rnamsm.RnaTokenizer"><code>RnaTokenizer</code></a> will convert &ldquo;T&rdquo;s to &ldquo;U&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>. <code>RnaTokenizer</code> does not perform other substitutions.</p>
 <h3 id="training-procedure">Training Procedure<a class="headerlink" href="#training-procedure" title="Permanent link">&para;</a></h3>
 <h4 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h4>
 <p>RNA-MSM used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:</p>
@@ -3204,15 +3204,15 @@ RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.configuration_utils.PreTrainedConfig&lt;/code&gt;" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt; (&lt;code&gt;multimolecule.models.configuration_utils.PreTrainedConfig&lt;/code&gt;)" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
 
 
-        <p>This is the configuration class to store the configuration of a <a class="autorefs autorefs-internal" href="#multimolecule.models.rnamsm.RnaMsmModel"><code>RnaMsmModel</code></a>.
+        <p>This is the configuration class to store the configuration of a <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmModel&lt;/span&gt;" href="#multimolecule.models.rnamsm.RnaMsmModel"><code>RnaMsmModel</code></a>.
 It is used to instantiate a RnaMsm model according to the specified arguments, defining the model architecture.
 Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaMsm
 <a href="https://github.com/yikunpku/RNA-MSM">yikunpku/RNA-MSM</a> architecture.</p>
-<p>Configuration objects inherit from <a class="autorefs autorefs-internal" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a> and can be used to
-control the model outputs. Read the documentation from <a class="autorefs autorefs-internal" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a>
+<p>Configuration objects inherit from <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt;" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a> and can be used to
+control the model outputs. Read the documentation from <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt;" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a>
 for more information.</p>
 
 
@@ -3464,7 +3464,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <h4 id="multimolecule.models.rnamsm.RnaMsmConfig(head)" class="doc doc-heading doc-heading-parameter">                  <code>head</code>
 <a href="#multimolecule.models.rnamsm.RnaMsmConfig(head)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.configuration_utils.HeadConfig&lt;/code&gt;" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig">HeadConfig</a> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;HeadConfig&lt;/span&gt; (&lt;code&gt;multimolecule.models.configuration_utils.HeadConfig&lt;/code&gt;)" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.HeadConfig">HeadConfig</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3480,7 +3480,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <h4 id="multimolecule.models.rnamsm.RnaMsmConfig(lm_head)" class="doc doc-heading doc-heading-parameter">                  <code>lm_head</code>
 <a href="#multimolecule.models.rnamsm.RnaMsmConfig(lm_head)" class="headerlink" title="Permanent link">&para;</a></h4>            </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.configuration_utils.MaskedLMHeadConfig&lt;/code&gt;" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.MaskedLMHeadConfig">MaskedLMHeadConfig</a> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MaskedLMHeadConfig&lt;/span&gt; (&lt;code&gt;multimolecule.models.configuration_utils.MaskedLMHeadConfig&lt;/code&gt;)" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.MaskedLMHeadConfig">MaskedLMHeadConfig</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3777,7 +3777,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
@@ -3982,7 +3982,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
@@ -4187,7 +4187,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
@@ -4432,7 +4432,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
@@ -4629,7 +4629,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
@@ -4820,7 +4820,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
@@ -5011,7 +5011,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaMsmPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.rnamsm.modeling_rnamsm.RnaMsmPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.rnamsm.RnaMsmPreTrainedModel">RnaMsmPreTrainedModel</a></code></p>
 
 
 
