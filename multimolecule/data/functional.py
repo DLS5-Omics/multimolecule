@@ -175,14 +175,16 @@ def contact_map_to_dot_bracket(contact_map: np.ndarray | list | Tensor, unsafe: 
     elif isinstance(contact_map, Tensor):
         contact_map = contact_map.detach().cpu().numpy()
 
+    contact_map = contact_map.astype(int)
+
     n = contact_map.shape[0]
 
-    if not unsafe and not np.array_equal(contact_map, contact_map.T):
-        raise ValueError("Contact map must be symmetric")
-    elif unsafe and not np.array_equal(contact_map, contact_map.T):
+    if not np.array_equal(contact_map, contact_map.T):
+        if not unsafe:
+            raise ValueError("Contact map must be symmetric")
         warn("Contact map is not symmetric. Using only the upper triangular part.")
-        upper_tri = np.triu(contact_map)
-        contact_map = upper_tri + upper_tri.T
+        triu = np.triu(contact_map)
+        contact_map = triu + triu.T
 
     if not np.all(np.diag(contact_map) == 0):
         if unsafe:

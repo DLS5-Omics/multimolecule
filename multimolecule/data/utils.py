@@ -45,6 +45,7 @@ def infer_task(
     truncation: bool = False,
     max_seq_length: int | None = None,
     seq_length_offset: int | None = None,
+    ignore_index: int | None = -100,
 ) -> Task:
     if max_seq_length is not None and seq_length_offset is not None:
         max_seq_length -= seq_length_offset
@@ -54,7 +55,6 @@ def infer_task(
         column = column.combine_chunks()
     flattened, levels = flatten_column(column, truncation, max_seq_length)
     dtype = flattened.type
-    unique = flattened.unique()
     num_elem = len(sequence)
     num_tokens, num_contacts = get_num_tokens(sequence, seq_length_offset)
 
@@ -79,6 +79,8 @@ def infer_task(
     if pa.types.is_floating(dtype):
         return Task(TaskType.Regression, level=level, num_labels=num_labels)
     if pa.types.is_integer(dtype):
+        elems = pc.filter(flattened, pc.not_equal(flattened, ignore_index)) if ignore_index is not None else flattened
+        unique = elems.unique()
         if len(unique) == 2:
             if len(flattened) in (num_elem, num_tokens, num_contacts):
                 return Task(TaskType.Binary, level=level, num_labels=1)
@@ -127,7 +129,7 @@ def map_value(value: Any, mapping: dict[str, int] | None) -> Any:
     return mapping[value]
 
 
-def truncate_value(value: Any, max_seq_length: int, level: int | None = None) -> Any:
+def truncate_value(value: Any, max_seq_length: int, level: TaskLevel | None = None) -> Any:
     if level == TaskLevel.Token:
         return value[:max_seq_length]
     if level == TaskLevel.Contact:
