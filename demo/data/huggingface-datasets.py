@@ -22,4 +22,4 @@
 
 from multimolecule.data import Dataset
 
-data = Dataset("multimolecule/bprna-spot", split="train", pretrained="multimolecule/rna")
+data = Dataset("multimolecule/bprna-spot", split="train")

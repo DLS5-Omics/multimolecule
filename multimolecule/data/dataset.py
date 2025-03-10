@@ -39,11 +39,19 @@ from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from multimolecule import defaults
 from multimolecule.tasks import Task, TaskLevel, TaskType
+from multimolecule.tokenisers.dna.utils import STANDARD_ALPHABET as DNA_ALPHABET
+from multimolecule.tokenisers.dot_bracket.utils import STANDARD_ALPHABET as DB_ALPHABET
+from multimolecule.tokenisers.protein.utils import STANDARD_ALPHABET as PROTEIN_ALPHABET
+from multimolecule.tokenisers.rna.utils import STANDARD_ALPHABET as RNA_ALPHABET
 
 from .functional import dot_bracket_to_contact_map
-from .utils import infer_discrete_map, infer_task, map_value, truncate_value
+from .utils import flatten_column, infer_discrete_map, infer_task, map_value, truncate_value
 
-# from multimolecule.tokenisers.dot_bracket.utils import STANDARD_ALPHABET as DOT_BRACKET_ALPHABET
+alphabets = {
+    "rna": RNA_ALPHABET,
+    "dna": DNA_ALPHABET,
+    "protein": PROTEIN_ALPHABET,
+}
 
 
 class Dataset(datasets.Dataset):
@@ -115,20 +123,21 @@ class Dataset(datasets.Dataset):
         fingerprint: The fingerprint of the dataset.
     """
 
-    tokenizer: PreTrainedTokenizerBase
-    truncation: bool = False
-    max_seq_length: int
-    seq_length_offset: int = 0
-
     _id_cols: List
     _feature_cols: List
     _label_cols: List
 
     _sequence_cols: List
     _secondary_structure_cols: List
+    _sequence_type: str
 
     _tasks: NestedDict[str, Task]
     _discrete_map: Mapping
+
+    tokenizer: PreTrainedTokenizerBase
+    truncation: bool = False
+    max_seq_length: int
+    seq_length_offset: int = 0
 
     preprocess: bool = True
     auto_rename_sequence_col: bool = True
@@ -140,17 +149,12 @@ class Dataset(datasets.Dataset):
         self,
         data: Table | DataFrame | dict | list | str,
         split: datasets.NamedSplit,
-        tokenizer: PreTrainedTokenizerBase | None = None,
-        pretrained: str | None = None,
         feature_cols: List | None = None,
         label_cols: List | None = None,
         id_cols: List | None = None,
-        preprocess: bool | None = None,
         auto_rename_sequence_col: bool | None = None,
         auto_rename_label_col: bool | None = None,
         column_names_map: Mapping[str, str] | None = None,
-        truncation: bool | None = None,
-        max_seq_length: int | None = None,
         tasks: Mapping[str, Task] | None = None,
         discrete_map: Mapping[str, int] | None = None,
         nan_process: str = "ignore",
@@ -159,12 +163,14 @@ class Dataset(datasets.Dataset):
         indices: Sequence | Table | None = None,
         fingerprint: str | None = None,
         ignored_cols: List[str] | None = None,
+        sequence_type: str | None = None,
+        tokenizer: PreTrainedTokenizerBase | None = None,
+        pretrained: str | None = None,
+        truncation: bool | None = None,
+        max_seq_length: int | None = None,
+        preprocess: bool | None = None,
+        train: bool | None = None,
     ):
-        self._tasks = NestedDict()
-        if tasks is not None:
-            self.tasks = tasks
-        if discrete_map is not None:
-            self._discrete_map = discrete_map
         arrow_table = self.build_table(
             data, split, feature_cols, label_cols, nan_process=nan_process, fill_value=fill_value
         )
@@ -173,19 +179,24 @@ class Dataset(datasets.Dataset):
         super().__init__(
             arrow_table=arrow_table, split=split, info=info, indices_table=indices, fingerprint=fingerprint
         )
-        self.identify_special_cols(feature_cols=feature_cols, label_cols=label_cols, id_cols=id_cols)
-        self.post(
-            tokenizer=tokenizer,
-            pretrained=pretrained,
-            preprocess=preprocess,
-            truncation=truncation,
-            max_seq_length=max_seq_length,
+        self.post_init(
+            feature_cols=feature_cols,
+            label_cols=label_cols,
+            id_cols=id_cols,
+            ignored_cols=ignored_cols,
+            tasks=tasks,
+            discrete_map=discrete_map,
             auto_rename_sequence_col=auto_rename_sequence_col,
             auto_rename_label_col=auto_rename_label_col,
             column_names_map=column_names_map,
+            sequence_type=sequence_type,
+            tokenizer=tokenizer,
+            pretrained=pretrained,
+            truncation=truncation,
+            max_seq_length=max_seq_length,
+            preprocess=preprocess,
+            train=train,
         )
-        self.ignored_cols = ignored_cols or self.id_cols
-        self.train = split == datasets.Split.TRAIN
 
     def build_table(
         self,
@@ -199,32 +210,41 @@ class Dataset(datasets.Dataset):
         if isinstance(data, str):
             try:
                 data = datasets.load_dataset(data, split=split).data
-            except FileNotFoundError:
+            except (FileNotFoundError, ValueError):
                 data = dl.load_pandas(data)
-                if isinstance(data, DataFrame):
-                    data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
-                    data = pa.Table.from_pandas(data, preserve_index=False)
-        elif isinstance(data, dict):
+        if isinstance(data, dict):
             data = pa.Table.from_pydict(data)
         elif isinstance(data, list):
             data = pa.Table.from_pylist(data)
         elif isinstance(data, DataFrame):
+            data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
+            # If there are None values in the dataset, we replace them with nan and process them later at once.
+            data = data.fillna(float("nan"))
+            data = data.map(lambda x: [float("nan") if i is None else i for i in x] if isinstance(x, list) else x)
             data = pa.Table.from_pandas(data, preserve_index=False)
         if feature_cols is not None and label_cols is not None:
             data = data.select(feature_cols + label_cols)
         data = self.process_nan(data, nan_process=nan_process, fill_value=fill_value)
         return data
 
-    def post(
+    def post_init(
         self,
+        feature_cols: List | None = None,
+        label_cols: List | None = None,
+        id_cols: List | None = None,
+        ignored_cols: List | None = None,
+        tasks: Mapping[str, Task] | None = None,
+        discrete_map: Mapping[str, int] | None = None,
+        auto_rename_sequence_col: bool | None = None,
+        auto_rename_label_col: bool | None = None,
+        column_names_map: Mapping[str, str] | None = None,
+        sequence_type: str | None = None,
         tokenizer: PreTrainedTokenizerBase | None = None,
         pretrained: str | None = None,
         max_seq_length: int | None = None,
         truncation: bool | None = None,
         preprocess: bool | None = None,
-        auto_rename_sequence_col: bool | None = None,
-        auto_rename_label_col: bool | None = None,
-        column_names_map: Mapping[str, str] | None = None,
+        train: bool | None = None,
     ) -> None:
         r"""
         Perform pre-processing steps after initialization.
@@ -235,26 +255,12 @@ class Dataset(datasets.Dataset):
         If `auto_rename_label_col` is `True`, it will automatically rename the label column.
         Finally, it sets the [`transform`][datasets.Dataset.set_transform] function based on the `preprocess` flag.
         """
-        if tokenizer is None:
-            if pretrained is None:
-                raise ValueError("tokenizer and pretrained can not be both None.")
-            tokenizer = AutoTokenizer.from_pretrained(pretrained)
-        if max_seq_length is None:
-            max_seq_length = tokenizer.model_max_length
-        else:
-            tokenizer.model_max_length = max_seq_length
-        self.tokenizer = tokenizer
-        self.max_seq_length = max_seq_length
-        if truncation is not None:
-            self.truncation = truncation
-        if self.tokenizer.cls_token is not None:
-            self.seq_length_offset += 1
-        if self.tokenizer.sep_token is not None and self.tokenizer.sep_token != self.tokenizer.eos_token:
-            self.seq_length_offset += 1
-        if self.tokenizer.eos_token is not None:
-            self.seq_length_offset += 1
-        if preprocess is not None:
-            self.preprocess = preprocess
+
+        # Rename columns
+        self.identify_special_cols(
+            feature_cols=feature_cols, label_cols=label_cols, id_cols=id_cols, sequence_type=sequence_type
+        )
+        self.ignored_cols = ignored_cols or self.id_cols
         if auto_rename_sequence_col is not None:
             self.auto_rename_sequence_col = auto_rename_sequence_col
         if auto_rename_label_col is not None:
@@ -272,8 +278,39 @@ class Dataset(datasets.Dataset):
         self.column_names_map = column_names_map
         if self.column_names_map:
             self.rename_columns(self.column_names_map)
-        self.infer_tasks()
 
+        # Initialize tokenizer
+        if tokenizer is None:
+            if pretrained is None:
+                pretrained = "multimolecule/" + self.sequence_type.lower()
+            tokenizer = AutoTokenizer.from_pretrained(pretrained)
+        if max_seq_length is None:
+            max_seq_length = tokenizer.model_max_length
+        else:
+            tokenizer.model_max_length = max_seq_length
+        self.tokenizer = tokenizer
+        self.max_seq_length = max_seq_length
+        if truncation is not None:
+            self.truncation = truncation
+        if self.tokenizer.cls_token is not None:
+            self.seq_length_offset += 1
+        if self.tokenizer.sep_token is not None and self.tokenizer.sep_token != self.tokenizer.eos_token:
+            self.seq_length_offset += 1
+        if self.tokenizer.eos_token is not None:
+            self.seq_length_offset += 1
+
+        # Infer Tasks and Discrete Map
+        if tasks is not None:
+            self.tasks = tasks
+        else:
+            self.infer_tasks()
+        if discrete_map is not None:
+            self._discrete_map = discrete_map
+        self.train = train if train is not None else self.split.lower() in defaults.TRAIN_SPLITS
+
+        # Preprocess
+        if preprocess is not None:
+            self.preprocess = preprocess
         if self.preprocess:
             self.update(self.map(self.tokenization))
             if self.secondary_structure_cols:
@@ -313,6 +350,12 @@ class Dataset(datasets.Dataset):
                 data = map_value(data, self.discrete_map[col])
             if col in self.tasks:
                 data = truncate_value(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
+        if col in self.tasks:
+            ignore_value = float("nan") if self.tasks[col].type == TaskType.Regression else -100
+            if isinstance(data[0], list):
+                data = [[i if i is not None else ignore_value for i in d] for d in data]
+            else:
+                data = [i if i is not None else ignore_value for i in data]
         if isinstance(data[0], str):
             return data
         try:
@@ -367,14 +410,33 @@ class Dataset(datasets.Dataset):
         return self.__getitem__(keys)
 
     def identify_special_cols(
-        self, feature_cols: List | None = None, label_cols: List | None = None, id_cols: List | None = None
+        self,
+        feature_cols: List | None = None,
+        label_cols: List | None = None,
+        id_cols: List | None = None,
+        sequence_type: str | None = None,
     ) -> Sequence:
         all_cols = self.data.column_names
-        self._id_cols = id_cols or [i for i in all_cols if i in defaults.ID_COL_NAMES]
+        self._id_cols = id_cols or [i for i in all_cols if i.lower() in defaults.ID_COL_NAMES]
+        self._sequence_type = sequence_type  # type: ignore[assignment]
 
         string_cols: list[str] = [k for k, v in self.features.items() if k not in self.id_cols and v.dtype == "string"]
-        self._sequence_cols = [i for i in string_cols if i.lower() in defaults.SEQUENCE_COL_NAMES]
-        self._secondary_structure_cols = [i for i in string_cols if i in defaults.SECONDARY_STRUCTURE_COL_NAMES]
+        unique_chars = {
+            k: {ch for s in flatten_column(self._data.column(k))[0] for ch in s.as_py()} for k in string_cols
+        }
+        unique_chars_upper = {k: {ch.upper() for ch in v} for k, v in unique_chars.items()}
+
+        self._sequence_cols = []
+        for col, chars in unique_chars_upper.items():
+            for type, alphabet in alphabets.items():
+                condition = type in {"dna", "rna"} and len(chars) >= 4 or type in {"protein"} and len(chars) >= 20
+                if condition and chars.issubset(alphabet):
+                    self._sequence_cols.append(col)
+                    if self._sequence_type is None:
+                        self._sequence_type = sequence_type
+                    break
+
+        self._secondary_structure_cols = [k for k, v in unique_chars.items() if v.issubset(DB_ALPHABET)]
 
         data_cols = [i for i in all_cols if i not in self.id_cols]
         if label_cols is None:
@@ -430,7 +492,8 @@ class Dataset(datasets.Dataset):
         self._label_cols = [column_mapping.get(i, i) for i in self.label_cols]
         self._sequence_cols = [column_mapping.get(i, i) for i in self.sequence_cols]
         self._secondary_structure_cols = [column_mapping.get(i, i) for i in self.secondary_structure_cols]
-        self.tasks = {column_mapping.get(k, k): v for k, v in self.tasks.items()}
+        if getattr(self, "_tasks", None) is not None:
+            self.tasks = {column_mapping.get(k, k): v for k, v in self.tasks.items()}
         return self
 
     def rename_column(
@@ -444,7 +507,8 @@ class Dataset(datasets.Dataset):
         self._secondary_structure_cols = [
             new_column_name if i == original_column_name else i for i in self.secondary_structure_cols
         ]
-        self.tasks = {new_column_name if k == original_column_name else k: v for k, v in self.tasks.items()}
+        if getattr(self, "_tasks", None) is not None:
+            self.tasks = {new_column_name if k == original_column_name else k: v for k, v in self.tasks.items()}
         return self
 
     def process_nan(self, data: Table, nan_process: str | None, fill_value: str | int | float = 0) -> Table:
@@ -492,6 +556,10 @@ class Dataset(datasets.Dataset):
     @property
     def secondary_structure_cols(self) -> List:
         return self._secondary_structure_cols
+
+    @property
+    def sequence_type(self) -> str:
+        return self._sequence_type
 
     @property
     def tasks(self) -> NestedDict:
