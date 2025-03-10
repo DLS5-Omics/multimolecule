@@ -414,9 +414,7 @@ class ResNet(nn.Module):
         self.proj = nn.Conv2d(hidden_size, num_channels, kernel_size=3, stride=1, padding=1, bias=False)
         self.norm = norm_layer(num_channels)
         self.relu = nn.ReLU(inplace=True)
-        self.layers = nn.Sequential(
-            *[block(num_channels, num_channels, norm_layer=norm_layer) for _ in range(num_layers)]  # type: ignore
-        )
+        self.layers = nn.Sequential(*[block(num_channels, num_channels, norm_layer=norm_layer) for _ in range(num_layers)])  # type: ignore
         self.output = nn.Linear(num_channels, num_labels)
 
         for m in self.modules():

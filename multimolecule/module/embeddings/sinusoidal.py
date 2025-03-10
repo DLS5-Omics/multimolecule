@@ -58,9 +58,7 @@ class SinusoidalEmbedding(nn.Embedding):
         self.bias = bias
 
     def update_weight(self, num_embeddings: int, embedding_dim: int, padding_idx: int | None = None):
-        weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx).to(
-            dtype=self.weight.dtype, device=self.weight.device  # type: ignore[has-type]
-        )
+        weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx).to(dtype=self.weight.dtype, device=self.weight.device)  # type: ignore[has-type]
         self.weight = nn.Parameter(weight.detach(), requires_grad=False)
 
     @staticmethod
