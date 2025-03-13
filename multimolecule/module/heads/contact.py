@@ -32,13 +32,13 @@ from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 from typing_extensions import TYPE_CHECKING
 
-from ..criterions import CriterionRegistry
+from ..criterions import CRITERIONS
 from ..normlizations import LayerNorm2D
 from .config import HeadConfig
 from .generic import BasePredictionHead, PredictionHead
 from .output import HeadOutput
-from .registry import HeadRegistry
-from .transform import HeadTransformRegistryHF
+from .registry import HEADS
+from .transform import HEAD_TRANSFORMS_HF
 
 with try_import() as tv:
     from torchvision.models.resnet import BasicBlock, Bottleneck
@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
 
-@HeadRegistry.contact.logits.register("projection", default=True)
+@HEADS.contact.logits.register("projection", default=True)
 class ContactPredictionHead(BasePredictionHead):
 
     output_name: str = "last_hidden_state"
@@ -59,12 +59,12 @@ class ContactPredictionHead(BasePredictionHead):
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.transform = HEAD_TRANSFORMS_HF.build(self.config)
         out_channels: int = self.config.hidden_size  # type: ignore[assignment]
         self.q_proj = nn.Linear(out_channels, out_channels)
         self.decoder = nn.Linear(out_channels, self.num_labels, bias=False)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        self.criterion = CriterionRegistry.build(self.config)
+        self.criterion = CRITERIONS.build(self.config)
         # self.ffn = MLP(1, out_channels, residual=False)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
@@ -107,10 +107,10 @@ class ContactPredictionHead(BasePredictionHead):
         return HeadOutput(output)
 
 
-HeadRegistry.contact.setattr("default", ContactPredictionHead)
+HEADS.contact.setattr("default", ContactPredictionHead)
 
 
-@HeadRegistry.contact.attention.register("linear")
+@HEADS.contact.attention.register("linear")
 class ContactAttentionLinearHead(PredictionHead):
     r"""
     Head for tasks in contact-level.
@@ -212,7 +212,7 @@ class ContactAttentionLinearHead(PredictionHead):
         return super().forward(attentions, labels, **kwargs)
 
 
-@HeadRegistry.contact.attention.register("resnet")
+@HEADS.contact.attention.register("resnet")
 class ContactAttentionResnetHead(PredictionHead):
     r"""
     Head for tasks in contact-level.
@@ -314,7 +314,7 @@ class ContactAttentionResnetHead(PredictionHead):
         return super().forward(attentions, labels, **kwargs)
 
 
-@HeadRegistry.contact.logits.register("resnet")
+@HEADS.contact.logits.register("resnet")
 class ContactLogitsResnetHead(PredictionHead):
     r"""
     Head for tasks in contact-level.
