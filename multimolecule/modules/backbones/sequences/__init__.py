@@ -21,6 +21,6 @@
 
 
 from .onehot import OneHot
-from .registry import SequenceRegistry
+from .registry import SEQUENCES
 
-__all__ = ["SequenceRegistry", "OneHot"]
+__all__ = ["SEQUENCES", "OneHot"]

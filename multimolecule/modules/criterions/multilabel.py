@@ -31,14 +31,43 @@ from torch import Tensor, nn
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 
 
-@CriterionRegistry.register("multilabel")
+@CRITERIONS.register("multilabel")
 class MultiLabelSoftMarginLoss(nn.MultiLabelSoftMarginLoss):
+    r"""
+    Multi-label classification loss that supports NestedTensor and ignore_index.
+
+    Attributes:
+        ignore_index: Value to ignore in the target tensor. If None, no values are ignored.
+            Defaults to -100.
+
+    Examples:
+        >>> import torch
+        >>> from ..heads.config import HeadConfig
+        >>> criterion = MultiLabelSoftMarginLoss(HeadConfig())
+        >>> input = torch.tensor([[0.6, -0.5], [0.7, 0.3]])
+        >>> target = torch.tensor([[1.0, 0.0], [1.0, 0.0]])
+        >>> loss = criterion(input, target)
+        >>> loss
+        tensor(0.5423)
+        >>> assert loss == torch.nn.functional.multilabel_soft_margin_loss(input, target)
+        >>> input = torch.tensor([[0.6, -0.5], [0.7, 0.3]])
+        >>> target = torch.tensor([[1.0, 0.0], [1.0, -100]])
+        >>> loss = criterion(input, target)
+        >>> loss
+        tensor(0.4558)
+    """
+
+    ignore_index: int | None = None
+
     def __init__(self, config: HeadConfig) -> None:
-        super().__init__(**config.get("loss", {}))
+        loss_config = config.get("loss", {})
+        ignore_index = loss_config.pop("ignore_index", -100)
+        super().__init__(**loss_config)
         self.config = config
+        self.ignore_index = ignore_index
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
         if isinstance(target, NestedTensor) and target.ndim > 2:
@@ -47,4 +76,10 @@ class MultiLabelSoftMarginLoss(nn.MultiLabelSoftMarginLoss):
             input = torch.cat(input.storage())
         if isinstance(target, NestedTensor):
             target = torch.cat(target.storage())
+        if self.ignore_index is not None:
+            # For multilabel, we need to check across all labels
+            # Create a mask for samples where no label is set to ignore_index
+            mask = (target != self.ignore_index).all(dim=-1)
+            input = input[mask]
+            target = target[mask]
         return super().forward(input, target.float())

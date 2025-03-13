@@ -22,6 +22,6 @@
 
 from .bert import BERTNeck
 from .cat import CatNeck
-from .registry import NeckRegistry
+from .registry import NECKS
 
-__all__ = ["NeckRegistry", "CatNeck", "BERTNeck"]
+__all__ = ["NECKS", "CatNeck", "BERTNeck"]

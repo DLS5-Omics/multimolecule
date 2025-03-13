@@ -28,12 +28,12 @@ from transformers.activations import ACT2FN
 
 from .config import HeadConfig
 
-HeadTransformRegistry = Registry()
-HeadTransformRegistryHF = ConfigRegistry(key="transform")
+HEAD_TRANSFORMS = Registry()
+HEAD_TRANSFORMS_HF = ConfigRegistry(key="transform")
 
 
-@HeadTransformRegistry.register("nonlinear")
-@HeadTransformRegistryHF.register("nonlinear")
+@HEAD_TRANSFORMS.register("nonlinear")
+@HEAD_TRANSFORMS_HF.register("nonlinear")
 class NonLinearTransform(nn.Module):
     def __init__(self, config: HeadConfig):
         super().__init__()
@@ -51,8 +51,8 @@ class NonLinearTransform(nn.Module):
         return hidden_states
 
 
-@HeadTransformRegistry.register("linear")
-@HeadTransformRegistryHF.register("linear")
+@HEAD_TRANSFORMS.register("linear")
+@HEAD_TRANSFORMS_HF.register("linear")
 class LinearTransform(nn.Module):
     def __init__(self, config: HeadConfig):
         super().__init__()
@@ -65,8 +65,8 @@ class LinearTransform(nn.Module):
         return hidden_states
 
 
-@HeadTransformRegistry.register("identity", default=True)
-@HeadTransformRegistryHF.register("identity", default=True)
+@HEAD_TRANSFORMS.register("identity", default=True)
+@HEAD_TRANSFORMS_HF.register("identity", default=True)
 class IdentityTransform(nn.Identity):
     def __init__(self, config: HeadConfig):  # pylint: disable=unused-argument
         super().__init__()
