@@ -23,7 +23,8 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Any, List
+from contextlib import suppress
+from typing import Any, List, Tuple
 from warnings import warn
 
 import danling as dl
@@ -33,6 +34,7 @@ import pyarrow as pa
 import torch
 from chanfig import NestedDict
 from danling import NestedTensor
+from datasets import get_dataset_split_names
 from datasets.table import Table
 from numpy import random
 from packaging.version import parse as parse_version
@@ -197,7 +199,7 @@ class Dataset(datasets.Dataset):
         preprocess: bool | None = None,
         train: bool | None = None,
     ):
-        arrow_table = self.build_table(
+        arrow_table, split = self.build_table(
             data, split, feature_cols, label_col, nan_process=nan_process, fill_value=fill_value
         )
         if indices is not None and not isinstance(indices, (Table, pa.Table)):
@@ -228,22 +230,55 @@ class Dataset(datasets.Dataset):
     def build_table(
         self,
         data: Table | DataFrame | dict | str,
-        split: datasets.NamedSplit,
+        split: datasets.NamedSplit | None = None,
         feature_cols: List | None = None,
         label_col: str | None = None,
         nan_process: str | None = "ignore",
         fill_value: str | int | float = 0,
     ) -> datasets.table.Table:
+        splits = ()
+        is_hf_dataset = False
         if isinstance(data, str):
-            try:
-                data = datasets.load_dataset(data, split=split).data
-            except (FileNotFoundError, ValueError):
-                data = dl.load_pandas(data)
+            with suppress(FileNotFoundError):
+                splits = get_dataset_split_names(data)
+                is_hf_dataset = bool(splits)
+        if is_hf_dataset:
+            data, split = self._build_table_from_datasets(data, split, splits)
+        else:
+            data, split = self._build_table_from_local_dataset(data, split)
+        if feature_cols is not None and label_col is not None:
+            data = data.select(feature_cols + [label_col])
+        data = self.process_nan(data, nan_process=nan_process, fill_value=fill_value)
+        return data, split
+
+    def _build_table_from_datasets(
+        self,
+        data: Table | DataFrame | dict | str,
+        split: datasets.NamedSplit | None = None,
+        splits: Sequence[datasets.NamedSplit] | None = None,
+    ) -> Tuple[datasets.table.Table, datasets.NamedSplit]:
+        if not splits:
+            splits = get_dataset_split_names(data)
+        if split is None:
+            if len(splits) != 1:  # type: ignore[arg-type]
+                raise ValueError(f"Found multiple splits in the dataset: {splits}, but split is not specified.")
+            split = splits[0]  # type: ignore[index]
+        if split not in splits:  # type: ignore[operator]
+            raise ValueError(f"Found the following splits in the dataset: {splits}, but {split} is not one of them.")
+        return datasets.load_dataset(data, split=split).data, split
+
+    def _build_table_from_local_dataset(
+        self,
+        data: Table | DataFrame | dict | str,
+        split: datasets.NamedSplit | None = None,
+    ) -> Tuple[datasets.table.Table, datasets.NamedSplit]:
+        if isinstance(data, str):
+            data = dl.load_pandas(data)
         if isinstance(data, dict):
-            data = pa.Table.from_pydict(data)
-        elif isinstance(data, list):
-            data = pa.Table.from_pylist(data)
-        elif isinstance(data, DataFrame):
+            return pa.Table.from_pydict(data), split
+        if isinstance(data, list):
+            return pa.Table.from_pylist(data), split
+        if isinstance(data, DataFrame):
             data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
             # If there are None values in the dataset, we replace them with nan and process them later at once.
             data = data.fillna(float("nan"))
@@ -254,11 +289,8 @@ class Dataset(datasets.Dataset):
                 data = data.applymap(
                     lambda x: [float("nan") if i is None else i for i in x] if isinstance(x, list) else x
                 )
-            data = pa.Table.from_pandas(data, preserve_index=False)
-        if feature_cols is not None and label_col is not None:
-            data = data.select(feature_cols + [label_col])
-        data = self.process_nan(data, nan_process=nan_process, fill_value=fill_value)
-        return data
+            return pa.Table.from_pandas(data, preserve_index=False), split
+        raise ValueError(f"Unsupported data type: {type(data)}")
 
     def post_init(
         self,
@@ -658,6 +690,11 @@ class SampleDataset(data.Dataset):
         return sorted(indices)
 
     def __getattr__(self, name: str):
+        if name == "dataset":
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute 'dataset'. "
+                "If this instance is initialized, this is probably because of multiprocessing."
+            )
         if hasattr(self.dataset, name):
             return getattr(self.dataset, name)
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
