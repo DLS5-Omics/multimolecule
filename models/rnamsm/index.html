@@ -40,7 +40,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/logo.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.8">
     
     
       
@@ -2810,6 +2810,7 @@ RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.</p>
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -2985,6 +2986,7 @@ RNA-MSM used Rfam 14.7 which contains 4,069 RNA families.</p>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="gt">Traceback (most recent call last):</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="gr">ValueError</span>: <span class="n">length of input sequence must be a multiple of 3 for codon tokenization, but got 10</span>
 </span></code></pre></div></td></tr></table></div>
+
 
 
 
@@ -3514,6 +3516,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/rnamsm/configuration_rnamsm.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-32"> 32</a></span>
@@ -3807,6 +3810,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/rnamsm/modeling_rnamsm.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-313">313</a></span>
@@ -4006,6 +4010,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">tensor(..., grad_fn=&lt;NllLossBackward0&gt;)</span>
 </span></code></pre></div></td></tr></table></div>
+
 
 
 
@@ -4215,6 +4220,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;logits_ss&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">torch.Size([1, 5, 5, 1])</span>
 </span></code></pre></div></td></tr></table></div>
+
 
 
 
@@ -4458,6 +4464,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/rnamsm/modeling_rnamsm.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-541">541</a></span>
@@ -4659,6 +4666,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/rnamsm/modeling_rnamsm.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-187">187</a></span>
@@ -4850,6 +4858,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/rnamsm/modeling_rnamsm.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-250">250</a></span>
@@ -5035,6 +5044,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;pooler_output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">torch.Size([1, 768])</span>
 </span></code></pre></div></td></tr></table></div>
+
 
 
 
@@ -5293,6 +5303,7 @@ models.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>multimolecule/models/rnamsm/modeling_rnamsm.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-54">54</a></span>
@@ -5377,6 +5388,7 @@ models.</p>
     <div class="doc doc-contents ">
 
         <p>Initialize the weights</p>
+
 
             <details class="quote">
               <summary>Source code in <code>multimolecule/models/rnamsm/modeling_rnamsm.py</code></summary>
