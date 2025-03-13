@@ -19,6 +19,7 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # https://multimolecule.danling.org/about/license-faq
 
+from .dataloader import DataLoader
 from .dataset import Dataset, SampleDataset
 from .functional import contact_map_to_dot_bracket, dot_bracket_to_contact_map
 from .registry import DATASETS
@@ -28,6 +29,7 @@ __all__ = [
     "DATASETS",
     "Dataset",
     "SampleDataset",
+    "DataLoader",
     "no_collate",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",

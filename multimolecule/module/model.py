@@ -22,35 +22,35 @@
 
 from __future__ import annotations
 
-from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
 
-from .backbones import BackboneRegistry
-from .heads import HeadRegistry
-from .necks import NeckRegistry
-from .registry import ModelRegistry
+from .backbones import BACKBONES
+from .heads import HEADS, HeadOutput
+from .necks import NECKS
+from .registry import MODELS
 
 
-@ModelRegistry.register(default=True)
-class MultiMoleculeModel(nn.Module):
+@MODELS.register(default=True)
+class Model(nn.Module):
 
     whitelist: list[str] = ["weight", "conv", "fc"]
     blacklist: list[str] = ["bias", "bn", "norm"]
 
+    backbone: nn.Module
+    neck: nn.Module | None
+    head: nn.Module
+
     def __init__(
         self,
         backbone: dict,
-        heads: dict,
+        head: dict,
         neck: dict | None = None,
-        max_length: int = 1024,
-        truncation: bool = False,
-        probing: bool = False,
     ):
         super().__init__()
 
         # Backbone
-        self.backbone = BackboneRegistry.build(**backbone)
+        self.backbone = BACKBONES.build(**backbone)
         backbone = self.backbone.config
         out_channels = self.backbone.out_channels
 
@@ -58,58 +58,57 @@ class MultiMoleculeModel(nn.Module):
         if neck:
             num_discrete = self.backbone.num_discrete
             num_continuous = self.backbone.num_continuous
-            embed_dim = self.backbone.sequence.config.hidden_size
-            attention_heads = self.backbone.sequence.config.num_attention_heads
+            hidden_size = self.backbone.sequence.config.hidden_size
             neck.update(
                 {
                     "num_discrete": num_discrete,
                     "num_continuous": num_continuous,
-                    "embed_dim": embed_dim,
-                    "attention_heads": attention_heads,
-                    "max_length": max_length,
-                    "truncation": truncation,
+                    "hidden_size": hidden_size,
                 }
             )
-            self.neck = NeckRegistry.build(**neck)
+            self.neck = NECKS.build(**neck)
             out_channels = self.neck.out_channels
         else:
             self.neck = None
 
-        # Heads
-        for head in heads.values():
-            if "hidden_size" not in head or head["hidden_size"] is None:
-                head["hidden_size"] = out_channels
-        self.heads = nn.ModuleDict({name: HeadRegistry.build(backbone, head) for name, head in heads.items()})
-        if any(getattr(h, "require_attentions", False) for h in self.heads.values()):
+        # Head
+        if "hidden_size" not in head or head["hidden_size"] is None:
+            head["hidden_size"] = out_channels
+        self.head = HEADS.build(backbone, head)
+        if self.head.require_attentions:
             self.backbone.sequence.config.output_attentions = True
-
-        if probing:
-            for param in self.backbone.parameters():
-                param.requires_grad = False
 
     def forward(
         self,
         sequence: NestedTensor | Tensor,
         discrete: Tensor | None = None,
         continuous: Tensor | None = None,
-        dataset: str | None = None,
-        **labels: NestedTensor | Tensor,
-    ) -> FlatDict:
-        ret = FlatDict()
-        output, _ = self.backbone(sequence, discrete, continuous)
-        if self.neck is not None:
-            output = self.neck(**output)
-        for task, label in labels.items():
-            ret[task] = self.heads[task](output, input_ids=sequence, labels=label)
-        return ret
+        labels: NestedTensor | Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_model_output: bool = False,
+    ) -> HeadOutput:
+        backbone_output = self.backbone(
+            sequence,
+            discrete,
+            continuous,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+        )
+        neck_output = self.neck(**backbone_output) if self.neck is not None else backbone_output
+        head_output = self.head(neck_output, input_ids=sequence, labels=labels)
+        if return_model_output:
+            head_output["model"] = backbone_output
+        return head_output
 
     def trainable_parameters(
         self,
         lr: float,
         weight_decay: float,
-        pretrained_ratio: float = 1e-2,
+        pretrained_ratio: float | None = None,
         whitelist: list[str] | None = None,
         blacklist: list[str] | None = None,
+        **kwargs,
     ) -> list[dict]:
         """
         Prepare parameter groups with specific optimization settings.
@@ -118,12 +117,16 @@ class MultiMoleculeModel(nn.Module):
             lr: Base learning rate.
             weight_decay: Base weight decay.
             pretrained_ratio: Scaling factor for backbone's learning rate and weight decay.
+                If is None, return all parameters without any scaling.
             whitelist: List of parameter name substrings to include in weight decay.
             blacklist: List of parameter name substrings to exclude from weight decay.
 
         Returns:
             Parameter groups for the optimizer.
         """
+
+        if pretrained_ratio is None:
+            return self.parameters()
 
         whitelist = whitelist or self.whitelist
         blacklist = blacklist or self.blacklist
@@ -152,8 +155,8 @@ class MultiMoleculeModel(nn.Module):
                 param_groups.append({"params": no_decay_params, "weight_decay": 0.0, "lr": base_lr * lr_ratio})
             return param_groups
 
-        heads_param_groups = categorize_parameters(self.heads, lr, weight_decay)
-        trainable_parameters.extend(heads_param_groups)
+        head_param_groups = categorize_parameters(self.head, lr, weight_decay)
+        trainable_parameters.extend(head_param_groups)
 
         if isinstance(self.backbone, nn.Module):
             backbone_param_groups = categorize_parameters(self.backbone, lr, weight_decay, lr_ratio=pretrained_ratio)

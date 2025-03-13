@@ -28,17 +28,47 @@ import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
 
-@CriterionRegistry.register("binary")
+@CRITERIONS.register("binary")
 class BCEWithLogitsLoss(nn.BCEWithLogitsLoss):
+    r"""
+    Binary Cross Entropy with Logits Loss that supports NestedTensor and ignore_index.
+
+    Attributes:
+        ignore_index: Value to ignore in the target tensor. If None, no values are ignored.
+            Defaults to -100.
+
+    Examples:
+        >>> import torch
+        >>> from ..heads.config import HeadConfig
+        >>> criterion = BCEWithLogitsLoss(HeadConfig())
+        >>> input = torch.tensor([0.6, -0.5, 0.7, 0.3])
+        >>> target = torch.tensor([1.0, 0.0, 1.0, 0.0])
+        >>> loss = criterion(input, target)
+        >>> loss
+        tensor(0.5423)
+        >>> assert loss == torch.nn.functional.binary_cross_entropy_with_logits(input, target)
+        >>> input = torch.tensor([0.6, -0.5, 0.7, 0.3])
+        >>> target = torch.tensor([1.0, 0.0, -100, -100])
+        >>> loss = criterion(input, target)
+        >>> loss
+        tensor(0.4558)
+        >>> assert loss == torch.nn.functional.binary_cross_entropy_with_logits(input[:2], target[:2])
+    """
+
+    ignore_index: int | None = None
+
     def __init__(self, config: HeadConfig) -> None:
-        super().__init__(**config.get("loss", {}))
+        loss_config = config.get("loss", {})
+        ignore_index = loss_config.pop("ignore_index", -100)
+        super().__init__(**loss_config)
         self.config = config
+        self.ignore_index = ignore_index
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
         if isinstance(input, NestedTensor):
@@ -47,4 +77,8 @@ class BCEWithLogitsLoss(nn.BCEWithLogitsLoss):
             target = torch.cat(target.flatten().storage())
         if input.ndim == target.ndim + 1:
             input = input.squeeze(-1)
+        if self.ignore_index is not None:
+            mask = target != self.ignore_index
+            input = input[mask]
+            target = target[mask]
         return super().forward(input, target.float())
