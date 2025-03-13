@@ -19,16 +19,15 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-
 from .binary import BCEWithLogitsLoss
 from .generic import Criterion
 from .multiclass import CrossEntropyLoss
 from .multilabel import MultiLabelSoftMarginLoss
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 from .regression import MSELoss
 
 __all__ = [
-    "CriterionRegistry",
+    "CRITERIONS",
     "Criterion",
     "MSELoss",
     "BCEWithLogitsLoss",

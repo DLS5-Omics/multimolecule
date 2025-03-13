@@ -69,4 +69,4 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
         return sequence
 
 
-SequenceRegistry = Registry()
+SEQUENCES = Registry()

@@ -20,8 +20,8 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .registry import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF
+from .registry import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF
 from .rotary import RotaryEmbedding
 from .sinusoidal import SinusoidalEmbedding
 
-__all__ = ["RotaryEmbedding", "SinusoidalEmbedding", "PositionEmbeddingRegistry", "PositionEmbeddingRegistryHF"]
+__all__ = ["RotaryEmbedding", "SinusoidalEmbedding", "POSITION_EMBEDDINGS", "POSITION_EMBEDDINGS_HF"]

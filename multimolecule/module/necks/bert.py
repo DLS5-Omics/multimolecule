@@ -24,22 +24,22 @@ from __future__ import annotations
 
 import torch
 from chanfig import FlatDict
-from danling.modules import TransformerEncoder, TransformerEncoderLayer
+from danling.module import TransformerEncoder, TransformerEncoderLayer
 from torch import Tensor, nn
 
-from .registry import NeckRegistry
+from .registry import NECKS
 
 MAX_LENGTH = 1024
 
 
-@NeckRegistry.register("bert")
+@NECKS.register("bert")
 class BERTNeck(nn.Module):
     def __init__(  # pylint: disable=keyword-arg-before-vararg
         self,
         num_discrete: int,
         num_continuous: int,
-        embed_dim: int,
-        attention_heads: int,
+        hidden_size: int,
+        num_attention_heads: int,
         num_layers: int = 6,
         max_length: int | None = None,
         truncation: bool = False,
@@ -48,20 +48,26 @@ class BERTNeck(nn.Module):
         **kwargs,
     ):
         super().__init__()
-        self.cls_token_dis = nn.Parameter(torch.zeros(embed_dim))
-        self.cls_token_con = nn.Parameter(torch.zeros(embed_dim))
+        self.cls_token_dis = nn.Parameter(torch.zeros(hidden_size))
+        self.cls_token_con = nn.Parameter(torch.zeros(hidden_size))
         if max_length is None:
             if truncation:
                 max_length = MAX_LENGTH + 1 + num_discrete + 1 + num_continuous
             else:
                 max_length = MAX_LENGTH * 4 + 1 + num_discrete + 1 + num_continuous
         self.max_length = max_length
-        self.pos_embed = nn.Parameter(torch.zeros(1, self.max_length, embed_dim))
+        self.pos_embed = nn.Parameter(torch.zeros(1, self.max_length, hidden_size))
         bert_layer = TransformerEncoderLayer(
-            embed_dim, attention_heads, *args, dropout=dropout, attn_dropout=dropout, ffn_dropout=dropout, **kwargs
+            hidden_size,
+            num_attention_heads,
+            *args,
+            dropout=dropout,
+            attn_dropout=dropout,
+            ffn_dropout=dropout,
+            **kwargs,
         )
         self.bert = TransformerEncoder(bert_layer, num_layers)
-        self.out_channels = embed_dim
+        self.out_channels = hidden_size
         nn.init.normal_(self.pos_embed, std=0.02)
         nn.init.trunc_normal_(self.cls_token_dis, std=0.2)
         nn.init.trunc_normal_(self.cls_token_con, std=0.2)
