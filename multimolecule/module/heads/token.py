@@ -26,7 +26,6 @@ from functools import partial
 from typing import TYPE_CHECKING, Mapping, Tuple
 
 import torch
-from chanfig import ConfigRegistry
 from danling import NestedTensor
 from torch import Tensor
 from transformers.modeling_outputs import ModelOutput
@@ -34,16 +33,13 @@ from transformers.modeling_outputs import ModelOutput
 from .config import HeadConfig
 from .generic import PredictionHead
 from .output import HeadOutput
-from .registry import HeadRegistry
+from .registry import HEADS
 
 if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
-TokenHeadRegistryHF = ConfigRegistry(key="tokenizer_type")
 
-
-@HeadRegistry.token.register("single", default=True)
-@TokenHeadRegistryHF.register("single", default=True)
+@HEADS.token.register("single", default=True)
 class TokenPredictionHead(PredictionHead):
     r"""
     Head for tasks in token-level.
@@ -95,8 +91,7 @@ class TokenPredictionHead(PredictionHead):
         return super().forward(output, labels, **kwargs)
 
 
-@HeadRegistry.register("token.kmer")
-@TokenHeadRegistryHF.register("kmer")
+@HEADS.token.register("kmer")
 class TokenKMerHead(PredictionHead):
     r"""
     Head for tasks in token-level with kmer inputs.

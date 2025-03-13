@@ -19,27 +19,33 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+from __future__ import annotations
+
+from typing import Tuple
 
 import torch
 from chanfig import FlatDict
-from torch import nn
+from torch import Tensor, nn
 from transformers import AutoConfig
 
-from .registry import SequenceRegistry
+from .registry import SEQUENCES
 
 
-@SequenceRegistry.register("onehot")
+@SEQUENCES.register("onehot")
 class OneHot(nn.Module):
     def __init__(self, pretrained: str) -> None:
         super().__init__()
         self.config = AutoConfig.from_pretrained(str(pretrained))
         self.module = nn.Embedding(self.config.vocab_size, self.config.hidden_size)
 
-    def forward(self, input_ids, attn_mask) -> FlatDict:
-        output = FlatDict()
-        output["last_hidden_state"] = self.module(input_ids)
+    def forward(
+        self,
+        input_ids: Tensor,
+        attn_mask: Tensor,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+    ) -> FlatDict | Tuple[Tensor, Tensor]:
+        last_hidden_state = self.module(input_ids)
         valid_length = attn_mask.sum(dim=1)
-        output["pooler_output"] = torch.stack(
-            [t[: valid_length[i]].sum(0) for i, t in enumerate(output["last_hidden_state"])]
-        )
-        return output
+        pooler_output = torch.stack([t[: valid_length[i]].sum(0) for i, t in enumerate(last_hidden_state)])
+        return FlatDict(last_hidden_state=last_hidden_state, pooler_output=pooler_output)

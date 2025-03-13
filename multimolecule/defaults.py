@@ -19,10 +19,11 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+from datasets.data_files import SPLIT_KEYWORDS, Split
 
-TRAIN_SPLITS = ("train",)
-VALIDATION_SPLITS = ("val", "validation")
-TEST_SPLITS = ("test", "eval", "evaluation")
+TRAIN_SPLITS = tuple(SPLIT_KEYWORDS[Split.TRAIN])
+VALIDATION_SPLITS = tuple(SPLIT_KEYWORDS[Split.VALIDATION])
+TEST_SPLITS = tuple(SPLIT_KEYWORDS[Split.TEST])
 INFERENCE_SPLITS = ("inf", "inference")
 DATASET_SPLITS = TRAIN_SPLITS + VALIDATION_SPLITS + TEST_SPLITS + INFERENCE_SPLITS
 ID_COL_NAMES = ["id", "idx", "index"]

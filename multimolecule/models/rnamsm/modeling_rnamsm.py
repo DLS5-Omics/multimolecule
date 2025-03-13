@@ -48,8 +48,6 @@ from multimolecule.module import (
 from ..configuration_utils import HeadConfig
 from .configuration_rnamsm import RnaMsmConfig
 
-LAYERS = ConfigRegistry()
-
 
 class RnaMsmPreTrainedModel(PreTrainedModel):
     """
@@ -780,10 +778,10 @@ class RnaMsmEncoder(nn.Module):
         )
 
 
-layer_registry = ConfigRegistry("layer_type")
+layers = ConfigRegistry("layer_type")
 
 
-@layer_registry.register("axial", default=True)
+@layers.register("axial", default=True)
 class RnaMsmAxialLayer(nn.Module):
     """Implements an Axial MSA Transformer block."""
 
@@ -831,14 +829,14 @@ class RnaMsmAxialLayer(nn.Module):
         return outputs
 
 
-@layer_registry.register("standard")
+@layers.register("standard")
 class RnaMsmLayer(nn.Module):
     """Transformer layer block."""
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.dropout = nn.Dropout(config.dropout)
-        self.self = attention_registry.build(config)
+        self.self = attentions.build(config)
         self.layer_norm = nn.LayerNorm(config.hidden_size)
         self.ffn = FeedForwardNetwork(config)
         self.final_layer_norm = nn.LayerNorm(config.hidden_size)
@@ -870,7 +868,7 @@ class RnaMsmLayer(nn.Module):
         return hidden_states, attention_probs
 
 
-@layer_registry.register("pkm")
+@layers.register("pkm")
 class RnaMsmPkmLayer(nn.Module):
     """Transformer layer block."""
 
@@ -878,7 +876,7 @@ class RnaMsmPkmLayer(nn.Module):
         from product_key_memory import PKM
 
         super().__init__()
-        self.self = attention_registry.build(config)
+        self.self = attentions.build(config)
         self.layer_norm = nn.LayerNorm(config.hidden_size)
 
         self.pkm = PKM(
@@ -1151,10 +1149,10 @@ class ColumnSelfAttention(nn.Module):
         return outputs
 
 
-attention_registry = ConfigRegistry(key="attention_type")
+attentions = ConfigRegistry(key="attention_type")
 
 
-@attention_registry.register("standard")
+@attentions.register("standard")
 class MultiheadAttention(nn.Module):
     """Multi-headed attention.
 
@@ -1319,7 +1317,7 @@ class MultiheadAttention(nn.Module):
         return outputs
 
 
-@attention_registry.register("performer")
+@attentions.register("performer")
 class PerformerAttention(MultiheadAttention):
     def __init__(self, config: RnaMsmConfig):
         from performer_pytorch import FastAttention

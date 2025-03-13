@@ -68,7 +68,11 @@ class HeadConfig(BaseHeadConfig):
         type:
             The type of the head in the model.
 
-            This is used by [`MultiMoleculeModel`][multimolecule.MultiMoleculeModel] to construct heads.
+            This is used by [`Model`][multimolecule.Model] to construct heads.
+        loss_weight:
+            The weight to scale the loss.
+
+            If is `None`, will not scale the loss.
     """
 
     num_labels: Optional[int] = None
@@ -82,6 +86,7 @@ class HeadConfig(BaseHeadConfig):
     layer_norm_eps: float = 1e-12
     output_name: Optional[str] = None
     type: Optional[str] = None
+    loss_weight: Optional[float] = None
 
 
 class MaskedLMHeadConfig(BaseHeadConfig):
@@ -109,6 +114,10 @@ class MaskedLMHeadConfig(BaseHeadConfig):
             The name of the tensor required in model outputs.
 
             If is `None`, will use the default output name of the corresponding head.
+        loss_weight:
+            The weight to scale the loss.
+
+            If is `None`, will not scale the loss.
     """
 
     hidden_size: Optional[int] = None
@@ -119,3 +128,4 @@ class MaskedLMHeadConfig(BaseHeadConfig):
     act: Optional[str] = None
     layer_norm_eps: float = 1e-12
     output_name: Optional[str] = None
+    loss_weight: Optional[float] = None

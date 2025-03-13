@@ -31,11 +31,32 @@ from torch import Tensor, nn
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 
 
-@CriterionRegistry.register("multiclass")
+@CRITERIONS.register("multiclass")
 class CrossEntropyLoss(nn.CrossEntropyLoss):
+    r"""
+    Cross Entropy Loss that supports NestedTensor inputs.
+
+    Examples:
+        >>> import torch
+        >>> from ..heads.config import HeadConfig
+        >>> criterion = CrossEntropyLoss(HeadConfig())
+        >>> input = torch.tensor([[0.1, 0.2, 0.9], [1.1, 0.1, 0.2]])
+        >>> target = torch.tensor([2, 0])
+        >>> loss = criterion(input, target)
+        >>> loss
+        tensor(0.6196)
+        >>> assert loss == torch.nn.functional.cross_entropy(input, target)
+        >>> input = torch.tensor([[0.1, 0.2, 0.9], [1.1, 0.1, 0.2]])
+        >>> target = torch.tensor([2, -100])
+        >>> loss = criterion(input, target)
+        >>> loss
+        tensor(0.6657)
+        >>> assert loss == torch.nn.functional.cross_entropy(input[:1], target[:1])
+    """
+
     def __init__(self, config: HeadConfig) -> None:
         super().__init__(**config.get("loss", {}))
         self.config = config

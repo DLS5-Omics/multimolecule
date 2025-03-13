@@ -15,38 +15,45 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-## Introduction
+## 🧬 Introduction
 
-Welcome to MultiMolecule (浦原), a foundational library designed to accelerate scientific research in molecular biology through machine learning.
-MultiMolecule provides a comprehensive yet flexible set of tools for researchers aiming to leverage AI with ease, focusing on biomolecular data (RNA, DNA, and protein).
+MultiMolecule is a framework that bridges molecular biology and machine learning. It offers machine learning tools specifically designed for biomolecular data (RNA, DNA, and protein).
 
-## Overview
+MultiMolecule serves as a foundation for advancing research at the intersection of molecular biology and machine learning.
 
-MultiMolecule is built with flexibility and ease of use in mind.
-Its modular design allows you to utilize only the components you need, integrating seamlessly into your existing workflows without adding unnecessary complexity.
+## 🚀 Features
 
-- [`data`](data): Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.
-- [`datasets`](datasets): A collection of widely-used biomolecular datasets.
-- [`module`](module): Modular neural network building blocks, including [embeddings](module/embeddings), [heads](module/heads), and criterions for constructing custom models.
-- [`models`](models): Implementation of state-of-the-art pre-trained models in molecular biology.
-- [`tokenisers`](tokenisers): Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.
-<!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->
+### 📑 Resources
 
-## Installation
+- **[Model Hub](https://multimolecule.danling.org/models)**: Models designed for biomolecular data.
+- **[Dataset Hub](https://multimolecule.danling.org/datasets)**: Processed biomolecular datasets.
 
-Install the most recent stable version on PyPI:
+### 🛠️ Tools
 
-```shell
-pip install multimolecule
-```
+- **[`pipelines`](pipelines)**: End-to-end workflows for applying models.
+- **[`runner`](runner)**: Automatic Runner for training models.
 
-Install the latest version from the source:
+### ⚙️ Infrastructure
 
-```shell
-pip install git+https://github.com/DLS5-Omics/MultiMolecule
-```
+- **[`data`](data)**: Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression).
+- **[`tokenisers`](tokenisers)**: Tokenizers for biomolecular sequences.
+- **[`module`](module)**: Neural network building blocks.
 
-## Citation
+## 🔧 Installation
+
+=== "Install the stable release from PyPI"
+
+    ```bash
+    pip install multimolecule
+    ```
+
+=== "Install the latest development version"
+
+    ```bash
+    pip install git+https://github.com/DLS5-Omics/multimolecule
+    ```
+
+## 📜 Citation
 
 If you use MultiMolecule in your research, please cite us as follows:
 
@@ -63,7 +70,7 @@ If you use MultiMolecule in your research, please cite us as follows:
 }
 ```
 
-## License
+## 📄 License
 
 We believe openness is the Foundation of Research.
 

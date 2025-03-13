@@ -25,10 +25,10 @@ from __future__ import annotations
 from chanfig import Registry as Registry_
 from torch import nn
 
-from .backbones import BackboneRegistry
-from .backbones.sequences import SequenceRegistry
-from .heads import HeadRegistry
-from .necks import NeckRegistry
+from .backbones import BACKBONES
+from .backbones.sequences import SEQUENCES
+from .heads import HEADS
+from .necks import NECKS
 
 
 class Registry(Registry_):  # pylint: disable=too-few-public-methods
@@ -36,6 +36,6 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
         return super().build(*args, **kwargs)
 
 
-ModelRegistry = Registry()
+MODELS = Registry()
 
-__all__ = ["ModelRegistry", "BackboneRegistry", "SequenceRegistry", "NeckRegistry", "HeadRegistry"]
+__all__ = ["MODELS", "BACKBONES", "SEQUENCES", "HEADS", "NECKS"]
