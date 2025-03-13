@@ -34,14 +34,14 @@ from transformers.modeling_outputs import ModelOutput
 from .config import MaskedLMHeadConfig
 from .generic import BasePredictionHead
 from .output import HeadOutput
-from .registry import HeadRegistry
-from .transform import HeadTransformRegistryHF
+from .registry import HEADS
+from .transform import HEAD_TRANSFORMS_HF
 
 if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
 
-@HeadRegistry.register("masked_lm")
+@HEADS.register("masked_lm")
 class MaskedLMHead(BasePredictionHead):
     r"""
     Head for masked language modeling.
@@ -63,7 +63,7 @@ class MaskedLMHead(BasePredictionHead):
         head_config.num_labels = config.vocab_size
         super().__init__(config, head_config)
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.transform = HEAD_TRANSFORMS_HF.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=False)
         if weight is not None:
             self.decoder.weight = weight
