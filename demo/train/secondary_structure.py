@@ -19,18 +19,13 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-from .binary import BCEWithLogitsLoss
-from .generic import Criterion
-from .multiclass import CrossEntropyLoss
-from .multilabel import MultiLabelSoftMarginLoss
-from .registry import CriterionRegistry
-from .regression import MSELoss
 
-__all__ = [
-    "CriterionRegistry",
-    "Criterion",
-    "MSELoss",
-    "BCEWithLogitsLoss",
-    "CrossEntropyLoss",
-    "MultiLabelSoftMarginLoss",
-]
+from multimolecule import Config, Runner
+
+# Sample 10% of the dataset to speed up testing process
+data = {"root": "multimolecule/rivas-a", "ratio": 0.1}
+config = Config(data=data, pretrained="multimolecule/rnabert", epoch_end=1)
+config.parse()
+runner = Runner(config)
+
+runner.train()
