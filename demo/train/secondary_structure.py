@@ -20,30 +20,12 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from __future__ import annotations
+from multimolecule import Config, Runner
 
-import torch
-from chanfig import FlatDict
-from torch import Tensor
+# Sample 10% of the dataset to speed up testing process
+data = {"root": "multimolecule/rivas-a", "ratio": 0.1}
+config = Config(data=data, pretrained="multimolecule/rnabert", epoch_end=1)
+config.parse()
+runner = Runner(config)
 
-from .registry import NECKS
-
-
-@NECKS.register("cat")
-class CatNeck:  # pylint: disable=too-few-public-methods
-    def __init__(self, hidden_size: int):
-        self.out_channels = hidden_size * 2
-
-    def __call__(
-        self,
-        cls_token: Tensor | None = None,
-        all_tokens: Tensor | None = None,
-        discrete: Tensor | None = None,
-        continuous: Tensor | None = None,
-    ) -> FlatDict:
-        ret = FlatDict()
-        if cls_token is not None:
-            ret.cls_token = torch.cat(tuple(i for i in (cls_token, discrete, continuous) if i is not None), -1)
-        if all_tokens is not None:
-            ret.all_tokens = torch.cat(tuple(i for i in (all_tokens, discrete, continuous) if i is not None), -1)
-        return ret
+runner.train()

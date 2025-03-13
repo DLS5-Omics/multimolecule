@@ -23,7 +23,7 @@ MultiMolecule provides a comprehensive yet flexible set of tools for researchers
 MultiMolecule is built with flexibility and ease of use in mind.
 Its modular design allows you to utilize only the components you need, integrating seamlessly into your existing workflows without adding unnecessary complexity.
 
-- [`data`](data): Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.
+- [`data`](data): Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression).
 - [`datasets`](datasets): A collection of widely-used biomolecular datasets.
 - [`module`](module): Modular neural network building blocks, including [embeddings](module/embeddings), [heads](module/heads), and criterions for constructing custom models.
 - [`models`](models): Implementation of state-of-the-art pre-trained models in molecular biology.
