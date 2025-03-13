@@ -32,4 +32,4 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
         return self.init(self.lookup(name), config, head_config)  # type: ignore[arg-type]
 
 
-HeadRegistry = Registry(default_factory=Registry, fallback=True)
+HEADS = Registry(default_factory=Registry, fallback=True)

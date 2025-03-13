@@ -25,11 +25,26 @@ from torch import nn
 
 
 class Registry(Registry_):  # pylint: disable=too-few-public-methods
+    """Registry for criterion classes that are selected based on problem_type.
+
+    This registry extends the ConfigRegistry to provide a specialized mechanism
+    for looking up and initializing criterion classes based on problem type.
+    """
+
     key = "problem_type"
 
     def build(self, config) -> nn.Module:  # type: ignore[override]
+        """Build a criterion instance based on the problem_type in the config.
+
+        Args:
+            config: Configuration object containing problem_type and other
+                   parameters needed to initialize the criterion.
+
+        Returns:
+            nn.Module: An initialized criterion instance.
+        """
         name = getattr(config, self.getattr("key"))
         return self.init(self.lookup(name), config)  # type: ignore[arg-type]
 
 
-CriterionRegistry = Registry(fallback=True)
+CRITERIONS = Registry(fallback=True)
