@@ -127,7 +127,7 @@ def map_value(value: Any, mapping: dict[str, int] | None) -> Any:
     return mapping[value]
 
 
-def truncate_value(value: Any, max_seq_length: int, level: int | None = None) -> Any:
+def truncate_value(value: Any, max_seq_length: int, level: TaskLevel | None = None) -> Any:
     if level == TaskLevel.Token:
         return value[:max_seq_length]
     if level == TaskLevel.Contact:

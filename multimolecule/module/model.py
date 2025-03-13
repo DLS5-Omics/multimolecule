@@ -41,11 +41,8 @@ class MultiMoleculeModel(nn.Module):
     def __init__(
         self,
         backbone: dict,
-        heads: dict,
+        head: dict,
         neck: dict | None = None,
-        max_length: int = 1024,
-        truncation: bool = False,
-        probing: bool = False,
     ):
         super().__init__()
 
@@ -58,16 +55,12 @@ class MultiMoleculeModel(nn.Module):
         if neck:
             num_discrete = self.backbone.num_discrete
             num_continuous = self.backbone.num_continuous
-            embed_dim = self.backbone.sequence.config.hidden_size
-            attention_heads = self.backbone.sequence.config.num_attention_heads
+            hidden_size = self.backbone.sequence.config.hidden_size
             neck.update(
                 {
                     "num_discrete": num_discrete,
                     "num_continuous": num_continuous,
-                    "embed_dim": embed_dim,
-                    "attention_heads": attention_heads,
-                    "max_length": max_length,
-                    "truncation": truncation,
+                    "hidden_size": hidden_size,
                 }
             )
             self.neck = NeckRegistry.build(**neck)
@@ -76,32 +69,23 @@ class MultiMoleculeModel(nn.Module):
             self.neck = None
 
         # Heads
-        for head in heads.values():
-            if "hidden_size" not in head or head["hidden_size"] is None:
-                head["hidden_size"] = out_channels
-        self.heads = nn.ModuleDict({name: HeadRegistry.build(backbone, head) for name, head in heads.items()})
-        if any(getattr(h, "require_attentions", False) for h in self.heads.values()):
+        if "hidden_size" not in head or head["hidden_size"] is None:
+            head["hidden_size"] = out_channels
+        self.head = HeadRegistry.build(backbone, head)
+        if self.head.require_attentions:
             self.backbone.sequence.config.output_attentions = True
-
-        if probing:
-            for param in self.backbone.parameters():
-                param.requires_grad = False
 
     def forward(
         self,
         sequence: NestedTensor | Tensor,
         discrete: Tensor | None = None,
         continuous: Tensor | None = None,
-        dataset: str | None = None,
-        **labels: NestedTensor | Tensor,
+        labels: NestedTensor | Tensor | None = None,
     ) -> FlatDict:
-        ret = FlatDict()
         output, _ = self.backbone(sequence, discrete, continuous)
         if self.neck is not None:
             output = self.neck(**output)
-        for task, label in labels.items():
-            ret[task] = self.heads[task](output, input_ids=sequence, labels=label)
-        return ret
+        return self.head(output, input_ids=sequence, labels=labels)
 
     def trainable_parameters(
         self,
@@ -152,8 +136,8 @@ class MultiMoleculeModel(nn.Module):
                 param_groups.append({"params": no_decay_params, "weight_decay": 0.0, "lr": base_lr * lr_ratio})
             return param_groups
 
-        heads_param_groups = categorize_parameters(self.heads, lr, weight_decay)
-        trainable_parameters.extend(heads_param_groups)
+        head_param_groups = categorize_parameters(self.head, lr, weight_decay)
+        trainable_parameters.extend(head_param_groups)
 
         if isinstance(self.backbone, nn.Module):
             backbone_param_groups = categorize_parameters(self.backbone, lr, weight_decay, lr_ratio=pretrained_ratio)

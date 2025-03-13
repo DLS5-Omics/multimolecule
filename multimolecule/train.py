@@ -17,14 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # For additional terms and clarifications, please refer to our License FAQ at:
-# https://multimolecule.danling.org/about/license-faq
+# <https://multimolecule.danling.org/about/license-faq>.
 
-from .dataset import Dataset, SampleDataset, build_dataset
-from .utils import no_collate
+from .apis import train
 
-__all__ = [
-    "build_dataset",
-    "Dataset",
-    "SampleDataset",
-    "no_collate",
-]
+if __name__ == "__main__":
+    train()
