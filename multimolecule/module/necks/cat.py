@@ -31,8 +31,8 @@ from .registry import NeckRegistry
 
 @NeckRegistry.register("cat")
 class CatNeck:  # pylint: disable=too-few-public-methods
-    def __init__(self, embed_dim: int):
-        self.out_channels = embed_dim * 2
+    def __init__(self, hidden_size: int):
+        self.out_channels = hidden_size * 2
 
     def __call__(
         self,

@@ -17,18 +17,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # For additional terms and clarifications, please refer to our License FAQ at:
-# https://multimolecule.danling.org/about/license-faq
+# <https://multimolecule.danling.org/about/license-faq>.
 
-from .dataset import Dataset, SampleDataset
-from .functional import contact_map_to_dot_bracket, dot_bracket_to_contact_map
-from .registry import DatasetRegistry
-from .utils import no_collate
 
-__all__ = [
-    "DatasetRegistry",
-    "Dataset",
-    "SampleDataset",
-    "no_collate",
-    "dot_bracket_to_contact_map",
-    "contact_map_to_dot_bracket",
-]
+from __future__ import annotations
+
+from chanfig import Registry as Registry_
+from datasets import Dataset as HFDataset
+from torch.utils.data import Dataset as TorchDataset
+
+
+class Registry(Registry_):  # pylint: disable=too-few-public-methods
+    def build(
+        self, *args, ratio: float | int | None = None, type: str | None = None, **kwargs
+    ) -> TorchDataset | HFDataset:
+        dataset = super().build(type, *args, **kwargs)
+        if ratio is not None:
+            from .dataset import SampleDataset
+
+            dataset = SampleDataset(dataset, ratio=ratio)
+        return dataset
+
+
+DatasetRegistry = Registry()
+
+__all__ = ["DatasetRegistry"]

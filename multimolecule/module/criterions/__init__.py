@@ -19,7 +19,6 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-
 from .binary import BCEWithLogitsLoss
 from .generic import Criterion
 from .multiclass import CrossEntropyLoss

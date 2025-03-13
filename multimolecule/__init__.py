@@ -20,6 +20,7 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
+from .apis import evaluate, inference, train
 from .data import Dataset, contact_map_to_dot_bracket, dot_bracket_to_contact_map
 from .models import (
     AutoModelForContactPrediction,
@@ -125,6 +126,7 @@ from .module import (
     TokenPredictionHead,
 )
 from .pipelines import RnaSecondaryStructurePipeline
+from .runner import Config, Runner
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
@@ -132,14 +134,14 @@ from .utils import count_parameters
 __all__ = [
     "train",
     "evaluate",
-    "infer",
+    "inference",
     "modeling_auto",
     "modeling_outputs",
     "Dataset",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",
-    "MultiMoleculeConfig",
-    "MultiMoleculeRunner",
+    "Config",
+    "Runner",
     "PreTrainedConfig",
     "HeadConfig",
     "BaseHeadConfig",

@@ -20,8 +20,8 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
+from .pretrained import PretrainedBackbone
 from .registry import BackboneRegistry
-from .sequence import SequenceBackbone
-from .sequences import SequenceRegistry
+from .sequences import OneHot, SequenceRegistry
 
-__all__ = ["BackboneRegistry", "SequenceRegistry", "SequenceBackbone"]
+__all__ = ["BackboneRegistry", "SequenceRegistry", "PretrainedBackbone", "OneHot"]

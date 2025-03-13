@@ -17,18 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # For additional terms and clarifications, please refer to our License FAQ at:
-# https://multimolecule.danling.org/about/license-faq
+# <https://multimolecule.danling.org/about/license-faq>.
 
-from .dataset import Dataset, SampleDataset
-from .functional import contact_map_to_dot_bracket, dot_bracket_to_contact_map
-from .registry import DatasetRegistry
-from .utils import no_collate
 
-__all__ = [
-    "DatasetRegistry",
-    "Dataset",
-    "SampleDataset",
-    "no_collate",
-    "dot_bracket_to_contact_map",
-    "contact_map_to_dot_bracket",
-]
+from multimolecule import Config, Runner
+
+# Sample 10% of the dataset to speed up testing process
+data = {"root": "multimolecule/rivas-a", "ratio": 0.1}
+config = Config(data=data, pretrained="multimolecule/rnabert", epoch_end=1)
+config.parse()
+runner = Runner(config)
+
+runner.train()
