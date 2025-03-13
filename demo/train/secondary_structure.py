@@ -17,14 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # For additional terms and clarifications, please refer to our License FAQ at:
-# https://multimolecule.danling.org/about/license-faq
+# <https://multimolecule.danling.org/about/license-faq>.
 
-from .dataset import Dataset, SampleDataset, build_dataset
-from .utils import no_collate
 
-__all__ = [
-    "build_dataset",
-    "Dataset",
-    "SampleDataset",
-    "no_collate",
-]
+from multimolecule import Config, Runner
+
+# Sample 10% of the dataset to speed up testing process
+data = {"root": "multimolecule/rivas-a", "ratio": 0.1}
+config = Config(data=data, pretrained="multimolecule/rnabert", epoch_end=1)
+config.parse()
+runner = Runner(config)
+
+runner.train()

@@ -36,8 +36,13 @@ from .registry import CriterionRegistry
 
 @CriterionRegistry.register("regression")
 class MSELoss(nn.MSELoss):
+
+    ignore_nan: bool = True
+
     def __init__(self, config: HeadConfig) -> None:
-        super().__init__(**config.get("loss", {}))
+        loss_config = config.get("loss", {})
+        self.ignore_nan = loss_config.pop("ignore_nan", True)
+        super().__init__(**loss_config)
         self.config = config
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
@@ -47,4 +52,8 @@ class MSELoss(nn.MSELoss):
             target = torch.cat(target.flatten().storage())
         if input.ndim == target.ndim + 1:
             target = target.unsqueeze(-1)
+        if self.ignore_nan:
+            mask = ~torch.isnan(target)
+            input = input[mask]
+            target = target[mask]
         return super().forward(input, target.to(input.dtype))
