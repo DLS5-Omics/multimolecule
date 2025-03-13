@@ -45,8 +45,9 @@ dynamic = [
 ]
 dependencies = [
   "accelerate",
-  "chanfig>=0.0.105",
-  "danling[torch]>=0.3.11",
+  "art",
+  "chanfig>=0.0.111",
+  "danling[torch]>=0.4.0b9",
   "datasets",
   "strenum; python_version<'3.11'",
   "torch",
@@ -55,6 +56,10 @@ dependencies = [
 urls.documentation = "https://multimolecule.danling.org"
 urls.homepage = "https://multimolecule.danling.org"
 urls.repository = "https://github.com/DLS5-Omics/multimolecule"
+
+scripts.mmevaluate = "multimolecule.apis.run:evaluate"
+scripts.mminfer = "multimolecule.apis.run:infer"
+scripts.mmtrain = "multimolecule.apis.run:train"
 
 [tool.setuptools]
 packages = [ "multimolecule" ]

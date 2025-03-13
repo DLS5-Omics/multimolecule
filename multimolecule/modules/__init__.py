@@ -20,7 +20,7 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .backbones import BACKBONES, SEQUENCES, SequenceBackbone
+from .backbones import BACKBONES, SEQUENCES, PreTrainedBackbone
 from .criterions import CRITERIONS, Criterion
 from .embeddings import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF, RotaryEmbedding, SinusoidalEmbedding
 from .heads import (
@@ -61,7 +61,7 @@ __all__ = [
     "SinusoidalEmbedding",
     "BACKBONES",
     "SEQUENCES",
-    "SequenceBackbone",
+    "PreTrainedBackbone",
     "NECKS",
     "CatNeck",
     "BaseHeadConfig",

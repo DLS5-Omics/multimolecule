@@ -21,6 +21,7 @@
 
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
+from .apis import evaluate, infer, train
 from .data import Dataset, contact_map_to_dot_bracket, dot_bracket_to_contact_map
 from .models import (
     AidoRnaConfig,
@@ -127,8 +128,6 @@ from .models import (
     UtrLmForSequencePrediction,
     UtrLmForTokenPrediction,
     UtrLmModel,
-    modeling_auto,
-    modeling_outputs,
 )
 from .modules import (
     BACKBONES,
@@ -136,6 +135,7 @@ from .modules import (
     HEAD_TRANSFORMS,
     HEAD_TRANSFORMS_HF,
     HEADS,
+    MODELS,
     NECKS,
     POSITION_EMBEDDINGS,
     POSITION_EMBEDDINGS_HF,
@@ -160,24 +160,29 @@ from .modules import (
     MultiMoleculeModel,
     NonLinearTransform,
     PredictionHead,
+    PreTrainedBackbone,
     RotaryEmbedding,
-    SequenceBackbone,
     SequencePredictionHead,
     SinusoidalEmbedding,
     TokenKMerHead,
     TokenPredictionHead,
 )
 from .pipelines import RnaSecondaryStructurePipeline
+from .runner import RUNNERS, MultiMoleculeConfig, MultiMoleculeRunner
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import count_parameters
 
 __all__ = [
-    "modeling_auto",
-    "modeling_outputs",
+    "train",
+    "evaluate",
+    "infer",
     "Dataset",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",
+    "RUNNERS",
+    "MultiMoleculeConfig",
+    "MultiMoleculeRunner",
     "MODELS",
     "MultiMoleculeModel",
     "POSITION_EMBEDDINGS",
@@ -186,7 +191,7 @@ __all__ = [
     "SinusoidalEmbedding",
     "BACKBONES",
     "SEQUENCES",
-    "SequenceBackbone",
+    "PreTrainedBackbone",
     "NECKS",
     "CatNeck",
     "BaseHeadConfig",

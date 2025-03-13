@@ -70,6 +70,9 @@ class BasePredictionHead(nn.Module):
     eos_token_id: int | None = None
     r"""The ID of the end-of-sequence token. In rare cases, it is an alias of `sep_token_id`."""
 
+    loss_weight: float | None = None
+    r"""The weight to scale the loss. If is `None`, will not scale the loss."""
+
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
         if head_config is None:
@@ -357,6 +360,8 @@ class PredictionHead(BasePredictionHead):
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
         self.criterion = CRITERIONS.build(self.config)
+        if self.config.loss_weight is not None:
+            self.loss_weight = self.config.loss_weight
 
     def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
         r"""
@@ -380,6 +385,10 @@ class PredictionHead(BasePredictionHead):
             if isinstance(labels, NestedTensor):
                 if isinstance(output, Tensor):
                     output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
-            return HeadOutput(output, self.criterion(output, labels))
+                loss = self.criterion(output.concat, labels.concat)
+            else:
+                loss = self.criterion(output, labels)
+            if self.loss_weight is not None:
+                loss = loss * self.loss_weight
+            return HeadOutput(output, loss)
         return HeadOutput(output)
