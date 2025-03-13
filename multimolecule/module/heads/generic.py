@@ -30,10 +30,10 @@ from danling import NestedTensor
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from ..criterions import CriterionRegistry
+from ..criterions import CRITERIONS
 from .config import HeadConfig
 from .output import HeadOutput
-from .transform import HeadTransformRegistryHF
+from .transform import HEAD_TRANSFORMS_HF
 
 if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
@@ -69,6 +69,8 @@ class BasePredictionHead(nn.Module):
 
     requires_attention: bool = False
     r"""Whether the head requires attentions from the model."""
+
+    loss_weight: float | None = None
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__()
@@ -140,10 +142,12 @@ class PredictionHead(BasePredictionHead):
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.transform = HEAD_TRANSFORMS_HF.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        self.criterion = CriterionRegistry.build(self.config)
+        self.criterion = CRITERIONS.build(self.config)
+        if self.config.loss_weight is not None:
+            self.loss_weight = self.config.loss_weight
 
     def forward(self, embeddings: Tensor, labels: Tensor | None, **kwargs) -> HeadOutput:
         r"""
@@ -155,7 +159,7 @@ class PredictionHead(BasePredictionHead):
         """
         if kwargs:
             warn(
-                f"The following arguments are not applicable to {self.__class__.__name__}"
+                f"The following arguments are not applicable to {self.__class__.__name__} "
                 f"and will be ignored: {kwargs.keys()}"
             )
         output = self.dropout(embeddings)
@@ -167,6 +171,10 @@ class PredictionHead(BasePredictionHead):
             if isinstance(labels, NestedTensor):
                 if isinstance(output, Tensor):
                     output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
-            return HeadOutput(output, self.criterion(output, labels))
+                loss = self.criterion(output.concat, labels.concat)
+            else:
+                loss = self.criterion(output, labels)
+            if self.loss_weight is not None:
+                loss = loss * self.loss_weight
+            return HeadOutput(output, loss)
         return HeadOutput(output)
