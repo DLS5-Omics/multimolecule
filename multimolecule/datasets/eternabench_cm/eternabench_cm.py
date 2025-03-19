@@ -30,6 +30,7 @@ import torch
 
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import save_dataset
+from multimolecule.datasets.ryos.ryos import preprocess
 
 torch.manual_seed(1016)
 
@@ -49,6 +50,7 @@ def convert_dataset_(df: pd.DataFrame):
     df = df.rename(columns={"ID": "id", "design_name": "design", "structure": "secondary_structure"})
     df = df.sort_values("id")
     df = df[cols]
+    df = preprocess(df)
     return df
 
 

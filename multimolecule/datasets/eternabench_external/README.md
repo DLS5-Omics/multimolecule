@@ -92,6 +92,12 @@ This dataset is available in four variants:
 - [eternabench-cm](https://huggingface.co/datasets/multimolecule/eternabench-cm)
 - [eternabench-switch](https://huggingface.co/datasets/multimolecule/eternabench-switch)
 
+## Preprocess
+
+The MultiMolecule team preprocess this dataset by the following steps:
+
+1. Padding/truncating all chemical measurements to sequence length.
+
 ## License
 
 This dataset is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
