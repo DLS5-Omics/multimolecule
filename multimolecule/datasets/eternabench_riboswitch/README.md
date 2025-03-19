@@ -13,27 +13,27 @@ task_categories:
 task_ids:
   - language-modeling
   - masked-language-modeling
-pretty_name: EternaBench-Switch
+pretty_name: EternaBench-Ribowitch
 library_name: multimolecule
 ---
 
-# EternaBench-Switch
+# EternaBench-Ribowitch
 
-![EternaBench-Switch](https://eternagame.org/sites/default/files/thumb_eternabench_paper.png)
+![EternaBench-Ribowitch](https://eternagame.org/sites/default/files/thumb_eternabench_paper.png)
 
-EternaBench-Switch is a synthetic RNA dataset consisting of 7,228 riboswitch constructs, designed to explore the structural behavior of RNA molecules that change conformation upon binding to ligands such as FMN, theophylline, or tryptophan.
+EternaBench-Ribowitch is a synthetic RNA dataset consisting of 7,228 riboswitch constructs, designed to explore the structural behavior of RNA molecules that change conformation upon binding to ligands such as FMN, theophylline, or tryptophan.
 These riboswitches exhibit different structural states in the presence or absence of their ligands, and the dataset includes detailed measurements of binding affinities (dissociation constants), activation ratios, and RNA folding properties.
 
 ## Disclaimer
 
-This is an UNOFFICIAL release of the [EternaBench-Switch](https://github.com/eternagame/EternaBench) by Hannah K. Wayment-Steele, et al.
+This is an UNOFFICIAL release of the [EternaBench-Ribowitch](https://github.com/eternagame/EternaBench) by Hannah K. Wayment-Steele, et al.
 
-**The team releasing EternaBench-Switch did not write this dataset card for this dataset so this dataset card has been written by the MultiMolecule team.**
+**The team releasing EternaBench-Ribowitch did not write this dataset card for this dataset so this dataset card has been written by the MultiMolecule team.**
 
 ## Dataset Description
 
 - **Homepage**: https://multimolecule.danling.org/datasets/eternabench_switch
-- **datasets**: https://huggingface.co/datasets/multimolecule/eternabench-switch
+- **datasets**: https://huggingface.co/datasets/multimolecule/EternaBench-Ribowitch
 - **Point of Contact**: [Rhiju Das](https://biochemistry.stanford.edu/people/rhiju-das)
 
 The dataset includes synthetic RNA sequences designed to act as riboswitches. These molecules can adopt different structural states in response to ligand binding, and the dataset provides detailed information on the binding affinities for various ligands, along with metrics on the RNA’s ability to switch between conformations. With over 7,000 entries, this dataset is highly useful for studying RNA folding, ligand interaction, and RNA structural dynamics.

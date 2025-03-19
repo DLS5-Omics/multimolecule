@@ -105,7 +105,9 @@ This is an UNOFFICIAL release of the [RYOS](https://www.kaggle.com/competitions/
 
     If the SN_filter is `True`, the sequence meets the quality criteria; otherwise, it does not.
 
-Note that due to technical limitations, the ground truth measurements are not available for the final bases of each RNA sequence, resulting in a shorter length for the provided labels compared to the full sequence.
+Note that due to technical limitations, the ground truth measurements are not available for the final bases of each RNA sequence.
+To facilitate processing, all measurement arrays (reactivity, deg_pH10, deg_50C, deg_Mg_pH10, deg_Mg_50C and their corresponding error fields) are padded with `None` values to match the full sequence length.
+When working with this data, please be aware that the trailing elements of these arrays are padding values and do not represent actual measurements.
 
 ## Variations
 
@@ -113,6 +115,15 @@ This dataset is available in two subsets:
 
 - [RYOS-1](https://huggingface.co/datasets/multimolecule/ryos-1): The RYOS dataset from round 1 of the Eterna RYOS lab. The sequence length for RYOS-1 is 107, and the label length is 68.
 - [RYOS-2](https://huggingface.co/datasets/multimolecule/ryos-2): The RYOS dataset from round 2 of the Eterna RYOS lab. The sequence length for RYOS-2 is 130, and the label length is 102.
+
+## Preprocess
+
+The MultiMolecule team preprocess this dataset by the following steps:
+
+1. Compute `signal_to_noise` by averaging all 5 `signal_to_noise_*` columns.
+2. Remove all sequence whose `signal_to_noise < 1`.
+3. Remove all sequence without proper secondary structure (i.e., the secondary structure in dot-bracket notation do not match).
+4. Padding/truncating all chemical measurements to sequence length.
 
 ## License
 
