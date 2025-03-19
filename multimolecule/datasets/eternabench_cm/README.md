@@ -85,6 +85,14 @@ The dataset includes a large set of synthetic RNA sequences with experimental ch
 - [eternabench-switch](https://huggingface.co/datasets/multimolecule/eternabench-switch)
 - [eternabench-external.1200](https://huggingface.co/datasets/multimolecule/eternabench-external.1200): EternaBench-External dataset with maximum sequence length of 1200 nucleotides.
 
+## Preprocess
+
+The MultiMolecule team preprocess this dataset by the following steps:
+
+1. Remove all sequence whose `signal_to_noise < 1`.
+2. Remove all sequence without proper secondary structure (i.e., the secondary structure in dot-bracket notation do not match).
+3. Padding/truncating all chemical measurements to sequence length.
+
 ## License
 
 This dataset is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
