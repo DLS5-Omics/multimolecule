@@ -30,7 +30,7 @@ from warnings import warn
 import danling as dl
 import torch
 from chanfig import FlatDict, NestedDict
-from danling import METRICS, OPTIMIZERS, SCHEDULERS, MetricMeters, Metrics
+from danling import OPTIMIZERS, SCHEDULERS, Metrics
 from danling.runner.utils import to_device
 from datasets import get_dataset_split_names
 from datasets.data_files import DataFilesDict, get_data_patterns
@@ -45,6 +45,7 @@ from multimolecule import defaults
 from multimolecule.data import DATASETS, Dataset
 from multimolecule.module import MODELS, HeadConfig, Model
 
+from ..metric import METRICS, TokenMetrics
 from .config import Config, DataloaderConfig
 from .registry import RUNNERS
 
@@ -84,8 +85,7 @@ class Runner(dl.Runner):
             self.config.optim.pretrained_ratio = pretrained_ratio
             if self.config.sched:
                 self.scheduler = SCHEDULERS.build(self.optimizer, total_steps=self.total_steps, **self.config.sched)
-        self.train_metrics = self.build_train_metrics()
-        self.evaluate_metrics = self.build_evaluate_metrics()
+        self.metrics = self.build_metrics()
 
     def __post_init__(self):
         if self.config.platform != "deepspeed":
@@ -300,13 +300,8 @@ class Runner(dl.Runner):
             )
         return dataloaders
 
-    def build_train_metrics(self) -> MetricMeters:
-        # Return a MetricMeters object for training set as we do not need very precise metrics
-        # and it is more efficient to use MetricMeters
-        return MetricMeters(METRICS.build(type=self.task.type, num_labels=self.task.num_labels))
-
-    def build_evaluate_metrics(self) -> Metrics:
-        return METRICS.build(type=self.task.type, num_labels=self.task.num_labels)
+    def build_metrics(self) -> Metrics | TokenMetrics:
+        return METRICS.build(self.task)
 
     def collate_fn(self, batch):
         return to_device(batch, self.device)
