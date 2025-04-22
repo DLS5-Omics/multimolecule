@@ -24,11 +24,8 @@ from __future__ import annotations
 from typing import Dict
 
 from transformers.pipelines.base import GenericTensor, Pipeline, PipelineException
-from transformers.utils import logging
 
 from ..data.functional import contact_map_to_dot_bracket
-
-logger = logging.get_logger(__name__)
 
 
 class RnaSecondaryStructurePipeline(Pipeline):

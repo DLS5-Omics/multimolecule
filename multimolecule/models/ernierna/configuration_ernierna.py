@@ -24,11 +24,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from transformers.utils import logging
-
 from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
-
-logger = logging.get_logger(__name__)
 
 
 class ErnieRnaConfig(PreTrainedConfig):
