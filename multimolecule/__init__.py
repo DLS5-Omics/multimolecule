@@ -19,6 +19,7 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from .data import Dataset, contact_map_to_dot_bracket, dot_bracket_to_contact_map
 from .models import (
@@ -153,13 +154,15 @@ __all__ = [
     "HeadConfig",
     "BaseHeadConfig",
     "MaskedLMHeadConfig",
+    "AutoTokenizer",
     "DnaTokenizer",
     "RnaTokenizer",
     "ProteinTokenizer",
     "DotBracketTokenizer",
     "Alphabet",
     "Tokenizer",
-    "models",
+    "AutoConfig",
+    "AutoModel",
     "AutoModelForContactPrediction",
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",

@@ -39,14 +39,11 @@ from transformers.modeling_outputs import (
 )
 from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
-from transformers.utils import logging
 
 from multimolecule.module import ContactPredictionHead, MaskedLMHead, SequencePredictionHead, TokenPredictionHead
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
 from .configuration_rnaernie import RnaErnieConfig
-
-logger = logging.get_logger(__name__)
 
 
 class RnaErniePreTrainedModel(PreTrainedModel):
@@ -483,7 +480,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
         if config.is_decoder:
-            logger.warning(
+            warn(
                 "If you want to use `RnaErnieForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
@@ -496,8 +493,8 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
     def get_output_embeddings(self):
         return self.lm_head.decoder
 
-    def set_output_embeddings(self, new_embeddings):
-        self.lm_head.decoder = new_embeddings
+    def set_output_embeddings(self, embeddings):
+        self.lm_head.decoder = embeddings
 
     def forward(
         self,
@@ -626,9 +623,7 @@ class RnaErnieEncoder(nn.Module):
         all_cross_attentions = () if output_attentions and self.config.add_cross_attention else None
 
         if self.gradient_checkpointing and self.training and use_cache:
-            logger.warning_once(
-                "`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`..."
-            )
+            warn("`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...")
             use_cache = False
 
         next_decoder_cache = () if use_cache else None

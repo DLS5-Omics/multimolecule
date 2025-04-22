@@ -30,11 +30,8 @@ from pathlib import Path
 from typing import List, Tuple
 
 from transformers.tokenization_utils import PreTrainedTokenizer
-from transformers.utils import logging
 
 from .alphabet import Alphabet
-
-logger = logging.get_logger(__name__)
 
 VOCAB_FILES_NAMES = {"vocab_file": "vocab.txt"}
 

@@ -408,8 +408,8 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     def get_output_embeddings(self):
         return self.lm_head.decoder
 
-    def set_output_embeddings(self, new_embeddings):
-        self.lm_head.decoder = new_embeddings
+    def set_output_embeddings(self, embeddings):
+        self.lm_head.decoder = embeddings
 
     def forward(
         self,
@@ -450,7 +450,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         )
 
 
-class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
+class RnaMsmForPreTraining(RnaMsmForMaskedLM):
     """
     Examples:
         >>> from multimolecule import RnaMsmConfig, RnaMsmForPreTraining, RnaTokenizer
@@ -467,22 +467,20 @@ class RnaMsmForPreTraining(RnaMsmPreTrainedModel):
         torch.Size([1, 5, 5, 1])
     """
 
-    _tied_weights_keys = [
-        "lm_head.decoder.weight",
-        "lm_head.decoder.bias",
-    ]
-
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+        if config.is_decoder:
+            warn(
+                "If you want to use `RnaMsmForPreTraining` make sure `config.is_decoder=False` for "
+                "bi-directional self-attention."
+            )
         self.ss_head = ContactAttentionLinearHead(config, head_config=HeadConfig(output_name="row_attentions"))
         self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
 
-    def forward(
+    def forward(  # type: ignore[override]
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,

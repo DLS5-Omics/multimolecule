@@ -24,13 +24,9 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from transformers.utils import logging
-
 from ..alphabet import Alphabet
 from ..tokenization_utils import Tokenizer
 from .utils import get_alphabet
-
-logger = logging.get_logger(__name__)
 
 
 class DotBracketTokenizer(Tokenizer):

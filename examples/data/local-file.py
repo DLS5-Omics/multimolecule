@@ -22,4 +22,4 @@
 
 from multimolecule.data import Dataset
 
-data = Dataset("data/rna/5utr.csv")
+dataset = Dataset("data/rna/5utr.csv")
