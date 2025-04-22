@@ -52,7 +52,7 @@ class SinusoidalEmbedding(nn.Embedding):
 
     _is_hf_initialized = True
 
-    def __init__(self, num_embeddings: int, embedding_dim: int, padding_idx: int | None = None, bias: int = 0):
+    def __init__(self, num_embeddings: int, embedding_dim: int, padding_idx: int | None = None, bias: int = 1):
         weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx)
         super().__init__(num_embeddings, embedding_dim, padding_idx, _weight=weight.detach(), _freeze=True)
         self.bias = bias
