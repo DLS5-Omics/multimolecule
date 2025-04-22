@@ -105,7 +105,13 @@ def convert_checkpoint(convert_config):
 
 class ConvertConfig(ConvertConfig_):
     root: str = os.path.dirname(__file__)
-    output_path: str = Config.model_type
+    output_path: str | None = None  # type: ignore[assignment]
+
+    def post(self):
+        if self.output_path is None:
+            self.output_path = f"{os.path.basename(self.root)}-{self.checkpoint_path.split('/')[-1][0]}mer"
+        if self.repo_id is None:
+            self.repo_id = f"multimolecule/{self.output_path}"
 
 
 if __name__ == "__main__":

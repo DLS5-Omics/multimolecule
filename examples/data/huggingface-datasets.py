@@ -22,4 +22,5 @@
 
 from multimolecule.data import Dataset
 
-data = Dataset("multimolecule/bprna-spot", split="train")
+# `split` must be specified if there are more than one split in the dataset
+dataset = Dataset("multimolecule/bprna-spot", split="train")

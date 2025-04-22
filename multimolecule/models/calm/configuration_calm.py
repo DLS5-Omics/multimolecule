@@ -22,11 +22,7 @@
 
 from __future__ import annotations
 
-from transformers.utils import logging
-
 from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
-
-logger = logging.get_logger(__name__)
 
 
 class CaLmConfig(PreTrainedConfig):
