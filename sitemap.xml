@@ -288,6 +288,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/heads/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/pipelines/</loc>
+        <lastmod>2025-04-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/runner/</loc>
         <lastmod>2025-04-23</lastmod>
         <changefreq>daily</changefreq>
@@ -629,6 +636,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/heads/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/heads/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/pipelines/</loc>
+        <lastmod>2025-04-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/runner/</loc>
