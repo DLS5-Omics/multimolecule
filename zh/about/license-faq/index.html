@@ -1046,7 +1046,7 @@
         <li class="md-nav__item">
   <a href="#1-multimolecule" class="md-nav__link">
     <span class="md-ellipsis">
-      1. 什么是 MultiMolecule 组件？
+      1. 在 MultiMolecule 中，什么是源代码和目标代码？
     </span>
   </a>
   
@@ -1219,7 +1219,7 @@
         <li class="md-nav__item">
   <a href="#1-multimolecule" class="md-nav__link">
     <span class="md-ellipsis">
-      1. 什么是 MultiMolecule 组件？
+      1. 在 MultiMolecule 中，什么是源代码和目标代码？
     </span>
   </a>
   
@@ -1351,9 +1351,9 @@
 <p>本摘要重点介绍了我们许可的关键方面。有关更多详细信息，请参阅下面的相应部分并阅读<a href="../license/">许可证</a>。</p>
 <div class="grid cards">
 <div class="admonition question">
-<p class="admonition-title">什么是 MultiMolecule 组件？</p>
-<p>MultiMolecule 组件包括所有 MultiMolecule 提供的材料，如源代码、目标代码、模型和数据集。源代码包括训练模型所需的全部材料，包括数据、代码、配置和文档。</p>
-<p><a href="#1-multimolecule"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 什么是 MultiMolecule 组件？</a></p>
+<p class="admonition-title">在 MultiMolecule 中，什么是源代码和目标代码？</p>
+<p>源代码包括开发、训练、评估、运行一个模型所需的全部材料，包括数据、代码、配置和文档。目标代码包括模型权重。</p>
+<p><a href="#1-multimolecule"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 在 MultiMolecule 中，什么是源代码和目标代码？</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">我是否需要共享我训练的模型？</p>
@@ -1391,38 +1391,33 @@
 <p><a href="#8-multimolecule"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> MultiMolecule 协作者社否有特别权利？</a></p>
 </div>
 </div>
-<h2 id="1-multimolecule">1. 什么是 MultiMolecule 组件？<a class="headerlink" href="#1-multimolecule" title="Permanent link">&para;</a></h2>
-<p>为本协议之目的，以下定义旨在阐明与 DanLing 团队通过 MultiMolecule 项目提供的材料相关的范围和关键术语，包括官方网站、代码仓库、模型中心和数据中心上的材料：</p>
-<div class="admonition note">
-<p class="admonition-title">MultiMolecule 组件</p>
-<p><strong>MultiMolecule 组件 (MultiMolecule Components)</strong> 是指 DanLing 团队根据本协议通过 MultiMolecule 项目提供的所有材料。</p>
-</div>
-<p>MultiMolecule 组件包括但不限于：源代码、目标代码、Python 包分发版（例如，“wheel”文件）、MultiMolecule 模型中心的模型、MultiMolecule 数据集中心的数据集以及 MultiMolecule spaces。</p>
+<h2 id="1-multimolecule">1. 在 MultiMolecule 中，什么是源代码和目标代码？<a class="headerlink" href="#1-multimolecule" title="Permanent link">&para;</a></h2>
+<p>对于 MultiMolecule 项目提供的所有材料，以下定义阐明和补充<a href="../license/">许可证</a>：</p>
 <div class="admonition note">
 <p class="admonition-title">源代码</p>
-<p><strong>源代码 (Source Code)</strong> 是指 MultiMolecule 组件中用于对其进行修改的首选形式，与<a href="../license/">许可证</a>第 1 节一致。它包含开发、训练和复现模型所需的所有材料。</p>
+<p><strong>源代码</strong> 是指根据本协议许可的材料中，用于对其进行修改的首选形式，与许可证第 1 条保持一致。它包含开发、训练、评估和运行模型所需的所有材料。</p>
 </div>
 <p>源代码包括但不限于：</p>
 <ul>
-<li><strong>数据</strong>：作为 MultiMolecule 组件一部分提供或生成的模型进行训练、评估所需的、以处理所需形式存在的数据集。这对重新生成或修改模型是必需的。</li>
-<li><strong>代码</strong>：处理数据、训练模型、执行评估、部署模型或以其他方式操作和修改 MultiMolecule 组件所需的所有脚本、程序、库（包括模型架构和流程定义）和实用程序的源代码。</li>
-<li><strong>配置</strong>：控制与 MultiMolecule 组件相关的安装、编译、训练、评估或执行过程的配置文件、设置参数、环境规范以及任何脚本。</li>
-<li><strong>文档</strong>：理解、安装、操作和修改 MultiMolecule 组件所需的接口定义文件、构建说明、手册、指南、描述具体方法、架构和使用参数的相关研究论文以及任何其他技术文档。</li>
+<li><strong>数据</strong>：以处理所需的形式提供的、用于训练、评估或微调所提供或生成的模型的数据集。</li>
+<li><strong>代码</strong>：处理数据、训练模型、执行评估、部署模型或以其他方式操作和修改许可材料所需的所有脚本、程序、库（包括模型架构和流程定义）和实用工具的源代码。</li>
+<li><strong>配置</strong>：控制许可材料相关的安装、编译、训练、评估或执行过程的配置文件、设置参数、环境规范以及任何脚本。</li>
+<li><strong>文档</strong>：接口定义文件、构建说明、手册、指南、描述所使用的具体方法、架构和参数的相关研究论文，以及理解、安装、操作和修改许可材料所需的任何其他技术文档。</li>
 </ul>
-<p><em>提供此处定义的源代码是满足在传递目标代码或提供网络访问时根据<a href="../license/">许可证</a>提供“相应源代码 (Corresponding Source)”要求所必需的。</em></p>
+<p><em>提供此处定义的源代码是满足在传递目标代码或提供网络访问时根据<a href="../license/">许可证</a>提供“相应源代码”要求所必需的。</em></p>
 <div class="admonition note">
 <p class="admonition-title">目标代码</p>
-<p><strong>目标代码 (Object Code)</strong> 是指不属于源代码的任何形式的 MultiMolecule 组件。</p>
+<p><strong>目标代码</strong> 是指根据本协议许可的材料中，除源代码之外的任何形式。</p>
 </div>
 <p>目标代码主要包括但不限于：</p>
 <ul>
-<li>训练过程产生的 <strong>模型权重</strong>。</li>
-<li>作为 MultiMolecule 组件一部分分发的任何已编译的计算机代码（例如，Python wheel 发行版中的已编译扩展）。</li>
+<li><strong>模型权重</strong>：代表模型训练后学到的状态的数值参数（例如，SafeTensors、HDF5 或类似格式的文件）。</li>
+<li><strong>已编译代码</strong>：任何非人类可读源代码形式的可执行软件代码，例如有时在 Python 包中可以找到的已编译 C++ 扩展。</li>
 </ul>
 <h2 id="2">2. 我是否需要共享我训练的模型？<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
 <p>是的，您必须根据协议条款使您训练的模型和其权重可用。</p>
-<p>如本 FAQ 第 1 节所定义，模型权重在 MultiMolecule 中被视为目标代码。因此，除了提供修改后的模型权重外，您还必须提供相应源代码，如<a href="../license/">许可证</a>第 1 节所定义并在本 FAQ 第 1 节中扩展说明的，以重现修改后的模型。这包括但不限于训练过程中使用的任何代码、数据、配置文件和脚本，以及修改后的模型权重本身。</p>
-<p>如果您出于任何目的使用 MultiMolecule 组件，您有义务根据协议条款提供所有相关材料，包括代码、数据集和模型。这种方法可确保所有增强功能、修改和相关资源对社区保持自由可用。</p>
+<p>如本 FAQ 第 1 节所定义，模型权重在 MultiMolecule 中被视为目标代码。因此，除了提供修改后的模型权重外，您还必须提供相应源代码，如<a href="../license/">许可证</a>第 1 节所定义并在本 FAQ 第 1 节中扩展说明的，以复现修改后的模型。这包括但不限于训练过程中使用的任何代码、数据、配置文件和脚本，以及修改后的模型权重本身。</p>
+<p>如果您出于任何目的使用本工作，您有义务根据协议条款提供所有相关材料，包括代码、数据集和模型。这种方法可确保所有增强功能、修改和相关资源对社区保持自由可用。</p>
 <h2 id="3">3. 我是否需要共享用于训练的数据？<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
 <p>是的，您必须根据协议条款提供用于训练的数据集。</p>
 <p>如本 FAQ 第 1 节所定义，用于训练的数据被视为源代码的一部分。因此，他属于<a href="../license/">许可证</a>要求的相应源代码定义范畴。此义务确保其他人可以使用用于训练这些模型的相同数据输入来复现或进一步开发模型。</p>
@@ -1433,7 +1428,7 @@
 <p class="admonition-title">研究论文</p>
 <p>研究论文应包含对 MultiMolecule 项目的正式引用。</p>
 </div>
-<p>任何利用 MultiMolecule 组件的研究论文 <em>都应包含</em> 对 MultiMolecule 项目的正式引用。具体的引用格式可能因出版场所的风格指南而异，但至少必须包含项目名称（“MultiMolecule”）和DOI（<a href="https://doi.org/10.5281/zenodo.12638419">10.5281/zenodo.12638419</a>）。如果由于场所限制无法进行正式引用，则 <em>应</em> 在致谢部分提及 MultiMolecule 项目名称和 DOI。</p>
+<p>任何利用本工作的研究论文 <em>都应包含</em> 对 MultiMolecule 项目的正式引用。具体的引用格式可能因出版场所的风格指南而异，但至少必须包含项目名称（“MultiMolecule”）和DOI（<a href="https://doi.org/10.5281/zenodo.12638419">10.5281/zenodo.12638419</a>）。如果由于场所限制无法进行正式引用，则 <em>应</em> 在致谢部分提及 MultiMolecule 项目名称和 DOI。</p>
 <div class="admonition code">
 <p class="admonition-title">项目</p>
 <p>其他项目应包含对 MultiMolecule 项目的适当致谢。</p>
@@ -1487,7 +1482,7 @@
 <p>是的！如果您是 MultiMolecule 项目的协作者（由 DanLing 团队认可），您有权根据<a href="../license/">许可证</a>第 7 节获得以下额外权限：</p>
 <div class="admonition tip">
 <p class="admonition-title">内部网络使用豁免</p>
-<p>协作者在涉及修改后的 MultiMolecule 组件的内部研发网络使用方面，获得 AGPL 第 13 节源代码共享义务的豁免。</p>
+<p>协作者在涉及修改后的本工作的内部研发网络使用方面，获得 AGPL 第 13 节源代码共享义务的豁免。</p>
 </div>
 <p>尽管有<a href="../license/">许可证</a>第 13 节的规定，作为受认可的协作者，您无需向通过计算机网络与已修改的 MultiMolecule（包括根据本协议许可的代码、模型或数据）远程交互的用户提供相应源代码，<em>前提是</em> 此类交互仅用于其各自团队内部的研究和开发目的。</p>
 <div class="admonition success">
