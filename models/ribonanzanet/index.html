@@ -2589,31 +2589,31 @@
 <h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
 <p>This is an UNOFFICIAL implementation of the <a href="https://doi.org/10.1101/2024.02.24.581671">Ribonanza: deep learning of RNA structure through dual crowdsourcing</a> by Shujun He, Rui Huang, et al.</p>
 <p>The OFFICIAL repository of RibonanzaNet is at <a href="https://github.com/Shujun-He/RibonanzaNet">Shujun-He/RibonanzaNet</a>.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
 <p>The MultiMolecule team is aware of a potential risk in reproducing the results of RibonanzaNet.</p>
 <p>The original implementation of RibonanzaNet does not prepend <code>&lt;cls&gt;</code> and append <code>&lt;eos&gt;</code> tokens to the input sequence.
 This should not affect the performance of the model in most cases, but it can lead to unexpected behavior in some cases.</p>
 <p>Please set <code>bos_token=None, cls_token=None, eos_token = None</code> in the tokenizer and set <code>bos_token_id=None, cls_token_id=None, eos_token_id=None</code> in the model configuration if you want the exact behavior of the original implementation.</p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
 <p>The MultiMolecule team is aware of a potential risk in reproducing the results of RibonanzaNet.</p>
 <p>The original implementation of RibonanzaNet applied <code>dropout-residual-norm</code> path twice to the output of the Self-Attention layer.</p>
 <p>By default, the MultiMolecule follows the original implementation.</p>
 <p>You can set <code>fix_attention_residual=True</code> in the model configuration to apply the <code>dropout-residual-norm</code> path once.</p>
 <p>See more at <a href="https://github.com/Shujun-He/RibonanzaNet/issues/3">issue #3</a></p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
 <p>The MultiMolecule team is aware of a potential risk in reproducing the results of RibonanzaNet.</p>
 <p>The original implementation of RibonanzaNet does not apply attention mask correctly.</p>
 <p>By default, the MultiMolecule follows the original implementation.</p>
 <p>You can set <code>fix_attention_mask=True</code> in the model configuration to apply the correct attention mask.</p>
 <p>See more at <a href="https://github.com/Shujun-He/RibonanzaNet/issues/4">issue #4</a>, <a href="https://github.com/Shujun-He/RibonanzaNet/issues/5">issue #5</a>, and <a href="https://github.com/Shujun-He/RibonanzaNet/issues/7">issue #7</a></p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
 <p>The MultiMolecule team is aware of a potential risk in reproducing the results of RibonanzaNet.</p>
 <p>The original implementation of RibonanzaNet applies dropout in an axis different from the one described in the paper.</p>
 <p>By default, the MultiMolecule follows the original implementation.</p>
