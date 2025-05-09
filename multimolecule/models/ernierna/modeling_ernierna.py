@@ -397,7 +397,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config)
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -463,7 +463,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config)
+        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
