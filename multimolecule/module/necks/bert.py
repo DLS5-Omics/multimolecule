@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import torch
 from chanfig import FlatDict
-from danling.modules import TransformerEncoder, TransformerEncoderLayer
+from danling.module import TransformerEncoder, TransformerEncoderLayer
 from torch import Tensor, nn
 
 from .registry import NeckRegistry
