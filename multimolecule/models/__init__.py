@@ -102,6 +102,10 @@ from .rnamsm import (
     RnaMsmForTokenPrediction,
     RnaMsmModel,
 )
+from .spliceai import (
+    SpliceAiConfig,
+    SpliceAiModel,
+)
 from .splicebert import (
     SpliceBertConfig,
     SpliceBertForContactPrediction,
@@ -201,6 +205,8 @@ __all__ = [
     "RnaMsmForMaskedLM",
     "RnaMsmForPreTraining",
     "RnaMsmForSecondaryStructurePrediction",
+    "SpliceAiConfig",
+    "SpliceAiModel",
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertForContactPrediction",
