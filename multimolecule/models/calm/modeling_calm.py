@@ -26,7 +26,6 @@ from typing import Tuple
 from warnings import warn
 
 import torch
-import torch.utils.checkpoint
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F

@@ -29,7 +29,6 @@ from typing import Tuple
 from warnings import warn
 
 import torch
-import torch.utils.checkpoint
 from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
@@ -178,6 +177,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         use_cache: bool | None = None,
         output_attentions: bool | None = None,
         output_attention_biases: bool | None = None,
+        output_attention_states: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
@@ -298,6 +298,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
             use_cache=use_cache,
             output_attentions=output_attentions,
             output_attention_biases=output_attention_biases,
+            output_attention_states=output_attention_states,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
@@ -350,6 +351,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_attention_biases: bool | None = None,
+        output_attention_states: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
@@ -363,6 +365,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
             inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_attention_biases=output_attention_biases,
+            output_attention_states=output_attention_states,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -417,6 +420,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_attention_biases: bool | None = None,
+        output_attention_states: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
@@ -430,6 +434,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
             inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_attention_biases=output_attention_biases,
+            output_attention_states=output_attention_states,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -566,6 +571,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
         labels: Tensor | None = None,
         output_attentions: bool | None = None,
         output_attention_biases: bool | None = None,
+        output_attention_states: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
@@ -581,6 +587,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
             encoder_attention_mask=encoder_attention_mask,
             output_attentions=output_attentions,
             output_attention_biases=output_attention_biases,
+            output_attention_states=output_attention_states,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -640,6 +647,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
         labels_ss: Tensor | None = None,
         output_attentions: bool | None = None,
         output_attention_biases: bool | None = None,
+        output_attention_states: bool | None = None,
         output_hidden_states: bool | None = None,
         return_dict: bool | None = None,
         **kwargs,
@@ -657,6 +665,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
             inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
             output_attention_biases=output_attention_biases,
+            output_attention_states=output_attention_states,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             **kwargs,
@@ -761,13 +770,14 @@ class ErnieRnaEncoder(nn.Module):
         past_key_values: Tuple[Tuple[torch.FloatTensor, ...], ...] | None = None,
         use_cache: bool | None = None,
         output_attentions: bool = False,
+        output_attention_states: bool = False,
         output_attention_biases: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
     ) -> Tuple[Tensor, ...] | ErnieRnaModelOutputWithPastAndCrossAttentions:
         all_hidden_states = () if output_hidden_states else None
-        all_attention_biases = () if output_attention_biases else None
         all_self_attentions = () if output_attentions else None
+        all_attention_biases = () if output_attention_biases else None
         all_cross_attentions = () if output_attentions and self.config.add_cross_attention else None
 
         if self.gradient_checkpointing and self.training and use_cache:
@@ -793,6 +803,7 @@ class ErnieRnaEncoder(nn.Module):
                     encoder_attention_mask,
                     past_key_value,
                     output_attentions,
+                    output_attention_states,
                 )
             else:
                 layer_outputs = layer_module(
@@ -804,6 +815,7 @@ class ErnieRnaEncoder(nn.Module):
                     encoder_attention_mask,
                     past_key_value,
                     output_attentions,
+                    output_attention_states,
                 )
 
             hidden_states, attention_bias = layer_outputs[:2]
@@ -867,6 +879,7 @@ class ErnieRnaLayer(nn.Module):
         encoder_attention_mask: torch.FloatTensor | None = None,
         past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
+        output_attention_states: bool = False,
     ) -> Tuple[Tensor, ...]:
         # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
         self_attn_past_key_value = past_key_value[:2] if past_key_value is not None else None
@@ -876,6 +889,7 @@ class ErnieRnaLayer(nn.Module):
             attention_bias,
             head_mask,
             output_attentions=output_attentions,
+            output_attention_states=output_attention_states,
             past_key_value=self_attn_past_key_value,
         )
         attention_output = self_attention_outputs[0]
@@ -965,8 +979,9 @@ class ErnieRnaAttention(nn.Module):
         encoder_attention_mask: torch.FloatTensor | None = None,
         past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
-    ) -> Tuple[Tensor, ...]:
-        self_outputs = self.self(
+        output_attention_states: bool = False,
+    ) -> ErnieRnaAttentionOutput:
+        outputs = self.self(
             hidden_states,
             attention_mask,
             attention_bias,
@@ -975,9 +990,9 @@ class ErnieRnaAttention(nn.Module):
             encoder_attention_mask,
             past_key_value,
             output_attentions,
+            output_attention_states,
         )
-        attention_output = self.output(self_outputs[0], hidden_states)
-        outputs = (attention_output,) + self_outputs[1:]  # add attentions if we output them
+        outputs["hidden_state"] = self.output(outputs[0], hidden_states)
         return outputs
 
 
@@ -1021,7 +1036,8 @@ class ErnieRnaSelfAttention(nn.Module):
         encoder_attention_mask: torch.FloatTensor | None = None,
         past_key_value: Tuple[torch.FloatTensor, torch.FloatTensor] | None = None,
         output_attentions: bool = False,
-    ) -> Tuple[Tensor, ...]:
+        output_attention_states: bool = False,
+    ) -> ErnieRnaAttentionOutput:
         mixed_query_layer = self.query(hidden_states)
 
         # If this is instantiated as a cross-attention module, the keys
@@ -1108,12 +1124,14 @@ class ErnieRnaSelfAttention(nn.Module):
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(new_context_layer_shape)
 
-        outputs: Tuple[Tensor, ...] = (context_layer, attention_bias)
+        outputs = ErnieRnaAttentionOutput(hidden_state=context_layer, attention_bias=attention_bias)
 
         if output_attentions:
-            outputs = outputs + (attention_probs,)
+            outputs["attention"] = attention_probs
+        if output_attention_states:
+            outputs["attention_state"] = attention_scores
         if self.is_decoder:
-            outputs = outputs + (past_key_value,)
+            outputs["past_key_value"] = past_key_value
         return outputs
 
 
@@ -1313,6 +1331,15 @@ class ErnieRnaBasicResBlock(nn.Module):
         output = self.conv2(output)
 
         return output + residual
+
+
+@dataclass
+class ErnieRnaAttentionOutput(ModelOutput):
+    hidden_state: torch.FloatTensor
+    attention_bias: torch.FloatTensor
+    attention: torch.FloatTensor | None = None
+    attention_state: torch.FloatTensor | None = None
+    past_key_value: torch.FloatTensor | None = None
 
 
 @dataclass

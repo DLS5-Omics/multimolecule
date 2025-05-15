@@ -138,3 +138,44 @@ class ContactPredictorOutput(ModelOutput):
     logits: torch.FloatTensor = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class AttentionOutput(ModelOutput):
+    """
+    Base class for outputs of self-attention mechanisms.
+
+    Args:
+        hidden_state:
+            `torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`.
+        attention:
+            `torch.FloatTensor` of shape `(batch_size, num_heads, sequence_length, sequence_length)`.
+
+            Optional, returned when `output_attentions=True` is passed or when `config.output_attentions=True`.
+
+            Attention weights after the attention softmax, used to compute the weighted average in the self-attention
+            heads.
+        attention_state:
+            `torch.FloatTensor` of shape `(batch_size, num_heads, sequence_length, sequence_length)`.
+
+            Optional, returned when `output_attention_states=True` is passed or when
+            `config.output_attention_states=True`.
+
+            Attention states before the attention softmax, used for contact prediction heads.
+        past_key_value:
+            `tuple(torch.FloatTensor)` of length 2, with each tensor having shape
+            `(batch_size, num_heads, sequence_length, embed_size_per_head)` and optionally if
+            `config.is_encoder_decoder=True` 2 additional tensors of shape `(batch_size, num_heads,
+            encoder_sequence_length, embed_size_per_head)`.
+
+            Optional, returned when `use_cache=True` is passed or when `config.use_cache=True`.
+
+            Contains pre-computed hidden-states (key and values in the self-attention blocks and optionally if
+            `config.is_encoder_decoder=True` in the cross-attention blocks) that can be used (see `past_key_values`
+            input) to speed up sequential decoding.
+    """
+
+    hidden_state: torch.FloatTensor
+    attention: torch.FloatTensor | None = None
+    attention_state: torch.FloatTensor | None = None
+    past_key_value: torch.FloatTensor | None = None
