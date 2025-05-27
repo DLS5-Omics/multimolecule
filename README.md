@@ -27,7 +27,7 @@ Its modular design allows you to utilize only the components you need, integrati
 
 - [`data`](data): Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.
 - [`datasets`](datasets): A collection of widely-used biomolecular datasets.
-- [`module`](module): Modular neural network building blocks, including [embeddings](module/embeddings), [heads](module/heads), and criterions for constructing custom models.
+- [`modules`](modules): Modular neural network building blocks, including [embeddings](modules/embeddings), [heads](modules/heads), and criterions for constructing custom models.
 - [`models`](models): Implementation of state-of-the-art pre-trained models in molecular biology.
 - [`tokenisers`](tokenisers): Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.
 <!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->

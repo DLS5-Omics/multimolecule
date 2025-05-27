@@ -37,7 +37,7 @@ from transformers import PreTrainedModel
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
-from multimolecule.module import (
+from multimolecule.modules import (
     ContactAttentionLinearHead,
     ContactPredictionHead,
     MaskedLMHead,
