@@ -87,7 +87,7 @@ Object Code primarily includes, but is not limited to:
 - **Model Weights**: The numerical parameters representing the learned state of a model after training (e.g., files in SafeTensors, HDF5, or similar formats).
 - **Compiled Code**: Any executable software code not in human-readable source form, like compiled C++ extensions sometimes found in Python packages.
 
-Understanding this distinction helps clarify your obligations under the AGPL. For instance, if you share or provide network access to Object Code (like a trained model), you must also ensure the corresponding Source Code (including the necessary data, code, configuration, and documentation) is available according to the license terms.
+Understanding this distinction helps clarify your obligations under the AGPL. For instance, if you share or provide network access to Object Code (like a trained model), you must also ensure the corresponding Source Code (including the necessary data, code, configuration, and documentation) is available under the terms of the Agreement.
 
 ## 2. Am I required to share my trained model?
 
@@ -139,7 +139,7 @@ You are permitted to publish research papers in fully open access journals, conf
 - [Creative Commons Licenses](https://creativecommons.org/licenses)
 - [OSI-Approved Licenses](https://opensource.org/licenses)
 
-This permission is granted as a additional permission under Section 7 of the [License](license.md).
+This permission is granted as an additional permission under Section 7 of the [License](license.md).
 
 !!! warning "Non-Profit"
 
@@ -150,7 +150,7 @@ You are permitted to publish research papers in certain non-profit journals, con
 - [All journals published by the American Association for the Advancement of Science (AAAS)](https://www.aaas.org/journals)
 - [eLife](https://elifesciences.org)
 
-This permission is granted as a additional permission under Section 7 of the [License](license.md).
+This permission is granted as an additional permission under Section 7 of the [License](license.md).
 
 !!! failure "Closed Access / Author Fee"
 
