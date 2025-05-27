@@ -37,7 +37,7 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 
-from multimolecule.module import (
+from multimolecule.modules import (
     ContactPredictionHead,
     MaskedLMHead,
     RotaryEmbedding,

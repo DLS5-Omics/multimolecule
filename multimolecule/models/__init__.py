@@ -20,7 +20,7 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from multimolecule.module import HeadConfig
+from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
 from .calm import (
