@@ -8,16 +8,16 @@ date: 2024-05-04
 
 --8<-- "multimolecule/module/heads/README.md:8:"
 
-::: multimolecule.module.heads.config
+::: multimolecule.modules.heads.config
 
-::: multimolecule.module.heads.sequence
+::: multimolecule.modules.heads.sequence
 
-::: multimolecule.module.heads.token
+::: multimolecule.modules.heads.token
 
-::: multimolecule.module.heads.contact
+::: multimolecule.modules.heads.contact
 
-::: multimolecule.module.heads.pretrain
+::: multimolecule.modules.heads.pretrain
 
-::: multimolecule.module.heads.generic
+::: multimolecule.modules.heads.generic
 
-::: multimolecule.module.heads.output
+::: multimolecule.modules.heads.output
