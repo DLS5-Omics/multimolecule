@@ -8,4 +8,4 @@ date: 2024-05-04
 
 --8<-- "multimolecule/module/embeddings/README.md:8:"
 
-::: multimolecule.module.embeddings
+::: multimolecule.modules.embeddings

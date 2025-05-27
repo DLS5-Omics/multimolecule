@@ -26,7 +26,7 @@ from dataclasses import asdict, is_dataclass
 
 from transformers.configuration_utils import PretrainedConfig
 
-from multimolecule.module import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
+from multimolecule.modules import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 
 __all__ = ["PreTrainedConfig", "BaseHeadConfig", "HeadConfig", "MaskedLMHeadConfig"]
 
