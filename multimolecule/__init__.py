@@ -115,7 +115,7 @@ from .models import (
     modeling_auto,
     modeling_outputs,
 )
-from .module import (
+from .modules import (
     BaseHeadConfig,
     ContactPredictionHead,
     Criterion,

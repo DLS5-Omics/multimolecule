@@ -27,7 +27,7 @@ MultiMolecule 以灵活性和易用性为设计核心。
 
 - [`data`](data)：智能的 [`Dataset`][multimolecule.data.Dataset]，能够自动推断任务，包括任务的层级（序列、令牌、接触）和类型（分类、回归）。还提供多任务数据集和采样器，简化多任务学习，无需额外配置。
 - [`datasets`](datasets)：广泛使用的生物分子数据集集合。
-- [`module`](module)：模块化神经网络构建块，包括[嵌入层](module/embeddings)、[预测头](module/heads)和损失函数，用于构建自定义模型。
+- [`modules`](modules)：模块化神经网络构建块，包括[嵌入层](modules/embeddings)、[预测头](modules/heads)和损失函数，用于构建自定义模型。
 - [`models`](models)：分子生物学领域的最先进预训练模型实现。
 - [`tokenisers`](tokenisers)：用于将 DNA、RNA、蛋白质及其他序列转换为独热编码的分词器。
 <!-- - [`runner`](runner)：功能强大且可扩展的运行器，允许用户轻松进行模型微调、评估和预测。 -->

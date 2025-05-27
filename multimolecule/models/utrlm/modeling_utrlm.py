@@ -40,7 +40,7 @@ from transformers.modeling_outputs import (
 from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 
-from multimolecule.module import (
+from multimolecule.modules import (
     ContactAttentionLinearHead,
     ContactPredictionHead,
     MaskedLMHead,
@@ -784,14 +784,6 @@ class UtrLmEmbeddings(nn.Module):
         inputs_embeds: Tensor | NestedTensor | None = None,
         past_key_values_length: int = 0,
     ):
-        if position_ids is None:
-            if input_ids is not None:
-                position_ids = create_position_ids_from_input_ids(input_ids, self.padding_idx, past_key_values_length)
-            else:
-                position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
-            # This is a bug in the original implementation
-            position_ids = position_ids + 1
-
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
 
@@ -807,8 +799,17 @@ class UtrLmEmbeddings(nn.Module):
             embeddings = (embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]).to(embeddings)
 
         if self.position_embedding_type == "absolute":
+            if position_ids is None:
+                if input_ids is not None:
+                    position_ids = create_position_ids_from_input_ids(
+                        input_ids, self.padding_idx, past_key_values_length
+                    )
+                else:
+                    position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
+                # This is a bug in the original implementation
+                position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
-            embeddings = embeddings + position_embeddings
+            embeddings += position_embeddings
 
         if self.layer_norm is not None:
             embeddings = self.layer_norm(embeddings)

@@ -34,10 +34,10 @@ nav:
               - EternaBench-CM: datasets/eternabench_cm.md
               - EternaBench-Switch: datasets/eternabench_switch.md
               - EternaBench-External: datasets/eternabench_external.md
-  - module:
-      - module/index.md
-      - heads: module/heads.md
-      - embeddings: module/embeddings.md
+  - modules:
+      - modules/index.md
+      - embeddings: modules/embeddings.md
+      - heads: modules/heads.md
   - models:
       - models/index.md
       - DNA:

@@ -18,5 +18,5 @@ date: 2024-05-04
 如果模型输出是一个 [`tuple`][]，我们将第一个元素视为 `pooler_output`，第二个元素视为 `last_hidden_state`，最后一个元素视为 `attention_map`。
 用户有责任确保模型输出格式正确。
 
-如果模型输出是一个 [`ModelOutupt`](https://huggingface.co/docs/transformers/en/main_classes/output) 或一个 [`dict`][]，`heads` 将从模型输出中查找 [`HeadConfig.output_name`][multimolecule.module.HeadConfig]。
-你可以在 [`HeadConfig`][multimolecule.module.HeadConfig] 中指定 `output_name`，以确保 `heads` 可以正确定位所需的张量。
+如果模型输出是一个 [`ModelOutupt`](https://huggingface.co/docs/transformers/en/main_classes/output) 或一个 [`dict`][]，`heads` 将从模型输出中查找 [`HeadConfig.output_name`][multimolecule.modules.HeadConfig]。
+你可以在 [`HeadConfig`][multimolecule.modules.HeadConfig] 中指定 `output_name`，以确保 `heads` 可以正确定位所需的张量。
