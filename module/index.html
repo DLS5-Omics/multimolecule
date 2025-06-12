@@ -953,32 +953,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Features
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modules
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -997,21 +971,6 @@
 
 
 <h1 id="module">module<a class="headerlink" href="#module" title="Permanent link">&para;</a></h1>
-<p><code>module</code> provides a collection of pre-defined modules for users to implement their own architectures.</p>
-<p>MultiMolecule is built upon the <img alt="🤗" class="gemoji" src="https://github.githubassets.com/images/icons/emoji/unicode/1f917.png" title=":hugs:" /> ecosystem, embracing a similar design philosophy: <a href="https://huggingface.co/blog/transformers-design-philosophy"><strong><del>Don&rsquo;t</del> Repeat Yourself</strong></a>.
-We follow the <code>single model file policy</code> where each model under the <a href="../models"><code>models</code></a> package contains one and only one <code>modeling.py</code> file that describes the network design.</p>
-<p>The <code>module</code> package is intended for simple, reusable modules that are consistent across multiple models. This approach minimizes code duplication and promotes clean, maintainable code.</p>
-<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Reusability: The <code>module</code> package includes components that are commonly used across different models, such as the <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;SequencePredictionHead&lt;/span&gt;" href="heads/#multimolecule.module.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>. This reduces redundancy and simplifies the development process.</li>
-<li>Consistency: By centralizing common modules, we ensure that updates and improvements are consistently applied across all models, enhancing reliability and performance.</li>
-<li>Flexibility: While modules such as transformer encoders are widely used, they often vary in implementation details (e.g., pre-norm vs. post-norm, different residual connection strategies). The module package focuses on simpler components, leaving complex, model-specific variations to be defined within each model&rsquo;s <code>modeling.py</code>.</li>
-</ul>
-<h2 id="modules">Modules<a class="headerlink" href="#modules" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="heads">heads</a>: Contains various prediction heads, such as <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;SequencePredictionHead&lt;/span&gt;" href="heads/#multimolecule.module.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>, <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;TokenPredictionHead&lt;/span&gt;" href="heads/#multimolecule.module.heads.token.TokenPredictionHead"><code>TokenPredictionHead</code></a>, and <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ContactPredictionHead&lt;/span&gt;" href="heads/#multimolecule.module.heads.contact.ContactPredictionHead"><code>ContactPredictionHead</code></a>.</li>
-<li><a href="embeddings">embeddings</a>: Contains various positional embeddings, such as <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;SinusoidalEmbedding&lt;/span&gt;" href="embeddings/#multimolecule.module.embeddings.SinusoidalEmbedding"><code>SinusoidalEmbedding</code></a> and <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RotaryEmbedding&lt;/span&gt;" href="embeddings/#multimolecule.module.embeddings.RotaryEmbedding"><code>RotaryEmbedding</code></a>.</li>
-</ul>
 
 
 
