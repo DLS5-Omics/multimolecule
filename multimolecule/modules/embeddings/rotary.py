@@ -47,11 +47,11 @@ class RotaryEmbedding(nn.Module):
         Rotary Embedding is irrespective of the sequence length and can be used for any sequence length.
     """
 
-    def __init__(self, embedding_dim: int):
+    def __init__(self, embedding_dim: int, base: float = 10000.0, dtype: torch.dtype = torch.float32):
         super().__init__()
         # Generate and save the inverse frequency buffer (non trainable)
-        inv_freq = 1.0 / (10000 ** (torch.arange(0, embedding_dim, 2, dtype=torch.int64).float() / embedding_dim))
-        self.register_buffer("inv_freq", inv_freq)
+        inv_freq = 1.0 / (base ** (torch.arange(0, embedding_dim, 2, dtype=dtype) / embedding_dim))
+        self.register_buffer("inv_freq", inv_freq, persistent=False)
 
         self._seq_len_cached = None
         self._cos_cached = None

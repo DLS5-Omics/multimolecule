@@ -50,7 +50,7 @@ dependencies = [
   "datasets",
   "strenum; python_version<'3.11'",
   "torch",
-  "transformers<=4.50",
+  "transformers",
 ]
 urls.documentation = "https://multimolecule.danling.org"
 urls.homepage = "https://multimolecule.danling.org"
