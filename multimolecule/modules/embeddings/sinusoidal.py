@@ -61,7 +61,7 @@ class SinusoidalEmbedding(nn.Embedding):
         weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx).to(
             dtype=self.weight.dtype, device=self.weight.device  # type: ignore[has-type]
         )
-        self.weight = nn.Parameter(weight.detach(), requires_grad=False)
+        self.register_buffer("weight", weight.detach(), persistent=False)
 
     @staticmethod
     def get_embedding(num_embeddings: int, embedding_dim: int, padding_idx: int | None = None) -> Tensor:
@@ -109,14 +109,3 @@ class SinusoidalEmbedding(nn.Embedding):
         # Need to shift the position ids by the padding index
         position_ids = self.get_position_ids(input_ids, self.padding_idx) + self.bias
         return super().forward(position_ids)
-
-    def state_dict(self, destination=None, prefix="", keep_vars=False):
-        return {}
-
-    def load_state_dict(self, *args, state_dict, strict=True):
-        return
-
-    def _load_from_state_dict(
-        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
-    ):
-        return
