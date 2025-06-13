@@ -55,32 +55,44 @@ class SinusoidalEmbedding(nn.Embedding):
     def __init__(self, num_embeddings: int, embedding_dim: int, padding_idx: int | None = None, bias: int = 1):
         weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx)
         super().__init__(num_embeddings, embedding_dim, padding_idx, _weight=weight.detach(), _freeze=True)
+        del self.weight
+        self.register_buffer("weight", weight, persistent=False)
         self.bias = bias
 
-    def update_weight(self, num_embeddings: int, embedding_dim: int, padding_idx: int | None = None):
-        weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx).to(
-            dtype=self.weight.dtype, device=self.weight.device  # type: ignore[has-type]
+    def update_weight(self, num_embeddings: int):
+        weight = self.get_embedding(
+            num_embeddings, self.embedding_dim, self.padding_idx, dtype=self.weight.dtype, device=self.weight.device
         )
-        self.weight = nn.Parameter(weight.detach(), requires_grad=False)
+        self.register_buffer("weight", weight, persistent=False)
 
     @staticmethod
-    def get_embedding(num_embeddings: int, embedding_dim: int, padding_idx: int | None = None) -> Tensor:
+    def get_embedding(
+        num_embeddings: int,
+        embedding_dim: int,
+        padding_idx: int | None = None,
+        device: torch.device | None = None,
+        dtype: torch.dtype = torch.float32,
+    ) -> Tensor:
         """
         Build sinusoidal embeddings.
 
         This matches the implementation in tensor2tensor, but differs slightly from the description in Section 3.5 of
         "Attention Is All You Need".
         """
+
+        if device is None:
+            device = torch.get_default_device()
         half_dim = embedding_dim // 2
         emb = torch.exp(torch.arange(half_dim, dtype=torch.float) * -(math.log(10000) / (half_dim - 1)))
         emb = torch.arange(num_embeddings, dtype=torch.float).unsqueeze(1) * emb.unsqueeze(0)
         emb = torch.cat([torch.sin(emb), torch.cos(emb)], dim=1).view(num_embeddings, -1)
+        emb = emb.to(device=device, dtype=dtype)
         if embedding_dim % 2 == 1:
             # zero pad
             emb = torch.cat([emb, torch.zeros(num_embeddings, 1)], dim=1)
         if padding_idx is not None:
             emb[padding_idx, :] = 0
-        return emb
+        return emb.detach()
 
     @staticmethod
     def get_position_ids(tensor: Tensor, padding_idx: int | None = None):
@@ -105,18 +117,7 @@ class SinusoidalEmbedding(nn.Embedding):
         if self.padding_idx is not None:
             max_position += self.padding_idx
         if max_position > self.weight.size(0):
-            self.update_weight(max_position, self.embedding_dim, self.padding_idx)
+            self.update_weight(max_position)
         # Need to shift the position ids by the padding index
         position_ids = self.get_position_ids(input_ids, self.padding_idx) + self.bias
         return super().forward(position_ids)
-
-    def state_dict(self, destination=None, prefix="", keep_vars=False):
-        return {}
-
-    def load_state_dict(self, *args, state_dict, strict=True):
-        return
-
-    def _load_from_state_dict(
-        self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
-    ):
-        return
