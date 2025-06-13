@@ -109,7 +109,7 @@ class ConvertConfig(ConvertConfig_):
 
     def post(self):
         if self.output_path is None:
-            self.output_path = self.checkpoint_path.split("/")[-1].lower()
+            self.output_path = f"{os.path.basename(self.root)}-{self.checkpoint_path.split('/')[-1][0]}mer"
         if self.repo_id is None:
             self.repo_id = f"multimolecule/{self.output_path}"
 

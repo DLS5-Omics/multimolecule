@@ -29,7 +29,6 @@ from typing import Tuple
 from warnings import warn
 
 import torch
-import torch.utils.checkpoint
 from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
@@ -1186,6 +1185,7 @@ class ErnieRnaPooler(nn.Module):
 class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
     output_name: str = "attentions"
+    require_attentions: bool = True
 
     def __init__(self, config: ErnieRnaConfig, head_config: ErnieRnaSecondaryStructureHeadConfig | None = None):
         if head_config is None:
@@ -1347,7 +1347,7 @@ class ErnieRnaConvNet(nn.Sequential):
         layers = []
         for i in range(config.num_layers):
             layers.append(
-                ErnieRnaBasicConvBlock(
+                ErnieRnaConvBlock(
                     config.channels,
                     dilation=pow(2, (i % 3)),
                     dropout=config.dropout,
@@ -1359,7 +1359,7 @@ class ErnieRnaConvNet(nn.Sequential):
         super().__init__(*layers)
 
 
-class ErnieRnaBasicConvBlock(nn.Module):
+class ErnieRnaConvBlock(nn.Module):
     def __init__(
         self,
         channels: int,

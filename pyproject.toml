@@ -25,7 +25,7 @@ authors = [
 ]
 requires-python = ">=3.8"
 classifiers = [
-  "Development Status :: 2 - Pre-Alpha ",
+  "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Developers",
   "Intended Audience :: Education",
   "Intended Audience :: Science/Research",
@@ -50,7 +50,7 @@ dependencies = [
   "datasets",
   "strenum; python_version<'3.11'",
   "torch",
-  "transformers",
+  "transformers<=4.50",
 ]
 urls.documentation = "https://multimolecule.danling.org"
 urls.homepage = "https://multimolecule.danling.org"
