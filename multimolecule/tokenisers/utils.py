@@ -60,6 +60,8 @@ def convert_word_embeddings(
 
     # First Pass, copy the embeddings for the tokens that are in both vocabularies
     for old_index, old_token in enumerate(old_vocab):
+        if old_token is None:
+            continue
         new_index = new_vocab.index(old_token)
         for new_embed, old_embed in zip(new_embeddings, old_embeddings):
             new_embed[new_index] = old_embed[old_index]
