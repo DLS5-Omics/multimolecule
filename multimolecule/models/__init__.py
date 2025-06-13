@@ -23,6 +23,16 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
+from .aido_rna import (
+    AidoRnaConfig,
+    AidoRnaForContactPrediction,
+    AidoRnaForMaskedLM,
+    AidoRnaForPreTraining,
+    AidoRnaForSecondaryStructurePrediction,
+    AidoRnaForSequencePrediction,
+    AidoRnaForTokenPrediction,
+    AidoRnaModel,
+)
 from .calm import (
     CaLmConfig,
     CaLmForContactPrediction,
@@ -144,6 +154,14 @@ __all__ = [
     "AutoModelForContactPrediction",
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
+    "AidoRnaConfig",
+    "AidoRnaModel",
+    "AidoRnaForContactPrediction",
+    "AidoRnaForSequencePrediction",
+    "AidoRnaForTokenPrediction",
+    "AidoRnaForMaskedLM",
+    "AidoRnaForPreTraining",
+    "AidoRnaForSecondaryStructurePrediction",
     "CaLmConfig",
     "CaLmModel",
     "CaLmForContactPrediction",
