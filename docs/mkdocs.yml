@@ -43,6 +43,7 @@ nav:
       - DNA:
           - CaLM: models/calm.md
       - RNA:
+          - AIDO.RNA: models/aido_rna.md
           - ERNIE-RNA: models/ernierna.md
           - RibonanzaNet: models/ribonanzanet.md
           - RiNALMo: models/rinalmo.md
