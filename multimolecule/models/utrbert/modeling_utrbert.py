@@ -27,7 +27,6 @@ from typing import Tuple
 from warnings import warn
 
 import torch
-import torch.utils.checkpoint
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
@@ -538,7 +537,10 @@ class UtrBertForMaskedLM(UtrBertPreTrainedModel):
 
 
 class UtrBertForPreTraining(UtrBertForMaskedLM):
-    pass
+
+    def __init__(self, config: UtrBertConfig):
+        super().__init__(config)
+        self.utrbert = UtrBertModel(config)
 
 
 class UtrBertEmbeddings(nn.Module):

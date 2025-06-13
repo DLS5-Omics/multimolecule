@@ -29,7 +29,6 @@ from typing import Tuple
 from warnings import warn
 
 import torch
-import torch.utils.checkpoint
 from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
@@ -1185,7 +1184,8 @@ class ErnieRnaPooler(nn.Module):
 
 class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
-    output_name: str = "attentions"
+    output_name: str = "attention_biases"
+    require_attentions: bool = True
 
     def __init__(self, config: ErnieRnaConfig, head_config: ErnieRnaSecondaryStructureHeadConfig | None = None):
         if head_config is None:
@@ -1223,9 +1223,12 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         threshold: float = 1.5,
     ) -> HeadOutput:
         if isinstance(outputs, (Mapping, ModelOutput)):
-            attentions = outputs["attention_biases"]
+            attentions = outputs[self.output_name]
         elif isinstance(outputs, tuple):
             attentions = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         attention = attentions[-1][:, 5:6, :, :]  # Mysterious magic head 5
 
         # In the original model, attention for padding tokens are completely zeroed out.
@@ -1347,7 +1350,7 @@ class ErnieRnaConvNet(nn.Sequential):
         layers = []
         for i in range(config.num_layers):
             layers.append(
-                ErnieRnaBasicConvBlock(
+                ErnieRnaConvBlock(
                     config.channels,
                     dilation=pow(2, (i % 3)),
                     dropout=config.dropout,
@@ -1359,7 +1362,7 @@ class ErnieRnaConvNet(nn.Sequential):
         super().__init__(*layers)
 
 
-class ErnieRnaBasicConvBlock(nn.Module):
+class ErnieRnaConvBlock(nn.Module):
     def __init__(
         self,
         channels: int,
@@ -1386,17 +1389,15 @@ class ErnieRnaBasicConvBlock(nn.Module):
             bias=bias,
         )
 
-    def forward(self, hidden_state: Tensor) -> Tensor:
-        residual = hidden_state
-
-        hidden_state = self.norm(hidden_state)
-        hidden_state = self.activation(hidden_state)
-        hidden_state = self.conv1(hidden_state)
-        hidden_state = self.dropout(hidden_state)
-        hidden_state = self.activation(hidden_state)
-        hidden_state = self.conv2(hidden_state)
-
-        return hidden_state + residual
+    def forward(self, hidden_states: Tensor) -> Tensor:
+        residual = hidden_states
+        hidden_states = self.norm(hidden_states)
+        hidden_states = self.activation(hidden_states)
+        hidden_states = self.conv1(hidden_states)
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = self.activation(hidden_states)
+        hidden_states = self.conv2(hidden_states)
+        return hidden_states + residual
 
 
 @dataclass

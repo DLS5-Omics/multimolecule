@@ -28,7 +28,6 @@ from typing import Tuple
 from warnings import warn
 
 import torch
-import torch.utils.checkpoint
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
@@ -78,7 +77,7 @@ class RnaBertPreTrainedModel(PreTrainedModel):
             module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
             if module.padding_idx is not None:
                 module.weight.data[module.padding_idx].zero_()
-        elif isinstance(module, nn.LayerNorm):
+        elif isinstance(module, (nn.LayerNorm, RnaBertLayerNorm)):
             module.bias.data.zero_()
             module.weight.data.fill_(1.0)
 
@@ -541,27 +540,27 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         >>> output = model(**input, labels_lm_seq=input["input_ids"])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<MeanBackward0>)
-        >>> output["logits_lm_seq"].shape
+        >>> output["logits_lm"].shape
         torch.Size([1, 7, 26])
-        >>> output["logits_lm_ss"].shape
+        >>> output["logits_ss"].shape
         torch.Size([1, 7, 8])
         >>> output["logits_sa"].shape
         torch.Size([1, 2])
     """
 
     _tied_weights_keys = [
-        "lm_head_seq.decoder.weight",
-        "lm_head_seq.decoder.bias",
-        "lm_head_ss.decoder.weight",
-        "lm_head_ss.decoder.bias",
+        "lm_head.decoder.weight",
+        "lm_head.decoder.bias",
+        "ss_head.decoder.weight",
+        "ss_head.decoder.bias",
     ]
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
         self.rnabert = RnaBertModel(config)
-        self.lm_head_seq = MaskedLMHead(config)
+        self.lm_head = MaskedLMHead(config)
         vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
-        self.lm_head_ss = MaskedLMHead(config)
+        self.ss_head = MaskedLMHead(config)
         config.vocab_size = vocab_size
         self.sa_head = SequencePredictionHead(config, HeadConfig(num_labels=2))
 
@@ -590,31 +589,31 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
             **kwargs,
         )
 
-        output_lm_seq = self.lm_head_seq(outputs, labels=labels_lm_seq)
-        logits_lm_seq, loss_lm_seq = output_lm_seq.logits, output_lm_seq.loss
+        output_lm = self.lm_head(outputs, labels=labels_lm_seq)
+        logits_lm, loss_lm = output_lm.logits, output_lm.loss
 
-        output_lm_ss = self.lm_head_ss(outputs, labels=labels_lm_ss)
-        logits_lm_ss, loss_lm_ss = output_lm_ss.logits, output_lm_ss.loss
+        output_ss = self.ss_head(outputs, labels=labels_lm_ss)
+        logits_ss, loss_ss = output_ss.logits, output_ss.loss
 
         output_sa = self.sa_head(outputs, labels=labels_sa)
         logits_sa, loss_sa = output_sa.logits, output_sa.loss
 
-        losses = tuple(l for l in (loss_lm_seq, loss_lm_ss, loss_sa) if l is not None)  # noqa: E741
+        losses = tuple(l for l in (loss_lm, loss_ss, loss_sa) if l is not None)  # noqa: E741
         loss = torch.mean(torch.stack(losses)) if losses else None
 
         if not return_dict:
             output = outputs[2:]
             output = ((logits_sa, loss_sa) + output) if loss_sa is not None else ((logits_sa,) + output)
-            output = ((logits_lm_ss, loss_lm_ss) + output) if loss_lm_ss is not None else ((logits_lm_ss,) + output)
-            output = ((logits_lm_seq, loss_lm_seq) + output) if loss_lm_seq is not None else ((logits_lm_seq,) + output)
+            output = ((logits_ss, loss_ss) + output) if loss_ss is not None else ((logits_ss,) + output)
+            output = ((logits_lm, loss_lm) + output) if loss_lm is not None else ((logits_lm,) + output)
             return ((loss,) + output) if loss is not None else output
 
         return RnaBertForPreTrainingOutput(
             loss=loss,
-            logits_lm_seq=logits_lm_seq,
-            loss_lm_seq=loss_lm_seq,
-            logits_lm_ss=logits_lm_ss,
-            loss_lm_ss=loss_lm_ss,
+            logits_lm=logits_lm,
+            loss_lm=loss_lm,
+            logits_ss=logits_ss,
+            loss_ss=loss_ss,
             logits_sa=logits_sa,
             loss_sa=loss_sa,
             hidden_states=outputs.hidden_states,
@@ -1087,10 +1086,10 @@ class RnaBertPooler(nn.Module):
 @dataclass
 class RnaBertForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
-    logits_lm_seq: torch.FloatTensor = None  # type: ignore[assignment]
-    loss_lm_seq: torch.FloatTensor | None = None
-    logits_lm_ss: torch.FloatTensor = None  # type: ignore[assignment]
-    loss_lm_ss: torch.FloatTensor | None = None
+    logits_lm: torch.FloatTensor = None  # type: ignore[assignment]
+    loss_lm: torch.FloatTensor | None = None
+    logits_ss: torch.FloatTensor = None  # type: ignore[assignment]
+    loss_ss: torch.FloatTensor | None = None
     logits_sa: torch.FloatTensor = None  # type: ignore[assignment]
     loss_sa: torch.FloatTensor | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
@@ -1100,8 +1099,8 @@ class RnaBertForPreTrainingOutput(ModelOutput):
 class RnaBertLayerNorm(nn.Module):
     def __init__(self, hidden_size: int, eps: float = 1e-12):
         super().__init__()
-        self.weight = nn.Parameter(torch.ones(hidden_size))  # weightのこと
-        self.bias = nn.Parameter(torch.zeros(hidden_size))  # biasのこと
+        self.weight = nn.Parameter(torch.ones(hidden_size))
+        self.bias = nn.Parameter(torch.zeros(hidden_size))
         self.variance_epsilon = eps
 
     def forward(self, x: Tensor) -> Tensor:

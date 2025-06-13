@@ -72,10 +72,8 @@ class SpliceAiModel(SpliceAiPreTrainedModel):
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/spliceai")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
-        >>> output["last_hidden_state"].shape
-        torch.Size([1, 7, 768])
-        >>> output["pooler_output"].shape
-        torch.Size([1, 768])
+        >>> output["logits"].shape
+        torch.Size([1, 5, 3])
     """
 
     def __init__(self, config: SpliceAiConfig):
@@ -209,7 +207,7 @@ class SpliceAiEncoder(nn.Module):
 
     def forward(
         self,
-        hidden_state: Tensor,
+        hidden_states: Tensor,
         output_contexts: bool = False,
         output_hidden_states: bool = False,
         return_dict: bool = True,
@@ -217,7 +215,7 @@ class SpliceAiEncoder(nn.Module):
         contexts = () if output_contexts else None
         hidden_states = () if output_hidden_states else None
 
-        context = self.conv(hidden_state)
+        context = self.conv(hidden_states)
         for stage in self.stages:
             if output_contexts:
                 contexts = contexts + (context[:, :, self.padding : -self.padding].transpose(1, 2),)  # type: ignore[operator] # noqa: E501
@@ -225,9 +223,9 @@ class SpliceAiEncoder(nn.Module):
                 hidden_states = hidden_states + (context[:, :, self.padding : -self.padding].transpose(1, 2),)  # type: ignore[operator] # noqa: E501
 
             if self.gradient_checkpointing and self.training:
-                hidden_state, context = self._gradient_checkpointing_func(stage.__call__, hidden_state, context)
+                hidden_states, context = self._gradient_checkpointing_func(stage.__call__, hidden_states, context)
             else:
-                hidden_state, context = stage(hidden_state, context)
+                hidden_states, context = stage(hidden_states, context)
 
         context = context[:, :, self.padding : -self.padding]
 
@@ -255,10 +253,10 @@ class SpliceAiStage(nn.Module):
             padding="same",
         )
 
-    def forward(self, hidden_state: Tensor, context: Tensor) -> Tuple[Tensor, Tensor]:
-        hidden_state = self.blocks(hidden_state)
-        context = self.conv(hidden_state) + context
-        return hidden_state, context
+    def forward(self, hidden_states: Tensor, context: Tensor) -> Tuple[Tensor, Tensor]:
+        hidden_states = self.blocks(hidden_states)
+        context = self.conv(hidden_states) + context
+        return hidden_states, context
 
 
 class SpliceAiBlock(nn.Module):
@@ -283,15 +281,15 @@ class SpliceAiBlock(nn.Module):
             padding="same",
         )
 
-    def forward(self, hidden_state: Tensor) -> Tensor:
-        residual = hidden_state
-        hidden_state = self.norm1(hidden_state)
-        hidden_state = self.act1(hidden_state)
-        hidden_state = self.conv1(hidden_state)
-        hidden_state = self.norm2(hidden_state)
-        hidden_state = self.act2(hidden_state)
-        hidden_state = self.conv2(hidden_state)
-        return hidden_state + residual
+    def forward(self, hidden_states: Tensor) -> Tensor:
+        residual = hidden_states
+        hidden_states = self.norm1(hidden_states)
+        hidden_states = self.act1(hidden_states)
+        hidden_states = self.conv1(hidden_states)
+        hidden_states = self.norm2(hidden_states)
+        hidden_states = self.act2(hidden_states)
+        hidden_states = self.conv2(hidden_states)
+        return hidden_states + residual
 
 
 def average_output(output: Tuple[Tensor, ...] | Tuple[Tuple[Tensor, ...], ...]) -> Tensor | Tuple[Tensor, ...]:
