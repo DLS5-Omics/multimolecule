@@ -3291,7 +3291,7 @@ RNABERT preprocessed all tokens by replacing &ldquo;U&rdquo;s with &ldquo;T&rdqu
 
 
         <p>This is the configuration class to store the configuration of a <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaBertModel&lt;/span&gt;" href="#multimolecule.models.rnabert.RnaBertModel"><code>RnaBertModel</code></a>.
-It is used to instantiate a RnaBert model according to the specified arguments, defining the model architecture.
+It is used to instantiate a RNABERT model according to the specified arguments, defining the model architecture.
 Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaBert
 <a href="https://github.com/mana438/RNABERT">mana438/RNABERT</a> architecture.</p>
 <p>Configuration objects inherit from <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt;" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig"><code>PreTrainedConfig</code></a> and can be used to
@@ -3319,7 +3319,7 @@ for more information.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Vocabulary size of the RnaBert model. Defines the number of different tokens that can be represented by the
+                <p>Vocabulary size of the RNABERT model. Defines the number of different tokens that can be represented by the
 <code>inputs_ids</code> passed when calling [<code>RnaBertModel</code>].</p>
               </div>
             </td>
@@ -3712,7 +3712,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <span class="normal"><a href="#__codelineno-0-135">135</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="k">class</span><span class="w"> </span><span class="nc">RnaBertConfig</span><span class="p">(</span><span class="n">PreTrainedConfig</span><span class="p">):</span>
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    This is the configuration class to store the configuration of a [`RnaBertModel`][multimolecule.models.RnaBertModel].</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    It is used to instantiate a RnaBert model according to the specified arguments, defining the model architecture.</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    It is used to instantiate a RNABERT model according to the specified arguments, defining the model architecture.</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaBert</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    [mana438/RNABERT](https://github.com/mana438/RNABERT) architecture.</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>
@@ -3722,7 +3722,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">        vocab_size:</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            Vocabulary size of the RnaBert model. Defines the number of different tokens that can be represented by the</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            Vocabulary size of the RNABERT model. Defines the number of different tokens that can be represented by the</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">            `inputs_ids` passed when calling [`RnaBertModel`].</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">        hidden_size:</span>
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">            Dimensionality of the encoder layers and the pooler layer.</span>
@@ -5803,7 +5803,7 @@ models.</p>
 </span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>            <span class="n">module</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">initializer_range</span><span class="p">)</span>
 </span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>            <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="n">padding_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>                <span class="n">module</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">padding_idx</span><span class="p">]</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">):</span>
+</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">,</span> <span class="n">RnaBertLayerNorm</span><span class="p">)):</span>
 </span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>            <span class="n">module</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
 </span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>            <span class="n">module</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
