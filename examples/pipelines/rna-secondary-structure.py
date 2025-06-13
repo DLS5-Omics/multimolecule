@@ -25,4 +25,4 @@ from transformers import pipeline
 import multimolecule as mm  # noqa: F401
 
 predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
-output = predictor("AUCG")
+output = predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU", output_contact_map=True)

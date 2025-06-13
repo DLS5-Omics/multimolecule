@@ -109,7 +109,7 @@ Note that due to technical limitations, the ground truth measurements are not av
 To facilitate processing, all measurement arrays (reactivity, deg_pH10, deg_50C, deg_Mg_pH10, deg_Mg_50C and their corresponding error fields) are padded with `None` values to match the full sequence length.
 When working with this data, please be aware that the trailing elements of these arrays are padding values and do not represent actual measurements.
 
-## Variations
+## Variants
 
 This dataset is available in two subsets:
 

@@ -25,6 +25,7 @@ from __future__ import annotations
 import os
 import shutil
 from typing import Dict
+from warnings import warn
 
 from chanfig import Config
 from transformers import PreTrainedModel
@@ -67,12 +68,12 @@ def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str 
         if HfApi is None:
             raise ImportError("Please install huggingface_hub to push to the hub.")
         api = HfApi()
+        repo_id = convert_config.repo_id
+        token = convert_config.token
         if convert_config.delete_existing:
-            api.delete_repo(convert_config.repo_id, token=convert_config.token, missing_ok=True)
-        api.create_repo(convert_config.repo_id, token=convert_config.token, exist_ok=True, repo_type=repo_type)
-        api.upload_folder(
-            repo_id=convert_config.repo_id, folder_path=output_path, token=convert_config.token, repo_type=repo_type
-        )
+            api.delete_repo(repo_id=repo_id, repo_type=repo_type, token=token, missing_ok=True)
+        api.create_repo(repo_id=repo_id, repo_type=repo_type, token=token, exist_ok=True)
+        api.upload_folder(repo_id=repo_id, repo_type=repo_type, token=token, folder_path=output_path)
 
 
 def save_checkpoint(
@@ -81,6 +82,10 @@ def save_checkpoint(
     tokenizer_config: Dict | None = None,
 ):
     root, output_path = convert_config.root, convert_config.output_path
+    if os.path.exists(output_path):
+        warn(f"Output directory: {output_path} already exists. Deleting it.")
+        shutil.rmtree(output_path)
+    os.makedirs(output_path)
     write_model(output_path, model, tokenizer_config)
     copy_readme(root, output_path)
     push_to_hub(convert_config, output_path)

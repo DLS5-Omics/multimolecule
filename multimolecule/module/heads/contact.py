@@ -174,6 +174,9 @@ class ContactAttentionLinearHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         attentions = torch.stack(output, 1)
 
         # In the original model, attentions for padding tokens are completely zeroed out.
@@ -273,6 +276,9 @@ class ContactAttentionResnetHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         attentions = torch.stack(output, 1)
 
         # In the original model, attentions for padding tokens are completely zeroed out.

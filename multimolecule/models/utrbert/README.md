@@ -57,7 +57,7 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 
 3UTRBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of 3’ untranslated regions (3’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
-### Variations
+### Variants
 
 - **[multimolecule/utrbert-3mer](https://huggingface.co/multimolecule/utrbert-3mer)**: The 3UTRBERT model pre-trained on 3-mer data.
 - **[multimolecule/utrbert-4mer](https://huggingface.co/multimolecule/utrbert-4mer)**: The 3UTRBERT model pre-trained on 4-mer data.
