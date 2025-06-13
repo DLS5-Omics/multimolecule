@@ -78,7 +78,7 @@ This dataset can be used to examine how RNA structures vary under different cond
 - **dataset**:
     The source or reference for the dataset entry, indicating its origin.
 
-## Variations
+## Variants
 
 This dataset is available in four variants:
 

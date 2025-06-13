@@ -91,7 +91,7 @@ The converted dataset consists of the following columns, each providing specific
     - **N**: **None** – No specific functional annotation is assigned.
     - **K**: **Pseudoknot** – Marks nucleotides involved in pseudoknot structures, which can be functionally significant.
 
-## Variations
+## Variants
 
 This dataset is available in two variants:
 

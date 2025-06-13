@@ -29,7 +29,7 @@ class RnaMsmConfig(PreTrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`RnaMsmModel`][multimolecule.models.RnaMsmModel].
     It is used to instantiate a RnaMsm model according to the specified arguments, defining the model architecture.
-    Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaMsm
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the RNA-MSM
     [yikunpku/RNA-MSM](https://github.com/yikunpku/RNA-MSM) architecture.
 
     Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to

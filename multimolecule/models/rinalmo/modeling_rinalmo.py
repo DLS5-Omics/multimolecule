@@ -81,6 +81,7 @@ class RiNALMoPreTrainedModel(PreTrainedModel):
 class RiNALMoModel(RiNALMoPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RiNALMoConfig, RiNALMoModel, RnaTokenizer
         >>> config = RiNALMoConfig()
         >>> model = RiNALMoModel(config)
@@ -267,6 +268,7 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
 class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RiNALMoConfig, RiNALMoForSequencePrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
         >>> model = RiNALMoForSequencePrediction(config)
@@ -331,6 +333,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RiNALMoConfig, RiNALMoForTokenPrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
         >>> model = RiNALMoForTokenPrediction(config)
@@ -395,6 +398,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
 class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RiNALMoConfig, RiNALMoForContactPrediction, RnaTokenizer
         >>> config = RiNALMoConfig()
         >>> model = RiNALMoForContactPrediction(config)
@@ -464,6 +468,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
 class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RiNALMoConfig, RiNALMoForMaskedLM, RnaTokenizer
         >>> config = RiNALMoConfig()
         >>> model = RiNALMoForMaskedLM(config)
@@ -581,10 +586,9 @@ class RiNALMoEmbeddings(nn.Module):
     ):
         if position_ids is None:
             if input_ids is not None:
-                # Create the position ids from the input token ids. Any padded tokens remain padded.
                 position_ids = create_position_ids_from_input_ids(input_ids, self.padding_idx, past_key_values_length)
             else:
-                position_ids = self.create_position_ids_from_inputs_embeds(inputs_embeds)
+                position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
             # This is a bug in the original implementation
             position_ids = position_ids + 1
 
@@ -609,23 +613,6 @@ class RiNALMoEmbeddings(nn.Module):
         if attention_mask is not None:
             embeddings = (embeddings * attention_mask.unsqueeze(-1)).to(embeddings.dtype)
         return embeddings
-
-    def create_position_ids_from_inputs_embeds(self, inputs_embeds):
-        """
-        We are provided embeddings directly. We cannot infer which are padded so just generate sequential position ids.
-
-        Args:
-            inputs_embeds: Tensor
-
-        Returns: Tensor
-        """
-        input_shape = inputs_embeds.size()[:-1]
-        sequence_length = input_shape[1]
-
-        position_ids = torch.arange(
-            self.padding_idx + 1, sequence_length + self.padding_idx + 1, dtype=torch.long, device=inputs_embeds.device
-        )
-        return position_ids.unsqueeze(0).expand(input_shape)
 
 
 class RiNALMoEncoder(nn.Module):
@@ -891,7 +878,7 @@ class RiNALMoSelfAttention(nn.Module):
     def transpose_for_scores(self, x: Tensor) -> Tensor:
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(new_x_shape)
-        return x.permute(0, 2, 1, 3)
+        return x.transpose(1, 2)
 
     def forward(
         self,
@@ -986,7 +973,7 @@ class RiNALMoSelfAttention(nn.Module):
 
         context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
 
-        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
+        context_layer = context_layer.transpose(1, 2).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(new_context_layer_shape)
 
@@ -1052,16 +1039,19 @@ class RiNALMoPooler(nn.Module):
         return pooled_output
 
 
-def create_position_ids_from_input_ids(input_ids, padding_idx, past_key_values_length=0):
-    """
-    Replace non-padding symbols with their position numbers. Position numbers begin at padding_idx+1. Padding symbols
-    are ignored. This is modified from fairseq's `utils.make_positions`.
+def create_position_ids_from_inputs_embeds(inputs_embeds: torch.FloatTensor, padding_idx: int = 0) -> torch.LongTensor:
+    input_shape = inputs_embeds.size()[:-1]
+    sequence_length = input_shape[1]
 
-    Args:
-        x: Tensor x:
+    position_ids = torch.arange(
+        padding_idx + 1, sequence_length + padding_idx + 1, dtype=torch.long, device=inputs_embeds.device
+    )
+    return position_ids.unsqueeze(0).expand(input_shape)
 
-    Returns: Tensor
-    """
+
+def create_position_ids_from_input_ids(
+    input_ids: torch.LongTensor, padding_idx: int = 0, past_key_values_length: int = 0
+) -> torch.LongTensor:
     # The series of casts and type-conversions here are carefully balanced to both work with ONNX export and XLA.
     mask = input_ids.ne(padding_idx).int()
     incremental_indices = (

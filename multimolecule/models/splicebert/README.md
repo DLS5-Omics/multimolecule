@@ -57,7 +57,7 @@ The OFFICIAL repository of SpliceBERT is at [chenkenbio/SpliceBERT](https://gith
 
 SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of messenger RNA precursor sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
-### Variations
+### Variants
 
 - **[multimolecule/splicebert](https://huggingface.co/multimolecule/splicebert)**: The SpliceBERT model.
 - **[multimolecule/splicebert.510](https://huggingface.co/multimolecule/splicebert.510)**: The intermediate SpliceBERT model.

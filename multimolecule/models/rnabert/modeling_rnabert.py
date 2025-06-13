@@ -77,7 +77,7 @@ class RnaBertPreTrainedModel(PreTrainedModel):
             module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
             if module.padding_idx is not None:
                 module.weight.data[module.padding_idx].zero_()
-        elif isinstance(module, nn.LayerNorm):
+        elif isinstance(module, (nn.LayerNorm, RnaBertLayerNorm)):
             module.bias.data.zero_()
             module.weight.data.fill_(1.0)
 
@@ -85,6 +85,7 @@ class RnaBertPreTrainedModel(PreTrainedModel):
 class RnaBertModel(RnaBertPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaBertConfig, RnaBertModel, RnaTokenizer
         >>> config = RnaBertConfig()
         >>> model = RnaBertModel(config)
@@ -270,6 +271,7 @@ class RnaBertModel(RnaBertPreTrainedModel):
 class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaBertConfig, RnaBertForSequencePrediction, RnaTokenizer
         >>> config = RnaBertConfig()
         >>> model = RnaBertForSequencePrediction(config)
@@ -334,6 +336,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
 class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaBertConfig, RnaBertForTokenPrediction, RnaTokenizer
         >>> config = RnaBertConfig()
         >>> model = RnaBertForTokenPrediction(config)
@@ -398,6 +401,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
 class RnaBertForContactPrediction(RnaBertPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaBertConfig, RnaBertForContactPrediction, RnaTokenizer
         >>> config = RnaBertConfig()
         >>> model = RnaBertForContactPrediction(config)
@@ -467,6 +471,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
 class RnaBertForMaskedLM(RnaBertPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaBertConfig, RnaBertForMaskedLM, RnaTokenizer
         >>> config = RnaBertConfig()
         >>> model = RnaBertForMaskedLM(config)
@@ -532,6 +537,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
 class RnaBertForPreTraining(RnaBertPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaBertConfig, RnaBertForPreTraining, RnaTokenizer
         >>> config = RnaBertConfig()
         >>> model = RnaBertForPreTraining(config)
@@ -922,7 +928,7 @@ class RnaBertSelfAttention(nn.Module):
     def transpose_for_scores(self, x: Tensor) -> Tensor:
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(new_x_shape)
-        return x.permute(0, 2, 1, 3)
+        return x.transpose(1, 2)
 
     def forward(
         self,
@@ -1013,7 +1019,7 @@ class RnaBertSelfAttention(nn.Module):
 
         context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
 
-        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
+        context_layer = context_layer.transpose(1, 2).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(new_context_layer_shape)
 
@@ -1099,8 +1105,8 @@ class RnaBertForPreTrainingOutput(ModelOutput):
 class RnaBertLayerNorm(nn.Module):
     def __init__(self, hidden_size: int, eps: float = 1e-12):
         super().__init__()
-        self.weight = nn.Parameter(torch.ones(hidden_size))  # weightのこと
-        self.bias = nn.Parameter(torch.zeros(hidden_size))  # biasのこと
+        self.weight = nn.Parameter(torch.ones(hidden_size))
+        self.bias = nn.Parameter(torch.zeros(hidden_size))
         self.variance_epsilon = eps
 
     def forward(self, x: Tensor) -> Tensor:

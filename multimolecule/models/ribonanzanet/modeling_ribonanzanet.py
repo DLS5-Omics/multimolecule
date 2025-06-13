@@ -86,6 +86,7 @@ class RibonanzaNetPreTrainedModel(PreTrainedModel):
 class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetModel, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetModel(config)
@@ -261,6 +262,7 @@ class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
 class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetForSequencePrediction, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetForSequencePrediction(config)
@@ -326,6 +328,7 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
 class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetForTokenPrediction, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetForTokenPrediction(config)
@@ -391,6 +394,7 @@ class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
 class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetForContactPrediction, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetForContactPrediction(config)
@@ -524,6 +528,7 @@ class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
 class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetForSecondaryStructurePrediction, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetForSecondaryStructurePrediction(config)
@@ -613,6 +618,7 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
 class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetForDegradationPrediction, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetForDegradationPrediction(config)
@@ -737,6 +743,7 @@ class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
 class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetForSequenceDropoutPrediction, RnaTokenizer
         >>> config = RibonanzaNetConfig()
         >>> model = RibonanzaNetForSequenceDropoutPrediction(config)
@@ -1091,7 +1098,7 @@ class RibonanzaNetSelfAttention(nn.Module):
     def transpose_for_scores(self, x: Tensor) -> Tensor:
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(new_x_shape)
-        return x.permute(0, 2, 1, 3)
+        return x.transpose(1, 2)
 
     def forward(
         self,
@@ -1134,7 +1141,7 @@ class RibonanzaNetSelfAttention(nn.Module):
 
         context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
 
-        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
+        context_layer = context_layer.transpose(1, 2).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(new_context_layer_shape)
 
@@ -1387,14 +1394,14 @@ class RibonanzaNetPairwiseTriangleAttention(nn.Module):
         attention_bias = attention_bias.unsqueeze(1).permute(0, 4, 1, 2, 3)
 
         if self.axis == "row":
-            query_layer = query_layer.permute(0, 1, 3, 2, 4)
-            key_layer = key_layer.permute(0, 1, 3, 2, 4)
+            query_layer = query_layer.transpose(2, 3)
+            key_layer = key_layer.transpose(2, 3)
         else:
             query_layer = query_layer.permute(0, 2, 3, 1, 4)
             key_layer = key_layer.permute(0, 2, 3, 1, 4)
 
-        attention_scores = torch.matmul(query_layer, key_layer.transpose(-2, -1))
-        attention_scores = attention_scores.permute(0, 2, 1, 3, 4)
+        attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
+        attention_scores = attention_scores.transpose(1, 2)
         attention_scores = attention_scores / scale + attention_bias
 
         if attention_mask is not None:
@@ -1411,9 +1418,9 @@ class RibonanzaNetPairwiseTriangleAttention(nn.Module):
             attention_probs = attention_probs * head_mask
 
         if self.axis == "row":
-            value_layer = value_layer.permute(0, 1, 3, 2, 4)
+            value_layer = value_layer.transpose(2, 3)
             context_layer = torch.matmul(attention_probs.transpose(1, 2), value_layer)
-            context_layer = context_layer.permute(0, 1, 3, 2, 4)
+            context_layer = context_layer.transpose(2, 3)
         else:
             value_layer = value_layer.permute(0, 2, 3, 1, 4)
             context_layer = torch.matmul(attention_probs.transpose(1, 2), value_layer)
@@ -1579,6 +1586,8 @@ class RibonanzaNetSecondaryStructurePredictionHead(BasePredictionHead):
                     "https://github.com/multimolecule/multimolecule/issues. As a temporary workaround, set "
                     "return_dict=True when calling the model."
                 )
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
         # In the original model, attention for padding tokens are completely zeroed out.
         # This makes no difference most of the time because the other tokens won't attend to them,
@@ -1601,7 +1610,7 @@ class RibonanzaNetSecondaryStructurePredictionHead(BasePredictionHead):
                 eos_mask = input_ids.ne(self.eos_token_id).to(pairwise_state)
                 input_ids = input_ids[..., :-1]
             else:
-                last_valid_indices = attention_mask.sum(dim=-1)
+                last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=pairwise_state.device).unsqueeze(0) == last_valid_indices
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)

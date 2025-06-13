@@ -28,8 +28,8 @@ from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConf
 class RnaBertConfig(PreTrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`RnaBertModel`][multimolecule.models.RnaBertModel].
-    It is used to instantiate a RnaBert model according to the specified arguments, defining the model architecture.
-    Instantiating a configuration with the defaults will yield a similar configuration to that of the RnaBert
+    It is used to instantiate a RNABERT model according to the specified arguments, defining the model architecture.
+    Instantiating a configuration with the defaults will yield a similar configuration to that of the RNABERT
     [mana438/RNABERT](https://github.com/mana438/RNABERT) architecture.
 
     Configuration objects inherit from [`PreTrainedConfig`][multimolecule.models.PreTrainedConfig] and can be used to
@@ -38,7 +38,7 @@ class RnaBertConfig(PreTrainedConfig):
 
     Args:
         vocab_size:
-            Vocabulary size of the RnaBert model. Defines the number of different tokens that can be represented by the
+            Vocabulary size of the RNABERT model. Defines the number of different tokens that can be represented by the
             `inputs_ids` passed when calling [`RnaBertModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.

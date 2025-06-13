@@ -91,7 +91,7 @@ This is an UNOFFICIAL release of the [RNAcentral](https://rnacentral.org) by the
 - **Point of Contact**: [Blake Sweeney](https://www.ebi.ac.uk/people/person/blake-sweeney)
 - **Original URL**: https://rnacentral.org
 
-## Variations
+## Variants
 
 This dataset is available in five additional variants:
 

@@ -85,6 +85,7 @@ class ErnieRnaPreTrainedModel(PreTrainedModel):
 class ErnieRnaModel(ErnieRnaPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import ErnieRnaConfig, ErnieRnaModel, RnaTokenizer
         >>> config = ErnieRnaConfig()
         >>> model = ErnieRnaModel(config)
@@ -323,6 +324,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
 class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import ErnieRnaConfig, ErnieRnaForSequencePrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
         >>> model = ErnieRnaForSequencePrediction(config)
@@ -387,6 +389,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
 class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import ErnieRnaConfig, ErnieRnaForTokenPrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
         >>> model = ErnieRnaForTokenPrediction(config)
@@ -454,6 +457,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
 class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import ErnieRnaConfig, ErnieRnaForContactPrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
         >>> model = ErnieRnaForContactPrediction(config)
@@ -523,6 +527,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import ErnieRnaConfig, ErnieRnaForMaskedLM, RnaTokenizer
         >>> config = ErnieRnaConfig()
         >>> model = ErnieRnaForMaskedLM(config)
@@ -615,12 +620,15 @@ class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
 class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule.models import ErnieRnaConfig, ErnieRnaForSecondaryStructurePrediction, RnaTokenizer
         >>> config = ErnieRnaConfig()
         >>> model = ErnieRnaForSecondaryStructurePrediction(config)
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
+        >>> output["logits_ss"].shape
+        torch.Size([1, 5, 5, 1])
     """
 
     def __init__(self, config: ErnieRnaConfig):
@@ -1014,7 +1022,7 @@ class ErnieRnaSelfAttention(nn.Module):
     def transpose_for_scores(self, x: Tensor) -> Tensor:
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(new_x_shape)
-        return x.permute(0, 2, 1, 3)
+        return x.transpose(1, 2)
 
     def forward(
         self,
@@ -1109,7 +1117,7 @@ class ErnieRnaSelfAttention(nn.Module):
 
         context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
 
-        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
+        context_layer = context_layer.transpose(1, 2).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(new_context_layer_shape)
 
@@ -1184,7 +1192,9 @@ class ErnieRnaPooler(nn.Module):
 
 class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
-    output_name: str = "attentions"
+    config: ErnieRnaSecondaryStructureHeadConfig
+    output_name: str = "attention_biases"
+    require_attention_biases: bool = True
 
     def __init__(self, config: ErnieRnaConfig, head_config: ErnieRnaSecondaryStructureHeadConfig | None = None):
         if head_config is None:
@@ -1194,19 +1204,18 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
                 else ErnieRnaSecondaryStructureHeadConfig()
             )
         super().__init__(config, head_config)
-        intermediate_channels = round(self.config.channels**0.5)
+        intermediate_channels = round(self.config.num_channels**0.5)
+        self.activation = ACT2FN[self.config.activation]
         self.conv1 = nn.Conv2d(1, intermediate_channels, self.config.kernel_size, padding=self.config.kernel_size // 2)
-        self.relu = nn.ReLU(inplace=True)
         self.dropout = nn.Dropout(self.config.dropout)
         self.conv2 = nn.Conv2d(
             intermediate_channels,
-            self.config.channels - 1,
+            self.config.num_channels - 1,
             self.config.kernel_size,
             padding=self.config.kernel_size // 2,
         )
         self.convnet = ErnieRnaConvNet(self.config)
-        self.activation = ErnieRnaSoftsign()
-        self.relu = nn.ReLU()
+        self.soft_sign = ErnieRnaSoftsign()
         self.criterion = Criterion(self.config)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
@@ -1222,9 +1231,12 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         threshold: float = 1.5,
     ) -> HeadOutput:
         if isinstance(outputs, (Mapping, ModelOutput)):
-            attentions = outputs["attention_biases"]
+            attentions = outputs[self.output_name]
         elif isinstance(outputs, tuple):
             attentions = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         attention = attentions[-1][:, 5:6, :, :]  # Mysterious magic head 5
 
         # In the original model, attention for padding tokens are completely zeroed out.
@@ -1248,7 +1260,7 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
                 eos_mask = input_ids.ne(self.eos_token_id).to(attention)
                 input_ids = input_ids[..., :-1]
             else:
-                last_valid_indices = attention_mask.sum(dim=-1)
+                last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=attention.device).unsqueeze(0) == last_valid_indices
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
@@ -1258,38 +1270,39 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
         output = self.conv1(attention)
         output = self.dropout(output)
-        output = self.relu(output)
+        output = self.activation(output)
         output = self.conv2(output)
         output = torch.cat((output, attention), dim=1)
         output = self.convnet(output)
 
-        output = (output + output.permute(0, 1, 3, 2)).squeeze(1)
+        output = (output + output.transpose(2, 3)).squeeze(1)
 
         constraint = self._get_base_pairing_constraint_matrix(input_ids)
-        output = self.activation(output - threshold) * output
-        adjacency = output.sigmoid() * self.activation(output - threshold).detach()
+        output = self.soft_sign(output - threshold) * output
+        adjacency = output.sigmoid() * self.soft_sign(output - threshold).detach()
 
         matrix_adj = self._get_squared_adjacency_matrix(adjacency, constraint)
-        lambda_values = self.relu(torch.sum(matrix_adj, dim=-1) - 1).detach()
+        lambda_values = self.activation(torch.sum(matrix_adj, dim=-1) - 1).detach()
 
         for _ in range(num_iters):
             matrix_adj = self._get_squared_adjacency_matrix(adjacency, constraint)
-            grad_adjacency = lambda_values * self.activation(torch.sum(matrix_adj, dim=-1) - 1)
+            grad_adjacency = lambda_values * self.soft_sign(torch.sum(matrix_adj, dim=-1) - 1)
             grad_adjacency = grad_adjacency.unsqueeze(-1).expand(output.shape) - output / 2
             gradient = adjacency * constraint * (grad_adjacency + grad_adjacency.transpose(-1, -2))
 
             adjacency -= lr_min * gradient
             lr_min = lr_min * 0.99
-            adjacency = self.relu(torch.abs(adjacency) - sparsity * lr_min)
+            adjacency = self.activation(torch.abs(adjacency) - sparsity * lr_min)
 
             matrix_adj = self._get_squared_adjacency_matrix(adjacency, constraint)
-            lambda_gradient = self.relu(torch.sum(matrix_adj, dim=-1) - 1)
+            lambda_gradient = self.activation(torch.sum(matrix_adj, dim=-1) - 1)
             lambda_values += lr_max * lambda_gradient
             lr_max = lr_max * 0.99
 
         output = adjacency * adjacency
         output = (output + output.transpose(-1, -2)) / 2
         output = output * constraint
+        output = output.unsqueeze(-1)
 
         if labels is not None:
             return HeadOutput(output, self.criterion(output, labels))
@@ -1346,22 +1359,22 @@ class ErnieRnaConvNet(nn.Sequential):
         layers = []
         for i in range(config.num_layers):
             layers.append(
-                ErnieRnaBasicConvBlock(
-                    config.channels,
+                ErnieRnaConvBlock(
+                    config.num_channels,
                     dilation=pow(2, (i % 3)),
                     dropout=config.dropout,
                     activation=config.activation,
                     bias=config.bias,
                 )
             )
-        layers.append(nn.Conv2d(config.channels, config.num_labels, kernel_size=3, padding=1))
+        layers.append(nn.Conv2d(config.num_channels, config.num_labels, kernel_size=3, padding=1))
         super().__init__(*layers)
 
 
-class ErnieRnaBasicConvBlock(nn.Module):
+class ErnieRnaConvBlock(nn.Module):
     def __init__(
         self,
-        channels: int,
+        num_channels: int,
         kernel_size: int = 3,
         stride: int = 1,
         dilation: int = 1,
@@ -1370,14 +1383,13 @@ class ErnieRnaBasicConvBlock(nn.Module):
         bias: bool = False,
     ) -> None:
         super().__init__()
-
-        self.norm = nn.BatchNorm2d(channels)
+        self.norm = nn.BatchNorm2d(num_channels)
         self.activation = ACT2FN[activation]
-        self.conv1 = nn.Conv2d(channels, channels, kernel_size, padding=1, bias=bias)
+        self.conv1 = nn.Conv2d(num_channels, num_channels, kernel_size, padding=1, bias=bias)
         self.dropout = nn.Dropout(dropout)
         self.conv2 = nn.Conv2d(
-            channels,
-            channels,
+            num_channels,
+            num_channels,
             kernel_size,
             stride=stride,
             padding=dilation,
@@ -1387,14 +1399,12 @@ class ErnieRnaBasicConvBlock(nn.Module):
 
     def forward(self, hidden_state: Tensor) -> Tensor:
         residual = hidden_state
-
         hidden_state = self.norm(hidden_state)
         hidden_state = self.activation(hidden_state)
         hidden_state = self.conv1(hidden_state)
         hidden_state = self.dropout(hidden_state)
         hidden_state = self.activation(hidden_state)
         hidden_state = self.conv2(hidden_state)
-
         return hidden_state + residual
 
 

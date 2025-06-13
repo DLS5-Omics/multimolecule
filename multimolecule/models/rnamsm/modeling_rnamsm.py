@@ -83,6 +83,7 @@ class RnaMsmPreTrainedModel(PreTrainedModel):
 class RnaMsmModel(RnaMsmPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmModel, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmModel(config)
@@ -204,6 +205,7 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
 class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmForSequencePrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmForSequencePrediction(config)
@@ -267,6 +269,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmForTokenPrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmForTokenPrediction(config)
@@ -330,6 +333,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmForContactPrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmForContactPrediction(config)
@@ -400,6 +404,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmForMaskedLM, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmForMaskedLM(config)
@@ -470,6 +475,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
 class RnaMsmForPreTraining(RnaMsmForMaskedLM):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmForPreTraining, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmForPreTraining(config)
@@ -556,6 +562,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
 class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
     """
     Examples:
+        >>> import torch
         >>> from multimolecule import RnaMsmConfig, RnaMsmForSecondaryStructurePrediction, RnaTokenizer
         >>> config = RnaMsmConfig()
         >>> model = RnaMsmForSecondaryStructurePrediction(config)
@@ -679,7 +686,7 @@ class RnaMsmEmbeddings(nn.Module):
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
         if attention_mask is not None:
-            embeddings = embeddings * attention_mask.unsqueeze(-1)
+            embeddings = (embeddings * attention_mask.unsqueeze(-1)).to(embeddings.dtype)
         return embeddings
 
 

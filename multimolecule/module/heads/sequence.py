@@ -73,4 +73,6 @@ class SequencePredictionHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
         return super().forward(output, labels, **kwargs)

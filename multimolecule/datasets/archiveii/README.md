@@ -69,7 +69,7 @@ This is an UNOFFICIAL release of the ArchiveII by Mehdi Saman Booy, et al.
 - **family**:
     The RNA family to which the sequence belongs, such as 16S rRNA, 5S rRNA, etc.
 
-## Variations
+## Variants
 
 This dataset is available in two additional variants:
 

@@ -44,7 +44,7 @@ The OFFICIAL repository of RNA-FM is at [ml4bio/RNA-FM](https://github.com/ml4bi
 
 RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
-### Variations
+### Variants
 
 - **[multimolecule/rnafm](https://huggingface.co/multimolecule/rnafm)**: The RNA-FM model pre-trained on non-coding RNA sequences.
 - **[multimolecule/mrnafm](https://huggingface.co/multimolecule/mrnafm)**: The RNA-FM model pre-trained on messenger RNA sequences.

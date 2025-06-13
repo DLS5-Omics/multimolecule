@@ -91,7 +91,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
 
         input_ids = model_outputs["input_ids"]
         if hasattr(self.model, "postprocess"):
-            outputs = self.model.postprocess(model_outputs)
+            outputs = self.model.postprocess(model_outputs).squeeze(-1)
         else:
             if "logits_ss" in model_outputs:
                 outputs = model_outputs["logits_ss"]
@@ -111,7 +111,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
             dot_bracket = contact_map_to_dot_bracket(outputs > threshold, unsafe=True)
             ret = {"sequence": sequence, "secondary_structure": dot_bracket}
             if output_contact_map:
-                ret["contact_map"] = outputs.tolist()
+                ret["contact_map"] = outputs.numpy()
             return ret
 
         sequences = [i.replace(" ", "") for i in self.tokenizer.batch_decode(input_ids, skip_special_tokens=True)]
@@ -122,7 +122,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
             contact_map = contact_map[: len(sequence), : len(sequence)]
             dot_brackets.append(contact_map_to_dot_bracket(contact_map > threshold, unsafe=True))
             if self.output_contact_map:
-                contact_maps.append(contact_map.tolist())
+                contact_maps.append(contact_map.numpy())
 
         ret = {"sequence": sequences, "secondary_structure": dot_brackets}
         if self.output_contact_map:

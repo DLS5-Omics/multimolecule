@@ -74,7 +74,7 @@ The OFFICIAL repository of UTR-LM is at [a96123155/UTR-LM](https://github.com/a9
 
 UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of 5’ untranslated regions (5’UTRs) in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
-### Variations
+### Variants
 
 - **[multimolecule/utrlm-te_el](https://huggingface.co/multimolecule/utrlm-te_el)**: The UTR-LM model for Translation Efficiency of transcripts and mRNA Expression Level.
 - **[multimolecule/utrlm-mrl](https://huggingface.co/multimolecule/utrlm-mrl)**: The UTR-LM model for Mean Ribosome Loading.
