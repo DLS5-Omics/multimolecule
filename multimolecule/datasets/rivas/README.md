@@ -63,7 +63,7 @@ The converted dataset consists of the following columns, each providing specific
     - **Square Brackets (`[` and `]`)**: Represent base pairs in pseudoknots (page 2).
     - **Curly Braces (`{` and `}`)**: Represent base pairs in additional pseudoknots (page 3).
 
-## Variations
+## Variants
 
 This dataset is available in three variants:
 

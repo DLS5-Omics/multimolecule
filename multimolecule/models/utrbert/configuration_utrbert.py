@@ -114,9 +114,13 @@ class UtrBertConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if vocab_size is None:
+            if nmers is None:
+                raise ValueError("`nmers` must be specified if `vocab_size` is not provided.")
+            vocab_size = 5**nmers + 6
         self.vocab_size = vocab_size
-        self.type_vocab_size = 2
         self.nmers = nmers
+        self.type_vocab_size = 2
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
         self.num_attention_heads = num_attention_heads

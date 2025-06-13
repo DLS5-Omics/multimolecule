@@ -93,11 +93,13 @@ class MaskedLMHead(BasePredictionHead):
             output = outputs[0]
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         output = self.dropout(output)
         output = self.transform(output)
         output = self.decoder(output)
         if self.activation is not None:
             output = self.activation(output)
+
         if labels is not None:
             if isinstance(labels, NestedTensor):
                 if isinstance(output, Tensor):

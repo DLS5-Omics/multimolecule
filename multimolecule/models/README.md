@@ -27,14 +27,6 @@ Contact prediction assign a label to each pair of token in a sentence.
 One of the most common contact prediction tasks is protein distance map prediction.
 Protein distance map prediction attempts to find the distance between all possible amino acid residue pairs of a three-dimensional protein structure
 
-### Nucleotide Prediction
-
-Similar to [Token Classification](https://huggingface.co/docs/transformers/en/tasks/token_classification), but removes the `<bos>` token and the `<eos>` token if they are defined in the model config.
-
-!!! note "`<bos>` and `<eos>` tokens"
-
-    In tokenizers provided by MultiMolecule, `<bos>` token is pointed to `<cls>` token, and `<sep>` token is pointed to `<eos>` token.
-
 ## Usage
 
 ### Build with `multimolecule.AutoModel`s

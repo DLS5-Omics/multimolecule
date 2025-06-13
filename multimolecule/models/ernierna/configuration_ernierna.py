@@ -161,6 +161,6 @@ class ErnieRnaSecondaryStructureHeadConfig(BaseHeadConfig):
     dropout: float = 0.3
     kernel_size: int = 7
     num_layers: int = 8
-    channels: int = 64
+    num_channels: int = 64
     bias: bool = False
     activation: str = "relu"

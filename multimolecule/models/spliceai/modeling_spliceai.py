@@ -72,10 +72,8 @@ class SpliceAiModel(SpliceAiPreTrainedModel):
         >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/spliceai")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
-        >>> output["last_hidden_state"].shape
-        torch.Size([1, 7, 768])
-        >>> output["pooler_output"].shape
-        torch.Size([1, 768])
+        >>> output["logits"].shape
+        torch.Size([1, 5, 3])
     """
 
     def __init__(self, config: SpliceAiConfig):
