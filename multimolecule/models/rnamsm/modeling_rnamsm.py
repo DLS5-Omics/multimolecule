@@ -679,7 +679,7 @@ class RnaMsmEmbeddings(nn.Module):
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
         if attention_mask is not None:
-            embeddings = embeddings * attention_mask.unsqueeze(-1)
+            embeddings = (embeddings * attention_mask.unsqueeze(-1)).to(embeddings.dtype)
         return embeddings
 
 

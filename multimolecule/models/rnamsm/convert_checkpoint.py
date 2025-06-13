@@ -83,7 +83,7 @@ def convert_checkpoint(convert_config):
 
     model = Model(config)
 
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
     ckpt = ckpt.get("state_dict", ckpt)
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 

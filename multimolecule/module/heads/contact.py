@@ -174,6 +174,9 @@ class ContactAttentionLinearHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         attentions = torch.stack(output, 1)
 
         # In the original model, attentions for padding tokens are completely zeroed out.
@@ -187,7 +190,7 @@ class ContactAttentionLinearHead(PredictionHead):
         if self.bos_token_id is not None:
             attentions = attentions[..., 1:, 1:]
             # process attention_mask and input_ids to make removal of eos token happy
-            attention_mask = attention_mask[..., 1:]
+            attention_mask = attention_mask[..., 1:, 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
         # remove eos token attentions
@@ -195,7 +198,7 @@ class ContactAttentionLinearHead(PredictionHead):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
             else:
-                last_valid_indices = attention_mask.sum(dim=-1)
+                last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=attentions.device).unsqueeze(0) == last_valid_indices
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
@@ -273,6 +276,9 @@ class ContactAttentionResnetHead(PredictionHead):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
             output = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
         attentions = torch.stack(output, 1)
 
         # In the original model, attentions for padding tokens are completely zeroed out.
@@ -287,7 +293,7 @@ class ContactAttentionResnetHead(PredictionHead):
         # remove bos token attentions
         if self.bos_token_id is not None:
             attentions = attentions[..., 1:, 1:]
-            attention_mask = attention_mask[..., 1:]
+            attention_mask = attention_mask[..., 1:, 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
         # remove eos token attentions
@@ -296,7 +302,7 @@ class ContactAttentionResnetHead(PredictionHead):
                 eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
                 input_ids = input_ids[..., :-1]
             else:
-                last_valid_indices = attention_mask.sum(dim=-1)
+                last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=attentions.device).unsqueeze(0) == last_valid_indices
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)

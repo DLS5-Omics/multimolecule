@@ -39,7 +39,7 @@ except ImportError:
 
 
 def get_files(path: str) -> list[str]:
-    files = [os.path.join(path, f) for f in os.listdir(path)]
+    files = [os.path.join(path, f) for f in os.listdir(path) if not f.startswith("README")]
     files.sort(key=lambda f: ("".join(filter(str.isalpha, f)), int("".join(filter(str.isdigit, f)))))
     return files
 
@@ -68,21 +68,19 @@ def copy_readme(root: str, output_path: str):
     shutil.copy2(os.path.join(root, readme), output_path)
 
 
-def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "dataset", revision: str = "main"):
+def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "dataset"):
     if convert_config.push_to_hub:
         if HfApi is None:
             raise ImportError("Please install huggingface_hub to push to the hub.")
+        repo_id = convert_config.repo_id
+        token = convert_config.token
         api = HfApi()
         if convert_config.delete_existing:
-            api.delete_repo(convert_config.repo_id, token=convert_config.token, missing_ok=True)
-        api.create_repo(convert_config.repo_id, token=convert_config.token, exist_ok=True, repo_type=repo_type)
-        api.upload_folder(
-            repo_id=convert_config.repo_id,
-            folder_path=output_path,
-            token=convert_config.token,
-            repo_type=repo_type,
-            revision=revision,
-        )
+            api.delete_repo(repo_id=repo_id, repo_type=repo_type, token=token, missing_ok=True)
+        api.create_repo(repo_id=repo_id, repo_type=repo_type, token=token, exist_ok=True)
+        api.upload_folder(repo_id=repo_id, repo_type=repo_type, token=token, folder_path=output_path)
+        if convert_config.tag is not None:
+            api.create_tag(repo_id=repo_id, repo_type=repo_type, token=token, tag=convert_config.tag)
 
 
 def save_dataset(
@@ -93,7 +91,10 @@ def save_dataset(
     level: int = 4,
 ):
     root, output_path = convert_config.root, convert_config.output_path
-    os.makedirs(output_path, exist_ok=True)
+    if os.path.exists(output_path):
+        warn(f"Output directory: {output_path} already exists. Deleting it.")
+        shutil.rmtree(output_path)
+    os.makedirs(output_path)
     if isinstance(data, Mapping):
         if filename != "data.parquet":
             warn("Filename is ignored when saving multiple datasets.")
@@ -113,7 +114,7 @@ class ConvertConfig(Config):
     delete_existing: bool = False
     repo_id: str | None = None
     token: str | None = None
-    revision: str = "main"
+    tag: str | None = None
 
     def post(self):
         if self.repo_id is None:

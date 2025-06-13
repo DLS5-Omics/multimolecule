@@ -58,7 +58,7 @@ The OFFICIAL repository of ERNIE-RNA is at [Bruce-ywj/ERNIE-RNA](https://github.
 
 ERNIE-RNA is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
 
-### Variations
+### Variants
 
 - **[multimolecule/ernierna](https://huggingface.co/multimolecule/ernierna)**: The ERNIE-RNA model pre-trained on non-coding RNA sequences.
 - **[multimolecule/ernierna-ss](https://huggingface.co/multimolecule/ernierna-ss)**: The ERNIE-RNA model fine-tuned on RNA secondary structure prediction.
@@ -95,15 +95,9 @@ You can use this model directly with a pipeline for secondary structure predicti
 >>> from transformers import pipeline
 
 >>> predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
->>> predictor("ggucuc")
-{'sequence': 'G G U C U C',
- 'secondary_structure': '......',
- 'contact_map': [[0.0017799462657421827, 4.7089865802263375e-06, 1.640546685166555e-07, 2.5541101678072664e-08, 1.406872751630317e-08, 1.2161588074377505e-06],
-  [4.7089865802263375e-06, 1.4281877902533324e-09, 1.9235731063549366e-11, 1.9720750640134233e-12, 2.8210010282608833e-12, 3.798107073293977e-08],
-  [1.640546685166555e-07, 1.9235731063549366e-11, 2.4905685153120416e-13, 3.803083404294895e-14, 1.5183041184984453e-13, 1.345094968741023e-08],
-  [2.5541101678072664e-08, 1.9720750640134233e-12, 3.803083404294895e-14, 1.2517053942005894e-14, 1.227603495202942e-13, 2.6007175080167144e-08],
-  [1.406872751630317e-08, 2.8210010282608833e-12, 1.5183041184984453e-13, 1.227603495202942e-13, 1.9662984348384205e-12, 3.379747397502797e-07],
-  [1.2161588074377505e-06, 3.798107073293977e-08, 1.345094968741023e-08, 2.6007175080167144e-08, 3.379747397502797e-07, 0.002007929841056466]]}
+>>> predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
+{'sequence': 'GGUCUCUCUGGUUAGACCAGAUCUGAGCCU',
+ 'secondary_structure': '.(.((((((((.....)))))...))).).'}
 ```
 
 ### Downstream Use

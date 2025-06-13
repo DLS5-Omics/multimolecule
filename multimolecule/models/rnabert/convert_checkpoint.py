@@ -45,27 +45,26 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("beta", "bias")
         key = key.replace("selfattn", "self")
         key = key.replace("seq_relationship", "seq_relationship.decoder")
+        key = key.replace("cls.predictions_ss", "ss_head")
+        key = key.replace("cls.predictions", "lm_head")
+        key = key.replace("cls.seq_relationship", "sa_head")
         if key.startswith("bert"):
             state_dict["rna" + key] = value
-            continue
-        if key.startswith("cls"):
-            key = "pretrain." + key[4:]
-            state_dict[key] = value
             continue
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
         state_dict["rnabert.embeddings.word_embeddings.weight"],
-        state_dict["pretrain.predictions.decoder.weight"],
-        state_dict["pretrain.predictions.bias"],
+        state_dict["lm_head.decoder.weight"],
+        state_dict["lm_head.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
     state_dict["rnabert.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["pretrain.predictions.decoder.weight"] = decoder_weight
-    state_dict["pretrain.predictions.decoder.bias"] = state_dict["pretrain.predictions.bias"] = decoder_bias
-    state_dict["pretrain.predictions_ss.decoder.bias"] = state_dict["pretrain.predictions_ss.bias"]
+    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
+    state_dict["ss_head.decoder.bias"] = state_dict["ss_head.bias"]
     return state_dict
 
 
@@ -83,7 +82,7 @@ def convert_checkpoint(convert_config):
 
     model.load_state_dict(state_dict)
 
-    model.lm_head = deepcopy(model.pretrain.predictions)
+    model.lm_head = deepcopy(model.lm_head)
 
     save_checkpoint(convert_config, model)
 

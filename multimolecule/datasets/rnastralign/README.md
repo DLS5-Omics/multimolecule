@@ -73,7 +73,7 @@ This is an UNOFFICIAL release of the RNAStrAlign by Zhen Tan, et al.
 
     Not all families have subfamilies, in which case this field will be `None`.
 
-## Variations
+## Variants
 
 This dataset is available in two additional variants:
 
