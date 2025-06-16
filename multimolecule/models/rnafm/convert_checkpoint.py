@@ -28,7 +28,7 @@ import chanfig
 import torch
 
 from multimolecule.models import RnaFmConfig as Config
-from multimolecule.models import RnaFmForPreTraining as Model
+from multimolecule.models import RnaFmForPreTraining, RnaFmForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
@@ -39,8 +39,10 @@ torch.manual_seed(1016)
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
     state_dict = {}
     for key, value in original_state_dict.items():
-        key = "rnafm" + key[7:]
+        key = key.replace("encoder.encoder", "rnafm.encoder")
+        key = key.replace("backbone", "rnafm.encoder")
         key = key.replace("LayerNorm", "layer_norm")
+        key = key.replace("emb_layer_norm_after", "layer_norm")
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
         key = key.replace("rnafm.encoder.emb_layer_norm_before", "rnafm.embeddings.layer_norm")
@@ -62,7 +64,16 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
         key = key.replace("lm_head.weight", "lm_head.decoder.weight")
         key = key.replace("rnafm.encoder.contact_head", "ss_head")
+        key = key.replace("downstream_modules.pc-resnet_1_sym_first:r-ss", "ss_head")
+        key = key.replace("pre_reduction", "reduction")
+        key = key.replace("proj.first.0", "projection")
+        key = key.replace("proj.resnet", "convnet")
+        key = key.replace("proj.final", "prediction")
         state_dict[key] = value
+
+    if "ss_head.prediction.weight" in state_dict:
+        state_dict.pop("ss_head.decoder.weight", None)
+        state_dict.pop("ss_head.decoder.bias", None)
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
         state_dict["rnafm.embeddings.word_embeddings.weight"],
@@ -186,20 +197,29 @@ original_vocabs = {
 
 def convert_checkpoint(convert_config):
     path = convert_config.checkpoint_path.lower()
-    mrnafm = "mrna" in path or "cds" in path
-    if mrnafm:
-        config = Config(num_labels=1, hidden_size=1280, emb_layer_norm_before=False)
+
+    config = Config(num_labels=1)
+    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
+    vocab_list = get_alphabet().vocabulary
+    original_vocab_list = original_vocabs["single"]
+    if "mrna" in path or "cds" in path:
+        Model = RnaFmForPreTraining
+        config = Config(num_labels=1, hidden_size=1280, embed_norm=False)
         vocab_list = get_alphabet(nmers=3).vocabulary
         original_vocab_list = original_vocabs["3mer"]
         convert_config.output_path = "mrnafm"
         convert_config.repo_id = "multimolecule/mrnafm"
-    else:
-        config = Config(num_labels=1)
         config.codon = True
-        vocab_list = get_alphabet().vocabulary
-        original_vocab_list = original_vocabs["single"]
+        tokenizer_config["codon"] = True
+    elif "resnet" in path:
+        Model = RnaFmForSecondaryStructurePrediction
+        convert_config.output_path += "-ss"
+        convert_config.repo_id += "-ss"
+    else:
+        Model = RnaFmForPreTraining
     config.vocab_size = len(vocab_list)
     config.architectures = ["RnaFmModel"]
+    tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
 
     model = Model(config)
 
@@ -208,11 +228,6 @@ def convert_checkpoint(convert_config):
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     model.load_state_dict(state_dict)
-
-    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
-    if mrnafm:
-        tokenizer_config["codon"] = True
 
     save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 

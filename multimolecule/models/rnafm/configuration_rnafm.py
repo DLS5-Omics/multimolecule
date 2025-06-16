@@ -22,7 +22,9 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from typing import Optional
+
+from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 
 
 class RnaFmConfig(PreTrainedConfig):
@@ -77,7 +79,7 @@ class RnaFmConfig(PreTrainedConfig):
         use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
-        emb_layer_norm_before:
+        embed_norm:
             Whether to apply layer normalization after embeddings but before the main stem of the network.
         token_dropout:
             When this is enabled, masked tokens are treated as if they had been dropped out by input dropout.
@@ -111,7 +113,7 @@ class RnaFmConfig(PreTrainedConfig):
         position_embedding_type: str = "absolute",
         is_decoder: bool = False,
         use_cache: bool = True,
-        emb_layer_norm_before: bool = True,
+        embed_norm: bool = True,
         token_dropout: bool = False,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
@@ -135,7 +137,37 @@ class RnaFmConfig(PreTrainedConfig):
         self.position_embedding_type = position_embedding_type
         self.is_decoder = is_decoder
         self.use_cache = use_cache
-        self.emb_layer_norm_before = emb_layer_norm_before
+        self.embed_norm = embed_norm
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+
+
+class RnaFmSecondaryStructureHeadConfig(BaseHeadConfig):
+    r"""
+    Configuration class for a prediction head.
+
+    Args:
+        num_labels:
+            Number of labels to use in the last layer added to the model, typically for a classification task.
+
+            Head should look for [`Config.num_labels`][multimolecule.PreTrainedConfig] if is `None`.
+        problem_type:
+            Problem type for `XxxForYyyPrediction` models. Can be one of `"binary"`, `"regression"`,
+            `"multiclass"` or `"multilabel"`.
+
+            Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
+        dropout:
+            The dropout ratio for the hidden states.
+    """
+
+    num_labels: int = 1
+    problem_type: Optional[str] = None
+    dropout: float = 0.3
+    kernel_size: int = 7
+    num_layers: int = 32
+    num_channels: int = 64
+    bias: bool = False
+    activation: str = "relu"
+    hidden_size: int = 128
+    intermediate_size: int = 256
