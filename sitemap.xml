@@ -274,25 +274,25 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrlm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/module/</loc>
+        <loc>https://multimolecule.danling.org/modules/</loc>
         <lastmod>2025-06-16</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/module/embeddings/</loc>
+        <loc>https://multimolecule.danling.org/modules/embeddings/</loc>
         <lastmod>2025-06-16</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/embeddings/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/embeddings/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/embeddings/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/embeddings/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/module/heads/</loc>
+        <loc>https://multimolecule.danling.org/modules/heads/</loc>
         <lastmod>2025-06-16</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/heads/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/heads/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/heads/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/heads/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/pipelines/</loc>
@@ -610,25 +610,25 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrlm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/module/</loc>
+        <loc>https://multimolecule.danling.org/zh/modules/</loc>
         <lastmod>2025-06-16</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/module/embeddings/</loc>
+        <loc>https://multimolecule.danling.org/zh/modules/embeddings/</loc>
         <lastmod>2025-06-16</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/embeddings/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/embeddings/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/embeddings/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/embeddings/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/module/heads/</loc>
+        <loc>https://multimolecule.danling.org/zh/modules/heads/</loc>
         <lastmod>2025-06-16</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/module/heads/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/module/heads/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/heads/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/heads/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/pipelines/</loc>
