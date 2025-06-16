@@ -5,8 +5,9 @@ tags:
   - RNA
 license: agpl-3.0
 datasets:
-  - multimolecule/rnacentral
+  - multimolecule/bprna-spot
 library_name: multimolecule
+base_model: multimolecule/rnafm
 pipeline_tag: fill-mask
 mask_token: "<mask>"
 widget:
@@ -14,28 +15,28 @@ widget:
     text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
     output:
       - label: "."
-        score: 0.2752501964569092
+        score: 0.2907504141330719
       - label: "*"
-        score: 0.22108642756938934
+        score: 0.2359575480222702
       - label: "I"
-        score: 0.18201279640197754
-      - label: "U"
-        score: 0.10875876247882843
+        score: 0.19035066664218903
       - label: "A"
-        score: 0.08898332715034485
+        score: 0.09356562793254852
+      - label: "U"
+        score: 0.08782266825437546
   - example_title: "microRNA-21"
     text: "UAGC<mask>UAUCAGACUGAUGUUG"
     output:
       - label: "."
-        score: 0.2275155633687973
+        score: 0.24210385978221893
       - label: "*"
-        score: 0.18255384266376495
+        score: 0.19574487209320068
       - label: "I"
-        score: 0.14644214510917664
+        score: 0.15285496413707733
       - label: "A"
-        score: 0.1262909322977066
+        score: 0.12451102584600449
       - label: "U"
-        score: 0.12270607799291611
+        score: 0.11860787868499756
 ---
 
 # RNA-FM
@@ -119,36 +120,18 @@ pip install multimolecule
 
 ### Direct Use
 
-#### Masked Language Modeling
+#### RNA Secondary Structure Prediction
 
-You can use this model directly with a pipeline for masked language modeling:
+You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/rnafm")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.2752501964569092,
-  'token': 21,
-  'token_str': '.',
-  'sequence': 'G G U C. C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.22108642756938934,
-  'token': 23,
-  'token_str': '*',
-  'sequence': 'G G U C * C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.18201279640197754,
-  'token': 25,
-  'token_str': 'I',
-  'sequence': 'G G U C I C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.10875876247882843,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.08898332715034485,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+>>> predictor = pipeline("rna-secondary-structure", model="multimolecule/rnafm-ss")
+>>> predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
+{'sequence': 'GGUCUCUCUGGUUAGACCAGAUCUGAGCCU',
+ 'secondary_structure': '.(.(((((((((...))))))...))))..'}
 ```
 
 ### Downstream Use
@@ -161,8 +144,8 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, RnaFmModel
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
-model = RnaFmModel.from_pretrained("multimolecule/rnafm")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm-ss")
+model = RnaFmModel.from_pretrained("multimolecule/rnafm-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -182,8 +165,8 @@ import torch
 from multimolecule import RnaTokenizer, RnaFmForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
-model = RnaFmForSequencePrediction.from_pretrained("multimolecule/rnafm")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm-ss")
+model = RnaFmForSequencePrediction.from_pretrained("multimolecule/rnafm-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -204,8 +187,8 @@ import torch
 from multimolecule import RnaTokenizer, RnaFmForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
-model = RnaFmForTokenPrediction.from_pretrained("multimolecule/rnafm")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm-ss")
+model = RnaFmForTokenPrediction.from_pretrained("multimolecule/rnafm-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -226,8 +209,8 @@ import torch
 from multimolecule import RnaTokenizer, RnaFmForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
-model = RnaFmForContactPrediction.from_pretrained("multimolecule/rnafm")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm-ss")
+model = RnaFmForContactPrediction.from_pretrained("multimolecule/rnafm-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
