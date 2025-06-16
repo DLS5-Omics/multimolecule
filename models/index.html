@@ -852,6 +852,8 @@
       
         
       
+        
+      
     
     
     
@@ -894,6 +896,29 @@
             RNA
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="aido_rna/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    AIDO.RNA
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1431,15 +1456,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#nucleotide-prediction" class="md-nav__link">
-    <span class="md-ellipsis">
-      Nucleotide Prediction
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1531,12 +1547,6 @@ While these classes support both regression and classification tasks, their name
 <p>Contact prediction assign a label to each pair of token in a sentence.
 One of the most common contact prediction tasks is protein distance map prediction.
 Protein distance map prediction attempts to find the distance between all possible amino acid residue pairs of a three-dimensional protein structure</p>
-<h3 id="nucleotide-prediction">Nucleotide Prediction<a class="headerlink" href="#nucleotide-prediction" title="Permanent link">&para;</a></h3>
-<p>Similar to <a href="https://huggingface.co/docs/transformers/en/tasks/token_classification">Token Classification</a>, but removes the <code>&lt;bos&gt;</code> token and the <code>&lt;eos&gt;</code> token if they are defined in the model config.</p>
-<div class="admonition note">
-<p class="admonition-title"><code>&lt;bos&gt;</code> and <code>&lt;eos&gt;</code> tokens</p>
-<p>In tokenizers provided by MultiMolecule, <code>&lt;bos&gt;</code> token is pointed to <code>&lt;cls&gt;</code> token, and <code>&lt;sep&gt;</code> token is pointed to <code>&lt;eos&gt;</code> token.</p>
-</div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <h3 id="build-with-multimoleculeautomodels">Build with <code>multimolecule.AutoModel</code>s<a class="headerlink" href="#build-with-multimoleculeautomodels" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
