@@ -46,6 +46,7 @@ nav:
       - RNA:
           - AIDO.RNA: models/aido_rna.md
           - ERNIE-RNA: models/ernierna.md
+          - ncRNABert: models/ncrnabert.md
           - RibonanzaNet: models/ribonanzanet.md
           - RiNALMo: models/rinalmo.md
           - RNABERT: models/rnabert.md

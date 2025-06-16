@@ -54,6 +54,15 @@ from .ernierna import (
     ErnieRnaModel,
 )
 from .modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
+from .ncrnabert import (
+    NcRnaBertConfig,
+    NcRnaBertForContactPrediction,
+    NcRnaBertForMaskedLM,
+    NcRnaBertForPreTraining,
+    NcRnaBertForSequencePrediction,
+    NcRnaBertForTokenPrediction,
+    NcRnaBertModel,
+)
 from .ribonanzanet import (
     RibonanzaNetConfig,
     RibonanzaNetForContactPrediction,
@@ -177,6 +186,13 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "NcRnaBertConfig",
+    "NcRnaBertModel",
+    "NcRnaBertForContactPrediction",
+    "NcRnaBertForSequencePrediction",
+    "NcRnaBertForTokenPrediction",
+    "NcRnaBertForMaskedLM",
+    "NcRnaBertForPreTraining",
     "RibonanzaNetConfig",
     "RibonanzaNetModel",
     "RibonanzaNetForContactPrediction",

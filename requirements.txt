@@ -1,5 +1,6 @@
 biopython
 pandas
 psycopg2
+rotary_embedding_torch
 torch
 torchvision
