@@ -65,6 +65,7 @@ nav:
       - DotBracket: tokenisers/dot_bracket.md
   - pipelines:
       - pipelines/index.md
+      - RNA Secondary Structure: pipelines/rna_secondary_structure.md
   - about:
       - about/index.md
       - License: about/license.md
