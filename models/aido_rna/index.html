@@ -975,6 +975,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      Variants
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#model-specification" class="md-nav__link">
     <span class="md-ellipsis">
       Model Specification
@@ -1013,6 +1022,21 @@
       Direct Use
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Direct Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#masked-language-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Masked Language Modeling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2070,6 +2094,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      Variants
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#model-specification" class="md-nav__link">
     <span class="md-ellipsis">
       Model Specification
@@ -2108,6 +2141,21 @@
       Direct Use
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Direct Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#masked-language-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Masked Language Modeling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2616,62 +2664,83 @@
 
 
 <h1 id="aidorna">AIDO.RNA<a class="headerlink" href="#aidorna" title="Permanent link">&para;</a></h1>
-<p>We do NOT endorse the publication of manuscripts in Closed Access / Author-Fee journals and encourage the community to support Open Access journals and conferences.</p>
-<p>Please consider signing the <a href="https://openaccess.engineering.oregonstate.edu">Statement on Nature Machine Intelligence</a>.</p>
+<p>Pre-trained model on non-coding RNA (ncRNA) using a masked language modeling (MLM) objective.</p>
 <h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">&para;</a></h2>
-<p>This is an UNOFFICIAL implementation of the <a href="https://doi.org/10.1101/2022.12.15.519894">Codon language embeddings provide strong signals for use in protein engineering</a> by Carlos Outeiral and Charlotte M. Deane.</p>
-<p>The OFFICIAL repository of CaLM is at <a href="https://github.com/oxpig/CaLM">oxpig/CaLM</a>.</p>
+<p>This is an UNOFFICIAL implementation of the <a href="https://doi.org/10.1101/2024.11.28.625345">A Large-Scale Foundation Model for RNA Function and Structure Prediction</a> by Shuxian Zou, Tianhua Tao, Sazan Mahbub, et al.</p>
+<p>The OFFICIAL repository of AIDO.RNA is at <a href="https://github.com/genbio-ai/AIDO">genbio-ai/AIDO</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The MultiMolecule team is unable to confirm that the provided model and checkpoints are producing the same intermediate representations as the original implementation.
-This is because</p>
-<p>The proposed method is published in a Closed Access / Author-Fee journal.</p>
+<p>The MultiMolecule team is aware of a potential risk in reproducing the results of AIDO.RNA.</p>
+<p>The original implementation of AIDO.RNA uses a special tokenizer that identifies <code>U</code> and <code>T</code> as different tokens.</p>
+<p>This behaviour is not supported by MultiMolecule.</p>
 </div>
-<p><strong>The team releasing CaLM did not write this model card for this model so this model card has been written by the MultiMolecule team.</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The MultiMolecule team has confirmed that the provided model and checkpoints are producing the same intermediate representations as the original implementation.</p>
+</div>
+<p><strong>The team releasing AIDO.RNA did not write this model card for this model so this model card has been written by the MultiMolecule team.</strong></p>
 <h2 id="model-details">Model Details<a class="headerlink" href="#model-details" title="Permanent link">&para;</a></h2>
-<p>CaLM is a <a href="https://huggingface.co/google-bert/bert-base-uncased">bert</a>-style model pre-trained on a large corpus of protein-coding DNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of DNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the <a href="#training-details">Training Details</a> section for more information on the training process.</p>
+<p>AIDO.RNA is a <a href="https://huggingface.co/google-bert/bert-base-uncased">bert</a>-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the <a href="#training-details">Training Details</a> section for more information on the training process.</p>
+<h3 id="variants">Variants<a class="headerlink" href="#variants" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="https://huggingface.co/multimolecule/aido.rna-1.6b">multimolecule/aido.rna-1.6b</a></strong>: The AIDO.RNA model with 1.6 billion parameters.</li>
+<li><strong><a href="https://huggingface.co/multimolecule/aido.rna-650m">multimolecule/aido.rna-650m</a></strong>: The AIDO.RNA model with 650 million parameters.</li>
+</ul>
 <h3 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
-<tr>
-<th>Num Layers</th>
-<th>Hidden Size</th>
-<th>Num Heads</th>
-<th>Intermediate Size</th>
-<th>Num Parameters (M)</th>
-<th>FLOPs (G)</th>
-<th>MACs (G)</th>
-<th>Max Num Tokens</th>
-</tr>
+  <tr>
+    <th>Variants</th>
+    <th>Num Layers</th>
+    <th>Hidden Size</th>
+    <th>Num Heads</th>
+    <th>Intermediate Size</th>
+    <th>Num Parameters (M)</th>
+    <th>FLOPs (G)</th>
+    <th>MACs (G)</th>
+    <th>Max Num Tokens</th>
+  </tr>
 </thead>
 <tbody>
-<tr>
-<td>12</td>
-<td>768</td>
-<td>12</td>
-<td>3072</td>
-<td>85.75</td>
-<td>22.36</td>
-<td>11.17</td>
-<td>1024</td>
-</tr>
+  <tr>
+    <td>AIDO.RNA-1.6B</td>
+    <td>32</td>
+    <td>2048</td>
+    <td>32</td>
+    <td>5440</td>
+    <td>1650.29</td>
+    <td>415.67</td>
+    <td>207.77</td>
+    <td rowspan="2">1022</td>
+  </tr>
+  <tr>
+    <td>AIDO.RNA-650M</td>
+    <td>33</td>
+    <td>1280</td>
+    <td>20</td>
+    <td>3392</td>
+    <td>648.38</td>
+    <td>168.25</td>
+    <td>80.09</td>
+  </tr>
 </tbody>
 </table>
+
 <h3 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/calm">multimolecule.calm</a></li>
-<li><strong>Weights</strong>: <a href="https://huggingface.co/multimolecule/calm">multimolecule/calm</a></li>
-<li><strong>Data</strong>: <a href="https://ebi.ac.uk/ena">European Nucleotide Archive</a></li>
-<li><strong>Paper</strong>: <a href="https://doi.org/10.1101/2022.12.15.519894">Codon language embeddings provide strong signals for use in protein engineering</a></li>
-<li><strong>Developed by</strong>: Carlos Outeiral, Charlotte M. Deane</li>
-<li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a> - <a href="https://huggingface.co/facebook/esm2_t48_15B_UR50D">ESM</a></li>
-<li><strong>Original Repository</strong>: <a href="https://github.com/oxpig/CaLM">oxpig/CaLM</a></li>
+<li><strong>Code</strong>: <a href="https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/aido_rna">multimolecule.aido_rna</a></li>
+<li><strong>Data</strong>: <a href="https://huggingface.co/datasets/multimolecule/rnacentral">multimolecule/rnacentral</a></li>
+<li><strong>Paper</strong>: <a href="https://doi.org/10.1101/2024.11.28.625345">A Large-Scale Foundation Model for RNA Function and Structure Prediction</a></li>
+<li><strong>Developed by</strong>: Shuxian Zou, Tianhua Tao, Sazan Mahbub, Caleb N. Ellington, Robin Algayres, Dian Li, Yonghao Zhuang, Hongyi Wang, Le Song, Eric P. Xing</li>
+<li><strong>Model type</strong>: <a href="https://huggingface.co/google-bert/bert-base-uncased">BERT</a></li>
+<li><strong>Original Repository</strong>: <a href="https://github.com/genbio-ai/AIDO">genbio-ai/AIDO</a></li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>The model file depends on the <a href="https://multimolecule.danling.org"><code>multimolecule</code></a> library. You can install it using pip:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>multimolecule
 </span></code></pre></div></td></tr></table></div>
 <h3 id="direct-use">Direct Use<a class="headerlink" href="#direct-use" title="Permanent link">&para;</a></h3>
+<h4 id="masked-language-modeling">Masked Language Modeling<a class="headerlink" href="#masked-language-modeling" title="Permanent link">&para;</a></h4>
 <p>You can use this model directly with a pipeline for masked language modeling:</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
@@ -2700,28 +2769,28 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-1-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">multimolecule</span>  <span class="c1"># you must import multimolecule to register models</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s2">&quot;fill-mask&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span><span class="p">(</span><span class="s2">&quot;agc&lt;mask&gt;cattatggcgaaccttggctgctg&quot;</span><span class="p">)</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="p">[{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.011160684749484062</span><span class="p">,</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;UUN&#39;</span><span class="p">,</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC UUN CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.01067513320595026</span><span class="p">,</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">117</span><span class="p">,</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;NGC&#39;</span><span class="p">,</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC NGC CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010549729689955711</span><span class="p">,</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;NNC&#39;</span><span class="p">,</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC NNC CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.0103579331189394</span><span class="p">,</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">51</span><span class="p">,</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;CNA&#39;</span><span class="p">,</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC CNA CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">},</span>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.010322545655071735</span><span class="p">,</span>
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">77</span><span class="p">,</span>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;GNC&#39;</span><span class="p">,</span>
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;AGC GNC CAU UAU GGC GAA CCU UGG CUG CUG&#39;</span><span class="p">}]</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="s2">&quot;fill-mask&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">unmasker</span><span class="p">(</span><span class="s2">&quot;gguc&lt;mask&gt;cucugguuagaccagaucugagccu&quot;</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="p">[{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.7308459877967834</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U&#39;</span><span class="p">},</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.11085908114910126</span><span class="p">,</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;G G U C W C U C U G G U U A G A C C A G A U C U G A G C C U&#39;</span><span class="p">},</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.03829820826649666</span><span class="p">,</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;G G U C Y C U C U G G U U A G A C C A G A U C U G A G C C U&#39;</span><span class="p">},</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.029108675196766853</span><span class="p">,</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;G G U C H C U C U G G U U A G A C C A G A U C U G A G C C U&#39;</span><span class="p">},</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22"></a> <span class="p">{</span><span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="mf">0.018761275336146355</span><span class="p">,</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23"></a>  <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24"></a>  <span class="s1">&#39;token_str&#39;</span><span class="p">:</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25"></a>  <span class="s1">&#39;sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;G G U C K C U C U G G U U A G A C C A G A U C U G A G C C U&#39;</span><span class="p">}]</span>
 </span></code></pre></div></td></tr></table></div>
 <h3 id="downstream-use">Downstream Use<a class="headerlink" href="#downstream-use" title="Permanent link">&para;</a></h3>
 <h4 id="extract-features">Extract Features<a class="headerlink" href="#extract-features" title="Permanent link">&para;</a></h4>
@@ -2735,13 +2804,13 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
 <span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-2-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">CaLmModel</span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">AidoRnaModel</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">CaLmModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AidoRnaModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;GCCAGTCGCTGACAGCCGCGG&quot;</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;UAGCUUAUCAGACUGAUGUUG&quot;</span>
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a>
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">)</span>
@@ -2764,13 +2833,13 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-3-10">10</a></span>
 <span class="normal"><a href="#__codelineno-3-11">11</a></span>
 <span class="normal"><a href="#__codelineno-3-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">CaLmForSequencePrediction</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">AidoRnaForSequencePrediction</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="n">model</span> <span class="o">=</span> <span class="n">CaLmForSequencePrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AidoRnaForSequencePrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;GCCAGTCGCTGACAGCCGCGG&quot;</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;UAGCUUAUCAGACUGAUGUUG&quot;</span>
 </span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
 </span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a>
@@ -2794,13 +2863,13 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-4-10">10</a></span>
 <span class="normal"><a href="#__codelineno-4-11">11</a></span>
 <span class="normal"><a href="#__codelineno-4-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">CaLmForTokenPrediction</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">AidoRnaForTokenPrediction</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="n">model</span> <span class="o">=</span> <span class="n">CaLmForTokenPrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AidoRnaForTokenPrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;GCCAGTCGCTGACAGCCGCGG&quot;</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;UAGCUUAUCAGACUGAUGUUG&quot;</span>
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="p">))</span>
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a>
@@ -2824,50 +2893,43 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-5-10">10</a></span>
 <span class="normal"><a href="#__codelineno-5-11">11</a></span>
 <span class="normal"><a href="#__codelineno-5-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">CaLmForContactPrediction</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">RnaTokenizer</span><span class="p">,</span> <span class="n">AidoRnaForContactPrediction</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="n">model</span> <span class="o">=</span> <span class="n">CaLmForContactPrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/calm&quot;</span><span class="p">)</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="n">model</span> <span class="o">=</span> <span class="n">AidoRnaForContactPrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/aido.rna-1.6b&quot;</span><span class="p">)</span>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7"></a>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;GCCAGTCGCTGACAGCCGCGG&quot;</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;UAGCUUAUCAGACUGAUGUUG&quot;</span>
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="nb">input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)))</span>
 </span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11"></a>
 </span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="nb">input</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="training-details">Training Details<a class="headerlink" href="#training-details" title="Permanent link">&para;</a></h2>
-<p>CaLM used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 25% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.</p>
+<p>AIDO.RNA used Masked Language Modeling (MLM) as the pre-training objective: taking a sequence, the model randomly masks 15% of the tokens in the input then runs the entire masked sentence through the model and has to predict the masked tokens. This is comparable to the Cloze task in language modeling.</p>
 <h3 id="training-data">Training Data<a class="headerlink" href="#training-data" title="Permanent link">&para;</a></h3>
-<p>The CaLM model was pre-trained coding sequences of all organisms available on the <a href="https://ebi.ac.uk/ena">European Nucleotide Archive (ENA)</a>. European Nucleotide Archive provides a comprehensive record of the world’s nucleotide sequencing information, covering raw sequencing data, sequence assembly information and functional annotation.</p>
-<p>CaLM collected coding sequences of all organisms from ENA on April 2022, including 114,214,475 sequences. Only high level assembly information (dataclass CON) were used. Sequences matching the following criteria were filtered out:</p>
-<ul>
-<li>with unknown nucleotides (<code>N</code>, <code>Y</code>, <code>R</code>)</li>
-<li>start codon is not <code>ATG</code></li>
-<li>contains interstitial stop codons</li>
-<li>number of nucleotides is not a multiple of three</li>
-</ul>
-<p>To reduce redundancy, CaLM grouped the entries by organism, and apply CD-HIT (CD-HIT-EST) with a cut-off at 40% sequence identity to the translated protein sequences.</p>
-<p>The final dataset contains 9,858,385 cDNA sequences.</p>
-<p>Note that the alphabet in the original implementation is RNA instead of DNA, therefore, we use <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RnaTokenizer&lt;/span&gt;" href="#multimolecule.models.aido_rna.RnaTokenizer"><code>RnaTokenizer</code></a> to tokenize the sequences. <code>RnaTokenizer</code> of <code>multimolecule</code> will convert &ldquo;U&rdquo;s to &ldquo;T&rdquo;s for you, you may disable this behaviour by passing <code>replace_T_with_U=False</code>.</p>
+<p>The AIDO.RNA model was pre-trained on <a href="https://multimolecule.danling.org/datasets/rnacentral">RNAcentral</a> and <a href="https://ngdc.cncb.ac.cn/omix/release/OMIX003037">MARS</a>.
+RNAcentral is a free, public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a collaborating group of <a href="https://rnacentral.org/expert-databases">Expert Databases</a> representing a broad range of organisms and RNA types.</p>
+<p>AIDO.RNA applied SeqKit to remove duplicated sequences in the RNAcentral, resulting 42 million unique sequences.</p>
+<p>Note that AIDO.RNA identifies <code>U</code> and <code>T</code> as different tokens, which is not supported by MultiMolecule. During model conversion, the embeddings of <code>T</code> is discarded. This means that the model will not be able to distinguish between <code>U</code> and <code>T</code> in the input sequences.</p>
 <h3 id="training-procedure">Training Procedure<a class="headerlink" href="#training-procedure" title="Permanent link">&para;</a></h3>
 <h4 id="preprocessing">Preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h4>
-<p>CaLM used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:</p>
+<p>AIDO.RNA used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:</p>
 <ul>
-<li>25% of the tokens are masked.</li>
+<li>15% of the tokens are masked.</li>
 <li>In 80% of the cases, the masked tokens are replaced by <code>&lt;mask&gt;</code>.</li>
 <li>In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.</li>
 <li>In the 10% remaining cases, the masked tokens are left as is.</li>
 </ul>
 <h4 id="pre-training">Pre-training<a class="headerlink" href="#pre-training" title="Permanent link">&para;</a></h4>
-<p>The model was trained on 4 NVIDIA Quadro RTX4000 GPUs with 8GiB memories.</p>
 <ul>
-<li>Batch Size: 1,000</li>
-<li>Epochs: 14</li>
+<li>Epochs: 6</li>
 <li>Optimizer: AdamW</li>
-<li>Learning rate: 1e-4</li>
+<li>Learning rate: 5e-5</li>
+<li>Learning rate warm-up: 2,000 steps</li>
 <li>Learning rate scheduler: Cosine</li>
-<li>Learning rate warm-up: 1,000 steps</li>
+<li>Minimum learning rate: 1e-5</li>
+<li>Weight decay: 0.01</li>
 </ul>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">&para;</a></h2>
 <p><strong>BibTeX</strong>:</p>
@@ -2882,22 +2944,22 @@ This is because</p>
 <span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-6-10">10</a></span>
 <span class="normal"><a href="#__codelineno-6-11">11</a></span>
-<span class="normal"><a href="#__codelineno-6-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nc">@article</span><span class="w"> </span><span class="p">{</span><span class="nl">outeiral2022coodn</span><span class="p">,</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">    </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Outeiral, Carlos and Deane, Charlotte M.}</span><span class="p">,</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">    </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Codon language embeddings provide strong signals for protein engineering}</span><span class="p">,</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">    </span><span class="na">elocation-id</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2022.12.15.519894}</span><span class="p">,</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">    </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2022}</span><span class="p">,</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">    </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.1101/2022.12.15.519894}</span><span class="p">,</span>
+<span class="normal"><a href="#__codelineno-6-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nc">@article</span><span class="w"> </span><span class="p">{</span><span class="nl">Zou2024.11.28.625345</span><span class="p">,</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">    </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Zou, Shuxian and Tao, Tianhua and Mahbub, Sazan and Ellington, Caleb N. and Algayres, Robin and Li, Dian and Zhuang, Yonghao and Wang, Hongyi and Song, Le and Xing, Eric P.}</span><span class="p">,</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">    </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{A Large-Scale Foundation Model for RNA Function and Structure Prediction}</span><span class="p">,</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">    </span><span class="na">elocation-id</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2024.11.28.625345}</span><span class="p">,</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">    </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2024}</span><span class="p">,</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">    </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.1101/2024.11.28.625345}</span><span class="p">,</span>
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">    </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Cold Spring Harbor Laboratory}</span><span class="p">,</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">    </span><span class="na">abstract</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Protein representations from deep language models have yielded state-of-the-art performance across many tasks in computational protein engineering. In recent years, progress has primarily focused on parameter count, with recent models{\textquoteright} capacities surpassing the size of the very datasets they were trained on. Here, we propose an alternative direction. We show that large language models trained on codons, instead of amino acid sequences, provide high-quality representations that outperform comparable state-of-the-art models across a variety of tasks. In some tasks, like species recognition, prediction of protein and transcript abundance, or melting point estimation, we show that a language model trained on codons outperforms every other published protein language model, including some that contain over 50 times more parameters. These results suggest that, in addition to commonly studied scale and model complexity, the information content of biological data provides an orthogonal direction to improve the power of machine learning in biology.Competing Interest StatementThe authors have declared no competing interest.}</span><span class="p">,</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="na">URL</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://www.biorxiv.org/content/early/2022/12/19/2022.12.15.519894}</span><span class="p">,</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">    </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://www.biorxiv.org/content/early/2022/12/19/2022.12.15.519894.full.pdf}</span><span class="p">,</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">    </span><span class="na">abstract</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Originally marginalized as an intermediate in the information flow from DNA to protein, RNA has become the star of modern biology, holding the key to precision therapeutics, genetic engineering, evolutionary origins, and our understanding of fundamental cellular processes. Yet RNA is as mysterious as it is prolific, serving as an information store, a messenger, and a catalyst, spanning many underchar-acterized functional and structural classes. Deciphering the language of RNA is important not only for a mechanistic understanding of its biological functions but also for accelerating drug design. Toward this goal, we introduce AIDO.RNA, a pre-trained module for RNA in an AI-driven Digital Organism [1]. AIDO.RNA contains a scale of 1.6 billion parameters, trained on 42 million non-coding RNA (ncRNA) sequences at single-nucleotide resolution, and it achieves state-of-the-art performance on a comprehensive set of tasks, including structure prediction, genetic regulation, molecular function across species, and RNA sequence design. AIDO.RNA after domain adaptation learns to model essential parts of protein translation that protein language models, which have received widespread attention in recent years, do not. More broadly, AIDO.RNA hints at the generality of biological sequence modeling and the ability to leverage the central dogma to improve many biomolecular representations. Models and code are available through ModelGenerator in https://github.com/genbio-ai/AIDO and on Hugging Face.Competing Interest StatementThe authors have declared no competing interest.}</span><span class="p">,</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="na">URL</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://www.biorxiv.org/content/early/2024/11/29/2024.11.28.625345}</span><span class="p">,</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">    </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://www.biorxiv.org/content/early/2024/11/29/2024.11.28.625345.full.pdf}</span><span class="p">,</span>
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">    </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{bioRxiv}</span>
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
 <h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">&para;</a></h2>
 <p>Please use GitHub issues of <a href="https://github.com/DLS5-Omics/multimolecule/issues">MultiMolecule</a> for any questions or comments on the model card.</p>
-<p>Please contact the authors of the <a href="https://doi.org/10.1101/2022.12.15.519894">CaLM paper</a> for questions or comments on the paper/model.</p>
+<p>Please contact the authors of the <a href="https://doi.org/10.1101/2024.11.28.625345">AIDO.RNA paper</a> for questions or comments on the paper/model.</p>
 <h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
 <p>This model is licensed under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0 License</a>.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a>SPDX-License-Identifier: AGPL-3.0-or-later
