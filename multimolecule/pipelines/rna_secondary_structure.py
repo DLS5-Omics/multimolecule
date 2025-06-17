@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import Dict
 from warnings import warn
 
+import torch
 from transformers.pipelines.base import GenericTensor, Pipeline, PipelineException
 
 from ..data.functional import contact_map_to_dot_bracket
@@ -83,6 +84,12 @@ class RnaSecondaryStructurePipeline(Pipeline):
             )
         return model_outputs
 
+    def _postprocess(self, contact_map: GenericTensor) -> GenericTensor:
+        contact_map = contact_map.squeeze(-1)
+        contact_map.fill_diagonal_(torch.finfo(contact_map.dtype).min)
+        contact_map = contact_map.sigmoid()
+        return contact_map
+
     def postprocess(self, model_outputs, threshold: float | None = None, output_contact_map: bool | None = None):
         if threshold is None:
             threshold = self.threshold
@@ -92,6 +99,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
         input_ids = model_outputs["input_ids"]
         if hasattr(self.model, "postprocess"):
             outputs = self.model.postprocess(model_outputs).squeeze(-1)
+            postprocessed = True
         else:
             if "logits_ss" in model_outputs:
                 outputs = model_outputs["logits_ss"]
@@ -101,17 +109,17 @@ class RnaSecondaryStructurePipeline(Pipeline):
                 raise PipelineException(
                     "rna-secondary-structure", self.model.base_model_prefix, "Unable to find logits in model outputs."
                 )
-            outputs = outputs.squeeze(-1)
-            outputs = outputs.sigmoid()
+            postprocessed = False
 
         if len(input_ids) == 1:
-            input_ids = input_ids.squeeze(0)
-            outputs = outputs.squeeze(0)
-            sequence = self.tokenizer.decode(input_ids, skip_special_tokens=True).replace(" ", "")
-            dot_bracket = contact_map_to_dot_bracket(outputs > threshold, unsafe=True)
+            sequence = self.tokenizer.decode(input_ids.squeeze(0), skip_special_tokens=True).replace(" ", "")
+            contact_map = outputs.squeeze(0)
+            if not postprocessed:
+                contact_map = self._postprocess(contact_map)
+            dot_bracket = contact_map_to_dot_bracket(contact_map > threshold, unsafe=True)
             ret = {"sequence": sequence, "secondary_structure": dot_bracket}
             if output_contact_map:
-                ret["contact_map"] = outputs.numpy()
+                ret["contact_map"] = contact_map.numpy()
             return ret
 
         sequences = [i.replace(" ", "") for i in self.tokenizer.batch_decode(input_ids, skip_special_tokens=True)]
@@ -120,14 +128,14 @@ class RnaSecondaryStructurePipeline(Pipeline):
             contact_maps = []
         for sequence, contact_map in zip(sequences, outputs):
             contact_map = contact_map[: len(sequence), : len(sequence)]
+            if not postprocessed:
+                contact_map = self._postprocess(contact_map)
             dot_brackets.append(contact_map_to_dot_bracket(contact_map > threshold, unsafe=True))
             if self.output_contact_map:
                 contact_maps.append(contact_map.numpy())
-
         ret = {"sequence": sequences, "secondary_structure": dot_brackets}
         if self.output_contact_map:
             ret["contact_map"] = contact_maps
-
         return ret
 
     def _sanitize_parameters(
