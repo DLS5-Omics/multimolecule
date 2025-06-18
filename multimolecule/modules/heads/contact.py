@@ -22,33 +22,46 @@
 
 from __future__ import annotations
 
-from typing import Callable, Mapping, Tuple, Type
+from typing import Mapping, Tuple
 
 import torch
 from danling import NestedTensor
-from lazy_imports import try_import
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 from typing_extensions import TYPE_CHECKING
 
 from ..criterions import CriterionRegistry
-from ..normlizations import LayerNorm2D
+from ..networks import ResNet, UNet
 from .config import HeadConfig
-from .generic import BasePredictionHead, PredictionHead
+from .generic import BasePredictionHead
 from .output import HeadOutput
 from .registry import HeadRegistry
 from .transform import HeadTransformRegistryHF
-
-with try_import() as tv:
-    from torchvision.models.resnet import BasicBlock, Bottleneck
 
 if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
 
-@HeadRegistry.contact.logits.register("projection", default=True)
+@HeadRegistry.contact.logits.register("linear", default=True)
 class ContactPredictionHead(BasePredictionHead):
+    r"""
+    Head for tasks in contact-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+
+    Examples:
+        >>> import torch
+        >>> from multimolecule.models import PreTrainedConfig
+        >>> from multimolecule.modules.heads import ContactPredictionHead
+        >>> config = PreTrainedConfig(hidden_size=8)
+        >>> head = ContactPredictionHead(config)
+        >>> input = torch.randn(1, 28, config.hidden_size)
+        >>> output = head({"last_hidden_state": input}, attention_mask=torch.ones(1, 28))
+    """
 
     output_name: str = "last_hidden_state"
     r"""The default output to use for the head."""
@@ -58,14 +71,12 @@ class ContactPredictionHead(BasePredictionHead):
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
         super().__init__(config, head_config)
+        out_channels: int = self.config.hidden_size  # type: ignore[assignment]
         self.dropout = nn.Dropout(self.config.dropout)
         self.transform = HeadTransformRegistryHF.build(self.config)
-        out_channels: int = self.config.hidden_size  # type: ignore[assignment]
-        self.q_proj = nn.Linear(out_channels, out_channels)
-        self.decoder = nn.Linear(out_channels, self.num_labels, bias=False)
+        self.decoder = nn.Linear(out_channels, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
         self.criterion = CriterionRegistry.build(self.config)
-        # self.ffn = MLP(1, out_channels, residual=False)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -89,37 +100,102 @@ class ContactPredictionHead(BasePredictionHead):
 
         output = self.dropout(output)
         output = self.transform(output)
-        q = self.q_proj(output)
-        contact_map = q.unsqueeze(1) * q.unsqueeze(2)
-        # contact_map = (q @ q.transpose(-1, -2)).unsqueeze(-1)
-        # contact_map = contact_map + self.ffn(contact_map)
-
-        output = self.decoder(contact_map)
+        contact_map = output.unsqueeze(1) * output.unsqueeze(2)
+        contact_map = self.decoder(contact_map)
+        contact_map = self.symmetrize(contact_map)
+        contact_map = self.average_product_correct(contact_map)
         if self.activation is not None:
-            output = self.activation(output)
+            contact_map = self.activation(contact_map)
+
         if labels is not None:
             if isinstance(labels, NestedTensor):
-                if isinstance(output, Tensor):
-                    output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
-            return HeadOutput(output, self.criterion(output, labels))
-        return HeadOutput(output)
+                if isinstance(contact_map, Tensor):
+                    contact_map = labels.nested_like(contact_map, strict=False)
+                return HeadOutput(contact_map, self.criterion(contact_map.concat, labels.concat))
+            return HeadOutput(contact_map, self.criterion(contact_map, labels))
+        return HeadOutput(contact_map)
 
 
-HeadRegistry.contact.setattr("default", ContactPredictionHead)
-
-
-@HeadRegistry.contact.attention.register("linear")
-class ContactAttentionLinearHead(PredictionHead):
+@HeadRegistry.contact.logits.register("resnet")
+class ContactPredictionResNetHead(ContactPredictionHead):
     r"""
     Head for tasks in contact-level.
-
-    Performs symmetrization, and average product correct.
 
     Args:
         config: The configuration object for the model.
         head_config: The configuration object for the head.
             If None, will use configuration from the `config`.
+
+    Examples:
+        >>> import torch
+        >>> from multimolecule.models import PreTrainedConfig
+        >>> from multimolecule.modules.heads import ContactPredictionResNetHead
+        >>> config = PreTrainedConfig(hidden_size=32)
+        >>> head = ContactPredictionResNetHead(config)
+        >>> input = torch.randn(1, 28, config.hidden_size)
+        >>> output = head({"last_hidden_state": input}, attention_mask=torch.ones(1, 28))
+    """
+
+    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
+        self.decoder = ResNet(
+            num_layers=self.config.get("num_layers", 6),
+            hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
+            block=self.config.get("block", "auto"),
+            num_channels=self.config.get("num_channels"),
+            num_labels=self.num_labels,
+        )
+
+
+@HeadRegistry.contact.logits.register("unet")
+class ContactPredictionUNetHead(ContactPredictionHead):
+    r"""
+    Head for tasks in contact-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+
+    Examples:
+        >>> import torch
+        >>> from multimolecule.models import PreTrainedConfig
+        >>> from multimolecule.modules.heads import ContactPredictionUNetHead
+        >>> config = PreTrainedConfig(hidden_size=32)
+        >>> head = ContactPredictionUNetHead(config)
+        >>> input = torch.randn(1, 28, config.hidden_size)
+        >>> output = head({"last_hidden_state": input}, attention_mask=torch.ones(1, 28))
+    """
+
+    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
+        self.decoder = UNet(
+            num_layers=self.config.get("num_layers", 6),
+            hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
+            block=self.config.get("block", "auto"),
+            num_channels=self.config.get("num_channels"),
+            num_labels=self.num_labels,
+        )
+
+
+@HeadRegistry.contact.attention.register("linear")
+class ContactAttentionHead(BasePredictionHead):
+    r"""
+    Head for tasks in contact-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+
+    Examples:
+        >>> import torch
+        >>> from multimolecule.models import PreTrainedConfig
+        >>> from multimolecule.modules.heads import ContactAttentionHead
+        >>> config = PreTrainedConfig(num_hidden_layers=2, num_attention_heads=4)
+        >>> head = ContactAttentionHead(config)
+        >>> input = tuple(torch.randn(1, config.num_attention_heads, 28, 28) for _ in range(config.num_hidden_layers))
+        >>> output = head({"attentions": input}, attention_mask=torch.ones(1, 28))
     """
 
     output_name: str = "attentions"
@@ -134,6 +210,11 @@ class ContactAttentionLinearHead(PredictionHead):
         else:
             head_config.hidden_size = config.num_hidden_layers * config.num_attention_heads
         super().__init__(config, head_config)
+        self.dropout = nn.Dropout(self.config.dropout)
+        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
+        self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
+        self.criterion = CriterionRegistry.build(self.config)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -144,31 +225,6 @@ class ContactAttentionLinearHead(PredictionHead):
         output_name: str | None = None,
         **kwargs,
     ) -> HeadOutput:
-        r"""
-        Forward pass of the ContactPredictionHead.
-
-        Args:
-            outputs: The outputs of the model.
-            attention_mask: The attention mask for the inputs.
-            input_ids: The input ids for the inputs.
-            labels: The labels for the head.
-            output_name: The name of the output to use.
-                Defaults to `self.output_name`.
-        """
-        if attention_mask is None:
-            if isinstance(input_ids, NestedTensor):
-                input_ids, attention_mask = input_ids.tensor, input_ids.mask
-            else:
-                if input_ids is None:
-                    raise ValueError(
-                        f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
-                    )
-                if self.pad_token_id is None:
-                    raise ValueError(
-                        f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
-                    )
-                attention_mask = input_ids.ne(self.pad_token_id)
-
         if isinstance(outputs, (Mapping, ModelOutput)):
             output = outputs[output_name or self.output_name]
         elif isinstance(outputs, tuple):
@@ -176,29 +232,80 @@ class ContactAttentionLinearHead(PredictionHead):
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
-        attentions = torch.stack(output, 1).flatten(1, 2).permute(0, 2, 3, 1)
+        if isinstance(output, (list, tuple)):
+            output = torch.stack(output, 1)
+        contact_map = output.flatten(1, 2).permute(0, 2, 3, 1)
 
         if attention_mask is None:
             attention_mask = self.get_attention_mask(input_ids)
-        attentions, _, _ = self.remove_special_tokens_2d(attentions, attention_mask, input_ids)
+        contact_map, _, _ = self.remove_special_tokens_2d(contact_map, attention_mask, input_ids)
 
-        attentions = attentions.to(self.decoder.weight.device)
-        attentions = average_product_correct(symmetrize(attentions))
+        contact_map = self.dropout(contact_map)
+        contact_map = self.transform(contact_map)
+        contact_map = self.decoder(contact_map)
+        contact_map = self.symmetrize(contact_map)
+        contact_map = self.average_product_correct(contact_map)
+        if self.activation is not None:
+            contact_map = self.activation(contact_map)
 
-        return super().forward(attentions, labels, **kwargs)
+        if labels is not None:
+            if isinstance(labels, NestedTensor):
+                if isinstance(contact_map, Tensor):
+                    contact_map = labels.nested_like(contact_map, strict=False)
+                return HeadOutput(contact_map, self.criterion(contact_map.concat, labels.concat))
+            return HeadOutput(contact_map, self.criterion(contact_map, labels))
+        return HeadOutput(contact_map)
 
 
 @HeadRegistry.contact.attention.register("resnet")
-class ContactAttentionResnetHead(PredictionHead):
+class ContactAttentionResNetHead(ContactAttentionHead):
     r"""
     Head for tasks in contact-level.
-
-    Performs symmetrization, and average product correct.
 
     Args:
         config: The configuration object for the model.
         head_config: The configuration object for the head.
             If None, will use configuration from the `config`.
+
+    Examples:
+        >>> import torch
+        >>> from multimolecule.models import PreTrainedConfig
+        >>> from multimolecule.modules.heads import ContactAttentionResNetHead
+        >>> config = PreTrainedConfig(num_hidden_layers=8, num_attention_heads=4)
+        >>> head = ContactAttentionResNetHead(config)
+        >>> input = tuple(torch.randn(1, config.num_attention_heads, 28, 28) for _ in range(config.num_hidden_layers))
+        >>> output = head({"attentions": input}, attention_mask=torch.ones(1, 28))
+    """
+
+    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
+        super().__init__(config, head_config)
+        self.decoder = ResNet(
+            num_layers=self.config.get("num_layers", 16),
+            hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
+            block=self.config.get("block", "auto"),
+            num_channels=self.config.get("num_channels"),
+            num_labels=self.num_labels,
+        )
+
+
+@HeadRegistry.contact.attention.register("unet")
+class ContactAttentionUNetHead(ContactAttentionHead):
+    r"""
+    Head for tasks in contact-level.
+
+    Args:
+        config: The configuration object for the model.
+        head_config: The configuration object for the head.
+            If None, will use configuration from the `config`.
+
+    Examples:
+        >>> import torch
+        >>> from multimolecule.models import PreTrainedConfig
+        >>> from multimolecule.modules.heads import ContactAttentionUNetHead
+        >>> config = PreTrainedConfig(num_hidden_layers=4, num_attention_heads=8)
+        >>> head = ContactAttentionUNetHead(config)
+        >>> input = tuple(torch.randn(1, config.num_attention_heads, 28, 28) for _ in range(config.num_hidden_layers))
+        >>> output = head({"attentions": input}, attention_mask=torch.ones(1, 28))
     """
 
     output_name: str = "attentions"
@@ -208,207 +315,14 @@ class ContactAttentionResnetHead(PredictionHead):
     r"""Whether the head requires attentions."""
 
     def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
-        if head_config is None:
-            head_config = HeadConfig(hidden_size=config.num_hidden_layers * config.num_attention_heads)
-        else:
-            head_config.hidden_size = config.num_hidden_layers * config.num_attention_heads
         super().__init__(config, head_config)
-        num_layers = self.config.get("num_layers", 16)
-        num_channels = self.config.get("num_channels", self.config.hidden_size)  # type: ignore[operator]
-        block = self.config.get("block", "auto")
-        self.decoder = ResNet(
-            num_layers=num_layers,
+        self.decoder = UNet(
+            num_layers=self.config.get("num_layers", 4),
             hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
-            block=block,
-            num_channels=num_channels,
+            block=self.config.get("block", "auto"),
+            num_channels=self.config.get("num_channels"),
             num_labels=self.num_labels,
         )
 
-    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
-        self,
-        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
-        attention_mask: Tensor | None = None,
-        input_ids: NestedTensor | Tensor | None = None,
-        labels: Tensor | None = None,
-        output_name: str | None = None,
-        **kwargs,
-    ) -> HeadOutput:
-        r"""
-        Forward pass of the ContactPredictionHead.
 
-        Args:
-            outputs: The outputs of the model.
-            attention_mask: The attention mask for the inputs.
-            input_ids: The input ids for the inputs.
-            labels: The labels for the head.
-            output_name: The name of the output to use.
-                Defaults to `self.output_name`.
-        """
-
-        if isinstance(outputs, (Mapping, ModelOutput)):
-            output = outputs[output_name or self.output_name]
-        elif isinstance(outputs, tuple):
-            output = outputs[-1]
-        else:
-            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
-
-        attentions = torch.stack(output, 1)
-
-        if attention_mask is None:
-            attention_mask = self.get_attention_mask(input_ids)
-        attentions, _, _ = self.remove_special_tokens(attentions, attention_mask, input_ids)
-
-        # features: batch x channels x input_ids x input_ids (symmetric)
-        batch_size, layers, heads, seq_len, _ = attentions.size()
-        attentions = attentions.view(batch_size, layers * heads, seq_len, seq_len)
-        attentions = attentions.to(self.decoder.proj.weight.device)
-        attentions = average_product_correct(symmetrize(attentions))
-
-        return super().forward(attentions, labels, **kwargs)
-
-
-@HeadRegistry.contact.logits.register("resnet")
-class ContactLogitsResnetHead(PredictionHead):
-    r"""
-    Head for tasks in contact-level.
-
-    Performs symmetrization, and average product correct.
-
-    Args:
-        config: The configuration object for the model.
-        head_config: The configuration object for the head.
-            If None, will use configuration from the `config`.
-    """
-
-    output_name: str = "last_hidden_state"
-    r"""The default output to use for the head."""
-
-    require_attentions: bool = False
-    r"""Whether the head requires attentions."""
-
-    def __init__(self, config: PreTrainedConfig, head_config: HeadConfig | None = None):
-        super().__init__(config, head_config)
-        num_layers = self.config.get("num_layers", 16)
-        num_channels = self.config.get("num_channels", self.config.hidden_size)  # type: ignore[operator]
-        block = self.config.get("block", "auto")
-        self.decoder = ResNet(
-            num_layers=num_layers,
-            hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
-            block=block,
-            num_channels=num_channels,
-            num_labels=self.num_labels,
-        )
-
-    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
-        self,
-        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
-        attention_mask: Tensor | None = None,
-        input_ids: NestedTensor | Tensor | None = None,
-        labels: Tensor | None = None,
-        output_name: str | None = None,
-        **kwargs,
-    ) -> HeadOutput:
-        r"""
-        Forward pass of the ContactPredictionHead.
-
-        Args:
-            outputs: The outputs of the model.
-            attention_mask: The attention mask for the inputs.
-            input_ids: The input ids for the inputs.
-            labels: The labels for the head.
-            output_name: The name of the output to use.
-                Defaults to `self.output_name`.
-        """
-        if isinstance(outputs, (Mapping, ModelOutput)):
-            output = outputs[output_name or self.output_name]
-        elif isinstance(outputs, tuple):
-            output = outputs[0]
-        else:
-            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
-
-        if attention_mask is None:
-            attention_mask = self.get_attention_mask(input_ids)
-        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
-
-        # make symmetric contact map
-        contact_map = output.unsqueeze(1) * output.unsqueeze(2)
-
-        return super().forward(contact_map, labels, **kwargs)
-
-
-class ResNet(nn.Module):
-    def __init__(
-        self,
-        num_layers: int,
-        hidden_size: int,
-        block: Type[BasicBlock | Bottleneck] | str = "auto",
-        num_channels: int | None = None,
-        num_labels: int = 1,
-        norm_layer: Callable[..., nn.Module] | None = None,
-        zero_init_residual: bool = True,
-    ) -> None:
-        tv.check()
-        super().__init__()
-
-        if block == "auto":
-            block = BasicBlock if num_layers < 50 else Bottleneck
-        elif block in ("basic", "BasicBlock"):
-            block = BasicBlock
-        elif block in ("bottleneck", "Bottleneck"):
-            block = Bottleneck
-        else:
-            raise ValueError(f"Unknown block type: {block}")
-        if num_channels is None:
-            num_channels = hidden_size // 10
-        if norm_layer is None:
-            norm_layer = LayerNorm2D
-
-        self.proj = nn.Conv2d(hidden_size, num_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.norm = norm_layer(num_channels)
-        self.relu = nn.ReLU(inplace=True)
-        self.layers = nn.Sequential(
-            *[block(num_channels, num_channels, norm_layer=norm_layer) for _ in range(num_layers)]  # type: ignore
-        )
-        self.output = nn.Linear(num_channels, num_labels)
-
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
-            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-
-        # Zero-initialize the last BN in each residual branch,
-        # so that the residual branch starts with zeros, and each residual block behaves like an identity.
-        # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
-        if zero_init_residual:
-            for m in self.modules():
-                if isinstance(m, Bottleneck) and m.bn3.weight is not None:
-                    nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
-                elif isinstance(m, BasicBlock) and m.bn2.weight is not None:
-                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
-
-    def forward(self, x: Tensor) -> Tensor:
-        x = self.proj(x.transpose(1, 3))
-        x = self.norm(x)
-        x = self.relu(x)
-        x = self.layers(x)
-        x = self.output(x.transpose(1, 3))
-        return x
-
-
-def symmetrize(x: Tensor) -> Tensor:
-    "Make layer symmetric in final two dimensions, used for contact prediction."
-    return x + x.transpose(1, 2)
-
-
-def average_product_correct(x: Tensor) -> Tensor:
-    "Perform average product correct, used for contact prediction."
-    a1 = x.sum(1, keepdims=True)
-    a2 = x.sum(2, keepdims=True)
-    a12 = x.sum((1, 2), keepdims=True)
-
-    avg = a1 * a2
-    avg.div_(a12)  # in-place to reduce memory
-    normalized = x - avg
-    return normalized
+HeadRegistry.contact.setattr("default", ContactAttentionHead)

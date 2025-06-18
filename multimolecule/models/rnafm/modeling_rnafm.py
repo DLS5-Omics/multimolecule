@@ -43,7 +43,7 @@ from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable
 
 from multimolecule.modules import (
     BasePredictionHead,
-    ContactAttentionLinearHead,
+    ContactAttentionHead,
     ContactPredictionHead,
     Criterion,
     HeadOutput,
@@ -579,7 +579,7 @@ class RnaFmForPreTraining(RnaFmForMaskedLM):
                 "If you want to use `RnaFmForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.ss_head = ContactAttentionLinearHead(config)
+        self.ss_head = ContactAttentionHead(config)
         self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing
