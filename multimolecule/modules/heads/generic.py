@@ -49,6 +49,9 @@ class BasePredictionHead(nn.Module):
             If None, will use configuration from the `config`.
     """
 
+    config: HeadConfig
+    r"""The configuration object for the head."""
+
     num_labels: int
     r"""Number of labels for the head."""
 
@@ -181,7 +184,10 @@ class BasePredictionHead(nn.Module):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
-                input_ids.masked_fill_(~eos_mask, self.pad_token_id or 0)
+                if isinstance(input_ids, Tensor):
+                    input_ids.masked_fill_(~eos_mask, self.pad_token_id or 0)
+                if isinstance(eos_mask, NestedTensor):
+                    eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1
@@ -241,7 +247,10 @@ class BasePredictionHead(nn.Module):
         if self.eos_token_id is not None:
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
-                input_ids.masked_fill_(~eos_mask, self.pad_token_id or 0)
+                if isinstance(input_ids, Tensor):
+                    input_ids.masked_fill_(~eos_mask, self.pad_token_id or 0)
+                if isinstance(eos_mask, NestedTensor):
+                    eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1

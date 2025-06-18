@@ -41,7 +41,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 
 from multimolecule.modules import (
-    ContactAttentionLinearHead,
+    ContactAttentionHead,
     ContactPredictionHead,
     MaskedLMHead,
     RotaryEmbedding,
@@ -575,7 +575,7 @@ class UtrLmForPreTraining(UtrLmForMaskedLM):
                 "If you want to use `UtrLmForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.ss_head = ContactAttentionLinearHead(config)
+        self.ss_head = ContactAttentionHead(config)
         self.structure_head = None
         if config.structure_head is not None:
             self.structure_head = TokenPredictionHead(config, config.structure_head)
@@ -691,7 +691,7 @@ class UtrLmForSecondaryStructurePrediction(UtrLmPreTrainedModel):
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
         self.utrlm = UtrLmModel(config, add_pooling_layer=False)
-        self.ss_head = ContactAttentionLinearHead(config)
+        self.ss_head = ContactAttentionHead(config)
         self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing

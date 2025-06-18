@@ -25,10 +25,12 @@ from .embeddings import PositionEmbeddingRegistry, RotaryEmbedding, SinusoidalEm
 from .heads import (
     BaseHeadConfig,
     BasePredictionHead,
-    ContactAttentionLinearHead,
-    ContactAttentionResnetHead,
-    ContactLogitsResnetHead,
+    ContactAttentionHead,
+    ContactAttentionResNetHead,
+    ContactAttentionUNetHead,
     ContactPredictionHead,
+    ContactPredictionResNetHead,
+    ContactPredictionUNetHead,
     HeadConfig,
     HeadOutput,
     HeadRegistry,
@@ -45,7 +47,7 @@ from .heads import (
     TokenPredictionHead,
 )
 from .model import MultiMoleculeModel
-from .normlizations import LayerNorm2D
+from .normlizations import LayerNorm2d
 from .registry import ModelRegistry
 
 __all__ = [
@@ -66,9 +68,11 @@ __all__ = [
     "TokenPredictionHead",
     "TokenKMerHead",
     "ContactPredictionHead",
-    "ContactLogitsResnetHead",
-    "ContactAttentionLinearHead",
-    "ContactAttentionResnetHead",
+    "ContactPredictionResNetHead",
+    "ContactPredictionUNetHead",
+    "ContactAttentionHead",
+    "ContactAttentionResNetHead",
+    "ContactAttentionUNetHead",
     "MaskedLMHead",
     "HeadOutput",
     "HeadTransformRegistry",
@@ -76,5 +80,5 @@ __all__ = [
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",
-    "LayerNorm2D",
+    "LayerNorm2d",
 ]

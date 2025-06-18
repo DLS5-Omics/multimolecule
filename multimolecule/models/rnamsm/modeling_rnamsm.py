@@ -38,7 +38,7 @@ from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 
 from multimolecule.modules import (
-    ContactAttentionLinearHead,
+    ContactAttentionHead,
     ContactPredictionHead,
     MaskedLMHead,
     SequencePredictionHead,
@@ -497,7 +497,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
                 "If you want to use `RnaMsmForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.ss_head = ContactAttentionLinearHead(config, head_config=HeadConfig(output_name="row_attentions"))
+        self.ss_head = ContactAttentionHead(config, head_config=HeadConfig(output_name="row_attentions"))
         self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing
@@ -576,7 +576,7 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
         self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.ss_head = ContactAttentionLinearHead(config, head_config=HeadConfig(output_name="row_attentions"))
+        self.ss_head = ContactAttentionHead(config, head_config=HeadConfig(output_name="row_attentions"))
         self.require_attentions = self.ss_head.require_attentions
 
         # Initialize weights and apply final processing
