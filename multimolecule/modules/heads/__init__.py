@@ -22,10 +22,12 @@
 
 from .config import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 from .contact import (
-    ContactAttentionLinearHead,
-    ContactAttentionResnetHead,
-    ContactLogitsResnetHead,
+    ContactAttentionHead,
+    ContactAttentionResNetHead,
+    ContactAttentionUNetHead,
     ContactPredictionHead,
+    ContactPredictionResNetHead,
+    ContactPredictionUNetHead,
 )
 from .generic import BasePredictionHead, PredictionHead
 from .output import HeadOutput
@@ -52,9 +54,11 @@ __all__ = [
     "TokenPredictionHead",
     "TokenKMerHead",
     "ContactPredictionHead",
-    "ContactLogitsResnetHead",
-    "ContactAttentionLinearHead",
-    "ContactAttentionResnetHead",
+    "ContactPredictionResNetHead",
+    "ContactPredictionUNetHead",
+    "ContactAttentionHead",
+    "ContactAttentionResNetHead",
+    "ContactAttentionUNetHead",
     "MaskedLMHead",
     "HeadOutput",
     "HeadTransformRegistry",

@@ -36,7 +36,7 @@ class PreTrainedConfig(PretrainedConfig):
     Base class for all model configuration classes.
     """
 
-    head: HeadConfig | None
+    head: HeadConfig | None = None
     num_labels: int = 1
 
     hidden_size: int
