@@ -1255,9 +1255,8 @@ class RnaFmSecondaryStructurePredictionHead(BasePredictionHead):
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
         if attention_mask is None:
-            attention_mask = self._get_attention_mask(input_ids)
-        output = output * attention_mask.unsqueeze(-1)
-        output, _, _ = self._remove_special_tokens(output, attention_mask, input_ids)
+            attention_mask = self.get_attention_mask(input_ids)
+        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
         seq_length = output.size(1)
 
         output = self.reduction(output)

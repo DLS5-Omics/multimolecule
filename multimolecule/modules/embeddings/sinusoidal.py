@@ -27,7 +27,6 @@ from __future__ import annotations
 import math
 
 import torch
-import torch.onnx.operators
 from torch import Tensor, nn
 
 from .registry import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF
@@ -48,13 +47,45 @@ class SinusoidalEmbedding(nn.Embedding):
 
     Success: **Sequence Length**
         These embeddings get automatically extended in forward if more positions is needed.
+
+    Args:
+        num_embeddings: The number of embeddings to use.
+        embedding_dim: The dimension of the embeddings.
+        padding_idx: The index of the padding symbol.
+        bias: The bias of the embeddings.
+
+    Example:
+        >>> embedding = SinusoidalEmbedding(num_embeddings=128, embedding_dim=64)
+        >>> input_ids = torch.arange(28).repeat(4).view(4, -1)
+        >>> input_embeds = torch.randn(4, 28, 64)
+        >>> embeddings = embedding(input_ids)
+        >>> embeddings.shape  # no batch dimension if padding_idx is None
+        torch.Size([28, 64])
+        >>> input_embeds = input_embeds + embeddings
+        >>> input_embeds.shape
+        torch.Size([4, 28, 64])
+        >>> embedding = SinusoidalEmbedding(num_embeddings=128, embedding_dim=64, padding_idx=0)
+        >>> embeddings = embedding(input_ids)
+        >>> embeddings.shape  # batch dimension if padding_idx is not None
+        torch.Size([4, 28, 64])
+        >>> embedding.state_dict()  # no weight in state_dict
+        OrderedDict()
     """
 
     _is_hf_initialized = True
 
-    def __init__(self, num_embeddings: int, embedding_dim: int, padding_idx: int | None = None, bias: int = 1):
-        weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx)
-        super().__init__(num_embeddings, embedding_dim, padding_idx, _weight=weight.detach(), _freeze=True)
+    def __init__(
+        self,
+        num_embeddings: int,
+        embedding_dim: int,
+        padding_idx: int | None = None,
+        bias: int = 1,
+        device: torch.device | None = None,
+        dtype: torch.dtype = torch.float32,
+        **kwargs,
+    ):
+        weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx, device=device, dtype=dtype)
+        super().__init__(num_embeddings, embedding_dim, padding_idx, _weight=weight.detach(), _freeze=True, **kwargs)
         del self.weight
         self.register_buffer("weight", weight, persistent=False)
         self.bias = bias
@@ -79,7 +110,6 @@ class SinusoidalEmbedding(nn.Embedding):
         This matches the implementation in tensor2tensor, but differs slightly from the description in Section 3.5 of
         "Attention Is All You Need".
         """
-
         if device is None:
             device = torch.get_default_device()
         half_dim = embedding_dim // 2
@@ -88,8 +118,7 @@ class SinusoidalEmbedding(nn.Embedding):
         emb = torch.cat([torch.sin(emb), torch.cos(emb)], dim=1).view(num_embeddings, -1)
         emb = emb.to(device=device, dtype=dtype)
         if embedding_dim % 2 == 1:
-            # zero pad
-            emb = torch.cat([emb, torch.zeros(num_embeddings, 1)], dim=1)
+            emb = torch.cat([emb, torch.zeros(num_embeddings, 1, dtype=dtype, device=device)], dim=1)
         if padding_idx is not None:
             emb[padding_idx, :] = 0
         return emb.detach()

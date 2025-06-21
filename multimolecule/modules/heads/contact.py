@@ -84,9 +84,8 @@ class ContactPredictionHead(BasePredictionHead):
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
         if attention_mask is None:
-            attention_mask = self._get_attention_mask(input_ids)
-        output = output * attention_mask.unsqueeze(-1)
-        output, _, _ = self._remove_special_tokens(output, attention_mask, input_ids)
+            attention_mask = self.get_attention_mask(input_ids)
+        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
 
         output = self.dropout(output)
         output = self.transform(output)
@@ -177,40 +176,14 @@ class ContactAttentionLinearHead(PredictionHead):
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
-        attentions = torch.stack(output, 1)
+        attentions = torch.stack(output, 1).flatten(1, 2).permute(0, 2, 3, 1)
 
-        # In the original model, attentions for padding tokens are completely zeroed out.
-        # This makes no difference most of the time because the other tokens won't attend to them,
-        # but it does for the contact prediction task, which takes attentions as input,
-        # so we have to mimic that here.
-        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
-        attentions *= attention_mask[:, None, None, :, :]
+        if attention_mask is None:
+            attention_mask = self.get_attention_mask(input_ids)
+        attentions, _, _ = self.remove_special_tokens_2d(attentions, attention_mask, input_ids)
 
-        # remove bos token attentions
-        if self.bos_token_id is not None:
-            attentions = attentions[..., 1:, 1:]
-            # process attention_mask and input_ids to make removal of eos token happy
-            attention_mask = attention_mask[..., 1:, 1:]
-            if input_ids is not None:
-                input_ids = input_ids[..., 1:]
-        # remove eos token attentions
-        if self.eos_token_id is not None:
-            if input_ids is not None:
-                eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
-            else:
-                last_valid_indices = attention_mask.sum(dim=-1) - 1
-                seq_length = attention_mask.size(-1)
-                eos_mask = torch.arange(seq_length, device=attentions.device).unsqueeze(0) == last_valid_indices
-            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
-            attentions *= eos_mask[:, None, None, :, :]
-            attentions = attentions[..., :-1, :-1]
-
-        # features: batch x channels x input_ids x input_ids (symmetric)
-        batch_size, layers, heads, seqlen, _ = attentions.size()
-        attentions = attentions.view(batch_size, layers * heads, seqlen, seqlen)
         attentions = attentions.to(self.decoder.weight.device)
         attentions = average_product_correct(symmetrize(attentions))
-        attentions = attentions.permute(0, 2, 3, 1).squeeze(3)
 
         return super().forward(attentions, labels, **kwargs)
 
@@ -281,41 +254,15 @@ class ContactAttentionResnetHead(PredictionHead):
 
         attentions = torch.stack(output, 1)
 
-        # In the original model, attentions for padding tokens are completely zeroed out.
-        # This makes no difference most of the time because the other tokens won't attend to them,
-        # but it does for the contact prediction task, which takes attentions as input,
-        # so we have to mimic that here.
         if attention_mask is None:
-            attention_mask = self._get_attention_mask(input_ids)
-        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
-        attentions = attentions * attention_mask[:, None, None, :, :]
-
-        # remove bos token attentions
-        if self.bos_token_id is not None:
-            attentions = attentions[..., 1:, 1:]
-            attention_mask = attention_mask[..., 1:, 1:]
-            if input_ids is not None:
-                input_ids = input_ids[..., 1:]
-        # remove eos token attentions
-        if self.eos_token_id is not None:
-            if input_ids is not None:
-                eos_mask = input_ids.ne(self.eos_token_id).to(attentions)
-                input_ids = input_ids[..., :-1]
-            else:
-                last_valid_indices = attention_mask.sum(dim=-1) - 1
-                seq_length = attention_mask.size(-1)
-                eos_mask = torch.arange(seq_length, device=attentions.device).unsqueeze(0) == last_valid_indices
-            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
-            attentions = attentions * eos_mask[:, None, None, :, :]
-            attentions = attentions[..., :-1, :-1]
-            attention_mask = attention_mask[..., :-1, :-1]
+            attention_mask = self.get_attention_mask(input_ids)
+        attentions, _, _ = self.remove_special_tokens(attentions, attention_mask, input_ids)
 
         # features: batch x channels x input_ids x input_ids (symmetric)
-        batch_size, layers, heads, seqlen, _ = attentions.size()
-        attentions = attentions.view(batch_size, layers * heads, seqlen, seqlen)
+        batch_size, layers, heads, seq_len, _ = attentions.size()
+        attentions = attentions.view(batch_size, layers * heads, seq_len, seq_len)
         attentions = attentions.to(self.decoder.proj.weight.device)
         attentions = average_product_correct(symmetrize(attentions))
-        attentions = attentions.permute(0, 2, 3, 1).squeeze(3)
 
         return super().forward(attentions, labels, **kwargs)
 
@@ -380,9 +327,8 @@ class ContactLogitsResnetHead(PredictionHead):
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
         if attention_mask is None:
-            attention_mask = self._get_attention_mask(input_ids)
-        output = output * attention_mask.unsqueeze(-1)
-        output, _, _ = self._remove_special_tokens(output, attention_mask, input_ids)
+            attention_mask = self.get_attention_mask(input_ids)
+        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
 
         # make symmetric contact map
         contact_map = output.unsqueeze(1) * output.unsqueeze(2)
@@ -453,14 +399,14 @@ class ResNet(nn.Module):
 
 def symmetrize(x: Tensor) -> Tensor:
     "Make layer symmetric in final two dimensions, used for contact prediction."
-    return x + x.transpose(-1, -2)
+    return x + x.transpose(1, 2)
 
 
 def average_product_correct(x: Tensor) -> Tensor:
     "Perform average product correct, used for contact prediction."
-    a1 = x.sum(-1, keepdims=True)
-    a2 = x.sum(-2, keepdims=True)
-    a12 = x.sum((-1, -2), keepdims=True)
+    a1 = x.sum(1, keepdims=True)
+    a2 = x.sum(2, keepdims=True)
+    a12 = x.sum((1, 2), keepdims=True)
 
     avg = a1 * a2
     avg.div_(a12)  # in-place to reduce memory

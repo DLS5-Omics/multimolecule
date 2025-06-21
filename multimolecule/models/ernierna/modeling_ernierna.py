@@ -1239,37 +1239,13 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
 
-        attention = attentions[-1][:, 5:6, :, :]  # Mysterious magic head 5
+        attention = attentions[-1][:, 5:6, :, :].permute(0, 2, 3, 1)  # Mysterious magic head 5
 
-        # In the original model, attention for padding tokens are completely zeroed out.
-        # This makes no difference most of the time because the other tokens won't attend to them,
-        # but it does for the contact prediction task, which takes attention as input,
-        # so we have to mimic that here.
         if attention_mask is None:
-            attention_mask = self._get_attention_mask(input_ids)
-        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
-        attention = attention * attention_mask[:, None, :, :]
+            attention_mask = self.get_attention_mask(input_ids)
+        attention, _, input_ids = self.remove_special_tokens_2d(attention, attention_mask, input_ids)
 
-        # remove bos token attention
-        if self.bos_token_id is not None:
-            attention = attention[..., 1:, 1:]
-            attention_mask = attention_mask[..., 1:, 1:]
-            if input_ids is not None:
-                input_ids = input_ids[..., 1:]
-        # remove eos token attention
-        if self.eos_token_id is not None:
-            if input_ids is not None:
-                eos_mask = input_ids.ne(self.eos_token_id).to(attention)
-                input_ids = input_ids[..., :-1]
-            else:
-                last_valid_indices = attention_mask.sum(dim=-1) - 1
-                seq_length = attention_mask.size(-1)
-                eos_mask = torch.arange(seq_length, device=attention.device).unsqueeze(0) == last_valid_indices
-            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
-            attention = attention * eos_mask[:, None, :, :]
-            attention = attention[..., :-1, :-1]
-            attention_mask = attention_mask[..., :-1, :-1]
-
+        attention = attention.permute(0, 3, 1, 2)
         output = self.conv1(attention)
         output = self.dropout(output)
         output = self.activation(output)
