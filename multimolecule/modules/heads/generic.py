@@ -87,20 +87,20 @@ class BasePredictionHead(nn.Module):
         if getattr(self.config, "output_name", None) is not None:
             self.output_name = self.config.output_name
 
-    def _get_attention_mask(self, input_ids: NestedTensor | Tensor) -> Tensor:
+    def get_attention_mask(self, input_ids: NestedTensor | Tensor) -> Tensor:
         if isinstance(input_ids, NestedTensor):
             return input_ids.mask
         if input_ids is None:
             raise ValueError(
-                f"Either attention_mask or input_ids must be provided for {self.__class__.__name__} to work."
+                f"Unable to infer attention mask for {self.__class__.__name__}, because input_ids is None."
             )
         if self.pad_token_id is None:
             raise ValueError(
-                f"pad_token_id must be provided when attention_mask is not passed to {self.__class__.__name__}."
+                f"Unable to infer attention mask for {self.__class__.__name__}, because pad_token_id is None."
             )
         return input_ids.ne(self.pad_token_id).int()
 
-    def _remove_special_tokens(
+    def remove_special_tokens(
         self, output: Tensor, attention_mask: Tensor, input_ids: Tensor | None
     ) -> Tuple[Tensor, Tensor, Tensor]:
         # remove bos token embeddings
@@ -112,15 +112,45 @@ class BasePredictionHead(nn.Module):
         # remove eos token embeddings
         if self.eos_token_id is not None:
             if input_ids is not None:
-                eos_mask = input_ids.ne(self.eos_token_id).to(output)
+                eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
+                input_ids[~eos_mask] = self.pad_token_id or 0
                 input_ids = input_ids[..., :-1]
             else:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
-            output = output * eos_mask[:, :, None]
-            output = output[..., :-1, :]
-            attention_mask = attention_mask[..., :-1]
+            output = (output * eos_mask.unsqueeze(-1))[..., :-1, :]
+            attention_mask = (attention_mask * eos_mask)[..., :-1]
+        # remove padding token embeddings
+        if attention_mask is not None:
+            output = output * attention_mask.unsqueeze(-1)
+        return output, attention_mask, input_ids
+
+    def remove_special_tokens_2d(
+        self, output: Tensor, attention_mask: Tensor, input_ids: Tensor | None
+    ) -> Tuple[Tensor, Tensor, Tensor]:
+        # remove bos token embeddings
+        if self.bos_token_id is not None:
+            output = output[..., 1:, 1:, :]
+            attention_mask = attention_mask[..., 1:]
+            if input_ids is not None:
+                input_ids = input_ids[..., 1:]
+        # remove eos token embeddings
+        if self.eos_token_id is not None:
+            if input_ids is not None:
+                eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
+                input_ids = (input_ids * eos_mask)[:, :-1]
+            else:
+                last_valid_indices = attention_mask.sum(dim=-1) - 1
+                seq_length = attention_mask.size(-1)
+                eos_mask = torch.arange(seq_length, device=output.device) == last_valid_indices.unsqueeze(1)
+            attention_mask = (attention_mask * eos_mask)[..., :-1]
+            eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
+            output = (output * eos_mask.unsqueeze(-1))[..., :-1, :-1, :]
+        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
+        # remove padding token embeddings
+        if attention_mask is not None:
+            output = output * attention_mask.unsqueeze(-1)
         return output, attention_mask, input_ids
 
 
