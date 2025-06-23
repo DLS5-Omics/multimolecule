@@ -27,16 +27,16 @@ from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
 
-from .registry import BackboneRegistry
-from .sequences import SequenceRegistry
+from .registry import BACKBONES
+from .sequences import SEQUENCES
 
 
-@BackboneRegistry.register("sequence", default=True)
+@BACKBONES.register("sequence", default=True)
 class SequenceBackbone(nn.Module):
     def __init__(self, sequence) -> None:
         super().__init__()
         sequence_dropout = sequence.pop("dropout", 0)
-        self.sequence = SequenceRegistry.build(**sequence)
+        self.sequence = SEQUENCES.build(**sequence)
         self.sequence_dropout = nn.Dropout(sequence_dropout)
         self.config = self.sequence.config
         self.out_channels = self.config.hidden_size

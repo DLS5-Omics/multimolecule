@@ -27,12 +27,12 @@ from chanfig import FlatDict
 from danling.modules import TransformerEncoder, TransformerEncoderLayer
 from torch import Tensor, nn
 
-from .registry import NeckRegistry
+from .registry import NECKS
 
 MAX_LENGTH = 1024
 
 
-@NeckRegistry.register("bert")
+@NECKS.register("bert")
 class BERTNeck(nn.Module):
     def __init__(  # pylint: disable=keyword-arg-before-vararg
         self,

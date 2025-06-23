@@ -28,13 +28,13 @@ import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
 
-@CriterionRegistry.register("binary")
+@CRITERIONS.register("binary")
 class BCEWithLogitsLoss(nn.BCEWithLogitsLoss):
     def __init__(self, config: HeadConfig) -> None:
         super().__init__(**config.get("loss", {}))

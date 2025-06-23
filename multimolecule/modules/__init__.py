@@ -20,9 +20,13 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .criterions import Criterion, CriterionRegistry
-from .embeddings import PositionEmbeddingRegistry, RotaryEmbedding, SinusoidalEmbedding
+from .backbones import BACKBONES, SEQUENCES, SequenceBackbone
+from .criterions import CRITERIONS, Criterion
+from .embeddings import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF, RotaryEmbedding, SinusoidalEmbedding
 from .heads import (
+    HEAD_TRANSFORMS,
+    HEAD_TRANSFORMS_HF,
+    HEADS,
     BaseHeadConfig,
     BasePredictionHead,
     ContactAttentionHead,
@@ -33,9 +37,6 @@ from .heads import (
     ContactPredictionUNetHead,
     HeadConfig,
     HeadOutput,
-    HeadRegistry,
-    HeadTransformRegistry,
-    HeadTransformRegistryHF,
     IdentityTransform,
     LinearTransform,
     MaskedLMHead,
@@ -47,21 +48,26 @@ from .heads import (
     TokenPredictionHead,
 )
 from .model import MultiMoleculeModel
+from .necks import NECKS, CatNeck
 from .normlizations import LayerNorm2d
-from .registry import ModelRegistry
+from .registry import MODELS
 
 __all__ = [
-    "ModelRegistry",
+    "MODELS",
     "MultiMoleculeModel",
-    "CriterionRegistry",
-    "Criterion",
-    "PositionEmbeddingRegistry",
+    "POSITION_EMBEDDINGS",
+    "POSITION_EMBEDDINGS_HF",
     "RotaryEmbedding",
     "SinusoidalEmbedding",
+    "BACKBONES",
+    "SEQUENCES",
+    "SequenceBackbone",
+    "NECKS",
+    "CatNeck",
     "BaseHeadConfig",
     "HeadConfig",
     "MaskedLMHeadConfig",
-    "HeadRegistry",
+    "HEADS",
     "BasePredictionHead",
     "PredictionHead",
     "SequencePredictionHead",
@@ -75,10 +81,12 @@ __all__ = [
     "ContactAttentionUNetHead",
     "MaskedLMHead",
     "HeadOutput",
-    "HeadTransformRegistry",
-    "HeadTransformRegistryHF",
+    "HEAD_TRANSFORMS",
+    "HEAD_TRANSFORMS_HF",
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",
+    "CRITERIONS",
+    "Criterion",
     "LayerNorm2d",
 ]

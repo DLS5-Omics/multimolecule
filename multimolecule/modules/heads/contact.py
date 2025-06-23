@@ -31,19 +31,19 @@ from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 from typing_extensions import TYPE_CHECKING
 
-from ..criterions import CriterionRegistry
+from ..criterions import CRITERIONS
 from ..networks import ResNet, UNet
 from .config import HeadConfig
 from .generic import BasePredictionHead
 from .output import HeadOutput
-from .registry import HeadRegistry
-from .transform import HeadTransformRegistryHF
+from .registry import HEADS
+from .transform import HEAD_TRANSFORMS_HF
 
 if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
 
-@HeadRegistry.contact.logits.register("linear", default=True)
+@HEADS.contact.logits.register("linear", default=True)
 class ContactPredictionHead(BasePredictionHead):
     r"""
     Head for tasks in contact-level.
@@ -73,10 +73,10 @@ class ContactPredictionHead(BasePredictionHead):
         super().__init__(config, head_config)
         out_channels: int = self.config.hidden_size  # type: ignore[assignment]
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.transform = HEAD_TRANSFORMS_HF.build(self.config)
         self.decoder = nn.Linear(out_channels, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        self.criterion = CriterionRegistry.build(self.config)
+        self.criterion = CRITERIONS.build(self.config)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -115,7 +115,7 @@ class ContactPredictionHead(BasePredictionHead):
         return HeadOutput(contact_map)
 
 
-@HeadRegistry.contact.logits.register("resnet")
+@HEADS.contact.logits.register("resnet")
 class ContactPredictionResNetHead(ContactPredictionHead):
     r"""
     Head for tasks in contact-level.
@@ -146,7 +146,7 @@ class ContactPredictionResNetHead(ContactPredictionHead):
         )
 
 
-@HeadRegistry.contact.logits.register("unet")
+@HEADS.contact.logits.register("unet")
 class ContactPredictionUNetHead(ContactPredictionHead):
     r"""
     Head for tasks in contact-level.
@@ -177,7 +177,7 @@ class ContactPredictionUNetHead(ContactPredictionHead):
         )
 
 
-@HeadRegistry.contact.attention.register("linear")
+@HEADS.contact.attention.register("linear")
 class ContactAttentionHead(BasePredictionHead):
     r"""
     Head for tasks in contact-level.
@@ -210,10 +210,10 @@ class ContactAttentionHead(BasePredictionHead):
             head_config.hidden_size = config.num_hidden_layers * config.num_attention_heads
         super().__init__(config, head_config)
         self.dropout = nn.Dropout(self.config.dropout)
-        self.transform = HeadTransformRegistryHF.build(self.config)
+        self.transform = HEAD_TRANSFORMS_HF.build(self.config)
         self.decoder = nn.Linear(self.config.hidden_size, self.num_labels, bias=self.config.bias)
         self.activation = ACT2FN[self.config.act] if self.config.act is not None else None
-        self.criterion = CriterionRegistry.build(self.config)
+        self.criterion = CRITERIONS.build(self.config)
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -255,7 +255,7 @@ class ContactAttentionHead(BasePredictionHead):
         return HeadOutput(contact_map)
 
 
-@HeadRegistry.contact.attention.register("resnet")
+@HEADS.contact.attention.register("resnet")
 class ContactAttentionResNetHead(ContactAttentionHead):
     r"""
     Head for tasks in contact-level.
@@ -286,7 +286,7 @@ class ContactAttentionResNetHead(ContactAttentionHead):
         )
 
 
-@HeadRegistry.contact.attention.register("unet")
+@HEADS.contact.attention.register("unet")
 class ContactAttentionUNetHead(ContactAttentionHead):
     r"""
     Head for tasks in contact-level.
@@ -323,4 +323,4 @@ class ContactAttentionUNetHead(ContactAttentionHead):
         )
 
 
-HeadRegistry.contact.setattr("default", ContactAttentionHead)
+HEADS.contact.setattr("default", ContactAttentionHead)

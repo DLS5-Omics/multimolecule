@@ -20,16 +20,21 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
+import chanfig
 from chanfig import ConfigRegistry as Registry_
 from torch import nn
 
 
 class Registry(Registry_):  # pylint: disable=too-few-public-methods
-    key = "type"
 
     def build(self, config, head_config) -> nn.Module:  # type: ignore[override]
         name = getattr(head_config, self.getattr("key"))
         return self.init(self.lookup(name), config, head_config)  # type: ignore[arg-type]
 
 
-HeadRegistry = Registry(default_factory=Registry, fallback=True)
+HEADS = Registry(default_factory=Registry, fallback=True)
+
+HEAD_TRANSFORMS = chanfig.Registry()
+HEAD_TRANSFORMS_HF = chanfig.ConfigRegistry(key="transform")
+
+__all__ = ["HEADS", "HEAD_TRANSFORMS", "HEAD_TRANSFORMS_HF"]

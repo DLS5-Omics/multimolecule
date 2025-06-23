@@ -40,3 +40,5 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
 
 
 DATASETS = Registry()
+
+__all__ = ["DATASETS"]
