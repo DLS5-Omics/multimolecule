@@ -31,10 +31,10 @@ from torch import Tensor, nn
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 
 
-@CriterionRegistry.register("regression")
+@CRITERIONS.register("regression")
 class MSELoss(nn.MSELoss):
     def __init__(self, config: HeadConfig) -> None:
         super().__init__(**config.get("loss", {}))

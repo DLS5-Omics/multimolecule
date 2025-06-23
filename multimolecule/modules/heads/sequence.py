@@ -30,13 +30,13 @@ from transformers.modeling_outputs import ModelOutput
 from .config import HeadConfig
 from .generic import PredictionHead
 from .output import HeadOutput
-from .registry import HeadRegistry
+from .registry import HEADS
 
 if TYPE_CHECKING:
     from multimolecule.models import PreTrainedConfig
 
 
-@HeadRegistry.register("sequence")
+@HEADS.register("sequence")
 class SequencePredictionHead(PredictionHead):
     r"""
     Head for tasks in sequence-level.

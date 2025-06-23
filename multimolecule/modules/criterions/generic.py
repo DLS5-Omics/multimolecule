@@ -32,10 +32,10 @@ from torch.nn import functional as F
 if TYPE_CHECKING:
     from ..heads.config import HeadConfig
 
-from .registry import CriterionRegistry
+from .registry import CRITERIONS
 
 
-@CriterionRegistry.register(default=True)
+@CRITERIONS.register(default=True)
 class Criterion(nn.Module):
 
     problem_types = ["regression", "binary", "multiclass", "multilabel"]
