@@ -24,4 +24,6 @@ from __future__ import annotations
 
 from chanfig import Registry
 
-NeckRegistry = Registry()
+NECKS = Registry()
+
+__all__ = ["NECKS"]

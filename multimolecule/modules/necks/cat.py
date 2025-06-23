@@ -26,10 +26,10 @@ import torch
 from chanfig import FlatDict
 from torch import Tensor
 
-from .registry import NeckRegistry
+from .registry import NECKS
 
 
-@NeckRegistry.register("cat")
+@NECKS.register("cat")
 class CatNeck:  # pylint: disable=too-few-public-methods
     def __init__(self, embed_dim: int):
         self.out_channels = embed_dim * 2

@@ -24,4 +24,4 @@ from __future__ import annotations
 
 from chanfig import Registry
 
-BackboneRegistry = Registry()
+BACKBONES = Registry()

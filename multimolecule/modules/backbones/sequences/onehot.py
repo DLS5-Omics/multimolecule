@@ -25,10 +25,10 @@ from chanfig import FlatDict
 from torch import nn
 from transformers import AutoConfig
 
-from .registry import SequenceRegistry
+from .registry import SEQUENCES
 
 
-@SequenceRegistry.register("onehot")
+@SEQUENCES.register("onehot")
 class OneHot(nn.Module):
     def __init__(self, pretrained: str) -> None:
         super().__init__()

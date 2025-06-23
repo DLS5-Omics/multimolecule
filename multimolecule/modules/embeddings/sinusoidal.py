@@ -29,11 +29,11 @@ import math
 import torch
 from torch import Tensor, nn
 
-from .registry import PositionEmbeddingRegistry, PositionEmbeddingRegistryHF
+from .registry import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF
 
 
-@PositionEmbeddingRegistry.register("sinusoidal")
-@PositionEmbeddingRegistryHF.register("sinusoidal")
+@POSITION_EMBEDDINGS.register("sinusoidal")
+@POSITION_EMBEDDINGS_HF.register("sinusoidal")
 class SinusoidalEmbedding(nn.Embedding):
     r"""
     Sinusoidal positional embeddings for inputs with any length.

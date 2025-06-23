@@ -32,4 +32,6 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
         return self.init(self.lookup(name), config)  # type: ignore[arg-type]
 
 
-CriterionRegistry = Registry(fallback=True)
+CRITERIONS = Registry(fallback=True)
+
+__all__ = ["CRITERIONS"]

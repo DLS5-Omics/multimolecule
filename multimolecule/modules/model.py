@@ -26,13 +26,13 @@ from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
 
-from .backbones import BackboneRegistry
-from .heads import HeadRegistry
-from .necks import NeckRegistry
-from .registry import ModelRegistry
+from .backbones import BACKBONES
+from .heads import HEADS
+from .necks import NECKS
+from .registry import MODELS
 
 
-@ModelRegistry.register(default=True)
+@MODELS.register(default=True)
 class MultiMoleculeModel(nn.Module):
 
     whitelist: list[str] = ["weight", "conv", "fc"]
@@ -50,7 +50,7 @@ class MultiMoleculeModel(nn.Module):
         super().__init__()
 
         # Backbone
-        self.backbone = BackboneRegistry.build(**backbone)
+        self.backbone = BACKBONES.build(**backbone)
         backbone = self.backbone.config
         out_channels = self.backbone.out_channels
 
@@ -70,7 +70,7 @@ class MultiMoleculeModel(nn.Module):
                     "truncation": truncation,
                 }
             )
-            self.neck = NeckRegistry.build(**neck)
+            self.neck = NECKS.build(**neck)
             out_channels = self.neck.out_channels
         else:
             self.neck = None
@@ -79,7 +79,7 @@ class MultiMoleculeModel(nn.Module):
         for head in heads.values():
             if "hidden_size" not in head or head["hidden_size"] is None:
                 head["hidden_size"] = out_channels
-        self.heads = nn.ModuleDict({name: HeadRegistry.build(backbone, head) for name, head in heads.items()})
+        self.heads = nn.ModuleDict({name: HEADS.build(backbone, head) for name, head in heads.items()})
         if any(getattr(h, "require_attentions", False) for h in self.heads.values()):
             self.backbone.sequence.config.output_attentions = True
 
