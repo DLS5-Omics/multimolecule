@@ -107,3 +107,6 @@ class MaskedLMHead(BasePredictionHead):
                 return HeadOutput(output, F.cross_entropy(output.concat, labels.concat))
             return HeadOutput(output, F.cross_entropy(output.view(-1, self.num_labels), labels.view(-1)))
         return HeadOutput(output)
+
+    def _tie_weights(self):
+        self.decoder.bias = self.bias
