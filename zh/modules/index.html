@@ -1029,15 +1029,15 @@
 
 
 <h1 id="modules">modules<a class="headerlink" href="#modules" title="Permanent link">&para;</a></h1>
-<p><code>module</code> 提供了一系列预定义模块，供用户实现自己的架构。</p>
+<p><code>modules</code> 提供了一系列预定义模块，供用户实现自己的架构。</p>
 <p>MultiMolecule 建立在 <img alt="🤗" class="gemoji" src="https://github.githubassets.com/images/icons/emoji/unicode/1f917.png" title=":hugs:" /> 生态系统之上，拥抱类似的设计理念：<a href="https://huggingface.co/blog/transformers-design-philosophy"><strong><del>不要</del> 重复自己</strong></a>。
 我们遵循 <code>单一模型文件策略</code>，其中 <a href="../models"><code>models</code></a> 包中的每个模型都包含一个且仅有一个描述网络设计的 <code>modeling.py</code> 文件。</p>
-<p><code>module</code> 包旨在提供简单、可重用的模块，这些模块在多个模型中保持一致。这种方法最大程度地减少了代码重复，并促进了干净、易于维护的代码。</p>
+<p><code>modules</code> 包旨在提供简单、可重用的模块，这些模块在多个模型中保持一致。这种方法最大程度地减少了代码重复，并促进了干净、易于维护的代码。</p>
 <h2 id="_1">核心特性<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <ul>
-<li>可重用性：<code>module</code> 包括一些在不同模型中常用的组件，例如 <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;SequencePredictionHead&lt;/span&gt;" href="heads/#multimolecule.modules.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>。这减少了冗余，并简化了开发过程。</li>
+<li>可重用性：<code>modules</code> 包括一些在不同模型中常用的组件，例如 <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;SequencePredictionHead&lt;/span&gt;" href="heads/#multimolecule.modules.heads.sequence.SequencePredictionHead"><code>SequencePredictionHead</code></a>。这减少了冗余，并简化了开发过程。</li>
 <li>一致性：通过集中常见模块，我们确保更新和改进在所有模型中一致应用，提高了可靠性和性能。</li>
-<li>灵活性：虽然变换网络编码器等模块被广泛使用，但它们在实现细节上经常有所不同（例如，前-归一化 vs. 后-归一化，不同的残差连接策略）。<code>module</code> 包专注于更简单的组件，将复杂的、特定于模型的变化留给每个模型的 <code>modeling.py</code> 中定义。</li>
+<li>灵活性：虽然变换网络编码器等模块被广泛使用，但它们在实现细节上经常有所不同（例如，前-归一化 vs. 后-归一化，不同的残差连接策略）。<code>modules</code> 包专注于更简单的组件，将复杂的、特定于模型的变化留给每个模型的 <code>modeling.py</code> 中定义。</li>
 </ul>
 <h2 id="modules_1">Modules<a class="headerlink" href="#modules_1" title="Permanent link">&para;</a></h2>
 <ul>
