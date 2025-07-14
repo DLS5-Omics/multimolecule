@@ -244,11 +244,38 @@ The model was trained on 7 NVIDIA A100 GPUs with 80GiB memories.
 **BibTeX**:
 
 ```bibtex
-@article{penic2024rinalmo,
-  title={RiNALMo: General-Purpose RNA Language Models Can Generalize Well on Structure Prediction Tasks},
-  author={Penić, Rafael Josip and Vlašić, Tin and Huber, Roland G. and Wan, Yue and Šikić, Mile},
-  journal={arXiv preprint arXiv:2403.00043},
-  year={2024}
+@ARTICLE{Penic2025-qf,
+  title     = "{RiNALMo}: general-purpose {RNA} language models can generalize
+               well on structure prediction tasks",
+  author    = "Peni{\'c}, Rafael Josip and Vla{\v s}i{\'c}, Tin and Huber,
+               Roland G and Wan, Yue and {\v S}iki{\'c}, Mile",
+  abstract  = "While RNA has recently been recognized as an interesting
+               small-molecule drug target, many challenges remain to be
+               addressed before we take full advantage of it. This emphasizes
+               the necessity to improve our understanding of its structures and
+               functions. Over the years, sequencing technologies have produced
+               an enormous amount of unlabeled RNA data, which hides a huge
+               potential. Motivated by the successes of protein language
+               models, we introduce RiboNucleic Acid Language Model (RiNALMo)
+               to unveil the hidden code of RNA. RiNALMo is the largest RNA
+               language model to date, with 650M parameters pre-trained on 36M
+               non-coding RNA sequences from several databases. It can extract
+               hidden knowledge and capture the underlying structure
+               information implicitly embedded within the RNA sequences.
+               RiNALMo achieves state-of-the-art results on several downstream
+               tasks. Notably, we show that its generalization capabilities
+               overcome the inability of other deep learning methods for
+               secondary structure prediction to generalize on unseen RNA
+               families.",
+  journal   = "Nature Communications",
+  publisher = "Springer Science and Business Media LLC",
+  volume    =  16,
+  number    =  1,
+  pages     = "5671",
+  month     =  jul,
+  year      =  2025,
+  copyright = "https://creativecommons.org/licenses/by-nc-nd/4.0",
+  language  = "en"
 }
 ```
 
