@@ -24,6 +24,7 @@ nav:
               - Rfam: datasets/rfam.md
           - Secondary Structures:
               - RIVAS: datasets/rivas.md
+              - CASP-RNA: datasets/casp_rna.md
               - bpRNA-1m: datasets/bprna_1m.md
               - bpRNA-spot: datasets/bprna_spot.md
               - bpRNA-new: datasets/bprna_new.md
