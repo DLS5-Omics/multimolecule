@@ -28,9 +28,11 @@ from torch.nn import functional as F
 from transformers.activations import ACT2FN
 
 from ..normlizations import LayerNorm2d
+from .registry import NETWORKS
 from .resnet import BasicBlock, BottleneckBlock, conv1x1
 
 
+@NETWORKS.register("unet")
 class UNet(nn.Module):
     def __init__(
         self,

@@ -49,6 +49,7 @@ from .heads import (
 )
 from .model import MultiMoleculeModel
 from .necks import NECKS, CatNeck
+from .networks import NETWORKS, ResNet, UNet
 from .normlizations import LayerNorm2d
 from .registry import MODELS
 
@@ -86,6 +87,9 @@ __all__ = [
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",
+    "NETWORKS",
+    "ResNet",
+    "UNet",
     "CRITERIONS",
     "Criterion",
     "LayerNorm2d",

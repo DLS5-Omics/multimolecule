@@ -27,8 +27,10 @@ from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
 from ..normlizations import LayerNorm2d
+from .registry import NETWORKS
 
 
+@NETWORKS.register("resnet")
 class ResNet(nn.Module):
     def __init__(
         self,

@@ -20,8 +20,17 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .registry import NETWORKS
-from .resnet import ResNet
-from .unet import UNet
+from __future__ import annotations
 
-__all__ = ["NETWORKS", "ResNet", "UNet"]
+from chanfig import Registry as Registry_
+from torch import nn
+
+
+class Registry(Registry_):  # pylint: disable=too-few-public-methods
+    def build(self, *args, **kwargs) -> nn.Module:
+        return super().build(*args, **kwargs)
+
+
+NETWORKS = Registry()
+
+__all__ = ["NETWORKS"]

@@ -130,6 +130,7 @@ from .modules import (
     HEAD_TRANSFORMS_HF,
     HEADS,
     NECKS,
+    NETWORKS,
     POSITION_EMBEDDINGS,
     POSITION_EMBEDDINGS_HF,
     SEQUENCES,
@@ -153,12 +154,14 @@ from .modules import (
     MultiMoleculeModel,
     NonLinearTransform,
     PredictionHead,
+    ResNet,
     RotaryEmbedding,
     SequenceBackbone,
     SequencePredictionHead,
     SinusoidalEmbedding,
     TokenKMerHead,
     TokenPredictionHead,
+    UNet,
 )
 from .pipelines import RnaSecondaryStructurePipeline
 from .tasks import Task, TaskLevel, TaskType
@@ -204,6 +207,9 @@ __all__ = [
     "LinearTransform",
     "NonLinearTransform",
     "IdentityTransform",
+    "NETWORKS",
+    "ResNet",
+    "UNet",
     "CRITERIONS",
     "Criterion",
     "LayerNorm2d",
