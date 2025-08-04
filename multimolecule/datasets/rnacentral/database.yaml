@@ -1,0 +1,7 @@
+dialect: postgresql
+driver: psycopg2
+host: hh-pgsql-public.ebi.ac.uk
+database: pfmegrnargs
+user: reader
+password: NWDMCE5xdipIjRrp
+port: 5432
