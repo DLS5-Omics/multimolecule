@@ -8,21 +8,7 @@ datasets:
   - multimolecule/ena
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "Homo sapiens PRNP mRNA for prion"
-    text: "AGC<mask>CATTATGGCGAACCTTGGCTGCTG"
-    output:
-      - label: "UUN"
-        score: 0.011160684749484062
-      - label: "NGC"
-        score: 0.01067513320595026
-      - label: "NNC"
-        score: 0.010549729689955711
-      - label: "CNA"
-        score: 0.0103579331189394
-      - label: "GNC"
-        score: 0.010322545655071735
+mask_token: <mask>
 ---
 
 # CaLM
@@ -87,34 +73,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/calm")
->>> unmasker("agc<mask>cattatggcgaaccttggctgctg")
-[{'score': 0.011160684749484062,
-  'token': 100,
-  'token_str': 'UUN',
-  'sequence': 'AGC UUN CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.01067513320595026,
-  'token': 117,
-  'token_str': 'NGC',
-  'sequence': 'AGC NGC CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.010549729689955711,
-  'token': 127,
-  'token_str': 'NNC',
-  'sequence': 'AGC NNC CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.0103579331189394,
-  'token': 51,
-  'token_str': 'CNA',
-  'sequence': 'AGC CNA CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.010322545655071735,
-  'token': 77,
-  'token_str': 'GNC',
-  'sequence': 'AGC GNC CAU UAU GGC GAA CCU UGG CUG CUG'}]
+predictor = pipeline("fill-mask", model="multimolecule/calm")
+output = predictor("agc<mask>cattatggcgaaccttggctgctg")
 ```
 
 ### Downstream Use

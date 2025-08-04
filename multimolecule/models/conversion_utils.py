@@ -27,8 +27,10 @@ import shutil
 from typing import Dict
 from warnings import warn
 
+import frontmatter as fm
 from chanfig import Config
-from transformers import PreTrainedModel
+from tqdm import tqdm
+from transformers import PreTrainedModel, pipeline
 from transformers.models.auto.tokenization_auto import tokenizer_class_from_name
 
 from multimolecule.tokenisers.rna.utils import get_tokenizer_config
@@ -38,8 +40,74 @@ try:
 except ImportError:
     HfApi = None
 
+reference_sequences = {
+    "cDNA": {
+        "prion protein (Kanno blood group)": "ATGGCGAACCTTGGCTGCTGGATGCTGGTTCTCTTTGTGGCCACATGGAGTGACCTGGGCCTCTGC",  # https://www.ncbi.nlm.nih.gov/nuccore/M13899.1?from=50&to=115  # noqa: E501
+        "interleukin 10": "ATGCACAGCTCAGCACTGCTCTGTTGCCTGGTCCTCCTGACTGGGGTGAGGGCC",  # https://www.ncbi.nlm.nih.gov/nuccore/M57627.1?from=31&to=84  # noqa: E501
+        "Zaire ebolavirus": "AATGTTCAAACACTTTGTGAAGCTCTGTTAGCTGATGGTCTTGCTAAAGCATTTCCTAGCAATATGATGGTAGTCACAGAGCGTGAGCAAAAAGAAAGCTTATTGCATCAAGCATCATGGCACCACACAAGTGATGATTTTGGTGAGCATGCCACAGTTAGAGGGAGTAGCTTTGTAACTGATTTAGAGAAATACAATCTTGCATTTAGATATGAGTTTACAGCACCTTTTATAGAATATTGTAACCGTTGCTATGGTGTTAAGAATGTTTTTAATTGGATGCATTATACAATCCCACAGTGTTAT",  # https://www.ncbi.nlm.nih.gov/nuccore/DQ211657.1?from=2&to=307  # noqa: E501
+        "SARS coronavirus": "ATGTTTATTTTCTTATTATTTCTTACTCTCACTAGTGGTAGTGACCTTGACCGGTGCACCACTTTTGATGATGTTCAAGCTCCTAATTACACTCAACATACTTCATCTATGAGGGGGGTTTACTATCCTGATGAAATTTTTAGATCAGACACTCTTTATTTAACTCAGGATTTATTTCTTCCATTTTATTCTAATGTTACAGGGTTTCATACTATTAATCATACGTTTGACAACCCTGTCATACCTTTTAAGGATGGTATTTATTTTGCTGCCACAGAGAAATCAAATGTTGTCCGTGGTTGGGTTTTTGGTTCTACCATGAACAACAAGTCACAGTCGGTGATTATTATTAACAATTCTACTAATGTTGTTATACGAGCATGTAACTTTGAATTGTGTGACAACCCTTTCTTTGCTGTTTCTAAACCCATGGGTACACAGACACATACTATGATATTCGATAATGCATTTAAATGCACTTTCGAGTACATATCT",  # https://www.ncbi.nlm.nih.gov/nuccore/AY536757.3?from=73&to=567  # noqa: E501
+    },
+    "ncRNA": {
+        "microRNA 21": "UAGCUUAUCAGACUGAUGUUGA",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_029493.1?from=8&to=29
+        "microRNA 146a": "UGAGAACUGAAUUCCAUGGGUU",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_029701.1?from=21&to=42
+        "microRNA 155": "UUAAUGCUAAUCGUGAUAGGGGUU",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_030784.1?from=4&to=27
+        "metastasis associated lung adenocarcinoma transcript 1": "AGGCAUUGAGGCAGCCAGCGCAGGGGCUUCUGCUGAGGGGGCAGGCGGAGCUUGAGGAAA",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_002819.5?from=1&to=60  # noqa: E501
+        "Pvt1 oncogene": "CCCGCGCUCCUCCGGGCAGAGCGCGUGUGGCGGCCGAGCACAUGGGCCCGCGGGCCGGGC",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_003367.4?from=1&to=60  # noqa: E501
+        "telomerase RNA component": "GGGUUGCGGAGGGUGGGCCUGGGAGGGGUGGUGGCCAUUUUUUGUCUAACCCUAACUGAG",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_001566.3?from=1&to=60  # noqa: E501
+        "vault RNA 2-1": "CGGGUCGGAGUUAGCUCAAGCGGUUACCUCCUCAUGCCGGACUUUCUAUCUGUCCAUCUCUGUGCUGGGGUUCGAGACCCGCGGGUGCUUACUGACCCUUUUAUGCAA",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_030583.3  # noqa: E501
+        "brain cytoplasmic RNA 1": "GGCCGGGCGCGGUGGCUCACGCCUGUAAUCCCAGCUCUCAGGGAGGCUAAGAGGCGGGAGGAUAGCUUGAGCCCAGGAGUUCGAGACCUGCCUGGGCAAUAUAGCGAGACCCCGUUCUCCAGAAAAAGGAAAAAAAAAAACAAAAGACAAAAAAAAAAUAAGCGUAACUUCCCUCAAAGCAACAACCCCCCCCCCCCUUU",  # https://www.ncbi.nlm.nih.gov/nuccore/NR_001568.1  # noqa: E501
+        "HIV-1 TAR-WT": "GGUCUCUCUGGUUAGACCAGAUCUGAGCCUGGGAGCUCUCUGGCUAACUAGGGAACC",  # https://pmc.ncbi.nlm.nih.gov/articles/PMC1955452/  # noqa: E501
+    },
+    "5UTR": {
+        "interleukin 10": "CUUUUUAAUGAAUGAAGAGGCCUCCCUGAGCUUACAAUAUAAAAGGGGGACAGAGAGGUG",  # https://www.ncbi.nlm.nih.gov/nuccore/EU751618.2?from=1&to=126  # noqa: E501
+    },
+    "3UTR": {
+        "Human GPI protein p137": "UUUUUAAAAGGAAAAGAUACCAAAUGCCUGCUGCUACCACCCUUUUCAAUUGCUAUGUUU",  # https://www.ncbi.nlm.nih.gov/nuccore/U51714.1?from=1&to=60  # noqa: E501
+    },
+    "Protein": {
+        "prion protein (Kanno blood group)": "MANLGCWMLVLFVATWSDLGLCKKRPKPGGWNTGGSRYPGQGSPGGNRYPPQGGGGWGQPHGGGWGQPHGGGWGQPHGGGWGQPHGGGWGQGGGTHSQWNKPSKPKTNMKHMAGAAAAGAVVGGLGGYMLGSAMSRPIIHFGSDYEDRYYRENMHRYPNQVYYRPMDEYSNQNNFVHDCVNITIKQHTVTTTTKGENFTETDVKMMERVVEQMCITQYERESQAYYQRGSSMVLFSSPPVILLISFLIFLIVG",  # https://www.ncbi.nlm.nih.gov/nuccore/M13899.1  # noqa: E501
+        "interleukin 10": "MHSSALLCCLVLLTGVRASPGQGTQSENSCTHFPGNLPNMLRDLRDAFSRVKTFFQMKDQLDNLLLKESLLEDFKGYLGCQALSEMIQFYLEEVMPQAENQDPDIKAHVNSLGENLKTLRLRLRRCHRFLPCENKSKAVEQVKNAFNKLQEKGIYKAMSEFDIFINYIEAYMTMKIRN",  # https://www.ncbi.nlm.nih.gov/nuccore/M57627.1  # noqa: E501
+        "Zaire ebolavirus": "NVQTLCEALLADGLAKAFPSNMMVVTEREQKESLLHQASWHHTSDDFGEHATVRGSSFVTDLEKYNLAFRYEFTAPFIEYCNRCYGVKNVFNWMHYTIPQCY",  # https://www.ncbi.nlm.nih.gov/nuccore/DQ211657.1  # noqa: E501
+        "SARS coronavirus": "MFIFLLFLTLTSGSDLDRCTTFDDVQAPNYTQHTSSMRGVYYPDEIFRSDTLYLTQDLFLPFYSNVTGFHTINHTFDNPVIPFKDGIYFAATEKSNVVRGWVFGSTMNNKSQSVIIINNSTNVVIRACNFELCDNPFFAVSKPMGTQTHTMIFDNAFKCTFEYIS",  # https://www.ncbi.nlm.nih.gov/nuccore/AY536757.3  # noqa: E501
+    },
+}
+reference_sequences["mRNA"] = {k: v.replace("T", "U") for k, v in reference_sequences["cDNA"].items()}
+
+
+def generate_widget_data(model: PreTrainedModel, tokenizer, sequence: str) -> Dict:
+    fill_mask = pipeline("fill-mask", model=model, tokenizer=tokenizer)
+    predictions = fill_mask(sequence)
+    widget_data = {"text": sequence, "output": predictions}
+    return widget_data
+
+
+def update_readme(readme_path: str, model: str) -> None:
+    post = fm.load(readme_path)
+    if "pipeline_tag" not in post:
+        return
+    ppl = pipeline(post["pipeline_tag"], model=model)
+    ref_sequences = {}
+    for tag in post["tags"][::-1]:
+        if tag in reference_sequences:
+            ref_sequences.update(reference_sequences[tag])
+    if not ref_sequences:
+        raise ValueError(f"Sequence type '{post['pipeline_tag']}' not found in reference sequences.")
+    post["widget"] = []
+    for name, sequence in tqdm(ref_sequences.items(), total=len(ref_sequences), desc="Generating widget data"):
+        sequence = sequence[:10] + sequence[10:].replace("U", "<mask>", 1)
+        output = [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
+        post["widget"].append(
+            {
+                "example_title": name,
+                "text": sequence,
+                "output": output,
+            }
+        )
+    fm.dump(post, readme_path)
+
 
 def write_model(
+    model_path: str,
     output_path: str,
     model: PreTrainedModel,
     tokenizer_config: Dict | None = None,
@@ -57,10 +125,9 @@ def write_model(
     tokenizer = tokenizer_class_from_name(tokenizer_config["tokenizer_class"])(**tokenizer_config)
     tokenizer.save_pretrained(output_path)
 
-
-def copy_readme(root: str, output_path: str):
-    readme = f"README.{output_path}.md" if f"README.{output_path}.md" in os.listdir(root) else "README.md"
-    shutil.copy2(os.path.join(root, readme), os.path.join(output_path, "README.md"))
+    readme = f"README.{output_path}.md" if f"README.{output_path}.md" in os.listdir(model_path) else "README.md"
+    shutil.copy2(os.path.join(model_path, readme), os.path.join(output_path, "README.md"))
+    update_readme(os.path.join(output_path, "README.md"), output_path)
 
 
 def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "model"):
@@ -81,13 +148,12 @@ def save_checkpoint(
     model: PreTrainedModel,
     tokenizer_config: Dict | None = None,
 ):
-    root, output_path = convert_config.root, convert_config.output_path
+    model_path, output_path = convert_config.root, convert_config.output_path
     if os.path.exists(output_path):
         warn(f"Output directory: {output_path} already exists. Deleting it.")
         shutil.rmtree(output_path)
     os.makedirs(output_path)
-    write_model(output_path, model, tokenizer_config)
-    copy_readme(root, output_path)
+    write_model(model_path, output_path, model, tokenizer_config)
     push_to_hub(convert_config, output_path)
 
 

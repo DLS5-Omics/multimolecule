@@ -101,6 +101,8 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 This model is fine-tuned on the number of 2A3 and DMS Illumina sequencer read counts from Ribonanza.
 
 You can use this model directly to predict the experimental dropout of an RNA sequence:

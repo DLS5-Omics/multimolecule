@@ -3,26 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - mRNA
 license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "Homo sapiens PRNP mRNA for prion"
-    text: "AGC<mask>CAUUAUGGCGAACCUUGGCUGCUG"
-    output:
-      - label: "AAA"
-        score: 0.05433480441570282
-      - label: "AUC"
-        score: 0.04437034949660301
-      - label: "AAU"
-        score: 0.03882088139653206
-      - label: "ACA"
-        score: 0.037016965448856354
-      - label: "ACC"
-        score: 0.03563101962208748
+mask_token: <mask>
 ---
 
 # mRNA-FM
@@ -111,51 +98,11 @@ pip install multimolecule
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/mrnafm")
->>> unmasker("agc<mask>cauuauggcgaaccuuggcugcug")
-[{'score': 0.05433480441570282,
-  'token': 6,
-  'token_str': 'AAA',
-  'sequence': 'AGC AAA CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.04437034949660301,
-  'token': 22,
-  'token_str': 'AUC',
-  'sequence': 'AGC AUC CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.03882088139653206,
-  'token': 9,
-  'token_str': 'AAU',
-  'sequence': 'AGC AAU CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.037016965448856354,
-  'token': 11,
-  'token_str': 'ACA',
-  'sequence': 'AGC ACA CAU UAU GGC GAA CCU UGG CUG CUG'},
- {'score': 0.03563101962208748,
-  'token': 12,
-  'token_str': 'ACC',
-  'sequence': 'AGC ACC CAU UAU GGC GAA CCU UGG CUG CUG'}]
-```
-
-#### RNA Secondary Structure Prediction
-
-You can use this model to predict the secondary structure of an RNA sequence:
-
-```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
-
->>> predictor = pipeline("rna-secondary-structure", model="multimolecule/mrnafm")
->>> predictor("agcagucauuauggcgaa")
-{'sequence': 'AGC AGU CAU UAU GGC GAA',
- 'secondary_structure': '((([(]',
- 'contact_map': [[0.5119704604148865, 0.5045265555381775, 0.494497150182724, 0.4931190013885498, 0.4915284812450409, 0.5020371675491333],
-  [0.5045265555381775, 0.5034880042076111, 0.5013145804405212, 0.49390116333961487, 0.5006486773490906, 0.49380120635032654],
-  [0.494497150182724, 0.5013145804405212, 0.5010323524475098, 0.5058367252349854, 0.5021511912345886, 0.49284809827804565],
-  [0.4931190013885498, 0.49390116333961487, 0.5058367252349854, 0.4988723397254944, 0.5004245042800903, 0.5055262446403503],
-  [0.4915284812450409, 0.5006486773490906, 0.5021511912345886, 0.5004245042800903, 0.4953134059906006, 0.5076138377189636],
-  [0.5020371675491333, 0.49380120635032654, 0.49284809827804565, 0.5055262446403503, 0.5076138377189636, 0.4958533048629761]]}
+predictor = pipeline("fill-mask", model="multimolecule/mrnafm")
+output = predictor("agc<mask>cauuauggcgaaccuuggcugcug")
 ```
 
 ### Downstream Use

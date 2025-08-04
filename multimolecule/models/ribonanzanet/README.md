@@ -100,6 +100,8 @@ pip install multimolecule
 
 ### Direct Use
 
+#### RNA Chemical Mapping Prediction
+
 You can use this model directly to predict the chemical mapping of an RNA sequence:
 
 ```python

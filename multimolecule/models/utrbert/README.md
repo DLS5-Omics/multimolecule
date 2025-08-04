@@ -3,39 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - 3' UTR
 license: agpl-3.0
 datasets:
   - multimolecule/gencode
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask><mask><mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "CUC"
-        score: 0.40745577216148376
-      - label: "CAC"
-        score: 0.40001827478408813
-      - label: "CCC"
-        score: 0.14566268026828766
-      - label: "CGC"
-        score: 0.04422207176685333
-      - label: "CAU"
-        score: 0.0008025980787351727
-  - example_title: "microRNA-21"
-    text: "UAG<mask><mask><mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "GAU"
-        score: 0.34961459040641785
-      - label: "GUU"
-        score: 0.29494708776474
-      - label: "GGU"
-        score: 0.17784686386585236
-      - label: "GCU"
-        score: 0.15021035075187683
-      - label: "AUU"
-        score: 0.0039286804385483265
+mask_token: <mask>
 ---
 
 # 3UTRBERT
@@ -126,37 +100,19 @@ pip install multimolecule
 
 ### Direct Use
 
-**Note**: Default transformers pipeline does not support K-mer tokenization.
+#### Masked Language Modeling
+
+> [!WARNING]
+> Default transformers pipeline does not support K-mer tokenization.
 
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/utrbert-3mer")
->>> unmasker("gguc<mask><mask><mask>cugguuagaccagaucugagccu")[1]
-
-[{'score': 0.40745577216148376,
-  'token': 47,
-  'token_str': 'CUC',
-  'sequence': '<cls> GGU GUC <mask> CUC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
- {'score': 0.40001827478408813,
-  'token': 32,
-  'token_str': 'CAC',
-  'sequence': '<cls> GGU GUC <mask> CAC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
- {'score': 0.14566268026828766,
-  'token': 37,
-  'token_str': 'CCC',
-  'sequence': '<cls> GGU GUC <mask> CCC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
- {'score': 0.04422207176685333,
-  'token': 42,
-  'token_str': 'CGC',
-  'sequence': '<cls> GGU GUC <mask> CGC <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'},
- {'score': 0.0008025980787351727,
-  'token': 34,
-  'token_str': 'CAU',
-  'sequence': '<cls> GGU GUC <mask> CAU <mask> CUG UGG GGU GUU UUA UAG AGA GAC ACC CCA CAG AGA GAU AUC UCU CUG UGA GAG AGC GCC CCU <eos>'}]
+predictor = pipeline("fill-mask", model="multimolecule/utrbert-3mer")
+output = predictor("gguc<mask><mask><mask>cugguuagaccagaucugagccu")[1]
 ```
 
 ### Downstream Use

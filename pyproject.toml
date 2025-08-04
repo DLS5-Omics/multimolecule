@@ -48,6 +48,7 @@ dependencies = [
   "chanfig>=0.0.105",
   "danling[torch]>=0.3.11",
   "datasets",
+  "pandas",
   "strenum; python_version<'3.11'",
   "torch",
   "transformers",

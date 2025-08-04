@@ -3,39 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - ncRNA
 license: agpl-3.0
 datasets:
   - multimolecule/ucsc-genome-browser
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "U"
-        score: 0.340412974357605
-      - label: "Y"
-        score: 0.13882005214691162
-      - label: "C"
-        score: 0.056610625237226486
-      - label: "H"
-        score: 0.05455885827541351
-      - label: "W"
-        score: 0.05356108024716377
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "A"
-        score: 0.09153486788272858
-      - label: "W"
-        score: 0.08465325832366943
-      - label: "U"
-        score: 0.07828908413648605
-      - label: "H"
-        score: 0.06861720234155655
-      - label: "M"
-        score: 0.0642390251159668
+mask_token: <mask>
 ---
 
 # SpliceBERT
@@ -121,34 +95,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/splicebert")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.340412974357605,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.13882005214691162,
-  'token': 12,
-  'token_str': 'Y',
-  'sequence': 'G G U C Y C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.056610625237226486,
-  'token': 7,
-  'token_str': 'C',
-  'sequence': 'G G U C C C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.05455885827541351,
-  'token': 19,
-  'token_str': 'H',
-  'sequence': 'G G U C H C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.05356108024716377,
-  'token': 14,
-  'token_str': 'W',
-  'sequence': 'G G U C W C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+predictor = pipeline("fill-mask", model="multimolecule/splicebert")
+output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
 ```
 
 ### Downstream Use

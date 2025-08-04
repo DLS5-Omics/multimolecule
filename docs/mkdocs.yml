@@ -51,6 +51,7 @@ nav:
           - RNAErnie: models/rnaernie.md
           - RNA-FM: models/rnafm.md
           - RNA-MSM: models/rnamsm.md
+          - SpliceAI: models/spliceai.md
           - SpliceBERT: models/splicebert.md
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md

@@ -3,6 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
+  - ncRNA
 license: agpl-3.0
 datasets:
   - multimolecule/gencode
@@ -51,6 +52,8 @@ pip install multimolecule
 ```
 
 ### Direct Use
+
+#### RNA Splicing Site Prediction
 
 You can use this model directly to predict the splicing sites of an RNA sequence:
 

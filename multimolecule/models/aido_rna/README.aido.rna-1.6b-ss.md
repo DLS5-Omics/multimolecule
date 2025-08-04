@@ -103,16 +103,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### RNA Secondary Structure Prediction
+
 You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> predictor = pipeline("rna-secondary-structure", model="multimolecule/aido.rna-ss")
->>> predictor("GGUCUCUGGUUAGACCAGAUCUGAGCCU")
-{'sequence': 'GGUCUCUGGUUAGACCAGAUCUGAGCCU',
- 'secondary_structure': '.(((((([(.....).)...].))))).'}
+predictor = pipeline("rna-secondary-structure", model="multimolecule/aido.rna-ss")
+output = predictor("GGUCUCUGGUUAGACCAGAUCUGAGCCU")
 ```
 
 ### Downstream Use

@@ -3,40 +3,14 @@ language: rna
 tags:
   - Biology
   - RNA
+  - mRNA
 license: agpl-3.0
 datasets:
   - multimolecule/ena
 library_name: multimolecule
 base_model: multimolecule/aido.rna-650m
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "A"
-        score: 0.15881139039993286
-      - label: "R"
-        score: 0.15044376254081726
-      - label: "G"
-        score: 0.14251668751239777
-      - label: "V"
-        score: 0.1298484206199646
-      - label: "M"
-        score: 0.1239432692527771
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "A"
-        score: 0.1757601946592331
-      - label: "M"
-        score: 0.1494324952363968
-      - label: "R"
-        score: 0.1302214413881302
-      - label: "V"
-        score: 0.1291552037000656
-      - label: "C"
-        score: 0.12704865634441376
+mask_token: <mask>
 ---
 
 # AIDO.RNA
@@ -131,34 +105,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/aido.rna-650m")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.15881139039993286,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.15044376254081726,
-  'token': 11,
-  'token_str': 'R',
-  'sequence': 'G G U C R C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.14251668751239777,
-  'token': 8,
-  'token_str': 'G',
-  'sequence': 'G G U C G C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.1298484206199646,
-  'token': 20,
-  'token_str': 'V',
-  'sequence': 'G G U C V C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.1239432692527771,
-  'token': 16,
-  'token_str': 'M',
-  'sequence': 'G G U C M C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+predictor = pipeline("fill-mask", model="multimolecule/aido.rna-650m-cds")
+output = predictor("agc<mask>cattatggcgaaccttggctgctg")
 ```
 
 ### Downstream Use

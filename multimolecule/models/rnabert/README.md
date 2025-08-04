@@ -3,39 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - ncRNA
 license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "-"
-        score: 0.03852083534002304
-      - label: "N"
-        score: 0.03851056098937988
-      - label: "I"
-        score: 0.03849703073501587
-      - label: "<unk>"
-        score: 0.03848597779870033
-      - label: "<null>"
-        score: 0.038484156131744385
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "N"
-        score: 0.03855736553668976
-      - label: "I"
-        score: 0.03851182386279106
-      - label: "<unk>"
-        score: 0.038497816771268845
-      - label: "<null>"
-        score: 0.03848177567124367
-      - label: "-"
-        score: 0.038468137383461
+mask_token: <mask>
 ---
 
 # RNABERT
@@ -91,34 +65,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/rnabert")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.03852083534002304,
-  'token': 24,
-  'token_str': '-',
-  'sequence': 'G G U C - C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.03851056098937988,
-  'token': 10,
-  'token_str': 'N',
-  'sequence': 'G G U C N C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.03849703073501587,
-  'token': 25,
-  'token_str': 'I',
-  'sequence': 'G G U C I C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.03848597779870033,
-  'token': 3,
-  'token_str': '<unk>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.038484156131744385,
-  'token': 5,
-  'token_str': '<null>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+predictor = pipeline("fill-mask", model="multimolecule/rnabert")
+output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
 ```
 
 ### Downstream Use
