@@ -3,39 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - ncRNA
 license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "."
-        score: 0.2752501964569092
-      - label: "*"
-        score: 0.22108642756938934
-      - label: "I"
-        score: 0.18201279640197754
-      - label: "U"
-        score: 0.10875876247882843
-      - label: "A"
-        score: 0.08898332715034485
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "."
-        score: 0.2275155633687973
-      - label: "*"
-        score: 0.18255384266376495
-      - label: "I"
-        score: 0.14644214510917664
-      - label: "A"
-        score: 0.1262909322977066
-      - label: "U"
-        score: 0.12270607799291611
+mask_token: <mask>
 ---
 
 # RNA-FM
@@ -124,31 +98,11 @@ pip install multimolecule
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/rnafm")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.2752501964569092,
-  'token': 21,
-  'token_str': '.',
-  'sequence': 'G G U C. C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.22108642756938934,
-  'token': 23,
-  'token_str': '*',
-  'sequence': 'G G U C * C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.18201279640197754,
-  'token': 25,
-  'token_str': 'I',
-  'sequence': 'G G U C I C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.10875876247882843,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.08898332715034485,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+predictor = pipeline("fill-mask", model="multimolecule/rnafm")
+output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
 ```
 
 ### Downstream Use

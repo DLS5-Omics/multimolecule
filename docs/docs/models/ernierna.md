@@ -6,6 +6,6 @@ date: 2024-05-04
 
 # ERNIE-RNA
 
---8<-- "multimolecule/models/ernierna/README.md:42:"
+--8<-- "multimolecule/models/ernierna/README.md:16:"
 
 ::: multimolecule.models.ernierna

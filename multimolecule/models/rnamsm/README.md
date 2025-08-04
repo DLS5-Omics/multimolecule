@@ -3,39 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - ncRNA
 license: agpl-3.0
 datasets:
   - multimolecule/rfam
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "U"
-        score: 0.25111356377601624
-      - label: "W"
-        score: 0.1200353354215622
-      - label: "K"
-        score: 0.10132723301649094
-      - label: "D"
-        score: 0.08383019268512726
-      - label: "A"
-        score: 0.05737845227122307
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "U"
-        score: 0.36363866925239563
-      - label: "K"
-        score: 0.2319803684949875
-      - label: "G"
-        score: 0.14799022674560547
-      - label: "D"
-        score: 0.062339700758457184
-      - label: "W"
-        score: 0.04046041890978813
+mask_token: <mask>
 ---
 
 # RNA-MSM
@@ -103,31 +77,11 @@ pip install multimolecule
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/rnamsm")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.25111356377601624,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.1200353354215622,
-  'token': 14,
-  'token_str': 'W',
-  'sequence': 'G G U C W C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.10132723301649094,
-  'token': 15,
-  'token_str': 'K',
-  'sequence': 'G G U C K C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.08383019268512726,
-  'token': 18,
-  'token_str': 'D',
-  'sequence': 'G G U C D C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.05737845227122307,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+predictor = pipeline("fill-mask", model="multimolecule/rnamsm")
+output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
 ```
 
 #### RNA Secondary Structure Prediction
@@ -135,19 +89,11 @@ You can use this model directly with a pipeline for masked language modeling:
 You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> predictor = pipeline("rna-secondary-structure", model="multimolecule/rnamsm")
->>> predictor("ggucuc")
-{'sequence': 'G G U C U C',
- 'secondary_structure': '......',
- 'contact_map': [[0.00261497194878757, 0.0022659720852971077, 0.0036333396565169096, 0.003973186947405338, 0.0034661777317523956, 0.0029443716630339622],
-  [0.0022659730166196823, 0.002837304025888443, 0.003722205525264144, 0.0034382310695946217, 0.003498978214338422, 0.0030326189007610083],
-  [0.0036333396565169096, 0.003722205525264144, 0.0026848132256418467, 0.002787571167573333, 0.0028246103320270777, 0.0030541368760168552],
-  [0.003973186947405338, 0.0034382310695946217, 0.002787571167573333, 0.0028833637479692698, 0.0027405587024986744, 0.0029016658663749695],
-  [0.0034661777317523956, 0.003498978214338422, 0.0028246103320270777, 0.0027405587024986744, 0.002930478658527136, 0.003173925681039691],
-  [0.0029443716630339622, 0.0030326189007610083, 0.0030541368760168552, 0.0029016658663749695, 0.003173925681039691, 0.003476995974779129]]}
+predictor = pipeline("rna-secondary-structure", model="multimolecule/rnamsm")
+output = predictor("ggucucucugguuagaccagaucugagccu")
 ```
 
 ### Downstream Use

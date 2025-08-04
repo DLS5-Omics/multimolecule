@@ -101,6 +101,8 @@ pip install multimolecule
 
 ### Direct Use
 
+#### RNA Degradation Prediction
+
 This model is fine-tuned for RNA degradation prediction.
 
 You can use this model directly to predict the degradation of an RNA sequence:

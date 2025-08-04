@@ -101,18 +101,18 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 This model is fine-tuned for RNA secondary structure prediction from PDB.
 
 You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> predictor = pipeline("rna-secondary-structure", model="multimolecule/ribonanzanet-ss")
->>> predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
-{'sequence': 'GGUCUCUCUGGUUAGACCAGAUCUGAGCCU',
- 'secondary_structure': '((.((((((((.....)))))...))))).'}
+predictor = pipeline("rna-secondary-structure", model="multimolecule/ribonanzanet-ss")
+output = predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
 ```
 
 ### Downstream Use

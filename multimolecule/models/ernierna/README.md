@@ -3,39 +3,13 @@ language: rna
 tags:
   - Biology
   - RNA
+  - ncRNA
 license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "A"
-        score: 0.32839149236679077
-      - label: "U"
-        score: 0.3044775426387787
-      - label: "C"
-        score: 0.09914574027061462
-      - label: "-"
-        score: 0.09502048045396805
-      - label: "."
-        score: 0.06993662565946579
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "A"
-        score: 0.28607121109962463
-      - label: "U"
-        score: 0.24161304533481598
-      - label: "G"
-        score: 0.12279549986124039
-      - label: "C"
-        score: 0.10425350069999695
-      - label: "-"
-        score: 0.09150994569063187
+mask_token: <mask>
 ---
 
 # ERNIE-RNA
@@ -87,34 +61,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### Masked Language Modeling
+
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/ernierna")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.32839149236679077,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.3044775426387787,
-  'token': 9,
-  'token_str': 'U',
-  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.09914574027061462,
-  'token': 7,
-  'token_str': 'C',
-  'sequence': 'G G U C C C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.09502048045396805,
-  'token': 24,
-  'token_str': '-',
-  'sequence': 'G G U C - C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.06993662565946579,
-  'token': 21,
-  'token_str': '.',
-  'sequence': 'G G U C. C U C U G G U U A G A C C A G A U C U G A G C C U'}]
+predictor = pipeline("fill-mask", model="multimolecule/ernierna")
+output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
 ```
 
 ### Downstream Use

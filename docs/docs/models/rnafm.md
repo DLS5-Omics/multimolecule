@@ -6,6 +6,6 @@ date: 2024-05-04
 
 # RNA-FM
 
---8<-- "multimolecule/models/rnafm/README.md:42:"
+--8<-- "multimolecule/models/rnafm/README.md:16:"
 
 ::: multimolecule.models.rnafm

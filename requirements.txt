@@ -1,5 +1,5 @@
 biopython
-pandas
 psycopg2
-torch
+python-frontmatter
 torchvision
+tqdm

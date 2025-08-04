@@ -9,34 +9,7 @@ datasets:
 library_name: multimolecule
 base_model: multimolecule/ernierna
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "G"
-        score: 0.2066272348165512
-      - label: "U"
-        score: 0.1811930239200592
-      - label: "A"
-        score: 0.17954225838184357
-      - label: "-"
-        score: 0.12186982482671738
-      - label: "."
-        score: 0.10200861096382141
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "U"
-        score: 0.23881851136684418
-      - label: "A"
-        score: 0.2219424843788147
-      - label: "G"
-        score: 0.133585587143898
-      - label: "C"
-        score: 0.11793075501918793
-      - label: "-"
-        score: 0.10667591542005539
+mask_token: <mask>
 ---
 
 # ERNIE-RNA
@@ -88,16 +61,16 @@ pip install multimolecule
 
 ### Direct Use
 
+#### RNA Secondary Structure Prediction
+
 You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
->>> predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
-{'sequence': 'GGUCUCUCUGGUUAGACCAGAUCUGAGCCU',
- 'secondary_structure': '.(.((((((((.....)))))...))).).'}
+predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
+output = predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
 ```
 
 ### Downstream Use

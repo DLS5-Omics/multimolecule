@@ -9,34 +9,7 @@ datasets:
 library_name: multimolecule
 base_model: multimolecule/rnafm
 pipeline_tag: fill-mask
-mask_token: "<mask>"
-widget:
-  - example_title: "HIV-1"
-    text: "GGUC<mask>CUCUGGUUAGACCAGAUCUGAGCCU"
-    output:
-      - label: "."
-        score: 0.2907504141330719
-      - label: "*"
-        score: 0.2359575480222702
-      - label: "I"
-        score: 0.19035066664218903
-      - label: "A"
-        score: 0.09356562793254852
-      - label: "U"
-        score: 0.08782266825437546
-  - example_title: "microRNA-21"
-    text: "UAGC<mask>UAUCAGACUGAUGUUG"
-    output:
-      - label: "."
-        score: 0.24210385978221893
-      - label: "*"
-        score: 0.19574487209320068
-      - label: "I"
-        score: 0.15285496413707733
-      - label: "A"
-        score: 0.12451102584600449
-      - label: "U"
-        score: 0.11860787868499756
+mask_token: <mask>
 ---
 
 # RNA-FM
@@ -125,13 +98,11 @@ pip install multimolecule
 You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
 
->>> predictor = pipeline("rna-secondary-structure", model="multimolecule/rnafm-ss")
->>> predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
-{'sequence': 'GGUCUCUCUGGUUAGACCAGAUCUGAGCCU',
- 'secondary_structure': '.(.(((((((((...))))))...))))..'}
+predictor = pipeline("rna-secondary-structure", model="multimolecule/rnafm-ss")
+output = predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
 ```
 
 ### Downstream Use
