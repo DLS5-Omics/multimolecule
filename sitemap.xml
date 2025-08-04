@@ -1,703 +1,689 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>https://multimolecule.danling.org/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/license-faq.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/license-faq/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license-faq.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license-faq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license-faq/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license-faq/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/license.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/license/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/about/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/about/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/about/license-faq.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/about/license-faq/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license-faq.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license-faq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license-faq/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license-faq/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/about/license.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/about/license/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/about/privacy.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/about/privacy/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/privacy.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/privacy.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/privacy/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/privacy/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/data/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/data/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/data/dataset.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/data/dataset/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/dataset.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/dataset/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/data/functional.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/data/functional/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/functional.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/functional.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/functional/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/functional/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/archiveii.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/archiveii/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/archiveii.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/archiveii.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/archiveii/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/archiveii/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/bprna_1m.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/bprna_1m/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_1m.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_1m.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_1m/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_1m/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/bprna_new.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/bprna_new/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_new.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_new.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_new/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_new/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/bprna_spot.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/bprna_spot/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_spot.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_spot.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_spot/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_spot/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/casp_rna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/eternabench_cm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/casp_rna.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/casp_rna.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_cm/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_cm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/eternabench_cm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/eternabench_external/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_cm.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_cm.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_external/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_external/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/eternabench_external.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/eternabench_switch/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_external.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_external.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_switch/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_switch/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/eternabench_switch.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/gencode/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_switch.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_switch.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/gencode/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/gencode/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/gencode.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/rfam/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/gencode.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/gencode.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rfam/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rfam/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/rfam.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/rivas/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rfam.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rfam.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rivas/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rivas/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/rivas.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/rnacentral/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rivas.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rivas.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/rnacentral.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/rnastralign/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnastralign/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnastralign/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/rnastralign.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/datasets/ryos/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnastralign.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnastralign.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/ryos/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/ryos/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/datasets/ryos.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/ryos.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/ryos.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/aido_rna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/aido_rna/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/aido_rna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/aido_rna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/calm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/aido_rna.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/aido_rna.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/calm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/configuration_utils/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/configuration_utils/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/configuration_utils/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/configuration_utils.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/ernierna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/configuration_utils.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/configuration_utils.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/ernierna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/modeling_outputs/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/modeling_outputs/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/modeling_outputs/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/modeling_outputs.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/ribonanzanet/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/modeling_outputs.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/modeling_outputs.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ribonanzanet/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ribonanzanet/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/ribonanzanet.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/rinalmo/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ribonanzanet.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ribonanzanet.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rinalmo/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rinalmo/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/rinalmo.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/rnabert/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rinalmo.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rinalmo.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnabert/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnabert/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/rnabert.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/rnaernie/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnabert.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnabert.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnaernie/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnaernie/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/rnaernie.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/rnafm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnaernie.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnaernie.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnafm/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnafm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/rnafm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/rnamsm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnafm.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnafm.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnamsm/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/rnamsm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/splicebert/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnamsm.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/splicebert/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/splicebert/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/splicebert.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/utrbert/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/splicebert.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/splicebert.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrbert/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrbert/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/utrbert.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/models/utrlm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrbert.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrbert.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrlm/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrlm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/utrlm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/modules/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrlm.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrlm.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/modules/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/modules/embeddings/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/embeddings/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/embeddings/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/modules/embeddings.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/modules/heads/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/embeddings.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/embeddings.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/heads/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/heads/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/modules/heads.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/pipelines/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/heads.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/heads.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/pipelines/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/pipelines/rna_secondary_structure/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/rna_secondary_structure/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/rna_secondary_structure/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/pipelines/rna_secondary_structure.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/tokenisers/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/rna_secondary_structure.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/rna_secondary_structure.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/tokenisers/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/tokenisers/dna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/index.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/index.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dna/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/tokenisers/dna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/tokenisers/dot_bracket/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dna.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dna.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dot_bracket/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dot_bracket/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/tokenisers/dot_bracket.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/tokenisers/protein/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dot_bracket.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dot_bracket.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/protein/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/protein/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/tokenisers/protein.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/tokenisers/rna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/protein.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/protein.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/tokenisers/rna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna.html"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/license-faq/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license-faq/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license-faq/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/license-faq.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/license/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license-faq.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license-faq.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/license.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/about/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/license.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/license.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/about/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/about/license-faq/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license-faq/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license-faq/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/about/license-faq.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/about/license/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license-faq.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license-faq.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/about/license.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/about/privacy/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/license.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/license.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/privacy/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/privacy/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/about/privacy.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/data/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/about/privacy.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/about/privacy.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/data/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/data/dataset/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/dataset/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/data/dataset.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/data/functional/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/dataset.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/dataset.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/functional/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/functional/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/data/functional.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/data/functional.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/data/functional.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/archiveii/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/archiveii/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/archiveii/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/archiveii.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/bprna_1m/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/archiveii.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/archiveii.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_1m/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_1m/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/bprna_1m.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/bprna_new/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_1m.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_1m.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_new/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_new/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/bprna_new.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/bprna_spot/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_new.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_new.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_spot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_spot/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/bprna_spot.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/eternabench_cm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/bprna_spot.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/bprna_spot.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_cm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_cm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/casp_rna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/eternabench_external/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/casp_rna.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/casp_rna.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_external/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_external/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/eternabench_cm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/eternabench_switch/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_cm.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_cm.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_switch/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_switch/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/eternabench_external.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/gencode/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_external.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_external.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/gencode/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/gencode/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/eternabench_switch.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/rfam/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/eternabench_switch.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/eternabench_switch.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rfam/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rfam/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/gencode.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/rivas/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/gencode.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/gencode.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rivas/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rivas/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/rfam.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/rnacentral/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rfam.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rfam.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/rivas.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/rnastralign/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rivas.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rivas.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnastralign/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnastralign/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/rnacentral.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/datasets/ryos/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnacentral.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnacentral.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/ryos/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/ryos/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/rnastralign.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/rnastralign.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/rnastralign.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/datasets/ryos.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/aido_rna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/datasets/ryos.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/datasets/ryos.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/aido_rna/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/aido_rna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/calm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/aido_rna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/configuration_utils/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/aido_rna.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/aido_rna.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/configuration_utils/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/configuration_utils/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/calm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/ernierna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/calm.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/calm.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/configuration_utils.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/modeling_outputs/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/configuration_utils.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/configuration_utils.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/modeling_outputs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/modeling_outputs/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/ernierna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/ribonanzanet/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ernierna.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ernierna.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ribonanzanet/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ribonanzanet/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/modeling_outputs.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/rinalmo/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/modeling_outputs.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/modeling_outputs.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rinalmo/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rinalmo/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/ribonanzanet.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/rnabert/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/ribonanzanet.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/ribonanzanet.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnabert/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnabert/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/rinalmo.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/rnaernie/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rinalmo.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rinalmo.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnaernie/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnaernie/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/rnabert.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/rnafm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnabert.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnabert.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnafm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnafm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/rnaernie.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/rnamsm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnaernie.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnaernie.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnamsm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/rnafm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/splicebert/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnafm.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnafm.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/splicebert/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/splicebert/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/rnamsm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/utrbert/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnamsm.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrbert/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrbert/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/splicebert.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/models/utrlm/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/splicebert.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/splicebert.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrlm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrlm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/utrbert.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/modules/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrbert.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrbert.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/utrlm.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/modules/embeddings/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/utrlm.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/utrlm.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/embeddings/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/embeddings/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/modules/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/modules/heads/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/heads/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/heads/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/modules/embeddings.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/pipelines/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/embeddings.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/embeddings.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/modules/heads.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/pipelines/rna_secondary_structure/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/modules/heads.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/modules/heads.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/rna_secondary_structure/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/rna_secondary_structure/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/pipelines/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/pipelines/rna_secondary_structure.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/dna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/pipelines/rna_secondary_structure.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/pipelines/rna_secondary_structure.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dna/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dna/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/tokenisers/index.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/dot_bracket/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/index.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/index.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dot_bracket/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dot_bracket/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/tokenisers/dna.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/protein/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dna.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dna.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/protein/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/protein/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/tokenisers/dot_bracket.html</loc>
-        <lastmod>2025-08-02</lastmod>
+        <loc>https://multimolecule.danling.org/zh/tokenisers/rna/</loc>
+        <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/dot_bracket.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/dot_bracket.html"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/tokenisers/protein.html</loc>
-        <lastmod>2025-08-02</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/protein.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/protein.html"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/tokenisers/rna.html</loc>
-        <lastmod>2025-08-02</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna.html"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/tokenisers/rna/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/tokenisers/rna/"/>
     </url>
 </urlset>
