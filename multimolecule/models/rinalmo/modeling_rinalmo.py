@@ -22,6 +22,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from contextlib import suppress
+from dataclasses import dataclass
 from typing import Tuple
 from warnings import warn
 
@@ -29,16 +32,21 @@ import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
+from transformers.activations import ACT2FN
 from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
     BaseModelOutputWithPoolingAndCrossAttentions,
     MaskedLMOutput,
+    ModelOutput,
 )
 from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
 
 from multimolecule.modules import (
+    BasePredictionHead,
     ContactPredictionHead,
+    Criterion,
+    HeadOutput,
     MaskedLMHead,
     RotaryEmbedding,
     SequencePredictionHead,
@@ -46,7 +54,10 @@ from multimolecule.modules import (
 )
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
-from .configuration_rinalmo import RiNALMoConfig
+from .configuration_rinalmo import RiNALMoConfig, RiNALMoSecondaryStructureHeadConfig
+
+with suppress(AttributeError):
+    ACT2FN["elu"] = nn.ELU
 
 
 class RiNALMoPreTrainedModel(PreTrainedModel):
@@ -550,6 +561,78 @@ class RiNALMoForPreTraining(RiNALMoForMaskedLM):
     pass
 
 
+class RiNALMoForSecondaryStructurePrediction(RiNALMoForMaskedLM):
+    """
+    Examples:
+        >>> import torch
+        >>> from multimolecule import RiNALMoConfig, RiNALMoForSecondaryStructurePrediction, RnaTokenizer
+        >>> config = RiNALMoConfig()
+        >>> model = RiNALMoForSecondaryStructurePrediction(config)
+        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> input = tokenizer("ACGUN", return_tensors="pt")
+        >>> output = model(**input)
+        >>> output["logits"].shape
+        torch.Size([1, 5, 5, 1])
+    """
+
+    def __init__(self, config: RiNALMoConfig):
+        super().__init__(config)
+        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
+        self.ss_head = RiNALMoSecondaryStructurePredictionHead(config)
+        self.require_attentions = self.ss_head.require_attentions
+
+        # Initialize weights and apply final processing
+        self.post_init()
+
+    def forward(  # type: ignore[override]
+        self,
+        input_ids: Tensor | NestedTensor,
+        attention_mask: Tensor | None = None,
+        position_ids: Tensor | None = None,
+        head_mask: Tensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+        encoder_hidden_states: Tensor | None = None,
+        encoder_attention_mask: Tensor | None = None,
+        labels: Tensor | None = None,
+        output_attentions: bool | None = None,
+        output_hidden_states: bool | None = None,
+        return_dict: bool | None = None,
+        **kwargs,
+    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+        if self.require_attentions:
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            output_attentions = True
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        outputs = self.rinalmo(
+            input_ids,
+            attention_mask=attention_mask,
+            position_ids=position_ids,
+            head_mask=head_mask,
+            inputs_embeds=inputs_embeds,
+            encoder_hidden_states=encoder_hidden_states,
+            encoder_attention_mask=encoder_attention_mask,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+            return_dict=return_dict,
+            **kwargs,
+        )
+
+        output = self.ss_head(outputs, attention_mask, input_ids, labels=labels)
+        logits, loss = output.logits, output.loss
+
+        if not return_dict:
+            output = (logits,) + outputs[2:]
+            return ((loss,) + output) if loss is not None else output
+
+        return ContactPredictorOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
+
+
 class RiNALMoEmbeddings(nn.Module):
     """
     Same as BertEmbeddings with a tiny tweak for positional embeddings indexing.
@@ -1038,6 +1121,245 @@ class RiNALMoPooler(nn.Module):
         pooled_output = self.dense(first_token_tensor)
         pooled_output = self.activation(pooled_output)
         return pooled_output
+
+
+class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
+
+    config: RiNALMoSecondaryStructureHeadConfig
+    output_name: str = "last_hidden_state"
+
+    def __init__(self, config: RiNALMoConfig, head_config: RiNALMoSecondaryStructureHeadConfig | None = None):
+        if head_config is None:
+            head_config = (
+                RiNALMoSecondaryStructureHeadConfig(config.head, num_labels=1)
+                if config.head is not None
+                else RiNALMoSecondaryStructureHeadConfig()
+            )
+        super().__init__(config, head_config)
+        self.projection = nn.Linear(config.hidden_size * 2, self.config.num_channels)
+        self.convnet = RiNALMoConvNet2d(self.config)
+        self.prediction = nn.Conv2d(self.config.num_channels, 1, kernel_size=self.config.kernel_size, padding="same")
+        self.criterion = Criterion(self.config)
+
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
+        self,
+        outputs: BaseModelOutputWithPastAndCrossAttentions | Mapping[str, Tensor] | Tuple[Tensor, ...],
+        attention_mask: Tensor | None = None,
+        input_ids: NestedTensor | Tensor | None = None,
+        labels: Tensor | None = None,
+    ) -> HeadOutput:
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[0]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
+        if attention_mask is None:
+            attention_mask = self.get_attention_mask(input_ids)
+        output, _, input_ids = self.remove_special_tokens(output, attention_mask, input_ids)
+
+        contact_map = self.pairwise_concat(output)
+        contact_map = self.projection(contact_map)
+        contact_map = self.convnet(contact_map.permute(0, 3, 1, 2))
+        contact_map = self.prediction(contact_map)
+        triangular = contact_map.triu(diagonal=1)
+        contact_map = triangular + triangular.transpose(-1, -2)
+        contact_map = contact_map.squeeze(1)
+
+        minima = torch.finfo(contact_map.dtype).min
+        contact_map.masked_fill_(torch.eye(contact_map.shape[-1], device=contact_map.device, dtype=torch.bool), minima)
+        contact_map.masked_fill_(self._get_canonical_pair_constraint_matrix(input_ids), minima)
+        contact_map.masked_fill_(self._get_sharp_loop_constraint_matrix(input_ids), minima)
+        contact_map = contact_map.unsqueeze(-1)
+
+        if labels is not None:
+            return HeadOutput(contact_map, self.criterion(contact_map, labels))
+        return HeadOutput(contact_map)
+
+    @staticmethod
+    def pairwise_concat(hidden_states: Tensor) -> Tensor:
+        """
+        Creates pairwise concatenations of hidden states for all sequence positions.
+
+        Args:
+            hidden_states: Tensor of shape (batch_size, seq_length, hidden_size)
+
+        Returns:
+            Tensor of shape (batch_size, seq_length, seq_length, hidden_size * 2)
+            where output[b, i, j] has interleaved features from positions i and j
+        """
+        batch_size, seq_length, hidden_size = hidden_states.shape
+
+        left = hidden_states.unsqueeze(2).expand(batch_size, seq_length, seq_length, hidden_size)
+        right = hidden_states.unsqueeze(1).expand(batch_size, seq_length, seq_length, hidden_size)
+
+        return torch.concat((left, right), dim=-1)
+
+    def postprocess(self, outputs: RiNALMoForSecondaryStructurePredictorOutput) -> Tensor:
+        return outputs["logits_ss"]
+
+    @staticmethod
+    def _get_canonical_pair_constraint_matrix(input_ids: Tensor) -> Tensor:
+        """
+        Computes a constraint matrix for RNA base pairing.
+
+        This matrix indicates which positions can potentially form base pairs based on
+        Watson-Crick and wobble base pairing rules (A-U, C-G, G-U).
+
+        Args:
+            input_ids: Token IDs where 6=A, 7=C, 8=G, 9=U
+
+        Returns:
+            A binary matrix where 1 indicates positions that can form valid base pairs
+        """
+        dtype = torch.get_default_dtype()
+        base_a = (input_ids == 6).to(dtype)
+        base_c = (input_ids == 7).to(dtype)
+        base_g = (input_ids == 8).to(dtype)
+        base_u = (input_ids == 9).to(dtype)
+        batch_size, seq_length = input_ids.shape
+
+        au = torch.matmul(base_a.view(batch_size, seq_length, 1), base_u.view(batch_size, 1, seq_length))
+        cg = torch.matmul(base_c.view(batch_size, seq_length, 1), base_g.view(batch_size, 1, seq_length))
+        gu = torch.matmul(base_g.view(batch_size, seq_length, 1), base_u.view(batch_size, 1, seq_length))
+
+        return (au + au.transpose(1, 2) + cg + cg.transpose(1, 2) + gu + gu.transpose(1, 2)).bool()
+
+    @staticmethod
+    def _get_sharp_loop_constraint_matrix(input_ids: Tensor, threshold: int = 4) -> Tensor:
+        """
+        Computes a constraint matrix to prevent sharp loops in RNA secondary structure.
+
+        This matrix indicates which positions should NOT form base pairs because they are
+        too close to each other (within 4 positions), which would create unstable sharp loops.
+
+        Args:
+            input_ids: Token IDs tensor of shape (batch_size, seq_length)
+
+        Returns:
+            A binary matrix where 1 indicates positions that should NOT pair (sharp loop constraint)
+        """
+        batch_size, seq_length = input_ids.shape
+        device = input_ids.device
+
+        indices = torch.arange(seq_length, device=device)
+        distance_matrix = torch.abs(indices.unsqueeze(1) - indices.unsqueeze(0))
+
+        mask = distance_matrix < threshold
+        mask = mask.unsqueeze(0).expand(batch_size, -1, -1)
+
+        return mask
+
+
+class RiNALMoConvNet2d(nn.Sequential):
+    def __init__(self, config: RiNALMoSecondaryStructureHeadConfig):
+        super().__init__(
+            *[
+                RiNALMoConvLayer2d(
+                    config.num_channels, config.kernel_size, activation=config.activation, bias=config.bias
+                )
+                for _ in range(config.num_layers)
+            ]
+        )
+
+
+class RiNALMoConvLayer2d(nn.Module):
+    def __init__(self, num_channels: int, kernel_size: int = 3, activation: str = "relu", bias: bool = False):
+        super().__init__()
+        self.conv1 = nn.Conv2d(
+            in_channels=num_channels,
+            out_channels=num_channels,
+            kernel_size=1,
+            bias=bias,
+        )
+        self.norm1 = nn.InstanceNorm2d(num_channels)
+        self.activation1 = ACT2FN[activation]
+        self.conv2 = nn.Conv2d(
+            in_channels=num_channels,
+            out_channels=num_channels,
+            kernel_size=kernel_size,
+            bias=bias,
+            padding="same",
+        )
+        self.norm2 = nn.InstanceNorm2d(num_channels)
+        self.activation2 = ACT2FN[activation]
+        self.conv3 = nn.Conv2d(
+            in_channels=num_channels,
+            out_channels=num_channels,
+            kernel_size=1,
+            bias=bias,
+        )
+        self.norm3 = nn.InstanceNorm2d(num_channels)
+        self.activation3 = ACT2FN[activation]
+
+    def forward(self, hidden_state: Tensor) -> Tensor:
+        residual = hidden_state
+        hidden_state = self.conv1(hidden_state)
+        hidden_state = self.norm1(hidden_state)
+        hidden_state = self.activation1(hidden_state)
+        hidden_state = self.conv2(hidden_state)
+        hidden_state = self.norm2(hidden_state)
+        hidden_state = self.activation2(hidden_state)
+        hidden_state = self.conv3(hidden_state)
+        hidden_state = self.norm3(hidden_state)
+        hidden_state = self.activation3(hidden_state)
+        return hidden_state + residual
+
+
+class RiNALMoConvNet1d(nn.Sequential):
+    def __init__(self, config: RiNALMoSecondaryStructureHeadConfig):
+        super().__init__(
+            *[
+                RiNALMoConvLayer1d(
+                    config.num_channels, config.kernel_size, activation=config.activation, bias=config.bias
+                )
+                for _ in range(config.num_layers)
+            ]
+        )
+
+
+class RiNALMoConvLayer1d(nn.Module):
+    def __init__(self, num_channels: int, kernel_size: int = 3, activation: str = "relu", bias: bool = False):
+        super().__init__()
+        self.conv1 = nn.Conv1d(
+            in_channels=num_channels,
+            out_channels=num_channels,
+            kernel_size=1,
+            bias=bias,
+        )
+        self.norm1 = nn.InstanceNorm1d(num_channels)
+        self.activation1 = ACT2FN[activation]
+        self.conv2 = nn.Conv1d(
+            in_channels=num_channels,
+            out_channels=num_channels,
+            kernel_size=kernel_size,
+            bias=bias,
+            padding="same",
+        )
+        self.norm2 = nn.InstanceNorm1d(num_channels)
+        self.activation2 = ACT2FN[activation]
+
+    def forward(self, hidden_state: Tensor) -> Tensor:
+        residual = hidden_state
+        hidden_state = self.conv1(hidden_state)
+        hidden_state = self.norm1(hidden_state)
+        hidden_state = self.activation1(hidden_state)
+        hidden_state = self.conv2(hidden_state)
+        hidden_state = self.norm2(hidden_state)
+        hidden_state = self.activation2(hidden_state)
+        return hidden_state + residual
+
+
+@dataclass
+class RiNALMoForSecondaryStructurePredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits_lm: torch.FloatTensor = None
+    loss_lm: torch.FloatTensor = None
+    logits_ss: torch.FloatTensor = None
+    loss_ss: torch.FloatTensor = None
+    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+    attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 def create_position_ids_from_inputs_embeds(inputs_embeds: torch.FloatTensor, padding_idx: int = 0) -> torch.LongTensor:
