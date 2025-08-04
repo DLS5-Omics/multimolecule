@@ -697,9 +697,6 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
             attention_biases=outputs.attention_biases,
         )
 
-    def postprocess(self, outputs: ErnieRnaForSecondaryStructurePredictorOutput) -> Tensor:
-        return outputs["logits_ss"]
-
 
 class ErnieRnaEmbeddings(nn.Module):
     """
@@ -1255,7 +1252,7 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
         output = (output + output.transpose(2, 3)).squeeze(1)
 
-        constraint = self._get_base_pairing_constraint_matrix(input_ids)
+        constraint = self._get_canonical_pair_constraint_matrix(input_ids)
         output = self.soft_sign(output - threshold) * output
         adjacency = output.sigmoid() * self.soft_sign(output - threshold).detach()
 
@@ -1291,7 +1288,7 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         return HeadOutput(output)
 
     @staticmethod
-    def _get_base_pairing_constraint_matrix(input_ids: Tensor) -> Tensor:
+    def _get_canonical_pair_constraint_matrix(input_ids: Tensor) -> Tensor:
         """
         Computes a constraint matrix for RNA base pairing.
 
@@ -1311,12 +1308,10 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         base_u = (input_ids == 9).to(dtype)
         batch_size, seq_length = input_ids.shape
 
-        # Compute possible pairings
         au = torch.matmul(base_a.view(batch_size, seq_length, 1), base_u.view(batch_size, 1, seq_length))
         cg = torch.matmul(base_c.view(batch_size, seq_length, 1), base_g.view(batch_size, 1, seq_length))
         gu = torch.matmul(base_g.view(batch_size, seq_length, 1), base_u.view(batch_size, 1, seq_length))
 
-        # Ensure symmetry in the constraint matrix
         return au + au.transpose(1, 2) + cg + cg.transpose(1, 2) + gu + gu.transpose(1, 2)
 
     @staticmethod
