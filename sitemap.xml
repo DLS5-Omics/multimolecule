@@ -253,6 +253,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm/"/>
     </url>
     <url>
+        <loc>https://multimolecule.danling.org/models/spliceai/</loc>
+        <lastmod>2025-08-04</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/spliceai/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/spliceai/"/>
+    </url>
+    <url>
         <loc>https://multimolecule.danling.org/models/splicebert/</loc>
         <lastmod>2025-08-04</lastmod>
         <changefreq>daily</changefreq>
@@ -594,6 +601,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnamsm/"/>
+    </url>
+    <url>
+        <loc>https://multimolecule.danling.org/zh/models/spliceai/</loc>
+        <lastmod>2025-08-04</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/spliceai/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/spliceai/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/splicebert/</loc>
