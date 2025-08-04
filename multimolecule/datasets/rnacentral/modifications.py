@@ -28,7 +28,7 @@ import torch
 
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import save_dataset
-from multimolecule.datasets.rnacentral.utils import execute
+from multimolecule.datasets.rnacentral.utils import query
 
 torch.manual_seed(1016)
 
@@ -62,7 +62,7 @@ ON
 
 
 def convert_dataset(config: ConvertConfig):
-    df = execute(command)
+    df = query(command)
     df = df.groupby("urs").agg(lambda x: list(x) if x.name.startswith("modification") else x.iloc[0])
     df.sort_values(["urs", "rna_id"], inplace=True)
     df.reset_index(inplace=True)
