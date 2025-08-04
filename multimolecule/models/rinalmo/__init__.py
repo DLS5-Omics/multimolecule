@@ -33,12 +33,18 @@ from transformers import (
 
 from multimolecule.tokenisers import RnaTokenizer
 
-from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
+from ..modeling_auto import (
+    AutoModelForContactPrediction,
+    AutoModelForRnaSecondaryStructurePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_rinalmo import RiNALMoConfig
 from .modeling_rinalmo import (
     RiNALMoForContactPrediction,
     RiNALMoForMaskedLM,
     RiNALMoForPreTraining,
+    RiNALMoForSecondaryStructurePrediction,
     RiNALMoForSequencePrediction,
     RiNALMoForTokenPrediction,
     RiNALMoModel,
@@ -55,6 +61,7 @@ __all__ = [
     "RiNALMoForTokenPrediction",
     "RiNALMoForMaskedLM",
     "RiNALMoForPreTraining",
+    "RiNALMoForSecondaryStructurePrediction",
 ]
 
 AutoConfig.register("rinalmo", RiNALMoConfig)
@@ -67,4 +74,5 @@ AutoModelForTokenPrediction.register(RiNALMoConfig, RiNALMoForTokenPrediction)
 AutoModelForTokenClassification.register(RiNALMoConfig, RiNALMoForTokenPrediction)
 AutoModelForMaskedLM.register(RiNALMoConfig, RiNALMoForMaskedLM)
 AutoModelForPreTraining.register(RiNALMoConfig, RiNALMoForPreTraining)
+AutoModelForRnaSecondaryStructurePrediction.register(RiNALMoConfig, RiNALMoForSecondaryStructurePrediction)
 AutoTokenizer.register(RiNALMoConfig, RnaTokenizer)
