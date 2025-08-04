@@ -28,7 +28,7 @@ import torch
 
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import save_dataset
-from multimolecule.datasets.rnacentral.utils import execute
+from multimolecule.datasets.rnacentral.utils import query
 
 torch.manual_seed(1016)
 
@@ -69,7 +69,7 @@ UNIQUE_COLUMNS = {"modification_id", "modification", "position"}
 
 
 def convert_dataset(config: ConvertConfig):
-    df = execute(command)
+    df = query(command)
     df.sort_values(["upi", "modification_id"], inplace=True)
     df = df.groupby("upi").agg(lambda x: list(x) if x.name in UNIQUE_COLUMNS else x.iloc[0])
     df.reset_index(inplace=True)
