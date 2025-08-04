@@ -22,7 +22,9 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from typing import Optional
+
+from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
 
 
 class RiNALMoConfig(PreTrainedConfig):
@@ -107,7 +109,7 @@ class RiNALMoConfig(PreTrainedConfig):
         attention_dropout: float = 0.1,
         max_position_embeddings: int = 1024,
         initializer_range: float = 0.02,
-        layer_norm_eps: float = 1e-12,
+        layer_norm_eps: float = 1e-5,
         position_embedding_type: str = "rotary",
         is_decoder: bool = False,
         use_cache: bool = True,
@@ -138,3 +140,59 @@ class RiNALMoConfig(PreTrainedConfig):
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.emb_layer_norm_before = emb_layer_norm_before
+
+
+class RiNALMoSecondaryStructureHeadConfig(BaseHeadConfig):
+    r"""
+    Configuration class for a prediction head.
+
+    Args:
+        num_labels:
+            Number of labels to use in the last layer added to the model, typically for a classification task.
+
+            Head should look for [`Config.num_labels`][multimolecule.PreTrainedConfig] if is `None`.
+        problem_type:
+            Problem type for `XxxForYyyPrediction` models. Can be one of `"binary"`, `"regression"`,
+            `"multiclass"` or `"multilabel"`.
+
+            Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
+        dropout:
+            The dropout ratio for the hidden states.
+    """
+
+    num_labels: int = 1
+    problem_type: Optional[str] = None
+    dropout: float = 0.0
+    kernel_size: int = 3
+    num_layers: int = 2
+    num_channels: int = 64
+    bias: bool = False
+    activation: str = "relu"
+
+
+class RiNALMoMeanRibosomeLoadingHeadConfig(BaseHeadConfig):
+    r"""
+    Configuration class for a prediction head.
+
+    Args:
+        num_labels:
+            Number of labels to use in the last layer added to the model, typically for a classification task.
+
+            Head should look for [`Config.num_labels`][multimolecule.PreTrainedConfig] if is `None`.
+        problem_type:
+            Problem type for `XxxForYyyPrediction` models. Can be one of `"binary"`, `"regression"`,
+            `"multiclass"` or `"multilabel"`.
+
+            Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
+        dropout:
+            The dropout ratio for the hidden states.
+    """
+
+    num_labels: int = 1
+    problem_type: Optional[str] = None
+    dropout: float = 0.0
+    kernel_size: int = 3
+    num_layers: int = 2
+    num_channels: int = 64
+    bias: bool = False
+    activation: str = "elu"

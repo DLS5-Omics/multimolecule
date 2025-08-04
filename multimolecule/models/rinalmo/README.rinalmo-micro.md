@@ -36,9 +36,9 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 
 ### Variants
 
+- **[multimolecule/rinalmo-micro](https://huggingface.co/multimolecule/rinalmo-micro)**: The RiNALMo model with 30 million parameters.
 - **[multimolecule/rinalmo-giga](https://huggingface.co/multimolecule/rinalmo-giga)**: The RiNALMo model with 650 million parameters.
 - **[multimolecule/rinalmo-mega](https://huggingface.co/multimolecule/rinalmo-mega)**: The RiNALMo model with 150 million parameters.
-- **[multimolecule/rinalmo-micro](https://huggingface.co/multimolecule/rinalmo-micro)**: The RiNALMo model with 30 million parameters.
 
 ### Model Specification
 
@@ -58,15 +58,24 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 </thead>
 <tbody>
   <tr>
+    <td>RiNALMo-Micro</td>
+    <td>12</td>
+    <td>480</td>
+    <td rowspan="3">20</td>
+    <td>1920</td>
+    <td>33.48</td>
+    <td>8.88</td>
+    <td>4.44</td>
+    <td rowspan="3">1022</td>
+  </tr>
+  <tr>
     <td>RiNALMo-Giga</td>
     <td>33</td>
     <td>1280</td>
-    <td rowspan="3">20</td>
     <td>5120</td>
     <td>650.88</td>
     <td>168.92</td>
     <td>84.43</td>
-    <td rowspan="3">1022</td>
   </tr>
   <tr>
     <td>RiNALMo-Mega</td>
@@ -76,15 +85,6 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
     <td>148.04</td>
     <td>39.03</td>
     <td>19.5</td>
-  </tr>
-  <tr>
-    <td>RiNALMo-Micro</td>
-    <td>12</td>
-    <td>480</td>
-    <td>1920</td>
-    <td>33.48</td>
-    <td>8.88</td>
-    <td>4.44</td>
   </tr>
 </tbody>
 </table>
@@ -113,39 +113,31 @@ pip install multimolecule
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
-<<<<<<< HEAD
-import multimolecule  # you must import multimolecule to register models
-from transformers import pipeline
-
-predictor = pipeline("fill-mask", model="multimolecule/rinalmo")
-output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
-=======
 >>> import multimolecule  # you must import multimolecule to register models
 >>> from transformers import pipeline
 
->>> unmasker = pipeline("fill-mask", model="multimolecule/rinalmo-giga")
+>>> unmasker = pipeline("fill-mask", model="multimolecule/rinalmo-micro")
 >>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.9774785041809082,
+[{'score': 0.3387778699398041,
   'token': 6,
   'token_str': 'A',
   'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.004996326752007008,
+ {'score': 0.25456807017326355,
+  'token': 8,
+  'token_str': 'G',
+  'sequence': 'G G U C G C U C U G G U U A G A C C A G A U C U G A G C C U'},
+ {'score': 0.10691815614700317,
   'token': 22,
   'token_str': 'X',
   'sequence': 'G G U C X C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.0035297079011797905,
-  'token': 3,
-  'token_str': '<unk>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.002614670665934682,
+ {'score': 0.0734482854604721,
   'token': 10,
   'token_str': 'N',
   'sequence': 'G G U C N C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.00249761575832963,
-  'token': 5,
-  'token_str': '<null>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'}]
->>>>>>> 6fbb6942... update RiNALMo models
+ {'score': 0.058429498225450516,
+  'token': 9,
+  'token_str': 'U',
+  'sequence': 'G G U C U C U C U G G U U A G A C C A G A U C U G A G C C U'}]
 ```
 
 ### Downstream Use
@@ -158,8 +150,8 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, RiNALMoModel
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoModel.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-micro")
+model = RiNALMoModel.from_pretrained("multimolecule/rinalmo-micro")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -179,8 +171,8 @@ import torch
 from multimolecule import RnaTokenizer, RiNALMoForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoForSequencePrediction.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-micro")
+model = RiNALMoForSequencePrediction.from_pretrained("multimolecule/rinalmo-micro")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -201,8 +193,8 @@ import torch
 from multimolecule import RnaTokenizer, RiNALMoForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoForTokenPrediction.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-micro")
+model = RiNALMoForTokenPrediction.from_pretrained("multimolecule/rinalmo-micro")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -223,8 +215,8 @@ import torch
 from multimolecule import RnaTokenizer, RiNALMoForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoForContactPrediction.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-micro")
+model = RiNALMoForContactPrediction.from_pretrained("multimolecule/rinalmo-micro")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -273,6 +265,8 @@ The model was trained on 7 NVIDIA A100 GPUs with 80GiB memories.
 
 ## Citation
 
+**BibTeX**:
+
 ```bibtex
 @ARTICLE{Penic2025-qf,
   title     = "{RiNALMo}: general-purpose {RNA} language models can generalize
@@ -309,23 +303,6 @@ The model was trained on 7 NVIDIA A100 GPUs with 80GiB memories.
 }
 ```
 
-> [!NOTE]
-> The artifacts distributed in this repository are part of the MultiMolecule project.
-> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
-
-```bibtex
-@software{chen_2024_12638419,
-  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
-  title     = {MultiMolecule},
-  doi       = {10.5281/zenodo.12638419},
-  publisher = {Zenodo},
-  url       = {https://doi.org/10.5281/zenodo.12638419},
-  year      = 2024,
-  month     = may,
-  day       = 4
-}
-```
-
 ## Contact
 
 Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
@@ -334,9 +311,7 @@ Please contact the authors of the [RiNALMo paper](https://doi.org/10.48550/arXiv
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
-
-For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
+This model is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
 
 ```spdx
 SPDX-License-Identifier: AGPL-3.0-or-later
