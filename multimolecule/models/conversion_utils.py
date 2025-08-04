@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import os
 import shutil
-from typing import Dict
+from typing import Dict, List
 from warnings import warn
 
 import frontmatter as fm
@@ -32,6 +32,7 @@ from chanfig import Config
 from tqdm import tqdm
 from transformers import PreTrainedModel, pipeline
 from transformers.models.auto.tokenization_auto import tokenizer_class_from_name
+from transformers.pipelines.base import Pipeline
 
 from multimolecule.tokenisers.rna.utils import get_tokenizer_config
 
@@ -74,18 +75,23 @@ reference_sequences = {
 reference_sequences["mRNA"] = {k: v.replace("T", "U") for k, v in reference_sequences["cDNA"].items()}
 
 
-def generate_widget_data(model: PreTrainedModel, tokenizer, sequence: str) -> Dict:
-    fill_mask = pipeline("fill-mask", model=model, tokenizer=tokenizer)
-    predictions = fill_mask(sequence)
-    widget_data = {"text": sequence, "output": predictions}
-    return widget_data
+def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
+    if ppl.task == "fill-mask":
+        sequence = sequence[:10] + sequence[10:].replace("U", "<mask>", 1)
+        return [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
+    if ppl.task == "rna-secondary-structure":
+        return {"text": ppl(sequence)["secondary_structure"]}
+    raise RecursionError(f"Pipeline {ppl.task} is not supported")
 
 
 def update_readme(readme_path: str, model: str) -> None:
     post = fm.load(readme_path)
-    if "pipeline_tag" not in post:
+    pipeline_tag = post.get("pipeline_tag")
+    if pipeline_tag is None:
         return
-    ppl = pipeline(post["pipeline_tag"], model=model)
+    if pipeline_tag == "other":
+        pipeline_tag = post["pipeline"]
+    ppl = pipeline(pipeline_tag, model=model)
     ref_sequences = {}
     for tag in post["tags"][::-1]:
         if tag in reference_sequences:
@@ -94,8 +100,7 @@ def update_readme(readme_path: str, model: str) -> None:
         raise ValueError(f"Sequence type '{post['pipeline_tag']}' not found in reference sequences.")
     post["widget"] = []
     for name, sequence in tqdm(ref_sequences.items(), total=len(ref_sequences), desc="Generating widget data"):
-        sequence = sequence[:10] + sequence[10:].replace("U", "<mask>", 1)
-        output = [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
+        output = run_pipeline(ppl, sequence)
         post["widget"].append(
             {
                 "example_title": name,

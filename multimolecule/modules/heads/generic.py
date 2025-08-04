@@ -134,7 +134,7 @@ class BasePredictionHead(nn.Module):
         return input_ids.ne(self.pad_token_id).int()
 
     def remove_special_tokens(
-        self, output: Tensor, attention_mask: Tensor, input_ids: Tensor | None = None
+        self, output: Tensor, attention_mask: Tensor | None = None, input_ids: Tensor | None = None
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""
         Remove special tokens and clean up model outputs using attention masks.
@@ -178,7 +178,8 @@ class BasePredictionHead(nn.Module):
         """
         if self.bos_token_id is not None:
             output = output[..., 1:, :]
-            attention_mask = attention_mask[..., 1:]
+            if attention_mask is not None:
+                attention_mask = attention_mask[..., 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
         if self.eos_token_id is not None:
@@ -189,18 +190,21 @@ class BasePredictionHead(nn.Module):
                 if isinstance(eos_mask, NestedTensor):
                     eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]
-            else:
+            elif attention_mask is not None:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=output.device) != last_valid_indices.unsqueeze(1)
+            else:
+                raise ValueError("Unable to remove EOS tokens because input_ids and attention_mask are both None")
             output = (output * eos_mask.unsqueeze(-1))[..., :-1, :]
-            attention_mask = (attention_mask * eos_mask)[..., :-1]
+            if attention_mask is not None:
+                attention_mask = (attention_mask * eos_mask)[..., :-1]
         if attention_mask is not None:
             output = output * attention_mask.unsqueeze(-1)
         return output, attention_mask, input_ids
 
     def remove_special_tokens_2d(
-        self, output: Tensor, attention_mask: Tensor, input_ids: Tensor | None = None
+        self, output: Tensor, attention_mask: Tensor | None = None, input_ids: Tensor | None = None
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""
         Remove special tokens from 2D outputs like contact maps or pairwise interaction matrices.
@@ -241,7 +245,8 @@ class BasePredictionHead(nn.Module):
         """
         if self.bos_token_id is not None:
             output = output[..., 1:, 1:, :]
-            attention_mask = attention_mask[..., 1:]
+            if attention_mask is not None:
+                attention_mask = attention_mask[..., 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
         if self.eos_token_id is not None:
@@ -252,15 +257,18 @@ class BasePredictionHead(nn.Module):
                 if isinstance(eos_mask, NestedTensor):
                     eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]
-            else:
+            elif attention_mask is not None:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1
                 seq_length = attention_mask.size(-1)
                 eos_mask = torch.arange(seq_length, device=output.device) != last_valid_indices.unsqueeze(1)
-            attention_mask = (attention_mask * eos_mask)[..., :-1]
+            else:
+                raise ValueError("Unable to remove EOS tokens because input_ids and attention_mask are both None")
+            if attention_mask is not None:
+                attention_mask = (attention_mask * eos_mask)[..., :-1]
             eos_mask = eos_mask.unsqueeze(1) * eos_mask.unsqueeze(2)
             output = (output * eos_mask.unsqueeze(-1))[..., :-1, :-1, :]
-        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
         if attention_mask is not None:
+            attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
             output = output * attention_mask.unsqueeze(-1)
         return output, attention_mask, input_ids
 

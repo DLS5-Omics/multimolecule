@@ -1191,7 +1191,7 @@ class AidoRnaSecondaryStructurePredictionHead(BasePredictionHead):
         left = hidden_states.unsqueeze(2).expand(batch_size, seq_length, seq_length, hidden_size)
         right = hidden_states.unsqueeze(1).expand(batch_size, seq_length, seq_length, hidden_size)
 
-        stacked = torch.stack([left, right], dim=-1)
+        stacked = torch.stack((left, right), dim=-1)
         result = stacked.view(batch_size, seq_length, seq_length, hidden_size * 2)
 
         I, J = torch.tril_indices(seq_length, seq_length, -1, device=hidden_states.device)

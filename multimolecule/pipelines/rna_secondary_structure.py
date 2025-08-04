@@ -98,7 +98,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
 
         input_ids = model_outputs["input_ids"]
         if hasattr(self.model, "postprocess"):
-            outputs = self.model.postprocess(model_outputs).squeeze(-1)
+            outputs = self.model.postprocess(outputs=model_outputs, input_ids=input_ids).squeeze(-1)
             postprocessed = True
         else:
             if "logits_ss" in model_outputs:
