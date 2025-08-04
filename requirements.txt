@@ -1,5 +1,7 @@
 biopython
+pandas
 psycopg2
-python-frontmatter
+pymysql
+sqlalchemy
+torch
 torchvision
-tqdm

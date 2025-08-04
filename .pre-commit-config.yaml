@@ -36,6 +36,7 @@ repos:
         pass_filenames: false
         args: ["multimolecule"]
         additional_dependencies:
+          - types-PyMySQL
           - types-PyYaml
           - types-requests
   - repo: https://github.com/codespell-project/codespell

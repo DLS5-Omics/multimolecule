@@ -29,6 +29,7 @@ import pandas as pd
 
 from ..database_utils import connect_database
 
+# Get the config path for this dataset
 _CONFIG_PATH = str(Path(__file__).parent / "database.yaml")
 
 

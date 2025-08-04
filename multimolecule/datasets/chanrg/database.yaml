@@ -1,0 +1,7 @@
+dialect: mysql
+driver: pymysql
+host: mysql-rfam-public.ebi.ac.uk
+database: Rfam
+user: rfamro
+password: ""
+port: 4497
