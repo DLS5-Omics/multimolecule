@@ -108,6 +108,16 @@ from .rnafm import (
     RnaFmForTokenPrediction,
     RnaFmModel,
 )
+from .rnamoe import (
+    RnaMoeConfig,
+    RnaMoeForContactPrediction,
+    RnaMoeForMaskedLM,
+    RnaMoeForPreTraining,
+    RnaMoeForSecondaryStructurePrediction,
+    RnaMoeForSequencePrediction,
+    RnaMoeForTokenPrediction,
+    RnaMoeModel,
+)
 from .rnamsm import (
     RnaMsmConfig,
     RnaMsmForContactPrediction,
@@ -223,6 +233,14 @@ __all__ = [
     "RnaFmForMaskedLM",
     "RnaFmForPreTraining",
     "RnaFmForSecondaryStructurePrediction",
+    "RnaMoeConfig",
+    "RnaMoeModel",
+    "RnaMoeForContactPrediction",
+    "RnaMoeForSequencePrediction",
+    "RnaMoeForTokenPrediction",
+    "RnaMoeForMaskedLM",
+    "RnaMoeForPreTraining",
+    "RnaMoeForSecondaryStructurePrediction",
     "RnaMsmConfig",
     "RnaMsmModel",
     "RnaMsmForContactPrediction",
