@@ -1,5 +1,7 @@
 biopython
 pandas
 psycopg2
+pymysql
+sqlalchemy
 torch
 torchvision
