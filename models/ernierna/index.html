@@ -4489,10 +4489,7 @@ relevant if <code>config.is_decoder=True</code>.</p>
 <span class="normal"><a href="#__codelineno-0-695">695</a></span>
 <span class="normal"><a href="#__codelineno-0-696">696</a></span>
 <span class="normal"><a href="#__codelineno-0-697">697</a></span>
-<span class="normal"><a href="#__codelineno-0-698">698</a></span>
-<span class="normal"><a href="#__codelineno-0-699">699</a></span>
-<span class="normal"><a href="#__codelineno-0-700">700</a></span>
-<span class="normal"><a href="#__codelineno-0-701">701</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-620"><a id="__codelineno-0-620" name="__codelineno-0-620"></a><span class="k">class</span><span class="w"> </span><span class="nc">ErnieRnaForSecondaryStructurePrediction</span><span class="p">(</span><span class="n">ErnieRnaForPreTraining</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-698">698</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-620"><a id="__codelineno-0-620" name="__codelineno-0-620"></a><span class="k">class</span><span class="w"> </span><span class="nc">ErnieRnaForSecondaryStructurePrediction</span><span class="p">(</span><span class="n">ErnieRnaForPreTraining</span><span class="p">):</span>
 </span><span id="__span-0-621"><a id="__codelineno-0-621" name="__codelineno-0-621"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="__span-0-622"><a id="__codelineno-0-622" name="__codelineno-0-622"></a><span class="sd">    Examples:</span>
 </span><span id="__span-0-623"><a id="__codelineno-0-623" name="__codelineno-0-623"></a><span class="sd">        &gt;&gt;&gt; import torch</span>
@@ -4571,9 +4568,6 @@ relevant if <code>config.is_decoder=True</code>.</p>
 </span><span id="__span-0-696"><a id="__codelineno-0-696" name="__codelineno-0-696"></a>            <span class="n">attentions</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">attentions</span><span class="p">,</span>
 </span><span id="__span-0-697"><a id="__codelineno-0-697" name="__codelineno-0-697"></a>            <span class="n">attention_biases</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">attention_biases</span><span class="p">,</span>
 </span><span id="__span-0-698"><a id="__codelineno-0-698" name="__codelineno-0-698"></a>        <span class="p">)</span>
-</span><span id="__span-0-699"><a id="__codelineno-0-699" name="__codelineno-0-699"></a>
-</span><span id="__span-0-700"><a id="__codelineno-0-700" name="__codelineno-0-700"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">ErnieRnaForSecondaryStructurePredictorOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-</span><span id="__span-0-701"><a id="__codelineno-0-701" name="__codelineno-0-701"></a>        <span class="k">return</span> <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;logits_ss&quot;</span><span class="p">]</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
