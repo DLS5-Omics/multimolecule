@@ -53,7 +53,12 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
-from .modeling_auto import AutoModelForContactPrediction, AutoModelForSequencePrediction, AutoModelForTokenPrediction
+from .modeling_auto import (
+    AutoModelForContactPrediction,
+    AutoModelForRnaSecondaryStructurePrediction,
+    AutoModelForSequencePrediction,
+    AutoModelForTokenPrediction,
+)
 from .ribonanzanet import (
     RibonanzaNetConfig,
     RibonanzaNetForContactPrediction,
@@ -154,6 +159,7 @@ __all__ = [
     "AutoModelForContactPrediction",
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
+    "AutoModelForRnaSecondaryStructurePrediction",
     "AidoRnaConfig",
     "AidoRnaModel",
     "AidoRnaForContactPrediction",
