@@ -29,10 +29,27 @@ import torch
 from multimolecule.models import RnaErnieConfig as Config
 from multimolecule.models import RnaErnieForPreTraining
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting RnaErnie checkpoint at {convert_config.checkpoint_path}")
+    vocab_list = get_alphabet().vocabulary
+    config = Config()
+    config.architectures = ["RnaErnieModel"]
+    config.vocab_size = len(vocab_list)
+
+    model = RnaErnieForPreTraining(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -78,61 +95,47 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-def convert_checkpoint(convert_config):
-    vocab_list = get_alphabet().vocabulary
-    original_vocab_list = [
-        "<pad>",
-        "<unk>",
-        "<cls>",
-        "<eos>",
-        "<mask>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<null>",
-        "A",
-        "U",
-        "C",
-        "G",
-    ]
-    config = Config()
-    config.architectures = ["RnaErnieModel"]
-    config.vocab_size = len(vocab_list)
-
-    model = RnaErnieForPreTraining(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model)
+original_vocab_list = [
+    "<pad>",
+    "<unk>",
+    "<cls>",
+    "<eos>",
+    "<mask>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<null>",
+    "A",
+    "U",
+    "C",
+    "G",
+]
 
 
 class ConvertConfig(ConvertConfig_):

@@ -28,7 +28,9 @@ from typing import Dict, List
 from warnings import warn
 
 import frontmatter as fm
+import torch
 from chanfig import Config
+from torch import nn
 from tqdm import tqdm
 from transformers import PreTrainedModel, pipeline
 from transformers.models.auto.tokenization_auto import tokenizer_class_from_name
@@ -75,13 +77,35 @@ reference_sequences = {
 reference_sequences["mRNA"] = {k: v.replace("T", "U") for k, v in reference_sequences["cDNA"].items()}
 
 
-def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
-    if ppl.task == "fill-mask":
-        sequence = sequence[:10] + sequence[10:].replace("U", "<mask>", 1)
-        return [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
-    if ppl.task == "rna-secondary-structure":
-        return {"text": ppl(sequence)["secondary_structure"]}
-    raise RecursionError(f"Pipeline {ppl.task} is not supported")
+def load_checkpoint(model: nn.Module, state_dict: Dict[str, torch.Tensor]) -> None:
+    model.load_state_dict(state_dict, assign=True)
+    for name, state in model.state_dict().items():
+        if not torch.equal(state, state_dict[name]):
+            raise ValueError("State dicts do not match after conversion.")
+
+
+def write_model(
+    model_path: str,
+    output_path: str,
+    model: PreTrainedModel,
+    tokenizer_config: Dict | None = None,
+):
+    model.save_pretrained(output_path, safe_serialization=True)
+    model.save_pretrained(output_path, safe_serialization=False)
+    if tokenizer_config is None:
+        tokenizer_config = get_tokenizer_config()
+        if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
+            position_embedding_type = getattr(model.config, "position_embedding_type", None)
+            if position_embedding_type == "absolute":
+                tokenizer_config["model_max_length"] = model.config.max_position_embeddings
+            else:
+                tokenizer_config["model_max_length"] = None
+    tokenizer = tokenizer_class_from_name(tokenizer_config["tokenizer_class"])(**tokenizer_config)
+    tokenizer.save_pretrained(output_path)
+
+    readme = f"README.{output_path}.md" if f"README.{output_path}.md" in os.listdir(model_path) else "README.md"
+    shutil.copy2(os.path.join(model_path, readme), os.path.join(output_path, "README.md"))
+    update_readme(os.path.join(output_path, "README.md"), output_path)
 
 
 def update_readme(readme_path: str, model: str) -> None:
@@ -111,28 +135,13 @@ def update_readme(readme_path: str, model: str) -> None:
     fm.dump(post, readme_path)
 
 
-def write_model(
-    model_path: str,
-    output_path: str,
-    model: PreTrainedModel,
-    tokenizer_config: Dict | None = None,
-):
-    model.save_pretrained(output_path, safe_serialization=True)
-    model.save_pretrained(output_path, safe_serialization=False)
-    if tokenizer_config is None:
-        tokenizer_config = get_tokenizer_config()
-        if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
-            position_embedding_type = getattr(model.config, "position_embedding_type", None)
-            if position_embedding_type == "absolute":
-                tokenizer_config["model_max_length"] = model.config.max_position_embeddings
-            else:
-                tokenizer_config["model_max_length"] = None
-    tokenizer = tokenizer_class_from_name(tokenizer_config["tokenizer_class"])(**tokenizer_config)
-    tokenizer.save_pretrained(output_path)
-
-    readme = f"README.{output_path}.md" if f"README.{output_path}.md" in os.listdir(model_path) else "README.md"
-    shutil.copy2(os.path.join(model_path, readme), os.path.join(output_path, "README.md"))
-    update_readme(os.path.join(output_path, "README.md"), output_path)
+def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
+    if ppl.task == "fill-mask":
+        sequence = sequence[:10] + sequence[10:].replace("U", "<mask>", 1)
+        return [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
+    if ppl.task == "rna-secondary-structure":
+        return {"text": ppl(sequence)["secondary_structure"]}
+    raise RecursionError(f"Pipeline {ppl.task} is not supported")
 
 
 def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "model"):

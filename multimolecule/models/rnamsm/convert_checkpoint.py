@@ -31,7 +31,7 @@ import torch
 from multimolecule.models import RnaMsmConfig as Config
 from multimolecule.models import RnaMsmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
@@ -42,6 +42,23 @@ __main__.MSATransformerModelConfig = chanfig.FlatDict()
 __main__.DataConfig = chanfig.FlatDict()
 __main__.TrainConfig = chanfig.FlatDict()
 __main__.LoggingConfig = chanfig.FlatDict()
+
+
+def convert_checkpoint(convert_config):
+    vocab_list = get_alphabet().vocabulary
+    config = Config(num_labels=1)
+    config.architectures = ["RnaMsmModel"]
+    config.vocab_size = len(vocab_list)
+
+    model = Model(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
+    ckpt = ckpt.get("state_dict", ckpt)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    load_checkpoint(model, state_dict)
+
+    save_checkpoint(convert_config, model)
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -74,22 +91,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-def convert_checkpoint(convert_config):
-    vocab_list = get_alphabet().vocabulary
-    original_vocab_list = ["<cls>", "<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "X", "N", "-", "<mask>"]
-    config = Config(num_labels=1)
-    config.architectures = ["RnaMsmModel"]
-    config.vocab_size = len(vocab_list)
-
-    model = Model(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
-    ckpt = ckpt.get("state_dict", ckpt)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model)
+original_vocab_list = ["<cls>", "<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "X", "N", "-", "<mask>"]
 
 
 class ConvertConfig(ConvertConfig_):

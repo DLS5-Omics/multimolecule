@@ -30,10 +30,30 @@ import torch
 from multimolecule.models import UtrLmConfig as Config
 from multimolecule.models import UtrLmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting UtrLM checkpoint at {convert_config.checkpoint_path}")
+    config = chanfig.FlatDict(num_labels=1)
+    config.mfe_head = {"num_labels": 1}
+    if "4.1" in convert_config.checkpoint_path:
+        config.structure_head = {"num_labels": 3}
+    vocab_list = get_alphabet().vocabulary
+    config = Config.from_dict(config)
+    config.vocab_size = len(vocab_list)
+
+    model = Model(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -83,24 +103,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-def convert_checkpoint(convert_config):
-    config = chanfig.FlatDict(num_labels=1)
-    config.mfe_head = {"num_labels": 1}
-    if "4.1" in convert_config.checkpoint_path:
-        config.structure_head = {"num_labels": 3}
-    vocab_list = get_alphabet().vocabulary
-    original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
-    config = Config.from_dict(config)
-    config.vocab_size = len(vocab_list)
-
-    model = Model(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model)
+original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
 
 
 class ConvertConfig(ConvertConfig_):

@@ -30,10 +30,49 @@ import torch
 from multimolecule.models import RnaFmConfig as Config
 from multimolecule.models import RnaFmForPreTraining, RnaFmForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting RnaFm checkpoint at {convert_config.checkpoint_path}")
+
+    path = convert_config.checkpoint_path.lower()
+
+    config = Config(num_labels=1)
+    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
+    vocab_list = get_alphabet().vocabulary
+    original_vocab_list = original_vocabs["single"]
+    if "mrna" in path or "cds" in path:
+        Model = RnaFmForPreTraining
+        config = Config(num_labels=1, hidden_size=1280, embed_norm=False)
+        vocab_list = get_alphabet(nmers=3).vocabulary
+        original_vocab_list = original_vocabs["3mer"]
+        convert_config.output_path = "mrnafm"
+        convert_config.repo_id = "multimolecule/mrnafm"
+        config.codon = True
+        tokenizer_config["codon"] = True
+    elif "resnet" in path:
+        Model = RnaFmForSecondaryStructurePrediction
+        convert_config.output_path += "-ss"
+        convert_config.repo_id += "-ss"
+    else:
+        Model = RnaFmForPreTraining
+    config.vocab_size = len(vocab_list)
+    config.architectures = ["RnaFmModel"]
+    tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
+
+    model = Model(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
+    ckpt = ckpt.get("model", ckpt)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -193,43 +232,6 @@ original_vocabs = {
         "<mask>",
     ],
 }
-
-
-def convert_checkpoint(convert_config):
-    path = convert_config.checkpoint_path.lower()
-
-    config = Config(num_labels=1)
-    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    vocab_list = get_alphabet().vocabulary
-    original_vocab_list = original_vocabs["single"]
-    if "mrna" in path or "cds" in path:
-        Model = RnaFmForPreTraining
-        config = Config(num_labels=1, hidden_size=1280, embed_norm=False)
-        vocab_list = get_alphabet(nmers=3).vocabulary
-        original_vocab_list = original_vocabs["3mer"]
-        convert_config.output_path = "mrnafm"
-        convert_config.repo_id = "multimolecule/mrnafm"
-        config.codon = True
-        tokenizer_config["codon"] = True
-    elif "resnet" in path:
-        Model = RnaFmForSecondaryStructurePrediction
-        convert_config.output_path += "-ss"
-        convert_config.repo_id += "-ss"
-    else:
-        Model = RnaFmForPreTraining
-    config.vocab_size = len(vocab_list)
-    config.architectures = ["RnaFmModel"]
-    tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
-
-    model = Model(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
-    ckpt = ckpt.get("model", ckpt)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 
 
 class ConvertConfig(ConvertConfig_):

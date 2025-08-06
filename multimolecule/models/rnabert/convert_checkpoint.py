@@ -23,17 +23,33 @@
 from __future__ import annotations
 
 import os
-from copy import deepcopy
 
 import torch
 
 from multimolecule.models import RnaBertConfig as Config
 from multimolecule.models import RnaBertForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting RnaBert checkpoint at {convert_config.checkpoint_path}")
+    vocab_list = get_alphabet().vocabulary
+    config = Config()
+    config.architectures = ["RnaBertModel"]
+    config.vocab_size = len(vocab_list)
+
+    model = Model(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -68,23 +84,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-def convert_checkpoint(convert_config):
-    vocab_list = get_alphabet().vocabulary
-    original_vocab_list = ["<pad>", "<mask>", "A", "U", "G", "C"]
-    config = Config()
-    config.architectures = ["RnaBertModel"]
-    config.vocab_size = len(vocab_list)
-
-    model = Model(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    model.lm_head = deepcopy(model.lm_head)
-
-    save_checkpoint(convert_config, model)
+original_vocab_list = ["<pad>", "<mask>", "A", "U", "G", "C"]
 
 
 class ConvertConfig(ConvertConfig_):
