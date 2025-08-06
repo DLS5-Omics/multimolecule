@@ -29,10 +29,31 @@ import torch
 from multimolecule.models import RiNALMoConfig as Config
 from multimolecule.models import RiNALMoForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting RiNALMo checkpoint at {convert_config.checkpoint_path}")
+    config = Config()
+    vocab_list = get_alphabet().vocabulary
+    config.vocab_size = len(vocab_list)
+    config.architectures = ["RiNALMoModel"]
+
+    model = Model(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = ckpt.get("model", ckpt)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+    for key, value in model.state_dict().items():
+        if "inv_freq" in key:
+            state_dict[key] = value
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -101,26 +122,6 @@ original_vocab_list = [
     "N",
     "-",
 ]
-
-
-def convert_checkpoint(convert_config):
-    config = Config()
-    vocab_list = get_alphabet().vocabulary
-    config.vocab_size = len(vocab_list)
-    config.architectures = ["RiNALMoModel"]
-
-    model = Model(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
-    ckpt = ckpt.get("model", ckpt)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-    for key, value in model.state_dict().items():
-        if "inv_freq" in key:
-            state_dict[key] = value
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model)
 
 
 class ConvertConfig(ConvertConfig_):
