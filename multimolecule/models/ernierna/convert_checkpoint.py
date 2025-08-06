@@ -29,10 +29,38 @@ import torch
 from multimolecule.models import ErnieRnaConfig as Config
 from multimolecule.models import ErnieRnaForPreTraining, ErnieRnaForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting ErnieRna checkpoint at {convert_config.checkpoint_path}")
+    vocab_list = get_alphabet().vocabulary
+    config = Config()
+    config.architectures = ["ErnieRnaModel"]
+    config.vocab_size = len(vocab_list)
+
+    Model = ErnieRnaForPreTraining
+    if "ss" in convert_config.checkpoint_path:
+        Model = ErnieRnaForSecondaryStructurePrediction
+        convert_config.output_path += "-ss"
+        convert_config.repo_id += "-ss"
+
+    model = Model(config)
+
+    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
+    ckpt = ckpt.get("model", ckpt)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+    if config.position_embedding_type == "sinusoidal":
+        state_dict["ernierna.embeddings.position_embeddings.weight"] = (
+            model.ernierna.embeddings.position_embeddings.weight
+        )
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -84,58 +112,33 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-def convert_checkpoint(convert_config):
-    vocab_list = get_alphabet().vocabulary
-    original_vocab_list = [
-        "<cls>",
-        "<pad>",
-        "<eos>",
-        "<unk>",
-        "G",
-        "A",
-        "U",
-        "C",
-        "N",
-        "Y",
-        "R",
-        "S",
-        "K",
-        "W",
-        "M",
-        "D",
-        "H",
-        "V",
-        "B",
-        "X",
-        "I",
-        "<null>",
-        "<null>",
-        "<null>",
-        "<mask>",
-    ]
-    config = Config()
-    config.architectures = ["ErnieRnaModel"]
-    config.vocab_size = len(vocab_list)
-
-    Model = ErnieRnaForPreTraining
-    if "ss" in convert_config.checkpoint_path:
-        Model = ErnieRnaForSecondaryStructurePrediction
-        convert_config.output_path += "-ss"
-        convert_config.repo_id += "-ss"
-
-    model = Model(config)
-
-    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
-    ckpt = ckpt.get("model", ckpt)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-    if config.position_embedding_type == "sinusoidal":
-        state_dict["ernierna.embeddings.position_embeddings.weight"] = (
-            model.ernierna.embeddings.position_embeddings.weight
-        )
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model)
+original_vocab_list = [
+    "<cls>",
+    "<pad>",
+    "<eos>",
+    "<unk>",
+    "G",
+    "A",
+    "U",
+    "C",
+    "N",
+    "Y",
+    "R",
+    "S",
+    "K",
+    "W",
+    "M",
+    "D",
+    "H",
+    "V",
+    "B",
+    "X",
+    "I",
+    "<null>",
+    "<null>",
+    "<null>",
+    "<mask>",
+]
 
 
 class ConvertConfig(ConvertConfig_):

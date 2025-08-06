@@ -30,10 +30,42 @@ import torch
 from multimolecule.models import SpliceBertConfig as Config
 from multimolecule.models import SpliceBertForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting SpliceBert checkpoint at {convert_config.checkpoint_path}")
+    config = chanfig.load(os.path.join(convert_config.checkpoint_path, "config.json"))
+    config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
+    config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
+    vocab_list = get_alphabet().vocabulary
+    config = Config.from_dict(config)
+    del config._name_or_path
+    config.architectures = ["SpliceBertModel"]
+    config.vocab_size = len(vocab_list)
+
+    model = Model(config)
+
+    ckpt = torch.load(
+        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"), map_location=torch.device("cpu")
+    )
+    original_vocab_list = []
+    for char in open(os.path.join(convert_config.checkpoint_path, "vocab.txt")).read().splitlines():  # noqa: SIM115
+        if char.startswith("["):
+            char = char.lower().replace("[", "<").replace("]", ">")
+        if char == "T":
+            char = "U"
+        if char == "<sep>":
+            char = "<eos>"
+        original_vocab_list.append(char)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model)
+    print(f"Checkpoint saved to {convert_config.output_path}")
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
@@ -64,37 +96,6 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     del state_dict["splicebert.embeddings.position_ids"]
     return state_dict
-
-
-def convert_checkpoint(convert_config):
-    config = chanfig.load(os.path.join(convert_config.checkpoint_path, "config.json"))
-    config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
-    config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
-    vocab_list = get_alphabet().vocabulary
-    config = Config.from_dict(config)
-    del config._name_or_path
-    config.architectures = ["SpliceBertModel"]
-    config.vocab_size = len(vocab_list)
-
-    model = Model(config)
-
-    ckpt = torch.load(
-        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"), map_location=torch.device("cpu")
-    )
-    original_vocab_list = []
-    for char in open(os.path.join(convert_config.checkpoint_path, "vocab.txt")).read().splitlines():  # noqa: SIM115
-        if char.startswith("["):
-            char = char.lower().replace("[", "<").replace("]", ">")
-        if char == "T":
-            char = "U"
-        if char == "<sep>":
-            char = "<eos>"
-        original_vocab_list.append(char)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    save_checkpoint(convert_config, model)
 
 
 class ConvertConfig(ConvertConfig_):

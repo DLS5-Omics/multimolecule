@@ -1157,6 +1157,15 @@ class AidoRnaSecondaryStructurePredictionHead(BasePredictionHead):
             output = outputs[0]
         else:
             raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+        batch_size, _, _ = output.shape
+        if batch_size > 1:
+            warn(
+                f"AIDO.RNA does not support `batch_size > 1`, but got {batch_size}.\n"
+                "Using a larger batch size will result in incorrect predictions for all but the longest sequence due "
+                "to how padding is handled.\n"
+                "Please set `batch_size=1` for accurate results.",
+                RuntimeWarning,
+            )
 
         if attention_mask is None:
             attention_mask = self.get_attention_mask(input_ids)
