@@ -31,15 +31,38 @@ import torch
 from multimolecule.models import CaLmConfig as Config
 from multimolecule.models import CaLmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
 
 
+def convert_checkpoint(convert_config):
+    print(f"Converting CaLm checkpoint at {convert_config.checkpoint_path}")
+    vocab_list = get_alphabet(nmers=3).vocabulary
+    config = Config()
+    del config._name_or_path
+    config.architectures = ["CaLmModel"]
+    config.vocab_size = len(vocab_list)
+
+    model = Model(config)
+
+    ckpt = dl.load(convert_config.checkpoint_path)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+
+    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
+    tokenizer_config["codon"] = True
+
+    load_checkpoint(model, state_dict)
+    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
+    print(f"Checkpoint saved to {convert_config.output_path}")
+
+
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
     state_dict = {}
     for key, value in original_state_dict.items():
+        if "rope.freqs" in key:
+            continue
         if "lm_head" not in key and "embed" not in key:
             key = "calm.encoder." + key
         key = key.replace("LayerNorm", "layer_norm")
@@ -55,7 +78,6 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("final_layer_norm", "layer_norm")
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
-        key = key.replace("rope.freqs", "rotary_embeddings.inv_freq")
         key = key.replace("embed_tokens", "calm.embeddings.word_embeddings")
         key = key.replace("lm_head.dense", "lm_head.transform.dense")
         key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
@@ -77,7 +99,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     return state_dict
 
 
-original_vocab = [
+original_vocab_list = [
     "<cls>",
     "<pad>",
     "<eos>",
@@ -148,27 +170,6 @@ original_vocab = [
     "GGG",
     "<mask>",
 ]
-
-
-def convert_checkpoint(convert_config):
-    original_vocab_list = original_vocab
-    vocab_list = get_alphabet(nmers=3).vocabulary
-    config = Config()
-    del config._name_or_path
-    config.architectures = ["CaLmModel"]
-    config.vocab_size = len(vocab_list)
-
-    model = Model(config)
-
-    ckpt = dl.load(convert_config.checkpoint_path)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
-
-    model.load_state_dict(state_dict)
-
-    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["codon"] = True
-
-    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 
 
 class ConvertConfig(ConvertConfig_):

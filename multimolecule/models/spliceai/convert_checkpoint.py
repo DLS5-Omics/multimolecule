@@ -33,7 +33,7 @@ from keras.models import load_model
 from multimolecule.models import SpliceAiConfig as Config
 from multimolecule.models import SpliceAiModel as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import save_checkpoint
+from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
 from multimolecule.tokenisers.rna.utils import get_alphabet, get_tokenizer_config
 
 try:
@@ -44,6 +44,49 @@ except ImportError:
 keras_version = parse_version(keras.__version__)
 
 torch.manual_seed(1016)
+
+
+def convert_checkpoint(convert_config):
+    print(f"Converting SpliceAi checkpoint at {convert_config.checkpoint_path}")
+    config = Config()
+    config.architectures = ["SpliceAiModel"]
+
+    model = Model(config)
+
+    root = convert_config.checkpoint_path
+
+    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
+    tokenizer_config["alphabet"] = get_alphabet("streamline", prepend_tokens=[])
+    tokenizer_config["unk_token"] = tokenizer_config["pad_token"] = "N"
+
+    ckpts = sorted([os.path.join(root, f) for f in os.listdir(root) if f.endswith(".h5")])
+    for i, ckpt in enumerate(ckpts):
+        state_dict = _convert_checkpoint(ckpt)
+        model_state = model.networks[i].state_dict()
+        for key, value in model_state.items():
+            if key.endswith("num_batches_tracked") and key not in state_dict:
+                state_dict[key] = value
+        load_checkpoint(model.networks[i], state_dict)
+
+    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
+    print(f"Checkpoint saved to {convert_config.output_path}")
+
+
+def _convert_checkpoint(file):
+    model = load_model(file)
+    state_dict = OrderedDict()
+    for layer in model.layers:
+        weight_names = [w.name for w in layer.weights]
+        if keras_version > parse_version("3.0"):
+            weight_names = [layer.name + "/" + n + "00" for n in weight_names]
+        weight_values = layer.get_weights()
+        for name, value in zip(weight_names, weight_values):
+            new_name = _convert_name(name)
+            new_value = torch.from_numpy(value)
+            if "kernel" in name:
+                new_value = new_value.transpose(0, 2)
+            state_dict[new_name] = new_value
+    return state_dict
 
 
 name_mapping = {
@@ -112,41 +155,6 @@ def _convert_name(name: str) -> str:
             pass
 
     return name
-
-
-def _convert_checkpoint(file):
-    model = load_model(file)
-    state_dict = OrderedDict()
-    for layer in model.layers:
-        weight_names = [w.name for w in layer.weights]
-        if keras_version > parse_version("3.0"):
-            weight_names = [layer.name + "/" + n + "00" for n in weight_names]
-        weight_values = layer.get_weights()
-        for name, value in zip(weight_names, weight_values):
-            new_name = _convert_name(name)
-            new_value = torch.from_numpy(value)
-            if "kernel" in name:
-                new_value = new_value.transpose(0, 2)
-            state_dict[new_name] = new_value
-    return state_dict
-
-
-def convert_checkpoint(convert_config):
-    config = Config()
-    config.architectures = ["SpliceAiModel"]
-
-    model = Model(config)
-
-    root = convert_config.checkpoint_path
-    ckpts = sorted([os.path.join(root, f) for f in os.listdir(root) if f.endswith(".h5")])
-    for i, ckpt in enumerate(ckpts):
-        state_dict = _convert_checkpoint(ckpt)
-        model.networks[i].load_state_dict(state_dict)
-
-    tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["alphabet"] = get_alphabet("streamline", prepend_tokens=[])
-    tokenizer_config["unk_token"] = tokenizer_config["pad_token"] = "N"
-    save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
 
 
 class ConvertConfig(ConvertConfig_):
