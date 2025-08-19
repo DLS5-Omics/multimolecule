@@ -166,9 +166,22 @@ def contact_map_to_dot_bracket(contact_map: np.ndarray | list | Tensor, unsafe: 
         '...'
 
         Using unsafe mode with non-symmetric input
+        >>> import numpy as np
         >>> contact_map = np.array([[0, 1, 0], [0, 0, 0], [1, 0, 0]])
         >>> contact_map_to_dot_bracket(contact_map, unsafe=True)  # Will issue a warning
         '().'
+
+        Using unsafe mode with non-symmetric input
+        >>> import numpy as np
+        >>> contact_map = np.array([
+        ...     [0, 1, 1, 0, 0],
+        ...     [1, 0, 0, 0, 0],
+        ...     [0, 0, 0, 0, 0],
+        ...     [0, 0, 0, 0, 1],
+        ...     [0, 0, 0, 1, 0],
+        ... ])
+        >>> contact_map_to_dot_bracket(contact_map, unsafe=True)
+        '().()'
     """
     if isinstance(contact_map, list):
         contact_map = np.array(contact_map)
@@ -192,6 +205,24 @@ def contact_map_to_dot_bracket(contact_map: np.ndarray | list | Tensor, unsafe: 
             )
         warn("Contact map diagonal is not zero (bases cannot pair with themselves).\nSetting diagonal to zero.")
         np.fill_diagonal(contact_map, 0)
+
+    row_sums = np.sum(contact_map, axis=1)
+    multiple_pairings = np.where(row_sums > 1)[0]
+    if len(multiple_pairings) > 0:
+        if not unsafe:
+            raise ValueError(
+                f"Positions {multiple_pairings.tolist()} are paired to multiple other positions.\n"
+                "Each base can only pair with at most one other base.\n"
+                "Pass `unsafe=True` if this is expected."
+            )
+        warn(
+            f"Positions {multiple_pairings.tolist()} are paired to multiple other positions.\n"
+            "Using only the first pairing occurrence for each position."
+        )
+        for i in multiple_pairings:
+            paired_positions = np.where(contact_map[i, :] == 1)[0]
+            for j in paired_positions[1:]:
+                contact_map[i, j] = contact_map[j, i] = 0
 
     dot_bracket = ["." for _ in range(n)]
     bracket_types = list(dot_bracket_pair_table.items())
