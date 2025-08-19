@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from typing import Callable, List, Type
 
+from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers.activations import ACT2FN
@@ -105,12 +106,12 @@ class UNet(nn.Module):
                     nn.init.constant_(m.norm2.weight, 0)  # type: ignore[arg-type]
 
     def forward(self, x: Tensor) -> Tensor:
-        x = self.projection(x.transpose(1, 3))
+        x = self.projection(x.transpose(1, -1))
         x = self.norm(x)
         x = self.activation(x)
         x = self.encoder(x)
         x = self.decoder(x)
-        x = self.prediction(x.transpose(1, 3))
+        x = self.prediction(x.transpose(1, -1))
         return x
 
 
@@ -202,9 +203,17 @@ class DecoderLayer(nn.Module):
 
     def forward(self, contact_map: Tensor, residual: Tensor) -> Tensor:
         contact_map = self.projection(contact_map)
-        diff = residual.shape[3] - contact_map.shape[3]
-        left = diff // 2
-        right = diff - left
-        contact_map = F.pad(contact_map, [left, right, left, right])
-        contact_map = contact_map + residual
+        if isinstance(residual, NestedTensor):
+            contact_map = NestedTensor(self._residual(c, r) for c, r in zip(contact_map.unbind(), residual.unbind()))
+        else:
+            contact_map = self._residual(contact_map, residual)
         return self.layer(contact_map)
+
+    @staticmethod
+    def _residual(contact_map: Tensor, residual: Tensor) -> Tensor:
+        diff = residual.shape[-1] - contact_map.shape[-1]
+        if diff:
+            left = diff // 2
+            right = diff - left
+            contact_map = F.pad(contact_map, [left, right, left, right])
+        return contact_map + residual
