@@ -1280,10 +1280,8 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         output = output.unsqueeze(-1)
 
         if labels is not None:
-            if isinstance(labels, NestedTensor):
-                if isinstance(output, Tensor):
-                    output = labels.nested_like(output, strict=False)
-                return HeadOutput(output, self.criterion(output.concat, labels.concat))
+            if isinstance(labels, NestedTensor) and not isinstance(output, NestedTensor):
+                output = labels.nested_like(output, strict=False)
             return HeadOutput(output, self.criterion(output, labels))
         return HeadOutput(output)
 

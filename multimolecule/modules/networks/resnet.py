@@ -87,11 +87,11 @@ class ResNet(nn.Module):
                     nn.init.constant_(m.norm2.weight, 0)  # type: ignore[arg-type]
 
     def forward(self, x: Tensor) -> Tensor:
-        x = self.projection(x.transpose(1, 3))
+        x = self.projection(x.transpose(1, -1))
         x = self.norm(x)
         x = self.activation(x)
         x = self.layers(x)
-        x = self.prediction(x.transpose(1, 3))
+        x = self.prediction(x.transpose(1, -1))
         return x
 
 

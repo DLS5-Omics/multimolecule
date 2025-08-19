@@ -24,7 +24,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 
@@ -41,10 +40,6 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
         self.config = config
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
-        if isinstance(input, NestedTensor):
-            input = torch.cat(input.storage())
-        if isinstance(target, NestedTensor):
-            target = torch.cat(target.storage())
-        if input.ndim > 2:
+        if target.ndim > 2:
             input, target = input.view(-1, input.size(-1)), target.view(-1)
         return super().forward(input, target.long())
