@@ -166,7 +166,7 @@ class Dataset(datasets.Dataset):
     max_seq_length: int
     seq_length_offset: int = 0
 
-    preprocess: bool = True
+    preprocess: bool = False
     auto_rename_sequence_col: bool = True
     auto_rename_label_col: bool = False
     column_names_map: Mapping[str, str] | None = None
@@ -424,7 +424,9 @@ class Dataset(datasets.Dataset):
                 data = self.tokenize(data)
             return NestedTensor(data)
         if not self.preprocess:
-            if col in self.discrete_map:
+            if col in self.secondary_structure_cols:
+                data = [torch.tensor(dot_bracket_to_contact_map(d)) for d in data]
+            elif col in self.discrete_map:
                 data = map_value(data, self.discrete_map[col])
             if col in self.tasks:
                 data = truncate_value(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
@@ -438,7 +440,7 @@ class Dataset(datasets.Dataset):
             return data
         try:
             return torch.tensor(data)
-        except ValueError:
+        except (TypeError, ValueError):
             return NestedTensor(data)
 
     def infer_tasks(self, sequence_col: str | None = None) -> NestedDict:

@@ -116,7 +116,8 @@ class RnaSecondaryStructurePipeline(Pipeline):
             contact_map = outputs.squeeze(0)
             if not postprocessed:
                 contact_map = self._postprocess(contact_map)
-            dot_bracket = contact_map_to_dot_bracket(contact_map > threshold, unsafe=True)
+            binary_contact_map = postprocess(contact_map, threshold)
+            dot_bracket = contact_map_to_dot_bracket(binary_contact_map, unsafe=True)
             ret = {"sequence": sequence, "secondary_structure": dot_bracket}
             if output_contact_map:
                 ret["contact_map"] = contact_map.numpy()
@@ -130,7 +131,8 @@ class RnaSecondaryStructurePipeline(Pipeline):
             contact_map = contact_map[: len(sequence), : len(sequence)]
             if not postprocessed:
                 contact_map = self._postprocess(contact_map)
-            dot_brackets.append(contact_map_to_dot_bracket(contact_map > threshold, unsafe=True))
+            binary_contact_map = postprocess(contact_map, threshold)
+            dot_brackets.append(contact_map_to_dot_bracket(binary_contact_map, unsafe=True))
             if self.output_contact_map:
                 contact_maps.append(contact_map.numpy())
         ret = {"sequence": sequences, "secondary_structure": dot_brackets}
@@ -225,3 +227,50 @@ class RnaSecondaryStructurePipeline(Pipeline):
         if isinstance(inputs, list) and len(inputs) == 1:
             return outputs[0]
         return outputs
+
+
+def postprocess(contact_map: torch.Tensor, threshold: float = 0.5) -> torch.Tensor:
+    """
+    Select the highest scoring pair above threshold for each nucleotide position.
+
+    This function ensures that each nucleotide can only pair with at most one other nucleotide
+    by selecting the highest value above the threshold in each row/column using vectorized operations.
+
+    Args:
+        contact_map: A 2D tensor representing the contact map with shape (seq_len, seq_len)
+        threshold: The minimum value for a contact to be considered
+
+    Returns:
+        A binary tensor of the same shape where each position has at most one pairing
+    """
+    seq_len = contact_map.shape[0]
+    device = contact_map.device
+
+    contact_map.fill_diagonal_(0)
+
+    above_threshold = contact_map > threshold
+
+    masked_contact_map = torch.where(above_threshold, contact_map, torch.tensor(float("-inf"), device=device))
+
+    row_max_indices = torch.argmax(masked_contact_map, dim=1)
+    row_max_values = torch.gather(contact_map, 1, row_max_indices.unsqueeze(1)).squeeze(1)
+    col_max_indices = torch.argmax(masked_contact_map, dim=0)
+
+    has_valid_row_pair = torch.any(above_threshold, dim=1)
+    has_valid_col_pair = torch.any(above_threshold, dim=0)
+
+    mutual_selection = col_max_indices[row_max_indices] == torch.arange(seq_len, device=device)
+
+    mutual_pairs = (
+        has_valid_row_pair & has_valid_col_pair[row_max_indices] & mutual_selection & (row_max_values > threshold)
+    )
+
+    result = torch.zeros_like(contact_map, dtype=torch.bool)
+    valid_indices = torch.nonzero(mutual_pairs, as_tuple=False).squeeze(-1)
+
+    if len(valid_indices) > 0:
+        partner_indices = row_max_indices[valid_indices]
+        result[valid_indices, partner_indices] = True
+        result[partner_indices, valid_indices] = True
+
+    return result
