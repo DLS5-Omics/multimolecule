@@ -24,7 +24,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 
@@ -41,10 +40,6 @@ class BCEWithLogitsLoss(nn.BCEWithLogitsLoss):
         self.config = config
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
-        if isinstance(input, NestedTensor):
-            input = torch.cat(input.flatten().storage())
-        if isinstance(target, NestedTensor):
-            target = torch.cat(target.flatten().storage())
         if input.ndim == target.ndim + 1:
             input = input.squeeze(-1)
         return super().forward(input, target.float())

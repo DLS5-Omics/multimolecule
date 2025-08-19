@@ -24,7 +24,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 
@@ -41,10 +40,6 @@ class MultiLabelSoftMarginLoss(nn.MultiLabelSoftMarginLoss):
         self.config = config
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
-        if isinstance(target, NestedTensor) and target.ndim > 2:
+        if target.ndim > 2:
             input, target = input.view(-1, input.size(-1)), target.view(-1, target.size(-1))
-        if isinstance(input, NestedTensor):
-            input = torch.cat(input.storage())
-        if isinstance(target, NestedTensor):
-            target = torch.cat(target.storage())
         return super().forward(input, target.float())

@@ -107,10 +107,8 @@ class ContactPredictionHead(BasePredictionHead):
             contact_map = self.activation(contact_map)
 
         if labels is not None:
-            if isinstance(labels, NestedTensor):
-                if isinstance(contact_map, Tensor):
-                    contact_map = labels.nested_like(contact_map, strict=False)
-                return HeadOutput(contact_map, self.criterion(contact_map.concat, labels.concat))
+            if isinstance(labels, NestedTensor) and not isinstance(contact_map, NestedTensor):
+                contact_map = labels.nested_like(contact_map, strict=False)
             return HeadOutput(contact_map, self.criterion(contact_map, labels))
         return HeadOutput(contact_map)
 
@@ -247,10 +245,8 @@ class ContactAttentionHead(BasePredictionHead):
             contact_map = self.activation(contact_map)
 
         if labels is not None:
-            if isinstance(labels, NestedTensor):
-                if isinstance(contact_map, Tensor):
-                    contact_map = labels.nested_like(contact_map, strict=False)
-                return HeadOutput(contact_map, self.criterion(contact_map.concat, labels.concat))
+            if isinstance(labels, NestedTensor) and not isinstance(contact_map, NestedTensor):
+                contact_map = labels.nested_like(contact_map, strict=False)
             return HeadOutput(contact_map, self.criterion(contact_map, labels))
         return HeadOutput(contact_map)
 
