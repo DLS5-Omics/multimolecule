@@ -426,6 +426,8 @@ class Dataset(datasets.Dataset):
         if not self.preprocess:
             if col in self.discrete_map:
                 data = map_value(data, self.discrete_map[col])
+            if col in self.secondary_structure_cols:
+                data = [torch.tensor(dot_bracket_to_contact_map(d)) for d in data]
             if col in self.tasks:
                 data = truncate_value(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
         if col in self.tasks:
@@ -438,7 +440,7 @@ class Dataset(datasets.Dataset):
             return data
         try:
             return torch.tensor(data)
-        except ValueError:
+        except (TypeError, ValueError):
             return NestedTensor(data)
 
     def infer_tasks(self, sequence_col: str | None = None) -> NestedDict:
