@@ -21,7 +21,15 @@
 
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
-from .data import Dataset, contact_map_to_dot_bracket, dot_bracket_to_contact_map
+from .data import (
+    Dataset,
+    contact_map_to_dot_bracket,
+    contact_map_to_pairs,
+    dot_bracket_to_contact_map,
+    dot_bracket_to_pairs,
+    pairs_to_contact_map,
+    pairs_to_dot_bracket,
+)
 from .models import (
     AidoRnaConfig,
     AidoRnaForContactPrediction,
@@ -131,6 +139,7 @@ from .modules import (
     HEAD_TRANSFORMS,
     HEAD_TRANSFORMS_HF,
     HEADS,
+    MODELS,
     NECKS,
     NETWORKS,
     POSITION_EMBEDDINGS,
@@ -176,6 +185,10 @@ __all__ = [
     "Dataset",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",
+    "dot_bracket_to_pairs",
+    "pairs_to_contact_map",
+    "contact_map_to_pairs",
+    "pairs_to_dot_bracket",
     "MODELS",
     "MultiMoleculeModel",
     "POSITION_EMBEDDINGS",
