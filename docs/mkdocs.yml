@@ -12,7 +12,6 @@ nav:
   - data:
       - data/index.md
       - Dataset: data/dataset.md
-      - functional: data/functional.md
   - datasets:
       - datasets/index.md
       - DNA:
@@ -67,6 +66,9 @@ nav:
   - pipelines:
       - pipelines/index.md
       - RNA Secondary Structure: pipelines/rna_secondary_structure.md
+  - utils:
+      - RNA:
+        - Secondary Structure: utils/rna/secondary_structure.md
   - about:
       - about/index.md
       - License: about/license.md

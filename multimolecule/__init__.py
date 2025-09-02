@@ -21,7 +21,9 @@
 
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
-from .data import Dataset, contact_map_to_dot_bracket, dot_bracket_to_contact_map
+from .data import (
+    Dataset,
+)
 from .models import (
     AidoRnaConfig,
     AidoRnaForContactPrediction,
@@ -131,6 +133,7 @@ from .modules import (
     HEAD_TRANSFORMS,
     HEAD_TRANSFORMS_HF,
     HEADS,
+    MODELS,
     NECKS,
     NETWORKS,
     POSITION_EMBEDDINGS,
@@ -168,7 +171,24 @@ from .modules import (
 from .pipelines import RnaSecondaryStructurePipeline
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
-from .utils import count_parameters
+from .utils import (
+    contact_map_to_dot_bracket,
+    contact_map_to_pairs,
+    count_parameters,
+    crossing_mask,
+    crossing_pairs,
+    dot_bracket_to_contact_map,
+    dot_bracket_to_pairs,
+    has_pseudoknot,
+    nested_pairs,
+    pairs_to_contact_map,
+    pairs_to_dot_bracket,
+    pseudoknot_nucleotides,
+    pseudoknot_pairs,
+    pseudoknot_tiers,
+    split_crossing_pairs,
+    split_pseudoknot_pairs,
+)
 
 __all__ = [
     "modeling_auto",
@@ -176,6 +196,19 @@ __all__ = [
     "Dataset",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",
+    "dot_bracket_to_pairs",
+    "pairs_to_contact_map",
+    "contact_map_to_pairs",
+    "pairs_to_dot_bracket",
+    "crossing_mask",
+    "crossing_pairs",
+    "has_pseudoknot",
+    "nested_pairs",
+    "pseudoknot_tiers",
+    "split_crossing_pairs",
+    "split_pseudoknot_pairs",
+    "pseudoknot_pairs",
+    "pseudoknot_nucleotides",
     "MODELS",
     "MultiMoleculeModel",
     "POSITION_EMBEDDINGS",

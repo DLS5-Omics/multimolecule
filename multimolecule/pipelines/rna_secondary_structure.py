@@ -27,7 +27,7 @@ from warnings import warn
 import torch
 from transformers.pipelines.base import GenericTensor, Pipeline, PipelineException
 
-from ..data.functional import contact_map_to_dot_bracket
+from multimolecule.utils import contact_map_to_dot_bracket
 
 
 class RnaSecondaryStructurePipeline(Pipeline):
@@ -86,6 +86,11 @@ class RnaSecondaryStructurePipeline(Pipeline):
 
     def _postprocess(self, contact_map: GenericTensor) -> GenericTensor:
         contact_map = contact_map.squeeze(-1)
+        if contact_map.ndim != 2:
+            raise ValueError(
+                "Expected a 2D contact map of shape (L, L) or a 3D tensor of shape (L, L, 1), "
+                f"but got shape {tuple(contact_map.shape)}."
+            )
         contact_map.fill_diagonal_(torch.finfo(contact_map.dtype).min)
         contact_map = contact_map.sigmoid()
         return contact_map
@@ -114,31 +119,29 @@ class RnaSecondaryStructurePipeline(Pipeline):
         if len(input_ids) == 1:
             sequence = self.tokenizer.decode(input_ids.squeeze(0), skip_special_tokens=True).replace(" ", "")
             contact_map = outputs.squeeze(0)
+            contact_map = contact_map[: len(sequence), : len(sequence)]
             if not postprocessed:
                 contact_map = self._postprocess(contact_map)
-            binary_contact_map = postprocess(contact_map, threshold)
-            dot_bracket = contact_map_to_dot_bracket(binary_contact_map, unsafe=True)
+            dot_bracket = contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold)
             ret = {"sequence": sequence, "secondary_structure": dot_bracket}
             if output_contact_map:
-                ret["contact_map"] = contact_map.numpy()
+                ret["contact_map"] = contact_map.detach().cpu().numpy()
             return ret
 
         sequences = [i.replace(" ", "") for i in self.tokenizer.batch_decode(input_ids, skip_special_tokens=True)]
-        dot_brackets = []
-        if self.output_contact_map:
-            contact_maps = []
+        results = []
         for sequence, contact_map in zip(sequences, outputs):
             contact_map = contact_map[: len(sequence), : len(sequence)]
             if not postprocessed:
                 contact_map = self._postprocess(contact_map)
-            binary_contact_map = postprocess(contact_map, threshold)
-            dot_brackets.append(contact_map_to_dot_bracket(binary_contact_map, unsafe=True))
-            if self.output_contact_map:
-                contact_maps.append(contact_map.numpy())
-        ret = {"sequence": sequences, "secondary_structure": dot_brackets}
-        if self.output_contact_map:
-            ret["contact_map"] = contact_maps
-        return ret
+            result = {
+                "sequence": sequence,
+                "secondary_structure": contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold),
+            }
+            if output_contact_map:
+                result["contact_map"] = contact_map.detach().cpu().numpy()
+            results.append(result)
+        return results
 
     def _sanitize_parameters(
         self, threshold: float | None = None, output_contact_map: bool | None = None, tokenizer_kwargs=None
@@ -216,61 +219,14 @@ class RnaSecondaryStructurePipeline(Pipeline):
                 `False`.
 
         Return:
-            A list or a list of list of `dict`: Each result comes as list of dictionaries with the following keys:
+            `dict` or `List[dict]`:
+                Each result comes as a dictionary with the following keys:
 
-            - **sequence** (`str`) -- The corresponding input with the mask token prediction.
-            - **score** (`float`) -- The corresponding probability.
-            - **token** (`int`) -- The predicted token id (to replace the masked one).
-            - **token_str** (`str`) -- The predicted token (to replace the masked one).
+                - **sequence** (`str`) -- The input RNA sequence.
+                - **secondary_structure** (`str`) -- The predicted dot-bracket notation string.
+                - **contact_map** (`np.ndarray`, *optional*) -- The post-processed contact map probabilities.
         """
         outputs = super().__call__(inputs, **kwargs)
         if isinstance(inputs, list) and len(inputs) == 1:
             return outputs[0]
         return outputs
-
-
-def postprocess(contact_map: torch.Tensor, threshold: float = 0.5) -> torch.Tensor:
-    """
-    Select the highest scoring pair above threshold for each nucleotide position.
-
-    This function ensures that each nucleotide can only pair with at most one other nucleotide
-    by selecting the highest value above the threshold in each row/column using vectorized operations.
-
-    Args:
-        contact_map: A 2D tensor representing the contact map with shape (seq_len, seq_len)
-        threshold: The minimum value for a contact to be considered
-
-    Returns:
-        A binary tensor of the same shape where each position has at most one pairing
-    """
-    seq_len = contact_map.shape[0]
-    device = contact_map.device
-
-    contact_map.fill_diagonal_(0)
-
-    above_threshold = contact_map > threshold
-
-    masked_contact_map = torch.where(above_threshold, contact_map, torch.tensor(float("-inf"), device=device))
-
-    row_max_indices = torch.argmax(masked_contact_map, dim=1)
-    row_max_values = torch.gather(contact_map, 1, row_max_indices.unsqueeze(1)).squeeze(1)
-    col_max_indices = torch.argmax(masked_contact_map, dim=0)
-
-    has_valid_row_pair = torch.any(above_threshold, dim=1)
-    has_valid_col_pair = torch.any(above_threshold, dim=0)
-
-    mutual_selection = col_max_indices[row_max_indices] == torch.arange(seq_len, device=device)
-
-    mutual_pairs = (
-        has_valid_row_pair & has_valid_col_pair[row_max_indices] & mutual_selection & (row_max_values > threshold)
-    )
-
-    result = torch.zeros_like(contact_map, dtype=torch.bool)
-    valid_indices = torch.nonzero(mutual_pairs, as_tuple=False).squeeze(-1)
-
-    if len(valid_indices) > 0:
-        partner_indices = row_max_indices[valid_indices]
-        result[valid_indices, partner_indices] = True
-        result[partner_indices, valid_indices] = True
-
-    return result
