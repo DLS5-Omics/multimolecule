@@ -29,6 +29,8 @@ from .data import (
     dot_bracket_to_pairs,
     pairs_to_contact_map,
     pairs_to_dot_bracket,
+    pseudoknot_nucleotides,
+    pseudoknot_pairs,
 )
 from .models import (
     AidoRnaConfig,
@@ -189,6 +191,8 @@ __all__ = [
     "pairs_to_contact_map",
     "contact_map_to_pairs",
     "pairs_to_dot_bracket",
+    "pseudoknot_pairs",
+    "pseudoknot_nucleotides",
     "MODELS",
     "MultiMoleculeModel",
     "POSITION_EMBEDDINGS",
