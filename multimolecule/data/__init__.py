@@ -20,8 +20,15 @@
 # https://multimolecule.danling.org/about/license-faq
 
 from .dataset import Dataset, SampleDataset
-from .functional import contact_map_to_dot_bracket, dot_bracket_to_contact_map
 from .registry import DATASETS
+from .rna_secondary_structure import (
+    contact_map_to_dot_bracket,
+    contact_map_to_pairs,
+    dot_bracket_to_contact_map,
+    dot_bracket_to_pairs,
+    pairs_to_contact_map,
+    pairs_to_dot_bracket,
+)
 from .utils import no_collate
 
 __all__ = [
@@ -31,4 +38,8 @@ __all__ = [
     "no_collate",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",
+    "dot_bracket_to_pairs",
+    "pairs_to_contact_map",
+    "contact_map_to_pairs",
+    "pairs_to_dot_bracket",
 ]

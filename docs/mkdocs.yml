@@ -12,7 +12,7 @@ nav:
   - data:
       - data/index.md
       - Dataset: data/dataset.md
-      - functional: data/functional.md
+      - RNA Secondary Structure: data/rna_secondary_structure.md
   - datasets:
       - datasets/index.md
       - DNA:
