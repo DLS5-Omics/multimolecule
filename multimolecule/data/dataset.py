@@ -53,8 +53,8 @@ from multimolecule.tokenisers.protein.utils import AMINO_ACID_ALPHABET as PROTEI
 from multimolecule.tokenisers.protein.utils import STANDARD_ALPHABET as PROTEIN_COMPLETE_ALPHABET
 from multimolecule.tokenisers.rna.utils import NUCLEOBASE_ALPHABET as RNA_MINIMAL_ALPHABET
 from multimolecule.tokenisers.rna.utils import STANDARD_ALPHABET as RNA_COMPLETE_ALPHABET
+from multimolecule.utils import dot_bracket_to_contact_map
 
-from .functional import dot_bracket_to_contact_map
 from .registry import DATASETS
 from .utils import flatten_column, infer_discrete_map, infer_task, map_value, truncate_value
 
