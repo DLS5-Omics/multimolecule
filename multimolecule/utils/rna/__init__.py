@@ -20,8 +20,7 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .parameters import count_parameters
-from .rna import (
+from .secondary_structure import (
     contact_map_to_dot_bracket,
     contact_map_to_pairs,
     crossing_pairs,
@@ -37,7 +36,6 @@ from .rna import (
 )
 
 __all__ = [
-    "count_parameters",
     "contact_map_to_dot_bracket",
     "contact_map_to_pairs",
     "crossing_pairs",

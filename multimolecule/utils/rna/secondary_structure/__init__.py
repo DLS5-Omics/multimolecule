@@ -20,34 +20,42 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from .parameters import count_parameters
-from .rna import (
+from .bprna import annotate, annotate_function, annotate_structure
+from .notations import (
     contact_map_to_dot_bracket,
     contact_map_to_pairs,
-    crossing_pairs,
     dot_bracket_to_contact_map,
     dot_bracket_to_pairs,
     pairs_to_contact_map,
     pairs_to_dot_bracket,
+)
+from .pseudoknot import (
+    crossing_pairs,
     primary_pairs,
     pseudoknot_nucleotides,
     pseudoknot_pairs,
     pseudoknot_tiers,
     split_pseudoknot_pairs,
 )
+from .topology import EdgeType, LoopType, RnaSecondaryStructure
 
 __all__ = [
-    "count_parameters",
+    "EdgeType",
+    "RnaSecondaryStructure",
+    "LoopType",
+    "annotate",
+    "annotate_function",
+    "annotate_structure",
+    "crossing_pairs",
+    "primary_pairs",
+    "pseudoknot_tiers",
+    "split_pseudoknot_pairs",
     "contact_map_to_dot_bracket",
     "contact_map_to_pairs",
-    "crossing_pairs",
     "dot_bracket_to_contact_map",
     "dot_bracket_to_pairs",
     "pairs_to_contact_map",
     "pairs_to_dot_bracket",
-    "primary_pairs",
     "pseudoknot_nucleotides",
     "pseudoknot_pairs",
-    "pseudoknot_tiers",
-    "split_pseudoknot_pairs",
 ]
