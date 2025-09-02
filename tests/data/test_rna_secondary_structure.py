@@ -7,6 +7,8 @@ from multimolecule.data.rna_secondary_structure import (
     dot_bracket_to_pairs,
     pairs_to_contact_map,
     pairs_to_dot_bracket,
+    pseudoknot_nucleotides,
+    pseudoknot_pairs,
 )
 
 
@@ -109,3 +111,14 @@ def test_pairs_to_dot_bracket_nested_crossing_and_errors():
     pairs = np.array([(i, i + m) for i in range(m)])
     with pytest.raises(ValueError):
         pairs_to_dot_bracket(pairs, length=2 * m)
+
+
+def test_pseudoknot_detection_pairs_and_nts():
+    # nested => no pk
+    assert pseudoknot_pairs(np.array([(0, 3), (1, 2)])).shape == (0, 2)
+    assert pseudoknot_nucleotides(np.array([(0, 3), (1, 2)])).size == 0
+
+    # crossing => both pairs and all nts are pk
+    pkp = pseudoknot_pairs(np.array([(0, 2), (1, 3)]))
+    assert np.array_equal(pkp, np.array([(0, 2), (1, 3)]))
+    assert np.array_equal(pseudoknot_nucleotides(np.array([(0, 2), (1, 3)])), np.array([0, 1, 2, 3]))

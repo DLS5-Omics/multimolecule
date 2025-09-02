@@ -516,3 +516,84 @@ def contact_map_to_dot_bracket(contact_map: np.ndarray | list | Tensor, unsafe: 
     return pairs_to_dot_bracket(
         contact_map_to_pairs(contact_map, unsafe=unsafe), length=len(contact_map), unsafe=unsafe
     )
+
+
+def pseudoknot_pairs(pairs: np.ndarray) -> np.ndarray:
+    """
+    Return the subset of base pairs that participate in any pseudoknot crossing.
+
+    A crossing exists between pairs (i, j) and (k, l) if i < k < j < l (after
+    normalizing each pair so i < j). Any pair involved in at least one such
+    crossing is considered a pseudoknot pair.
+
+    Args:
+        pairs: numpy array of index pairs with shape (n, 2).
+
+    Returns:
+        A numpy array of shape (k, 2) of pairs (i, j) with i < j that are part of a pseudoknot,
+        sorted lexicographically. Returns an empty array with shape (0, 2) if none.
+
+    Examples:
+        Crossing pairs
+        >>> import numpy as np
+        >>> pseudoknot_pairs(np.array([[0, 2], [1, 3]]))
+        array([[0, 2],
+               [1, 3]])
+
+        No crossing (nested only)
+        >>> pseudoknot_pairs(np.array([[0, 3], [1, 2]]))
+        array([], shape=(0, 2), dtype=int64)
+    """
+    if not isinstance(pairs, np.ndarray) or (pairs.size != 0 and (pairs.ndim != 2 or pairs.shape[1] != 2)):
+        raise TypeError("pairs must be a numpy.ndarray with shape (n, 2)")
+    if pairs.size == 0:
+        return np.empty((0, 2), dtype=int)
+
+    i = np.minimum(pairs[:, 0], pairs[:, 1])
+    j = np.maximum(pairs[:, 0], pairs[:, 1])
+    norm = np.column_stack((i, j)).astype(int, copy=False)
+    norm = np.unique(norm, axis=0)
+    if norm.size == 0:
+        return np.empty((0, 2), dtype=int)
+    ord_idx = np.lexsort((norm[:, 1], norm[:, 0]))
+    norm = norm[ord_idx]
+
+    n = norm.shape[0]
+    if n < 2:
+        return np.empty((0, 2), dtype=int)
+    ii = norm[:, 0]
+    jj = norm[:, 1]
+    tri = np.triu(np.ones((n, n), dtype=bool), k=1)
+    crosses = tri & (ii[None, :] < jj[:, None]) & (jj[:, None] < jj[None, :])
+    if not (crosses.any()):
+        return np.empty((0, 2), dtype=int)
+    pk_mask = crosses.any(axis=1) | crosses.any(axis=0)
+    out = norm[pk_mask]
+    return out.astype(int, copy=False)
+
+
+def pseudoknot_nucleotides(pairs: np.ndarray) -> np.ndarray:
+    """
+    Return nucleotide indices that participate in any pseudoknot pair.
+
+    Args:
+        pairs: numpy array of index pairs with shape (n, 2).
+
+    Returns:
+        A numpy array of unique nucleotide indices involved in any pseudoknot pair, sorted ascending.
+
+    Examples:
+        Crossing pairs
+        >>> import numpy as np
+        >>> pseudoknot_nucleotides(np.array([[0, 2], [1, 3]]))
+        array([0, 1, 2, 3])
+
+        No crossing (nested only)
+        >>> pseudoknot_nucleotides(np.array([[0, 3], [1, 2]]))
+        array([], dtype=int64)
+    """
+    pkp = pseudoknot_pairs(pairs)
+    if pkp.size == 0:
+        return np.empty((0,), dtype=int)
+    nts = np.unique(pkp.reshape(-1))
+    return nts
