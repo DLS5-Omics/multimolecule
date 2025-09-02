@@ -54,8 +54,8 @@ from multimolecule.tokenisers.protein.utils import STANDARD_ALPHABET as PROTEIN_
 from multimolecule.tokenisers.rna.utils import NUCLEOBASE_ALPHABET as RNA_MINIMAL_ALPHABET
 from multimolecule.tokenisers.rna.utils import STANDARD_ALPHABET as RNA_COMPLETE_ALPHABET
 
-from .functional import dot_bracket_to_contact_map
 from .registry import DATASETS
+from .rna_secondary_structure import dot_bracket_to_contact_map
 from .utils import flatten_column, infer_discrete_map, infer_task, map_value, truncate_value
 
 alphabets = {
