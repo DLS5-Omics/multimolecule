@@ -27,9 +27,9 @@ import os
 import danling as dl
 import torch
 
-from multimolecule.data import dot_bracket_to_contact_map
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import save_dataset
+from multimolecule.utils import dot_bracket_to_contact_map
 
 torch.manual_seed(1016)
 
