@@ -21,5 +21,25 @@
 
 
 from .parameters import count_parameters
+from .rna_secondary_structure import (
+    contact_map_to_dot_bracket,
+    contact_map_to_pairs,
+    dot_bracket_to_contact_map,
+    dot_bracket_to_pairs,
+    pairs_to_contact_map,
+    pairs_to_dot_bracket,
+    pseudoknot_nucleotides,
+    pseudoknot_pairs,
+)
 
-__all__ = ["count_parameters"]
+__all__ = [
+    "count_parameters",
+    "contact_map_to_dot_bracket",
+    "contact_map_to_pairs",
+    "dot_bracket_to_contact_map",
+    "dot_bracket_to_pairs",
+    "pairs_to_contact_map",
+    "pairs_to_dot_bracket",
+    "pseudoknot_nucleotides",
+    "pseudoknot_pairs",
+]

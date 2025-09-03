@@ -27,7 +27,7 @@ from warnings import warn
 import torch
 from transformers.pipelines.base import GenericTensor, Pipeline, PipelineException
 
-from ..data.rna_secondary_structure import contact_map_to_dot_bracket
+from multimolecule.utils.rna_secondary_structure import contact_map_to_dot_bracket
 
 
 class RnaSecondaryStructurePipeline(Pipeline):
