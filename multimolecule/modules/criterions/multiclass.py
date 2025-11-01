@@ -40,6 +40,11 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
         self.config = config
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
-        if target.ndim > 2:
-            input, target = input.view(-1, input.size(-1)), target.view(-1)
+        if isinstance(input, NestedTensor) and not isinstance(target, NestedTensor):
+            target = target[input.mask.bool()]
+            input = input.concat
+        if isinstance(target, NestedTensor) and not isinstance(input, NestedTensor):
+            input = input[target.mask.bool()]
+            target = target.concat
+        input, target = input.view(-1, input.size(-1)), target.view(-1)
         return super().forward(input, target.long())

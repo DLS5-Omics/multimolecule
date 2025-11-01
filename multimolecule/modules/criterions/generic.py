@@ -64,11 +64,9 @@ class Criterion(nn.Module):
             )
             self.config.problem_type = self.problem_type
         if self.problem_type == "regression":
-            labels = labels.to(logits.dtype)
-            if self.num_labels == 1:
-                return F.mse_loss(logits.squeeze(), labels.squeeze())
-            logits, labels = logits.view(-1, self.num_labels), labels.view(-1, self.num_labels)
-            return sum(F.mse_loss(logits[:, i], labels[:, i]).sqrt() for i in range(self.num_labels))  # type: ignore
+            if logits.ndim == labels.ndim + 1:
+                labels = labels.unsqueeze(-1)
+            return F.mse_loss(logits, labels.to(logits.dtype))
         if self.problem_type == "multiclass":
             return F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
         if self.problem_type == "binary":
@@ -76,5 +74,7 @@ class Criterion(nn.Module):
                 logits = logits.squeeze(-1)
             return F.binary_cross_entropy_with_logits(logits, labels.to(logits.dtype))
         if self.problem_type == "multilabel":
+            if labels.ndim > 2:
+                logits, labels = logits.view(-1, logits.size(-1)), labels.view(-1, labels.size(-1))
             return F.multilabel_soft_margin_loss(logits, labels.to(logits.dtype))
         raise ValueError(f"problem_type should be one of {self.problem_types}, but got {self.problem_type}")

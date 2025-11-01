@@ -91,7 +91,7 @@ output-format = "colorized"
 fail-under = 9.8
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --cov"
+addopts = "--import-mode=importlib --doctest-modules --cov"
 
 [tool.coverage.run]
 branch = true
