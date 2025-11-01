@@ -222,6 +222,8 @@ class TestPredictionHead:
     def test_forward(self, labels):
         batch_size, seq_len, hidden_size = 2, 28, 768
         embeddings = torch.randn(batch_size, seq_len, hidden_size)
+        if labels is not None:
+            labels = labels.unsqueeze(-1)
 
         output = self.head(embeddings, labels=labels)
 
