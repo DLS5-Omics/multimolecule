@@ -38,8 +38,9 @@ class MSELoss(nn.MSELoss):
     def __init__(self, config: HeadConfig) -> None:
         super().__init__(**config.get("loss", {}))
         self.config = config
+        self.num_labels = config.num_labels
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
         if input.ndim == target.ndim + 1:
-            target = target.unsqueeze(-1)
+            input = input.squeeze(-1)
         return super().forward(input, target.to(input.dtype))
