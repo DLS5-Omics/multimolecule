@@ -24,5 +24,5 @@ from transformers import pipeline
 
 import multimolecule as mm  # noqa: F401
 
-predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
+predictor = pipeline("rna-secondary-structure", model="multimolecule/unirna-l16-ss")
 output = predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU", output_contact_map=True)

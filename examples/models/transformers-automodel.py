@@ -24,8 +24,8 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 import multimolecule  # noqa: F401
 
-model = AutoModelForSequenceClassification.from_pretrained("multimolecule/mrnafm")
-tokenizer = AutoTokenizer.from_pretrained("multimolecule/mrnafm")
+model = AutoModelForSequenceClassification.from_pretrained("multimolecule/unirna-l16")
+tokenizer = AutoTokenizer.from_pretrained("multimolecule/unirna-l16")
 
 sequence = "UAGCGUAUCAGACUGAUGUUG"
 output = model(**tokenizer(sequence, return_tensors="pt"))

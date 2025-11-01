@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import os
 import shutil
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from warnings import warn
 
 import frontmatter as fm
@@ -124,24 +124,24 @@ def update_readme(readme_path: str, model: str) -> None:
         raise ValueError(f"Sequence type '{post['pipeline_tag']}' not found in reference sequences.")
     post["widget"] = []
     for name, sequence in tqdm(ref_sequences.items(), total=len(ref_sequences), desc="Generating widget data"):
-        output = run_pipeline(ppl, sequence)
+        output, text = run_pipeline(ppl, sequence)
         post["widget"].append(
             {
                 "example_title": name,
-                "text": sequence,
+                "text": text,
                 "output": output,
             }
         )
     fm.dump(post, readme_path)
 
 
-def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
+def run_pipeline(ppl: Pipeline, sequence: str) -> Tuple[List[Dict] | Dict, str]:
     if ppl.task == "fill-mask":
-        sequence = sequence[:10] + sequence[10:].replace("U", "<mask>", 1)
-        return [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
+        sequence = sequence.replace("U", "<mask>", 1)
+        return [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)], sequence
     if ppl.task == "rna-secondary-structure":
-        return {"text": ppl(sequence)["secondary_structure"]}
-    raise RecursionError(f"Pipeline {ppl.task} is not supported")
+        return {"text": ppl(sequence)["secondary_structure"]}, sequence
+    raise RuntimeError(f"Pipeline {ppl.task} is not supported")
 
 
 def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "model"):

@@ -131,6 +131,16 @@ from .splicebert import (
     SpliceBertForTokenPrediction,
     SpliceBertModel,
 )
+from .unirna import (
+    UniRnaConfig,
+    UniRnaForContactPrediction,
+    UniRnaForMaskedLM,
+    UniRnaForPreTraining,
+    UniRnaForSecondaryStructurePrediction,
+    UniRnaForSequencePrediction,
+    UniRnaForTokenPrediction,
+    UniRnaModel,
+)
 from .utrbert import (
     UtrBertConfig,
     UtrBertForContactPrediction,
@@ -240,6 +250,14 @@ __all__ = [
     "SpliceBertForTokenPrediction",
     "SpliceBertForMaskedLM",
     "SpliceBertForPreTraining",
+    "UniRnaConfig",
+    "UniRnaModel",
+    "UniRnaForContactPrediction",
+    "UniRnaForSequencePrediction",
+    "UniRnaForTokenPrediction",
+    "UniRnaForMaskedLM",
+    "UniRnaForPreTraining",
+    "UniRnaForSecondaryStructurePrediction",
     "UtrBertConfig",
     "UtrBertModel",
     "UtrBertForContactPrediction",

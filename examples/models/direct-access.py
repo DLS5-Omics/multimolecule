@@ -20,10 +20,10 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from multimolecule.models import RnaFmForTokenPrediction, RnaTokenizer
+from multimolecule.models import RnaTokenizer, UniRnaForTokenPrediction
 
-model = RnaFmForTokenPrediction.from_pretrained("multimolecule/rnafm")
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rnafm")
+model = UniRnaForTokenPrediction.from_pretrained("multimolecule/unirna-l16")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/unirna-l16")
 
 sequence = "UAGCGUAUCAGACUGAUGUUG"
 output = model(**tokenizer(sequence, return_tensors="pt"))

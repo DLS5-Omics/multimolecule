@@ -8,7 +8,7 @@ license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
   - multimolecule/rfam
-  - multimolecule/ensembl-genome-browser
+  - multimolecule/ensembl_genome_browser
   - multimolecule/nucleotide
 library_name: multimolecule
 pipeline_tag: fill-mask
@@ -113,39 +113,11 @@ pip install multimolecule
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
-<<<<<<< HEAD
 import multimolecule  # you must import multimolecule to register models
 from transformers import pipeline
 
 predictor = pipeline("fill-mask", model="multimolecule/rinalmo")
 output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
-=======
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
-
->>> unmasker = pipeline("fill-mask", model="multimolecule/rinalmo-giga")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.9774785041809082,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.004996326752007008,
-  'token': 22,
-  'token_str': 'X',
-  'sequence': 'G G U C X C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.0035297079011797905,
-  'token': 3,
-  'token_str': '<unk>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.002614670665934682,
-  'token': 10,
-  'token_str': 'N',
-  'sequence': 'G G U C N C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.00249761575832963,
-  'token': 5,
-  'token_str': '<null>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'}]
->>>>>>> 6fbb6942... update RiNALMo models
 ```
 
 ### Downstream Use
@@ -240,7 +212,7 @@ RiNALMo used Masked Language Modeling (MLM) as the pre-training objective: takin
 ### Training Data
 
 The RiNALMo model was pre-trained on a cocktail of databases including [RNAcentral](https://rnacentral.org), [Rfam](https://rfam.org), [Ensembl Genome Browser](https://ensembl.org), and [Nucleotide](https://ncbi.nlm.nih.gov/nucleotide).
-The training data contains 36 million unique ncRNA sequences.
+The raw data for training contains 36 million unique ncRNA sequences.
 
 To ensure sequence diversity in each training batch, RiNALMo clustered the sequences with [MMSeqs2](https://github.com/soedinglab/MMseqs2) into 17 million clusters and then sampled each sequence in the batch from a different cluster.
 

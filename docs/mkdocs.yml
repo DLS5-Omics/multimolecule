@@ -53,6 +53,7 @@ nav:
           - RNA-MSM: models/rnamsm.md
           - SpliceAI: models/spliceai.md
           - SpliceBERT: models/splicebert.md
+          - Uni-RNA: models/unirna.md
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md
       - utils:
