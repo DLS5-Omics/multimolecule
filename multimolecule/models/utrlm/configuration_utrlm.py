@@ -101,7 +101,7 @@ class UtrLmConfig(PreTrainedConfig):
         hidden_size: int = 128,
         num_hidden_layers: int = 6,
         num_attention_heads: int = 16,
-        intermediate_size: int = 512,
+        intermediate_size: int | None = None,
         hidden_act: str = "gelu",
         hidden_dropout: float = 0.1,
         attention_dropout: float = 0.1,
@@ -120,6 +120,8 @@ class UtrLmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if intermediate_size is None:
+            intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers

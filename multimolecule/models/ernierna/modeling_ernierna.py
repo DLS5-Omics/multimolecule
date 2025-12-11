@@ -145,7 +145,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         class PreTrainedModel
         """
         for layer, heads in heads_to_prune.items():
-            self.encoder.layer[layer].attention.prune_heads(heads)
+            self.encoder.layers[layer].attention.prune_heads(heads)
 
     def get_pairwise_bias(
         self, input_ids: Tensor | NestedTensor, attention_mask: Tensor | NestedTensor | None = None
@@ -307,10 +307,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
 
-        if not return_dict:
-            return (sequence_output, pooled_output) + encoder_outputs[1:]
-
-        return ErnieRnaModelOutputWithPoolingAndCrossAttentions(
+        output = ErnieRnaModelOutputWithPoolingAndCrossAttentions(
             last_hidden_state=sequence_output,
             pooler_output=pooled_output,
             past_key_values=encoder_outputs.past_key_values,
@@ -319,6 +316,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
             attentions=encoder_outputs.attentions,
             cross_attentions=encoder_outputs.cross_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
@@ -371,19 +369,16 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.sequence_head(outputs, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.sequence_head(outputs, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaSequencePredictorOutput(
+        output = ErnieRnaSequencePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
@@ -405,7 +400,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.model = ErnieRnaModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -439,19 +434,16 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.token_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.token_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaTokenPredictorOutput(
+        output = ErnieRnaTokenPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
@@ -472,7 +464,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.model = ErnieRnaModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -509,19 +501,16 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.contact_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaContactPredictorOutput(
+        output = ErnieRnaContactPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
@@ -549,7 +538,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
                 "If you want to use `ErnieRnaForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.model = ErnieRnaModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -592,19 +581,16 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.lm_head(outputs, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaForMaskedLMOutput(
+        output = ErnieRnaForMaskedLMOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
@@ -680,13 +666,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
         losses = tuple(l for l in (loss_lm, loss_ss) if l is not None)  # noqa: E741
         loss = torch.mean(torch.tensor(losses)) if losses else None
 
-        if not return_dict:
-            output = outputs[2:]
-            output = ((logits_ss, loss_ss) + output) if loss_ss is not None else ((logits_ss,) + output)
-            output = ((logits_lm, loss_lm) + output) if loss_lm is not None else ((logits_lm,) + output)
-            return ((loss,) + output) if loss is not None else output
-
-        return ErnieRnaForSecondaryStructurePredictorOutput(
+        output = ErnieRnaForSecondaryStructurePredictorOutput(
             loss=loss,
             logits_lm=logits_lm,
             loss_lm=loss_lm,
@@ -696,6 +676,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
             attentions=outputs.attentions,
             attention_biases=outputs.attention_biases,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaEmbeddings(nn.Module):
@@ -759,7 +740,7 @@ class ErnieRnaEncoder(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
         self.config = config
-        self.layer = nn.ModuleList([ErnieRnaLayer(config) for _ in range(config.num_hidden_layers)])
+        self.layers = nn.ModuleList([ErnieRnaLayer(config) for _ in range(config.num_hidden_layers)])
         self.gradient_checkpointing = False
 
     def forward(
@@ -787,7 +768,7 @@ class ErnieRnaEncoder(nn.Module):
             use_cache = False
 
         next_decoder_cache = () if use_cache else None
-        for i, layer_module in enumerate(self.layer):
+        for i, layer in enumerate(self.layers):
             if output_hidden_states:
                 all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore[operator]
 
@@ -796,7 +777,7 @@ class ErnieRnaEncoder(nn.Module):
 
             if self.gradient_checkpointing and self.training:
                 layer_outputs = self._gradient_checkpointing_func(
-                    layer_module.__call__,
+                    layer.__call__,
                     hidden_states,
                     attention_mask,
                     attention_bias,
@@ -807,7 +788,7 @@ class ErnieRnaEncoder(nn.Module):
                     output_attentions,
                 )
             else:
-                layer_outputs = layer_module(
+                layer_outputs = layer(
                     hidden_states,
                     attention_mask,
                     attention_bias,
@@ -831,20 +812,7 @@ class ErnieRnaEncoder(nn.Module):
         if output_hidden_states:
             all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore[operator]
 
-        if not return_dict:
-            return tuple(
-                v
-                for v in [
-                    hidden_states,
-                    next_decoder_cache,
-                    all_hidden_states,
-                    all_self_attentions,
-                    all_cross_attentions,
-                    all_attention_biases,
-                ]
-                if v is not None
-            )
-        return ErnieRnaModelOutputWithPastAndCrossAttentions(
+        output = ErnieRnaModelOutputWithPastAndCrossAttentions(
             last_hidden_state=hidden_states,
             past_key_values=next_decoder_cache,  # type: ignore[arg-type]
             hidden_states=all_hidden_states,
@@ -852,13 +820,14 @@ class ErnieRnaEncoder(nn.Module):
             cross_attentions=all_cross_attentions,
             attention_biases=all_attention_biases,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class ErnieRnaLayer(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
         self.chunk_size_feed_forward = config.chunk_size_feed_forward
-        self.seq_len_dim = 1
+        self.seq_length_dim = 1
         self.attention = ErnieRnaAttention(config)
         self.is_decoder = config.is_decoder
         self.add_cross_attention = config.add_cross_attention
@@ -926,7 +895,7 @@ class ErnieRnaLayer(nn.Module):
             present_key_value = present_key_value + cross_attn_present_key_value
 
         layer_output = apply_chunking_to_forward(
-            self.feed_forward_chunk, self.chunk_size_feed_forward, self.seq_len_dim, attention_output
+            self.feed_forward_chunk, self.chunk_size_feed_forward, self.seq_length_dim, attention_output
         )
         outputs = (layer_output,) + outputs
 

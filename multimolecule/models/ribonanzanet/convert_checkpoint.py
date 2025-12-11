@@ -82,7 +82,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         if key.startswith("encoder"):
             key = key.replace("encoder", "model.embeddings.word_embeddings")
         key = key.replace("pos_encoder.linear", "model.encoder.pairwise_embeddings.position_embeddings")
-        key = key.replace("transformer_encoder", "model.encoder.layer")
+        key = key.replace("transformer_encoder", "model.encoder.layers")
         key = key.replace("triangle", "pairwise.triangle")
         if key.startswith("outer_product_mean"):
             key = key.replace("outer_product_mean", "model.encoder.pairwise_embeddings.triangle_proj")

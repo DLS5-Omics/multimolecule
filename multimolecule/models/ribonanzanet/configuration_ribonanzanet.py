@@ -84,7 +84,7 @@ class RibonanzaNetConfig(PreTrainedConfig):
         hidden_size: int = 256,
         num_hidden_layers: int = 9,
         num_attention_heads: int = 8,
-        intermediate_size: int = 1024,
+        intermediate_size: int | None = None,
         pairwise_size: int = 64,
         pairwise_attention_size: int = 32,
         pairwise_intermediate_size: int = 256,
@@ -106,6 +106,8 @@ class RibonanzaNetConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if intermediate_size is None:
+            intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size
         self.type_vocab_size = 2
         self.hidden_size = hidden_size

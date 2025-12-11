@@ -96,7 +96,7 @@ class RnaMsmConfig(PreTrainedConfig):
         hidden_size: int = 768,
         num_hidden_layers: int = 10,
         num_attention_heads: int = 12,
-        intermediate_size: int = 3072,
+        intermediate_size: int | None = None,
         hidden_act: str = "gelu",
         hidden_dropout: float = 0.1,
         attention_dropout: float = 0.1,
@@ -116,6 +116,8 @@ class RnaMsmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if intermediate_size is None:
+            intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers

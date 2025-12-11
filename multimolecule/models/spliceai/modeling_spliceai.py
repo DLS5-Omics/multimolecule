@@ -120,14 +120,12 @@ class SpliceAiModel(SpliceAiPreTrainedModel):
             for module in self.networks
         ]
 
-        if not return_dict:
-            return tuple(average_output(output) for output in zip(*all_outputs))
-
         outputs: Dict = {k: [outputs[k] for outputs in all_outputs] for k in all_outputs[0]}
         for key, output in outputs.items():
             outputs[key] = average_output(output)
 
-        return SpliceAiModelOutput(**outputs)
+        output = SpliceAiModelOutput(**outputs)
+        return output if return_dict else output.to_tuple()
 
 
 class SpliceAiEmbedding(nn.Module):
@@ -185,13 +183,10 @@ class SpliceAiModule(nn.Module):
 
         loss = self.criterion(logits, labels) if labels is not None else None
 
-        if not return_dict:
-            output = (logits,) + outputs[1:]
-            return (loss,) + output if loss is not None else output
-
-        return SpliceAiModelOutput(
+        output = SpliceAiModelOutput(
             loss=loss, logits=logits, contexts=outputs.contexts, hidden_states=outputs.hidden_states
         )
+        return output if return_dict else output.to_tuple()
 
 
 class SpliceAiEncoder(nn.Module):
@@ -233,10 +228,8 @@ class SpliceAiEncoder(nn.Module):
         if output_hidden_states:
             hidden_states = hidden_states + (context.transpose(1, 2),)  # type: ignore[operator]
 
-        if not return_dict:
-            return context, hidden_states if output_hidden_states else context
-
-        return SpliceAiModuleOutput(last_context=context, contexts=contexts, hidden_states=hidden_states)
+        output = SpliceAiModuleOutput(last_context=context, contexts=contexts, hidden_states=hidden_states)
+        return output if return_dict else output.to_tuple()
 
 
 class SpliceAiStage(nn.Module):

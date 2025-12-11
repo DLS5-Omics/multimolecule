@@ -68,7 +68,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("beta", "bias")
         key = key.replace("embedding", "model.embeddings.word_embeddings")
         key = key.replace("transformer", "model")
-        key = key.replace("blocks", "encoder.layer")
+        key = key.replace("blocks", "encoder.layers")
         key = key.replace("mh_attn", "attention")
         key = key.replace("attn_layer_norm", "attention.layer_norm")
         key = key.replace("out_proj", "output.dense")

@@ -98,7 +98,7 @@ class RnaBertConfig(PreTrainedConfig):
         multiple: int | None = None,
         num_hidden_layers: int = 6,
         num_attention_heads: int = 12,
-        intermediate_size: int = 40,
+        intermediate_size: int | None = None,
         hidden_act: str = "gelu",
         hidden_dropout: float = 0.0,
         attention_dropout: float = 0.0,
@@ -115,6 +115,8 @@ class RnaBertConfig(PreTrainedConfig):
         super().__init__(**kwargs)
         if hidden_size is None:
             hidden_size = num_attention_heads * multiple if multiple is not None else 120
+        if intermediate_size is None:
+            intermediate_size = hidden_size // 3
         self.vocab_size = vocab_size
         self.ss_vocab_size = ss_vocab_size
         self.type_vocab_size = 2

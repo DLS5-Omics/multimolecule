@@ -159,10 +159,16 @@ class Tokenizer(PreTrainedTokenizer):
         return list(text)
 
     def _convert_token_to_id(self, token: str) -> int:
-        return self._token_to_id.get(token, self.unk_token_id)
+        out = self._token_to_id.get(token, self.unk_token_id)
+        if out is None:
+            raise ValueError(f"Token {token} not found in vocabulary and no UNK token set.")
+        return out
 
     def _convert_id_to_token(self, index: int) -> str:
-        return self._id_to_token.get(index, self.unk_token)
+        out = self._id_to_token.get(index, self.unk_token)
+        if out is None:
+            raise ValueError(f"Index {index} not found in vocabulary and no UNK token set.")
+        return out
 
     def token_to_id(self, token: str) -> int:
         return self._convert_token_to_id(token)

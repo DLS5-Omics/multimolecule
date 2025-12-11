@@ -64,7 +64,7 @@ def convert_checkpoint(convert_config):
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
     state_dict = {}
     for key, value in original_state_dict.items():
-        key = key.replace("layers", "model.encoder.layer")
+        key = key.replace("layers", "model.encoder.layers")
         key = key.replace("msa_position_embedding", "model.embeddings.msa_embeddings")
         key = key.replace("embed_tokens", "model.embeddings.word_embeddings")
         key = key.replace("embed_positions", "model.embeddings.position_embeddings")

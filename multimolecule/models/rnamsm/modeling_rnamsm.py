@@ -188,16 +188,14 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
             sequence_output = sequence_output.squeeze(1)
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
 
-        if not return_dict:
-            return (sequence_output, pooled_output) + encoder_outputs[1:]
-
-        return RnaMsmModelOutputWithPooling(
+        output = RnaMsmModelOutputWithPooling(
             last_hidden_state=sequence_output,
             pooler_output=pooled_output,
             hidden_states=encoder_outputs.hidden_states,
             col_attentions=encoder_outputs.col_attentions,
             row_attentions=encoder_outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
@@ -248,20 +246,17 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.sequence_head(outputs, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.sequence_head(outputs, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmSequencePredictorOutput(
+        output = RnaMsmSequencePredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
@@ -282,7 +277,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -312,20 +307,17 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.token_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.token_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmTokenPredictorOutput(
+        output = RnaMsmTokenPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
@@ -346,7 +338,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -383,20 +375,17 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.contact_head(outputs, attention_mask, input_ids, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.contact_head(outputs, attention_mask, input_ids, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmContactPredictorOutput(
+        output = RnaMsmContactPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
@@ -419,7 +408,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config, weight=self.model.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
@@ -454,20 +443,17 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
             return_dict=return_dict,
             **kwargs,
         )
-        output = self.lm_head(outputs, labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.lm_head(outputs, labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmForMaskedLMOutput(
+        output = RnaMsmForMaskedLMOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmForPreTraining(RnaMsmForMaskedLM):
@@ -539,13 +525,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
         losses = tuple(l for l in (loss_lm, loss_ss) if l is not None)  # noqa: E741
         loss = torch.mean(torch.stack(losses)) if losses else None
 
-        if not return_dict:
-            output = outputs[2:]
-            output = ((logits_ss, loss_ss) + output) if loss_ss is not None else ((logits_ss,) + output)
-            output = ((logits_lm, loss_lm) + output) if loss_lm is not None else ((logits_lm,) + output)
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmForPreTrainingOutput(
+        output = RnaMsmForPreTrainingOutput(
             loss=loss,
             logits_lm=logits_lm,
             loss_lm=loss_lm,
@@ -555,6 +535,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
@@ -573,7 +554,7 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.ss_head = ContactAttentionHead(config, head_config=HeadConfig(output_name="row_attentions"))
         self.require_attentions = self.ss_head.require_attentions
 
@@ -610,20 +591,17 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
             **kwargs,
         )
 
-        output = self.ss_head(outputs, attention_mask, input_ids, labels=labels)
-        logits, loss = output.logits, output.loss
+        head_output = self.ss_head(outputs, attention_mask, input_ids, labels=labels)
+        logits, loss = head_output.logits, head_output.loss
 
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
-
-        return RnaMsmContactPredictorOutput(
+        output = RnaMsmContactPredictorOutput(
             loss=loss,
             logits=logits,
             hidden_states=outputs.hidden_states,
             col_attentions=outputs.col_attentions,
             row_attentions=outputs.row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 class RnaMsmEmbeddings(nn.Module):
@@ -702,7 +680,7 @@ class RnaMsmLearnedPositionalEmbedding(nn.Embedding):
         self.max_positions = num_embeddings
 
     def forward(self, position_ids: torch.LongTensor) -> Tensor:
-        """Input is expected to be of size [bsz x seq_len]."""
+        """Input is expected to be of size [bsz x seq_length]."""
 
         # This is a bug in the original implementation
         positions = position_ids + 1
@@ -721,7 +699,7 @@ class RnaMsmEncoder(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.config = config
-        self.layer = nn.ModuleList([RnaMsmAxialLayer(config) for _ in range(config.num_hidden_layers)])
+        self.layers = nn.ModuleList([RnaMsmAxialLayer(config) for _ in range(config.num_hidden_layers)])
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.gradient_checkpointing = False
 
@@ -742,20 +720,20 @@ class RnaMsmEncoder(nn.Module):
         # B x R x C x D -> R x C x B x D
         hidden_states = hidden_states.permute(1, 2, 0, 3)
 
-        for layer_module in self.layer:
+        for layer in self.layers:
             if output_hidden_states:
                 all_hidden_states = all_hidden_states + (hidden_states.permute(2, 0, 1, 3),)  # type: ignore[operator]
 
             if self.gradient_checkpointing and self.training:
                 layer_outputs = self._gradient_checkpointing_func(
-                    layer_module.__call__,
+                    layer.__call__,
                     hidden_states,
                     None,
                     key_padding_mask,
                     output_attentions,
                 )
             else:
-                layer_outputs = layer_module(
+                layer_outputs = layer(
                     hidden_states,
                     None,
                     key_padding_mask,
@@ -776,23 +754,13 @@ class RnaMsmEncoder(nn.Module):
         if output_hidden_states:
             all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore[operator]
 
-        if not return_dict:
-            return tuple(
-                v
-                for v in [
-                    hidden_states,
-                    all_hidden_states,
-                    all_col_attentions,
-                    all_row_attentions,
-                ]
-                if v is not None
-            )
-        return RnaMsmModelOutput(
+        output = RnaMsmModelOutput(
             last_hidden_state=hidden_states,
             hidden_states=all_hidden_states,
             col_attentions=all_col_attentions,
             row_attentions=all_row_attentions,
         )
+        return output if return_dict else output.to_tuple()
 
 
 layers = ConfigRegistry("layer_type")

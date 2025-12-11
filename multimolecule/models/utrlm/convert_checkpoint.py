@@ -69,7 +69,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("model.emb_layer_norm_after", "model.encoder.emb_layer_norm_after")
         key = key.replace("model.embed_tokens", "model.embeddings.word_embeddings")
         key = key.replace("rot_emb", "rotary_embeddings")
-        key = key.replace("layers", "encoder.layer")
+        key = key.replace("layers", "encoder.layers")
         key = key.replace("self_attn", "attention.self")
         key = key.replace("q_proj", "query")
         key = key.replace("k_proj", "key")

@@ -106,22 +106,23 @@ class RotaryEmbedding(nn.Module):
         if seq_length is None:
             seq_length = k.shape[-2]
 
-        self._update_cos_sin_tables(k, seq_len_dim=-2, seq_length=seq_length)
+        self._update_cos_sin_tables(k, seq_length_dim=-2, seq_length=seq_length)
         return self.apply_rotary_pos_emb(q, offset=offset), self.apply_rotary_pos_emb(k, offset=offset)
 
+    @torch.no_grad()
     def _update_cos_sin_tables(
-        self, x: Tensor, seq_len_dim: int = 2, seq_length: int | None = None
+        self, x: Tensor, seq_length_dim: int = 2, seq_length: int | None = None
     ) -> Tuple[Tensor, Tensor]:
         """
         Update cached cos/sin tables for rotary embeddings.
 
         Args:
             x: Input tensor to determine device and dtype
-            seq_len_dim: Dimension containing sequence length (default: -2)
-            seq_length: Full sequence length to cache. If None, uses x.shape[seq_len_dim]
+            seq_length_dim: Dimension containing sequence length (default: -2)
+            seq_length: Full sequence length to cache. If None, uses x.shape[seq_length_dim]
         """
         if seq_length is None:
-            seq_length = x.shape[seq_len_dim]
+            seq_length = x.shape[seq_length_dim]
 
         if seq_length != self._seq_len_cached or self._cos_cached is None or self._cos_cached.device != x.device:
             self._seq_len_cached = seq_length

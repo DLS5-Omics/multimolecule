@@ -35,33 +35,33 @@ class TestRotaryEmbedding:
         base = 10000.0
         rotary_emb = RotaryEmbedding(embedding_dim, base)
 
-        batch_size, num_heads, seq_len, head_dim = 2, 4, 10, 64
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        batch_size, num_heads, seq_length, head_dim = 2, 4, 10, 64
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
         q_rot, k_rot = rotary_emb(q, k)
 
         assert k_rot.shape == k.shape
 
-        assert rotary_emb._seq_len_cached == seq_len
+        assert rotary_emb._seq_len_cached == seq_length
         assert rotary_emb._cos_cached is not None
         assert rotary_emb._sin_cached is not None
-        assert rotary_emb._cos_cached.shape == (1, 1, seq_len, head_dim)
-        assert rotary_emb._sin_cached.shape == (1, 1, seq_len, head_dim)
+        assert rotary_emb._cos_cached.shape == (1, 1, seq_length, head_dim)
+        assert rotary_emb._sin_cached.shape == (1, 1, seq_length, head_dim)
 
     def test_cache_reuse(self):
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim)
 
-        batch_size, num_heads, seq_len, head_dim = 2, 8, 10, 64
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        batch_size, num_heads, seq_length, head_dim = 2, 8, 10, 64
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
         rotary_emb(q, k)
 
         cos_cached_before = rotary_emb._cos_cached.clone()
         sin_cached_before = rotary_emb._sin_cached.clone()
 
-        q2 = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k2 = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        q2 = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k2 = torch.randn(batch_size, num_heads, seq_length, head_dim)
         rotary_emb(q2, k2)
 
         assert torch.equal(rotary_emb._cos_cached, cos_cached_before)
@@ -94,13 +94,13 @@ class TestRotaryEmbedding:
         assert torch.allclose(x_rotated, expected)
 
     def test_position_relationships(self):
-        seq_len = 8
+        seq_length = 8
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim)
 
         batch_size, num_heads, head_dim = 1, 1, embedding_dim
-        q_test = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k_test = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        q_test = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k_test = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
         q_rot_test, k_rot_test = rotary_emb(q_test, k_test)
 
@@ -151,9 +151,9 @@ class TestRotaryEmbedding:
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim, scale=scale)
 
-        batch_size, num_heads, seq_len, head_dim = 1, 1, 10, embedding_dim
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        batch_size, num_heads, seq_length, head_dim = 1, 1, 10, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
         q_rot, k_rot = rotary_emb(q, k)
         assert q_rot.shape == q.shape
@@ -177,9 +177,9 @@ class TestRotaryEmbedding:
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim)
 
-        batch_size, num_heads, seq_len, head_dim = 1, 1, 10, embedding_dim
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        batch_size, num_heads, seq_length, head_dim = 1, 1, 10, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
         # offset=0 should be the same as no offset
         q_rot1, k_rot1 = rotary_emb(q, k)
@@ -189,34 +189,34 @@ class TestRotaryEmbedding:
         assert torch.allclose(k_rot1, k_rot2, atol=1e-6)
 
     def test_offset_with_seq_len(self):
-        """Test that offset works correctly with seq_len parameter."""
+        """Test that offset works correctly with seq_length parameter."""
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim)
 
-        batch_size, num_heads, seq_len, head_dim = 1, 1, 5, embedding_dim
+        batch_size, num_heads, seq_length, head_dim = 1, 1, 5, embedding_dim
         offset = 10
-        full_seq_len = offset + seq_len
+        full_seq_len = offset + seq_length
 
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
         # Apply with offset
-        q_rot, k_rot = rotary_emb(q, k, offset=offset, seq_len=full_seq_len)
+        q_rot, k_rot = rotary_emb(q, k, offset=offset, seq_length=full_seq_len)
 
         assert q_rot.shape == q.shape
         assert k_rot.shape == k.shape
         assert rotary_emb._seq_len_cached == full_seq_len
 
     def test_offset_without_seq_len_error(self):
-        """Test that offset > 0 without seq_len raises ValueError."""
+        """Test that offset > 0 without seq_length raises ValueError."""
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim)
 
-        batch_size, num_heads, seq_len, head_dim = 1, 1, 5, embedding_dim
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        batch_size, num_heads, seq_length, head_dim = 1, 1, 5, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
-        with pytest.raises(ValueError, match="seq_len must be provided when offset > 0"):
+        with pytest.raises(ValueError, match="seq_length must be provided when offset > 0"):
             rotary_emb(q, k, offset=10)
 
     def test_offset_consistency(self):
@@ -226,7 +226,7 @@ class TestRotaryEmbedding:
 
         batch_size, num_heads, full_seq_len, head_dim = 1, 1, 20, embedding_dim
         offset = 5
-        seq_len = 10
+        seq_length = 10
 
         # Create full sequence
         q_full = torch.randn(batch_size, num_heads, full_seq_len, head_dim)
@@ -236,13 +236,13 @@ class TestRotaryEmbedding:
         q_rot_full, k_rot_full = rotary_emb(q_full, k_full)
 
         # Apply with offset to a slice
-        q_slice = q_full[:, :, offset : offset + seq_len, :]
-        k_slice = k_full[:, :, offset : offset + seq_len, :]
-        q_rot_slice, k_rot_slice = rotary_emb(q_slice, k_slice, offset=offset, seq_len=full_seq_len)
+        q_slice = q_full[:, :, offset : offset + seq_length, :]
+        k_slice = k_full[:, :, offset : offset + seq_length, :]
+        q_rot_slice, k_rot_slice = rotary_emb(q_slice, k_slice, offset=offset, seq_length=full_seq_len)
 
         # Results should match
-        assert torch.allclose(q_rot_full[:, :, offset : offset + seq_len, :], q_rot_slice, atol=1e-5)
-        assert torch.allclose(k_rot_full[:, :, offset : offset + seq_len, :], k_rot_slice, atol=1e-5)
+        assert torch.allclose(q_rot_full[:, :, offset : offset + seq_length, :], q_rot_slice, atol=1e-5)
+        assert torch.allclose(k_rot_full[:, :, offset : offset + seq_length, :], k_rot_slice, atol=1e-5)
 
     def test_scale_with_offset(self):
         """Test that scale and offset work together."""
@@ -250,14 +250,14 @@ class TestRotaryEmbedding:
         scale = 2.0
         rotary_emb = RotaryEmbedding(embedding_dim, scale=scale)
 
-        batch_size, num_heads, seq_len, head_dim = 1, 1, 5, embedding_dim
+        batch_size, num_heads, seq_length, head_dim = 1, 1, 5, embedding_dim
         offset = 10
-        full_seq_len = offset + seq_len
+        full_seq_len = offset + seq_length
 
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
-        q_rot, k_rot = rotary_emb(q, k, offset=offset, seq_len=full_seq_len)
+        q_rot, k_rot = rotary_emb(q, k, offset=offset, seq_length=full_seq_len)
 
         assert q_rot.shape == q.shape
         assert k_rot.shape == k.shape
@@ -265,16 +265,16 @@ class TestRotaryEmbedding:
         assert rotary_emb._seq_len_cached == full_seq_len
 
     def test_seq_len_auto_detection(self):
-        """Test that seq_len is automatically detected when not provided."""
+        """Test that seq_length is automatically detected when not provided."""
         embedding_dim = 64
         rotary_emb = RotaryEmbedding(embedding_dim)
 
-        batch_size, num_heads, seq_len, head_dim = 1, 1, 15, embedding_dim
-        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
-        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        batch_size, num_heads, seq_length, head_dim = 1, 1, 15, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_length, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_length, head_dim)
 
         q_rot, k_rot = rotary_emb(q, k)
 
-        assert rotary_emb._seq_len_cached == seq_len
+        assert rotary_emb._seq_len_cached == seq_length
         assert q_rot.shape == q.shape
         assert k_rot.shape == k.shape

@@ -141,7 +141,7 @@ def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
         return [{"label": i["token_str"], "score": round(i["score"], 6)} for i in ppl(sequence)]
     if ppl.task == "rna-secondary-structure":
         return {"text": ppl(sequence)["secondary_structure"]}
-    raise RecursionError(f"Pipeline {ppl.task} is not supported")
+    raise ValueError(f"Pipeline {ppl.task} is not supported")
 
 
 def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "model"):

@@ -103,7 +103,7 @@ class RiNALMoConfig(PreTrainedConfig):
         hidden_size: int = 1280,
         num_hidden_layers: int = 33,
         num_attention_heads: int = 20,
-        intermediate_size: int = 5120,
+        intermediate_size: int | None = None,
         hidden_act: str = "gelu",
         hidden_dropout: float = 0.1,
         attention_dropout: float = 0.1,
@@ -121,6 +121,8 @@ class RiNALMoConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if intermediate_size is None:
+            intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers

@@ -237,13 +237,13 @@ def postprocess(contact_map: torch.Tensor, threshold: float = 0.5) -> torch.Tens
     by selecting the highest value above the threshold in each row/column using vectorized operations.
 
     Args:
-        contact_map: A 2D tensor representing the contact map with shape (seq_len, seq_len)
+        contact_map: A 2D tensor representing the contact map with shape (seq_length, seq_length)
         threshold: The minimum value for a contact to be considered
 
     Returns:
         A binary tensor of the same shape where each position has at most one pairing
     """
-    seq_len = contact_map.shape[0]
+    seq_length = contact_map.shape[0]
     device = contact_map.device
 
     contact_map.fill_diagonal_(0)
@@ -259,7 +259,7 @@ def postprocess(contact_map: torch.Tensor, threshold: float = 0.5) -> torch.Tens
     has_valid_row_pair = torch.any(above_threshold, dim=1)
     has_valid_col_pair = torch.any(above_threshold, dim=0)
 
-    mutual_selection = col_max_indices[row_max_indices] == torch.arange(seq_len, device=device)
+    mutual_selection = col_max_indices[row_max_indices] == torch.arange(seq_length, device=device)
 
     mutual_pairs = (
         has_valid_row_pair & has_valid_col_pair[row_max_indices] & mutual_selection & (row_max_values > threshold)

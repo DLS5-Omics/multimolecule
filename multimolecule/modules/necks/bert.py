@@ -60,7 +60,7 @@ class BERTNeck(nn.Module):
         bert_layer = TransformerEncoderLayer(
             embed_dim, attention_heads, *args, dropout=dropout, attn_dropout=dropout, ffn_dropout=dropout, **kwargs
         )
-        self.bert = TransformerEncoder(bert_layer, num_layers)
+        self.model = TransformerEncoder(bert_layer, num_layers)
         self.out_channels = embed_dim
         nn.init.normal_(self.pos_embed, std=0.02)
         nn.init.trunc_normal_(self.cls_token_dis, std=0.2)
@@ -102,7 +102,7 @@ class BERTNeck(nn.Module):
         if all_len > self.pos_embed.shape[1]:
             raise ValueError("sequence length is out of range.")
         output = output + self.pos_embed[:, 0:all_len, :]
-        output = self.bert(output)[0][:, 0:seq_length, :]
+        output = self.model(output)[0][:, 0:seq_length, :]
         if seq_length == 1:
             output = output.squeeze(1)
         return output

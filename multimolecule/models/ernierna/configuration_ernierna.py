@@ -100,7 +100,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         hidden_size: int = 768,
         num_hidden_layers: int = 12,
         num_attention_heads: int = 12,
-        intermediate_size: int = 3072,
+        intermediate_size: int | None = None,
         hidden_act: str = "gelu",
         hidden_dropout: float = 0.1,
         attention_dropout: float = 0.1,
@@ -117,6 +117,8 @@ class ErnieRnaConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if intermediate_size is None:
+            intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size
         self.type_vocab_size = 2
         self.hidden_size = hidden_size

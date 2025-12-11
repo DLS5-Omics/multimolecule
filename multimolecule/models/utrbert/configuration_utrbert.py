@@ -99,7 +99,7 @@ class UtrBertConfig(PreTrainedConfig):
         hidden_size: int = 768,
         num_hidden_layers: int = 12,
         num_attention_heads: int = 12,
-        intermediate_size: int = 3072,
+        intermediate_size: int | None = None,
         hidden_act: str = "gelu",
         hidden_dropout: float = 0.1,
         attention_dropout: float = 0.1,
@@ -118,6 +118,8 @@ class UtrBertConfig(PreTrainedConfig):
             if nmers is None:
                 raise ValueError("`nmers` must be specified if `vocab_size` is not provided.")
             vocab_size = 5**nmers + 6
+        if intermediate_size is None:
+            intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size
         self.nmers = nmers
         self.type_vocab_size = 2
