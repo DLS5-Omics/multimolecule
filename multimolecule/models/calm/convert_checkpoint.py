@@ -62,7 +62,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     state_dict = {}
     for key, value in original_state_dict.items():
         if "lm_head" not in key and "embed" not in key:
-            key = "calm.encoder." + key
+            key = "model.encoder." + key
         key = key.replace("LayerNorm", "layer_norm")
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
@@ -77,7 +77,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
         key = key.replace("rope.freqs", "rotary_embeddings.inv_freq")
-        key = key.replace("embed_tokens", "calm.embeddings.word_embeddings")
+        key = key.replace("embed_tokens", "model.embeddings.word_embeddings")
         key = key.replace("lm_head.dense", "lm_head.transform.dense")
         key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
         key = key.replace("lm_head.weight", "lm_head.decoder.weight")
@@ -85,14 +85,14 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-        state_dict["calm.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.weight"],
         state_dict["lm_head.decoder.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["calm.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
     state_dict["lm_head.decoder.weight"] = decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict

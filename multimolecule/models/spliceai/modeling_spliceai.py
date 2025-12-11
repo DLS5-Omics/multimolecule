@@ -44,7 +44,6 @@ class SpliceAiPreTrainedModel(PreTrainedModel):
     """
 
     config_class = SpliceAiConfig
-    base_model_prefix = "spliceai"
     supports_gradient_checkpointing = True
     _no_split_modules = ["SpliceAiBlock"]
 

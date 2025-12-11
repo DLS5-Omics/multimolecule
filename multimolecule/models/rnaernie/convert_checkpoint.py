@@ -56,7 +56,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     state_dict = {}
     for key, value in original_state_dict.items():
         if key.startswith("ernie"):
-            key = "rna" + key
+            key = "model" + key[5:]
         key = key.replace("LayerNorm", "layer_norm")
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
@@ -84,13 +84,13 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
             state_dict[key] = value.t()
 
     word_embed_weight, decoder_bias = convert_word_embeddings(
-        state_dict["rnaernie.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["rnaernie.embeddings.word_embeddings.weight"] = state_dict["lm_head.decoder.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = state_dict["lm_head.decoder.weight"] = word_embed_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 

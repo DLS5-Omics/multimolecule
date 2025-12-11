@@ -88,8 +88,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     for key, value in original_state_dict.items():
         if key == "threshold":
             continue
-        key = key.replace("bert", "aido_rna")
-        key = key.replace("backbone.encoder", "aido_rna")
+        key = key.replace("bert", "model")
+        key = key.replace("backbone.encoder", "model")
         key = key.replace("ln", "layer_norm")
         key = key.replace("LayerNorm", "layer_norm")
         key = key.replace("mlp.gate_proj", "intermediate.dense")
@@ -107,22 +107,22 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         state_dict[key] = value
 
     if "threshold" in original_state_dict:
-        state_dict["aido_rna.embeddings.word_embeddings.weight"] = convert_word_embeddings(
-            state_dict["aido_rna.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"] = convert_word_embeddings(
+            state_dict["model.embeddings.word_embeddings.weight"],
             old_vocab=original_vocab_list,
             new_vocab=vocab_list,
             std=config.initializer_range,
         )[0]
     else:
         word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-            state_dict["aido_rna.embeddings.word_embeddings.weight"],
+            state_dict["model.embeddings.word_embeddings.weight"],
             state_dict["lm_head.decoder.weight"],
             state_dict["lm_head.decoder.bias"],
             old_vocab=original_vocab_list,
             new_vocab=vocab_list,
             std=config.initializer_range,
         )
-        state_dict["aido_rna.embeddings.word_embeddings.weight"] = word_embed_weight
+        state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
         state_dict["lm_head.decoder.weight"] = decoder_weight
         state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
 

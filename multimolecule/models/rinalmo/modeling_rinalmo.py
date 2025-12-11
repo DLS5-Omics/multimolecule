@@ -67,7 +67,7 @@ class RiNALMoPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RiNALMoConfig
-    base_model_prefix = "rinalmo"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["RiNALMoLayer", "RiNALMoEmbeddings"]
 
@@ -294,7 +294,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config)
+        self.model = RiNALMoModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -315,7 +315,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -380,7 +380,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -450,7 +450,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -529,7 +529,7 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -604,7 +604,7 @@ class RiNALMoForSecondaryStructurePrediction(RiNALMoForMaskedLM):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

@@ -57,7 +57,7 @@ class SpliceBertPreTrainedModel(PreTrainedModel):
     """
 
     config_class = SpliceBertConfig
-    base_model_prefix = "splicebert"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["SpliceBertLayer", "SpliceBertEmbeddings"]
 
@@ -287,7 +287,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config)
+        self.model = SpliceBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -308,7 +308,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -373,7 +373,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -443,7 +443,7 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -522,7 +522,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

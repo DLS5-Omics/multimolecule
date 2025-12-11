@@ -57,7 +57,7 @@ class RibonanzaNetPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RibonanzaNetConfig
-    base_model_prefix = "ribonanzanet"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["RibonanzaNetLayer", "RibonanzaNetEmbeddings"]
 
@@ -277,7 +277,7 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config)
+        self.model = RibonanzaNetModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -298,7 +298,7 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | RibonanzaNetSequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,
@@ -364,7 +364,7 @@ class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | RibonanzaNetTokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,
@@ -432,7 +432,7 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
         if output_attentions is False:
             warn("output_attentions must be True for contact classification and will be ignored.")
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,
@@ -486,7 +486,7 @@ class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | RibonanzaNetForPreTrainingOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,
@@ -570,7 +570,7 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
         if not output_pairwise_states:
             warn("output_pairwise_states must be True since prediction head requires pairwise states.")
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,
@@ -661,7 +661,7 @@ class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,
@@ -778,7 +778,7 @@ class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             head_mask=head_mask,

@@ -52,7 +52,7 @@ class UtrBertPreTrainedModel(PreTrainedModel):
     """
 
     config_class = UtrBertConfig
-    base_model_prefix = "utrbert"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["UtrBertLayer", "UtrBertEmbeddings"]
 
@@ -278,7 +278,7 @@ class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        self.utrbert = UtrBertModel(config)
+        self.model = UtrBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -299,7 +299,7 @@ class UtrBertForSequencePrediction(UtrBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrbert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -364,7 +364,7 @@ class UtrBertForTokenPrediction(UtrBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrbert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -434,7 +434,7 @@ class UtrBertForContactPrediction(UtrBertPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrbert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -513,7 +513,7 @@ class UtrBertForMaskedLM(UtrBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrbert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -545,7 +545,7 @@ class UtrBertForPreTraining(UtrBertForMaskedLM):
 
     def __init__(self, config: UtrBertConfig):
         super().__init__(config)
-        self.utrbert = UtrBertModel(config)
+        self.model = UtrBertModel(config)
 
 
 class UtrBertEmbeddings(nn.Module):

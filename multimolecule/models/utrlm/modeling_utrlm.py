@@ -60,7 +60,7 @@ class UtrLmPreTrainedModel(PreTrainedModel):
     """
 
     config_class = UtrLmConfig
-    base_model_prefix = "utrlm"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["UtrLmLayer", "UtrLmEmbeddings"]
 
@@ -287,7 +287,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config)
+        self.model = UtrLmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -308,7 +308,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -373,7 +373,7 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -443,7 +443,7 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -522,7 +522,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -610,7 +610,7 @@ class UtrLmForPreTraining(UtrLmForMaskedLM):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -717,7 +717,7 @@ class UtrLmForSecondaryStructurePrediction(UtrLmPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

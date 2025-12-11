@@ -60,7 +60,7 @@ class ErnieRnaPreTrainedModel(PreTrainedModel):
     """
 
     config_class = ErnieRnaConfig
-    base_model_prefix = "ernierna"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["ErnieRnaLayer", "ErnieRnaEmbeddings"]
 
@@ -337,7 +337,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config)
+        self.model = ErnieRnaModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -359,7 +359,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -427,7 +427,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -498,7 +498,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -578,7 +578,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | ErnieRnaForMaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -611,7 +611,7 @@ class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config)
+        self.model = ErnieRnaModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -659,7 +659,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
                 warn("output_attention_biases must be True since prediction head requires attention biases.")
             output_attention_biases = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

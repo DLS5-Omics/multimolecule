@@ -52,7 +52,7 @@ class RnaErniePreTrainedModel(PreTrainedModel):
     """
 
     config_class = RnaErnieConfig
-    base_model_prefix = "rnaernie"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["RnaErnieLayer", "RnaErnieEmbeddings"]
 
@@ -284,7 +284,7 @@ class RnaErnieForSequencePrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config)
+        self.model = RnaErnieModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -305,7 +305,7 @@ class RnaErnieForSequencePrediction(RnaErniePreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -370,7 +370,7 @@ class RnaErnieForTokenPrediction(RnaErniePreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -440,7 +440,7 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -519,7 +519,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -551,7 +551,7 @@ class RnaErnieForPreTraining(RnaErnieForMaskedLM):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config)
+        self.model = RnaErnieModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()

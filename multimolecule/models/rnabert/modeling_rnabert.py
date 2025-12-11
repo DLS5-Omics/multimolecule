@@ -60,7 +60,7 @@ class RnaBertPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RnaBertConfig
-    base_model_prefix = "rnabert"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _no_split_modules = ["RnaBertLayer", "RnaBertEmbeddings"]
 
@@ -286,7 +286,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config)
+        self.model = RnaBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -307,7 +307,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -372,7 +372,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -442,7 +442,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
                 warn("output_attentions must be True since prediction head requires attentions.")
             output_attentions = True
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -511,7 +511,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask,
             output_attentions=output_attentions,
@@ -563,7 +563,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config)
+        self.model = RnaBertModel(config)
         self.lm_head = MaskedLMHead(config)
         vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
         self.ss_head = MaskedLMHead(config)
@@ -586,7 +586,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         **kwargs,
     ) -> Tuple[Tensor, ...] | RnaBertForPreTrainingOutput:
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask,
             output_attentions=output_attentions,
