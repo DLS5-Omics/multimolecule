@@ -80,12 +80,12 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     for key, value in original_state_dict.items():
         key = key.replace("model.", "")
         if key.startswith("encoder"):
-            key = key.replace("encoder", "ribonanzanet.embeddings.word_embeddings")
-        key = key.replace("pos_encoder.linear", "ribonanzanet.encoder.pairwise_embeddings.position_embeddings")
-        key = key.replace("transformer_encoder", "ribonanzanet.encoder.layer")
+            key = key.replace("encoder", "model.embeddings.word_embeddings")
+        key = key.replace("pos_encoder.linear", "model.encoder.pairwise_embeddings.position_embeddings")
+        key = key.replace("transformer_encoder", "model.encoder.layer")
         key = key.replace("triangle", "pairwise.triangle")
         if key.startswith("outer_product_mean"):
-            key = key.replace("outer_product_mean", "ribonanzanet.encoder.pairwise_embeddings.triangle_proj")
+            key = key.replace("outer_product_mean", "model.encoder.pairwise_embeddings.triangle_proj")
         else:
             key = key.replace("outer_product_mean", "pairwise.triangle_proj")
         key = key.replace("pairwise_norm", "pairwise_to_bias.0")
@@ -154,13 +154,13 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
             state_dict[key] = value
 
     word_embed_weight = convert_word_embeddings(
-        state_dict["ribonanzanet.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )[0]
     word_embed_weight[0] = 0
-    state_dict["ribonanzanet.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
     return state_dict
 
 

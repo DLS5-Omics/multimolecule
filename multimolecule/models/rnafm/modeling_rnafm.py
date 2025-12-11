@@ -71,7 +71,7 @@ class RnaFmPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RnaFmConfig
-    base_model_prefix = "rnafm"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -279,7 +279,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config)
+        self.model = RnaFmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -296,7 +296,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.rnafm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -333,7 +333,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.model = RnaFmModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -350,7 +350,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.rnafm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -387,7 +387,7 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.model = RnaFmModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -410,7 +410,7 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnafm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -446,7 +446,7 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "rnafm.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -457,7 +457,7 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
                 "If you want to use `RnaFmForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.model = RnaFmModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -483,7 +483,7 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.rnafm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -548,7 +548,7 @@ class RnaFmForPreTraining(RnaFmForMaskedLM):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnafm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -595,7 +595,7 @@ class RnaFmForSecondaryStructurePrediction(RnaFmForPreTraining):
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)
-        self.rnafm = RnaFmModel(config, add_pooling_layer=False)
+        self.model = RnaFmModel(config, add_pooling_layer=False)
         self.ss_head = RnaFmSecondaryStructurePredictionHead(config)
 
         # Initialize weights and apply final processing
@@ -618,7 +618,7 @@ class RnaFmForSecondaryStructurePrediction(RnaFmForPreTraining):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnafm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

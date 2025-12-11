@@ -63,13 +63,13 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
             continue
         if key.startswith("module."):
             key = key[7:]
-        key = "utrlm." + key
+        key = "model." + key
         key = key.replace("LayerNorm", "layer_norm")
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
-        key = key.replace("utrlm.encoder.emb_layer_norm_before", "utrlm.embeddings.layer_norm")
-        key = key.replace("utrlm.emb_layer_norm_after", "utrlm.encoder.emb_layer_norm_after")
-        key = key.replace("utrlm.embed_tokens", "utrlm.embeddings.word_embeddings")
+        key = key.replace("model.encoder.emb_layer_norm_before", "model.embeddings.layer_norm")
+        key = key.replace("model.emb_layer_norm_after", "model.encoder.emb_layer_norm_after")
+        key = key.replace("model.embed_tokens", "model.embeddings.word_embeddings")
         key = key.replace("rot_emb", "rotary_embeddings")
         key = key.replace("layers", "encoder.layer")
         key = key.replace("self_attn", "attention.self")
@@ -82,24 +82,24 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
         key = key.replace("regression", "decoder")
-        key = key.replace("utrlm.lm_head", "lm_head")
+        key = key.replace("model.lm_head", "lm_head")
         key = key.replace("lm_head.dense", "lm_head.transform.dense")
         key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
         key = key.replace("lm_head.weight", "lm_head.decoder.weight")
-        key = key.replace("utrlm.contact_head", "ss_head")
-        key = key.replace("utrlm.structure_linear", "structure_head.decoder")
-        key = key.replace("utrlm.supervised_linear", "mfe_head.decoder")
+        key = key.replace("model.contact_head", "ss_head")
+        key = key.replace("model.structure_linear", "structure_head.decoder")
+        key = key.replace("model.supervised_linear", "mfe_head.decoder")
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-        state_dict["utrlm.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.weight"],
         state_dict["lm_head.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["utrlm.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
     state_dict["lm_head.decoder.weight"] = decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict

@@ -74,7 +74,7 @@ class RiNALMoPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RiNALMoConfig
-    base_model_prefix = "rinalmo"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -284,7 +284,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config)
+        self.model = RiNALMoModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -301,7 +301,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -338,7 +338,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
+        self.model = RiNALMoModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -355,7 +355,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -392,7 +392,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
+        self.model = RiNALMoModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -415,7 +415,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -451,7 +451,7 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "rinalmo.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -462,7 +462,7 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
                 "If you want to use `RiNALMoForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
+        self.model = RiNALMoModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -488,7 +488,7 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -529,7 +529,7 @@ class RiNALMoForSecondaryStructurePrediction(RiNALMoForMaskedLM):
 
     def __init__(self, config: RiNALMoConfig):
         super().__init__(config)
-        self.rinalmo = RiNALMoModel(config, add_pooling_layer=False)
+        self.model = RiNALMoModel(config, add_pooling_layer=False)
         self.ss_head = RiNALMoSecondaryStructurePredictionHead(config)
         self.require_attentions = self.ss_head.require_attentions
 
@@ -553,7 +553,7 @@ class RiNALMoForSecondaryStructurePrediction(RiNALMoForMaskedLM):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rinalmo(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

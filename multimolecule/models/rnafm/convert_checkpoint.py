@@ -78,15 +78,15 @@ def convert_checkpoint(convert_config):
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
     state_dict = {}
     for key, value in original_state_dict.items():
-        key = key.replace("encoder.encoder", "rnafm.encoder")
-        key = key.replace("backbone", "rnafm.encoder")
+        key = key.replace("encoder.encoder", "model.encoder")
+        key = key.replace("backbone", "model.encoder")
         key = key.replace("LayerNorm", "layer_norm")
         key = key.replace("emb_layer_norm_after", "layer_norm")
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
-        key = key.replace("rnafm.encoder.emb_layer_norm_before", "rnafm.embeddings.layer_norm")
-        key = key.replace("rnafm.encoder.embed_tokens", "rnafm.embeddings.word_embeddings")
-        key = key.replace("rnafm.encoder.embed_positions", "rnafm.embeddings.position_embeddings")
+        key = key.replace("model.encoder.emb_layer_norm_before", "model.embeddings.layer_norm")
+        key = key.replace("model.encoder.embed_tokens", "model.embeddings.word_embeddings")
+        key = key.replace("model.encoder.embed_positions", "model.embeddings.position_embeddings")
         key = key.replace("layers", "layer")
         key = key.replace("self_attn", "attention.self")
         key = key.replace("q_proj", "query")
@@ -98,11 +98,11 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
         key = key.replace("regression", "decoder")
-        key = key.replace("rnafm.encoder.lm_head", "lm_head")
+        key = key.replace("model.encoder.lm_head", "lm_head")
         key = key.replace("lm_head.dense", "lm_head.transform.dense")
         key = key.replace("lm_head.layer_norm", "lm_head.transform.layer_norm")
         key = key.replace("lm_head.weight", "lm_head.decoder.weight")
-        key = key.replace("rnafm.encoder.contact_head", "ss_head")
+        key = key.replace("model.encoder.contact_head", "ss_head")
         key = key.replace("downstream_modules.pc-resnet_1_sym_first:r-ss", "ss_head")
         key = key.replace("pre_reduction", "reduction")
         key = key.replace("proj.first.0", "projection")
@@ -115,14 +115,14 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         state_dict.pop("ss_head.decoder.bias", None)
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-        state_dict["rnafm.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.weight"],
         state_dict["lm_head.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["rnafm.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
     state_dict["lm_head.decoder.weight"] = decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict

@@ -65,7 +65,7 @@ class ErnieRnaPreTrainedModel(PreTrainedModel):
     """
 
     config_class = ErnieRnaConfig
-    base_model_prefix = "ernierna"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -326,7 +326,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config)
+        self.model = ErnieRnaModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -343,7 +343,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -381,7 +381,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
         self.num_labels = config.num_labels
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.model = ErnieRnaModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -398,7 +398,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -435,7 +435,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
 
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.model = ErnieRnaModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -458,7 +458,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -494,7 +494,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "ernierna.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -505,7 +505,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
                 "If you want to use `ErnieRnaForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.ernierna = ErnieRnaModel(config, add_pooling_layer=False)
+        self.model = ErnieRnaModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -531,7 +531,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | ErnieRnaForMaskedLMOutput:
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -555,7 +555,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
 class ErnieRnaForPreTraining(ErnieRnaForMaskedLM):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__(config)
-        self.ernierna = ErnieRnaModel(config)
+        self.model = ErnieRnaModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -599,7 +599,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
             if output_attention_biases is False:
                 warn("output_attention_biases must be True since prediction head requires attention biases.")
             kwargs["output_attention_biases"] = True
-        outputs = self.ernierna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

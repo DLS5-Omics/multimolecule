@@ -68,7 +68,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
         key = key.replace("module.sentence_encoder", "encoder")
-        key = key.replace("encoder.sentence_encoder", "ernierna.encoder")
+        key = key.replace("encoder.sentence_encoder", "model.encoder")
         key = key.replace("layers", "layer")
         key = key.replace("self_attn", "attention.self")
         key = key.replace("q_proj", "query")
@@ -79,14 +79,14 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("final_layer_norm", "output.layer_norm")
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
-        key = key.replace("encoder.twod_proj.linear1", "ernierna.pairwise_bias_proj.0")
-        key = key.replace("encoder.twod_proj.linear2", "ernierna.pairwise_bias_proj.2")
+        key = key.replace("encoder.twod_proj.linear1", "model.pairwise_bias_proj.0")
+        key = key.replace("encoder.twod_proj.linear2", "model.pairwise_bias_proj.2")
         key = key.replace("encoder.embed_tokens", "embeddings.word_embeddings")
         key = key.replace("encoder.segment_embeddings", "embeddings.token_type_embeddings")
         key = key.replace("encoder.emb_layer_norm", "embeddings.layer_norm")
         key = key.replace("encoder.lm_head_transform_weight", "lm_head.transform.dense")
         key = key.replace("encoder.layer_norm", "lm_head.transform.layer_norm")
-        key = key.replace("encoder.masked_lm_pooler", "ernierna.pooler.dense")
+        key = key.replace("encoder.masked_lm_pooler", "model.pooler.dense")
         key = key.replace("encoder.lm_output_learned_bias", "lm_head.decoder.bias")
         key = key.replace("module", "ss_head")
         key = key.replace("proj.resnet", "convnet")
@@ -94,17 +94,17 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("bn1", "norm")
         state_dict[key] = value
 
-    state_dict.pop("ernierna.embeddings.position_embeddings._float_tensor", None)
+    state_dict.pop("model.embeddings.position_embeddings._float_tensor", None)
     state_dict.pop("encoder.sentence_projection_layer.weight", None)
 
     word_embed_weight, decoder_bias = convert_word_embeddings(
-        state_dict["ernierna.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["ernierna.embeddings.word_embeddings.weight"] = state_dict["lm_head.decoder.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = state_dict["lm_head.decoder.weight"] = word_embed_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 

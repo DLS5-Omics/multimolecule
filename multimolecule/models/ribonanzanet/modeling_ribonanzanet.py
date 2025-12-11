@@ -60,7 +60,7 @@ class RibonanzaNetPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RibonanzaNetConfig
-    base_model_prefix = "ribonanzanet"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -223,7 +223,7 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config)
+        self.model = RibonanzaNetModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -239,7 +239,7 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetSequencePredictorOutput:
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
@@ -276,7 +276,7 @@ class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
+        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -292,7 +292,7 @@ class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetTokenPredictorOutput:
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
@@ -329,7 +329,7 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
+        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -351,7 +351,7 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
@@ -373,7 +373,7 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
 class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
+        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         # It should have been named as 2a3_head but Python doesn't allow a number at the beginning of a variable name.
         self.a3c_head = TokenPredictionHead(config)
         self.dms_head = TokenPredictionHead(config)
@@ -391,7 +391,7 @@ class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
         labels_dms: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForPreTrainingOutput:
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
@@ -438,7 +438,7 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
+        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         self.ss_head = RibonanzaNetSecondaryStructurePredictionHead(config)
         self.a3c_head = TokenPredictionHead(config)
         self.dms_head = TokenPredictionHead(config)
@@ -462,7 +462,7 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
         if not output_pairwise_states:
             warn("output_pairwise_states must be True since prediction head requires pairwise states.")
         kwargs["output_pairwise_states"] = True
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
@@ -514,7 +514,7 @@ class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
+        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         self.reactivity_head = TokenPredictionHead(config)
         self.deg_Mg_pH10_head = TokenPredictionHead(config)
         self.deg_pH10_head = TokenPredictionHead(config)
@@ -537,7 +537,7 @@ class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
         labels_deg_50C: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
@@ -601,7 +601,7 @@ class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
+        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         self.a3c_head = RibonanzaNetSequenceDropoutPredictionHead(config)
         self.dms_head = RibonanzaNetSequenceDropoutPredictionHead(config)
 
@@ -618,7 +618,7 @@ class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
         labels_dms: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
-        outputs = self.ribonanzanet(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,

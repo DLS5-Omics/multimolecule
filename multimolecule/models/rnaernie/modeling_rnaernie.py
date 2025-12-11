@@ -64,7 +64,7 @@ class RnaErniePreTrainedModel(PreTrainedModel):
     """
 
     config_class = RnaErnieConfig
-    base_model_prefix = "rnaernie"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -273,7 +273,7 @@ class RnaErnieForSequencePrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config)
+        self.model = RnaErnieModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -290,7 +290,7 @@ class RnaErnieForSequencePrediction(RnaErniePreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -327,7 +327,7 @@ class RnaErnieForTokenPrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=False)
+        self.model = RnaErnieModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -344,7 +344,7 @@ class RnaErnieForTokenPrediction(RnaErniePreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -381,7 +381,7 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=False)
+        self.model = RnaErnieModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -404,7 +404,7 @@ class RnaErnieForContactPrediction(RnaErniePreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -440,7 +440,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "rnaernie.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -451,7 +451,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
                 "If you want to use `RnaErnieForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.rnaernie = RnaErnieModel(config, add_pooling_layer=False)
+        self.model = RnaErnieModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -477,7 +477,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.rnaernie(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -501,7 +501,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
 class RnaErnieForPreTraining(RnaErnieForMaskedLM):
     def __init__(self, config: RnaErnieConfig):
         super().__init__(config)
-        self.rnaernie = RnaErnieModel(config)
+        self.model = RnaErnieModel(config)
 
         # Initialize weights and apply final processing
         self.post_init()

@@ -47,7 +47,7 @@ class SpliceAiPreTrainedModel(PreTrainedModel):
     """
 
     config_class = SpliceAiConfig
-    base_model_prefix = "spliceai"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True

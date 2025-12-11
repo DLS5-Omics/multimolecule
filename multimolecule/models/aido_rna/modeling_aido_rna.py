@@ -69,7 +69,7 @@ class AidoRnaPreTrainedModel(PreTrainedModel):
     """
 
     config_class = AidoRnaConfig
-    base_model_prefix = "aido_rna"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -277,7 +277,7 @@ class AidoRnaForSequencePrediction(AidoRnaPreTrainedModel):
 
     def __init__(self, config: AidoRnaConfig):
         super().__init__(config)
-        self.aido_rna = AidoRnaModel(config)
+        self.model = AidoRnaModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -294,7 +294,7 @@ class AidoRnaForSequencePrediction(AidoRnaPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.aido_rna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -331,7 +331,7 @@ class AidoRnaForTokenPrediction(AidoRnaPreTrainedModel):
 
     def __init__(self, config: AidoRnaConfig):
         super().__init__(config)
-        self.aido_rna = AidoRnaModel(config, add_pooling_layer=False)
+        self.model = AidoRnaModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -348,7 +348,7 @@ class AidoRnaForTokenPrediction(AidoRnaPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.aido_rna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -385,7 +385,7 @@ class AidoRnaForContactPrediction(AidoRnaPreTrainedModel):
 
     def __init__(self, config: AidoRnaConfig):
         super().__init__(config)
-        self.aido_rna = AidoRnaModel(config, add_pooling_layer=False)
+        self.model = AidoRnaModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -408,7 +408,7 @@ class AidoRnaForContactPrediction(AidoRnaPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.aido_rna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -444,7 +444,7 @@ class AidoRnaForMaskedLM(AidoRnaPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "aido_rna.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -455,7 +455,7 @@ class AidoRnaForMaskedLM(AidoRnaPreTrainedModel):
                 "If you want to use `AidoRnaForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.aido_rna = AidoRnaModel(config, add_pooling_layer=False)
+        self.model = AidoRnaModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -481,7 +481,7 @@ class AidoRnaForMaskedLM(AidoRnaPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.aido_rna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -535,7 +535,7 @@ class AidoRnaForSecondaryStructurePrediction(AidoRnaPreTrainedModel):
 
     def __init__(self, config: AidoRnaConfig):
         super().__init__(config)
-        self.aido_rna = AidoRnaModel(config, add_pooling_layer=False)
+        self.model = AidoRnaModel(config, add_pooling_layer=False)
         self.ss_head = AidoRnaSecondaryStructurePredictionHead(config)
         self.require_attentions = self.ss_head.require_attentions
 
@@ -559,7 +559,7 @@ class AidoRnaForSecondaryStructurePrediction(AidoRnaPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.aido_rna(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

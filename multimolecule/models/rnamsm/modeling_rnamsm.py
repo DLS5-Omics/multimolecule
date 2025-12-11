@@ -61,7 +61,7 @@ class RnaMsmPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RnaMsmConfig
-    base_model_prefix = "rnamsm"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -196,7 +196,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config)
+        self.model = RnaMsmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -213,7 +213,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaMsmSequencePredictorOutput:
-        outputs = self.rnamsm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -251,7 +251,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -268,7 +268,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaMsmTokenPredictorOutput:
-        outputs = self.rnamsm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -306,7 +306,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -329,7 +329,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnamsm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -366,7 +366,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "rnamsm.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -377,8 +377,8 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
                 "If you want to use `RnaMsmForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config, weight=self.rnamsm.embeddings.word_embeddings.weight)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
+        self.lm_head = MaskedLMHead(config, weight=self.model.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -401,7 +401,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
-        outputs = self.rnamsm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -463,7 +463,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnamsm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -509,7 +509,7 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
 
     def __init__(self, config: RnaMsmConfig):
         super().__init__(config)
-        self.rnamsm = RnaMsmModel(config, add_pooling_layer=False)
+        self.model = RnaMsmModel(config, add_pooling_layer=False)
         self.ss_head = ContactAttentionHead(config, head_config=HeadConfig(output_name="row_attentions"))
         self.require_attentions = self.ss_head.require_attentions
 
@@ -531,7 +531,7 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnamsm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

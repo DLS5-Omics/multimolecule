@@ -64,7 +64,7 @@ class SpliceBertPreTrainedModel(PreTrainedModel):
     """
 
     config_class = SpliceBertConfig
-    base_model_prefix = "splicebert"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -271,7 +271,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config)
+        self.model = SpliceBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -288,7 +288,7 @@ class SpliceBertForSequencePrediction(SpliceBertPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -325,7 +325,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
+        self.model = SpliceBertModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -342,7 +342,7 @@ class SpliceBertForTokenPrediction(SpliceBertPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -379,7 +379,7 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
 
     def __init__(self, config: SpliceBertConfig):
         super().__init__(config)
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
+        self.model = SpliceBertModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -402,7 +402,7 @@ class SpliceBertForContactPrediction(SpliceBertPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -438,7 +438,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "splicebert.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -449,7 +449,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
                 "If you want to use `SpliceBertForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.splicebert = SpliceBertModel(config, add_pooling_layer=False)
+        self.model = SpliceBertModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -475,7 +475,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.splicebert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

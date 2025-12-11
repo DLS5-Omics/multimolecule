@@ -66,8 +66,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("lm.", "")
         key = key.replace("gamma", "weight")
         key = key.replace("beta", "bias")
-        key = key.replace("embedding", "rinalmo.embeddings.word_embeddings")
-        key = key.replace("transformer", "rinalmo")
+        key = key.replace("embedding", "model.embeddings.word_embeddings")
+        key = key.replace("transformer", "model")
         key = key.replace("blocks", "encoder.layer")
         key = key.replace("mh_attn", "attention")
         key = key.replace("attn_layer_norm", "attention.layer_norm")
@@ -97,14 +97,14 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
             state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-        state_dict["rinalmo.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.weight"],
         state_dict["lm_head.decoder.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["rinalmo.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
     state_dict["lm_head.decoder.weight"] = decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict

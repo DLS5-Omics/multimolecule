@@ -64,12 +64,12 @@ def convert_checkpoint(convert_config):
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):
     state_dict = {}
     for key, value in original_state_dict.items():
-        key = key.replace("layers", "rnamsm.encoder.layer")
-        key = key.replace("msa_position_embedding", "rnamsm.embeddings.msa_embeddings")
-        key = key.replace("embed_tokens", "rnamsm.embeddings.word_embeddings")
-        key = key.replace("embed_positions", "rnamsm.embeddings.position_embeddings")
-        key = key.replace("emb_layer_norm_before", "rnamsm.embeddings.layer_norm")
-        key = key.replace("emb_layer_norm_after", "rnamsm.encoder.layer_norm")
+        key = key.replace("layers", "model.encoder.layer")
+        key = key.replace("msa_position_embedding", "model.embeddings.msa_embeddings")
+        key = key.replace("embed_tokens", "model.embeddings.word_embeddings")
+        key = key.replace("embed_positions", "model.embeddings.position_embeddings")
+        key = key.replace("emb_layer_norm_before", "model.embeddings.layer_norm")
+        key = key.replace("emb_layer_norm_after", "model.encoder.layer_norm")
         key = key.replace("regression", "decoder")
         key = key.replace("contact_head", "ss_head")
         key = key.replace("lm_head.weight", "lm_head.decoder.weight")
@@ -78,14 +78,14 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         state_dict[key] = value
 
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-        state_dict["rnamsm.embeddings.word_embeddings.weight"],
+        state_dict["model.embeddings.word_embeddings.weight"],
         state_dict["lm_head.decoder.weight"],
         state_dict["lm_head.bias"],
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["rnamsm.embeddings.word_embeddings.weight"] = word_embed_weight
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
     state_dict["lm_head.decoder.weight"] = decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict

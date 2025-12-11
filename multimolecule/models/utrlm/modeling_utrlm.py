@@ -68,7 +68,7 @@ class UtrLmPreTrainedModel(PreTrainedModel):
     """
 
     config_class = UtrLmConfig
-    base_model_prefix = "utrlm"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -281,7 +281,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config)
+        self.model = UtrLmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -298,7 +298,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -335,7 +335,7 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config, add_pooling_layer=False)
+        self.model = UtrLmModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -352,7 +352,7 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -389,7 +389,7 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config, add_pooling_layer=False)
+        self.model = UtrLmModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -412,7 +412,7 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -448,7 +448,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "utrlm.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -459,7 +459,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
                 "If you want to use `UtrLmForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.utrlm = UtrLmModel(config, add_pooling_layer=False)
+        self.model = UtrLmModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -485,7 +485,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -558,7 +558,7 @@ class UtrLmForPreTraining(UtrLmForMaskedLM):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -621,7 +621,7 @@ class UtrLmForSecondaryStructurePrediction(UtrLmPreTrainedModel):
 
     def __init__(self, config: UtrLmConfig):
         super().__init__(config)
-        self.utrlm = UtrLmModel(config, add_pooling_layer=False)
+        self.model = UtrLmModel(config, add_pooling_layer=False)
         self.ss_head = ContactAttentionHead(config)
         self.require_attentions = self.ss_head.require_attentions
 
@@ -645,7 +645,7 @@ class UtrLmForSecondaryStructurePrediction(UtrLmPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.utrlm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

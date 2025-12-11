@@ -65,7 +65,7 @@ class CaLmPreTrainedModel(PreTrainedModel):
     """
 
     config_class = CaLmConfig
-    base_model_prefix = "calm"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -273,7 +273,7 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.calm = CaLmModel(config)
+        self.model = CaLmModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -290,7 +290,7 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.calm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -327,7 +327,7 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.calm = CaLmModel(config, add_pooling_layer=False)
+        self.model = CaLmModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -344,7 +344,7 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.calm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -381,7 +381,7 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
 
     def __init__(self, config: CaLmConfig):
         super().__init__(config)
-        self.calm = CaLmModel(config, add_pooling_layer=False)
+        self.model = CaLmModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -404,7 +404,7 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.calm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -440,7 +440,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "calm.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -451,8 +451,8 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
                 "If you want to use `CaLmForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.calm = CaLmModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config, self.calm.embeddings.word_embeddings.weight)
+        self.model = CaLmModel(config, add_pooling_layer=False)
+        self.lm_head = MaskedLMHead(config, self.model.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -477,7 +477,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.calm(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,

@@ -67,7 +67,7 @@ class RnaBertPreTrainedModel(PreTrainedModel):
     """
 
     config_class = RnaBertConfig
-    base_model_prefix = "rnabert"
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
     _supports_flash_attn = True
     _supports_sdpa = True
@@ -274,7 +274,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config)
+        self.model = RnaBertModel(config)
         self.sequence_head = SequencePredictionHead(config)
         self.head_config = self.sequence_head.config
 
@@ -291,7 +291,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -328,7 +328,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=False)
+        self.model = RnaBertModel(config, add_pooling_layer=False)
         self.token_head = TokenPredictionHead(config)
         self.head_config = self.token_head.config
 
@@ -345,7 +345,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -382,7 +382,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
 
     def __init__(self, config: RnaBertConfig):
         super().__init__(config)
-        self.rnabert = RnaBertModel(config, add_pooling_layer=False)
+        self.model = RnaBertModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
         self.require_attentions = self.contact_head.require_attentions
@@ -405,7 +405,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
             if output_attentions is False:
                 warn("output_attentions must be True since prediction head requires attentions.")
             kwargs["output_attentions"] = True
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -441,7 +441,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "rnabert.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
     }
 
@@ -452,7 +452,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
                 "If you want to use `RnaBertForMaskedLM` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.rnabert = RnaBertModel(config, add_pooling_layer=False)
+        self.model = RnaBertModel(config, add_pooling_layer=False)
         self.lm_head = MaskedLMHead(config)
 
         # Initialize weights and apply final processing
@@ -474,7 +474,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             return_dict=True,
@@ -512,7 +512,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
     """
 
     _tied_weights_keys = {
-        "lm_head.decoder.weight": "rnabert.embeddings.word_embeddings.weight",
+        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
         "lm_head.decoder.bias": "lm_head.bias",
         "ss_head.decoder.bias": "ss_head.bias",
     }
@@ -524,7 +524,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
                 "If you want to use `RnaBertForPreTraining` make sure `config.is_decoder=False` for "
                 "bi-directional self-attention."
             )
-        self.rnabert = RnaBertModel(config)
+        self.model = RnaBertModel(config)
         self.lm_head = MaskedLMHead(config)
         vocab_size, config.vocab_size = config.vocab_size, config.ss_vocab_size
         self.ss_head = MaskedLMHead(config)
@@ -544,7 +544,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         labels_sa: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaBertForPreTrainingOutput:
-        outputs = self.rnabert(
+        outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
             return_dict=True,
