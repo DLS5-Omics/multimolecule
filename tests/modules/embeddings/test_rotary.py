@@ -116,7 +116,8 @@ class TestRotaryEmbedding:
         rotary_emb = RotaryEmbedding(embedding_dim, base=base)
 
         expected_inv_freq = 1.0 / (base ** (torch.arange(0, embedding_dim, 2, dtype=torch.float32) / embedding_dim))
-        assert torch.allclose(rotary_emb.inv_freq, expected_inv_freq)
+        inv_freq: torch.Tensor = rotary_emb.inv_freq  # type: ignore[assignment]
+        assert torch.allclose(inv_freq, expected_inv_freq)
 
         q = torch.randn(1, 1, 5, embedding_dim)
         k = torch.randn(1, 1, 5, embedding_dim)
@@ -143,3 +144,137 @@ class TestRotaryEmbedding:
 
         assert torch.allclose(q_rot_fp16.float(), q_rot_fp32, atol=1e-4, rtol=1e-2)
         assert torch.allclose(k_rot_fp16.float(), k_rot_fp32, atol=1e-4, rtol=1e-2)
+
+    @pytest.mark.parametrize("scale", [1.0, 2.0, 4.0, 0.5])
+    def test_scale(self, scale: float):
+        """Test that scale parameter affects the rotary embeddings."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim, scale=scale)
+
+        batch_size, num_heads, seq_len, head_dim = 1, 1, 10, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+
+        q_rot, k_rot = rotary_emb(q, k)
+        assert q_rot.shape == q.shape
+        assert k_rot.shape == k.shape
+
+        # Different scales should produce different results
+        if scale != 1.0:
+            rotary_emb_default = RotaryEmbedding(embedding_dim, scale=1.0)
+            q_rot_default, k_rot_default = rotary_emb_default(q, k)
+            assert not torch.allclose(q_rot, q_rot_default, atol=1e-6)
+            assert not torch.allclose(k_rot, k_rot_default, atol=1e-6)
+
+    def test_scale_default(self):
+        """Test that default scale is 1.0."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim)
+        assert rotary_emb.scale == 1.0
+
+    def test_offset_zero(self):
+        """Test that offset=0 (default) works correctly."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim)
+
+        batch_size, num_heads, seq_len, head_dim = 1, 1, 10, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+
+        # offset=0 should be the same as no offset
+        q_rot1, k_rot1 = rotary_emb(q, k)
+        q_rot2, k_rot2 = rotary_emb(q, k, offset=0)
+
+        assert torch.allclose(q_rot1, q_rot2, atol=1e-6)
+        assert torch.allclose(k_rot1, k_rot2, atol=1e-6)
+
+    def test_offset_with_seq_len(self):
+        """Test that offset works correctly with seq_len parameter."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim)
+
+        batch_size, num_heads, seq_len, head_dim = 1, 1, 5, embedding_dim
+        offset = 10
+        full_seq_len = offset + seq_len
+
+        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+
+        # Apply with offset
+        q_rot, k_rot = rotary_emb(q, k, offset=offset, seq_len=full_seq_len)
+
+        assert q_rot.shape == q.shape
+        assert k_rot.shape == k.shape
+        assert rotary_emb._seq_len_cached == full_seq_len
+
+    def test_offset_without_seq_len_error(self):
+        """Test that offset > 0 without seq_len raises ValueError."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim)
+
+        batch_size, num_heads, seq_len, head_dim = 1, 1, 5, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+
+        with pytest.raises(ValueError, match="seq_len must be provided when offset > 0"):
+            rotary_emb(q, k, offset=10)
+
+    def test_offset_consistency(self):
+        """Test that offset produces consistent results with manual slicing."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim)
+
+        batch_size, num_heads, full_seq_len, head_dim = 1, 1, 20, embedding_dim
+        offset = 5
+        seq_len = 10
+
+        # Create full sequence
+        q_full = torch.randn(batch_size, num_heads, full_seq_len, head_dim)
+        k_full = torch.randn(batch_size, num_heads, full_seq_len, head_dim)
+
+        # Apply to full sequence
+        q_rot_full, k_rot_full = rotary_emb(q_full, k_full)
+
+        # Apply with offset to a slice
+        q_slice = q_full[:, :, offset : offset + seq_len, :]
+        k_slice = k_full[:, :, offset : offset + seq_len, :]
+        q_rot_slice, k_rot_slice = rotary_emb(q_slice, k_slice, offset=offset, seq_len=full_seq_len)
+
+        # Results should match
+        assert torch.allclose(q_rot_full[:, :, offset : offset + seq_len, :], q_rot_slice, atol=1e-5)
+        assert torch.allclose(k_rot_full[:, :, offset : offset + seq_len, :], k_rot_slice, atol=1e-5)
+
+    def test_scale_with_offset(self):
+        """Test that scale and offset work together."""
+        embedding_dim = 64
+        scale = 2.0
+        rotary_emb = RotaryEmbedding(embedding_dim, scale=scale)
+
+        batch_size, num_heads, seq_len, head_dim = 1, 1, 5, embedding_dim
+        offset = 10
+        full_seq_len = offset + seq_len
+
+        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+
+        q_rot, k_rot = rotary_emb(q, k, offset=offset, seq_len=full_seq_len)
+
+        assert q_rot.shape == q.shape
+        assert k_rot.shape == k.shape
+        assert rotary_emb.scale == scale
+        assert rotary_emb._seq_len_cached == full_seq_len
+
+    def test_seq_len_auto_detection(self):
+        """Test that seq_len is automatically detected when not provided."""
+        embedding_dim = 64
+        rotary_emb = RotaryEmbedding(embedding_dim)
+
+        batch_size, num_heads, seq_len, head_dim = 1, 1, 15, embedding_dim
+        q = torch.randn(batch_size, num_heads, seq_len, head_dim)
+        k = torch.randn(batch_size, num_heads, seq_len, head_dim)
+
+        q_rot, k_rot = rotary_emb(q, k)
+
+        assert rotary_emb._seq_len_cached == seq_len
+        assert q_rot.shape == q.shape
+        assert k_rot.shape == k.shape
