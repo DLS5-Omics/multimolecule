@@ -1,0 +1,314 @@
+[project]
+site_name = "MultiMolecule"
+site_url = "https://multimolecule.danling.org"
+site_author = "DanLing Team"
+site_description = "Accelerate Molecular Biology Research with Machine Learning"
+repo_name = "MultiMolecule"
+repo_url = "https://github.com/DLS5-Omics/multimolecule"
+copyright = "All rights reserved &copy; 2024-Present, DanLing Team."
+
+nav = [
+  "index.md",
+  { data = [
+    "data/index.md",
+    "data/dataset.md",
+  ] },
+  { datasets = [
+    "datasets/index.md",
+    { "DNA" = [
+      { "Sequences" = [
+        "datasets/gencode.md",
+      ]},
+    ] },
+    { "RNA" = [
+      { "Sequences" = [
+        "datasets/rnacentral.md",
+        "datasets/rfam.md",
+      ] },
+      { "Secondary Structures" = [
+        "datasets/rivas.md",
+        "datasets/casp_rna.md",
+        "datasets/bprna_1m.md",
+        "datasets/bprna_spot.md",
+        "datasets/bprna_new.md",
+        "datasets/rnastralign.md",
+        "datasets/archiveii.md",
+      ] },
+      { "Structures" = [
+        "datasets/ryos.md",
+        "datasets/eternabench_cm.md",
+        "datasets/eternabench_switch.md",
+        "datasets/eternabench_external.md",
+      ] },
+    ] },
+  ] },
+  { modules = [
+    "modules/index.md",
+    { embeddings = "modules/embeddings.md" },
+    { heads = "modules/heads.md" },
+  ] },
+  { models = [
+    "models/index.md",
+    { "DNA" = [
+      "models/calm.md",
+    ] },
+    { "RNA" = [
+      "models/aido_rna.md",
+      "models/ernierna.md",
+      "models/ribonanzanet.md",
+      "models/rinalmo.md",
+      "models/rnabert.md",
+      "models/rnaernie.md",
+      "models/rnafm.md",
+      "models/rnamsm.md",
+      "models/spliceai.md",
+      "models/splicebert.md",
+      "models/utrbert.md",
+      "models/utrlm.md",
+    ] },
+    { utils = [
+      "models/configuration_utils.md",
+      "models/modeling_outputs.md",
+    ] },
+  ] },
+  { tokenisers = [
+    "tokenisers/index.md",
+    "tokenisers/dna.md",
+    "tokenisers/rna.md",
+    "tokenisers/protein.md",
+    "tokenisers/dot_bracket.md",
+  ] },
+  { pipelines = [
+    "pipelines/index.md",
+    "pipelines/rna_secondary_structure.md",
+  ] },
+  { utils = [
+    "utils/index.md",
+    "utils/rna_secondary_structure.md",
+  ] },
+  { about = [
+    "about/index.md",
+    "about/license.md",
+    "about/license-faq.md",
+    "about/privacy.md",
+  ] },
+]
+
+[project.theme]
+language = "zh"
+logo = "assets/images/logo.png"
+favicon = "assets/images/logo.ico"
+features = [
+  "announce.dismiss",
+  "content.code.annotate",
+  "content.code.copy",
+  "content.code.select",
+  "content.tabs.link",
+  "content.tooltips",
+  "header.autohide",
+  "navigation.expand",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.instant.progress",
+  "navigation.prune",
+  "navigation.sections",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "search.share",
+  "search.suggest",
+  "toc.follow",
+]
+
+[project.theme.font]
+text = "Noto Sans SC"
+code = "Cascadia Code"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[project.extra.analytics]
+provider = "google"
+property = "G-YFVBYNKMD6"
+
+[project.extra.comments]
+provider = "giscus"
+
+[project.extra.comments.giscus]
+repo = "MultiMolecule/multimolecule"
+repo_id = "R_kgDOMtrA6Q"
+category = "General"
+category_id = "DIC_kwDOMtrA6c4CpX2s"
+mapping = "pathname"
+strict = false
+reactions_enabled = true
+emit_metadata = false
+input_position = "top"
+theme = "preferred_color_scheme"
+lang = "en"
+loading = "lazy"
+
+[project.extra.consent]
+title = "Cookie Consent"
+description = """
+We use cookies to recognize your repeated visits and preferences, as well
+as to measure the effectiveness of our documentation and whether users
+find what they're searching for. With your consent, you're helping us to
+make our documentation better. Please check out our
+<a href="https://multimolecule.danling.org/about/privacy">Privacy Notice</a> for more information.
+"""
+
+[project.extra]
+generator = false
+manifest = "manifest.webmanifest"
+
+extra_css = ["assets/css/extra.css"]
+extra_javascript = [
+  "assets/javascripts/mathjax.js",
+  "https://cdn.jsdelivr.net/npm/mathjax@4/es5/tex-mml-chtml.js",
+]
+
+[project.markdown_extensions.abbr]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.callouts]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.markdown_gfm_admonition]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.mdx_math]
+[project.markdown_extensions.meta]
+
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+
+[project.markdown_extensions.pymdownx.betterem]
+smart_enable = "all"
+
+[project.markdown_extensions.pymdownx.caret]
+[project.markdown_extensions.pymdownx.critic]
+[project.markdown_extensions.pymdownx.details]
+
+[project.markdown_extensions.pymdownx.emoji]
+emoji_index = "materialy.gemoji"
+emoji_generator = "materialy.to_png"
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+auto_title = true
+linenums = true
+
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.keys]
+[project.markdown_extensions.pymdownx.magiclink]
+[project.markdown_extensions.pymdownx.mark]
+[project.markdown_extensions.pymdownx.smartsymbols]
+[project.markdown_extensions.pymdownx.snippets]
+
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+
+[project.markdown_extensions.pymdownx.tilde]
+[project.markdown_extensions.smarty]
+[project.markdown_extensions.tables]
+
+[project.markdown_extensions.toc]
+permalink = true
+
+[project.plugins.mkdocstrings.handlers.python]
+inventories = [
+  "https://docs.python.org/3/objects.inv",
+  "https://pytorch.org/docs/stable/objects.inv",
+  "https://huggingface.co/docs/transformers/master/en/objects.inv",
+  "https://huggingface.co/docs/datasets/master/en/objects.inv",
+  "https://numpy.org/doc/stable/objects.inv",
+  "https://pandas.pydata.org/docs/objects.inv",
+  "https://danling.org/objects.inv",
+  "https://chanfig.danling.org/objects.inv"
+]
+paths = ["multimolecule"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+members_order = "source"
+parameter_headings = true
+show_root_heading = true
+show_symbol_type_heading = true
+show_symbol_type_toc = true
+separate_signature = true
+show_signature_annotations = true
+signature_crossrefs = true
+
+[project.plugins.autorefs]
+resolve_closest = true
+
+[project.plugins.redirects.redirect_maps]
+"license.md" = "about/license.md"
+"license-faq.md" = "about/license-faq.md"
+
+[project.plugins."git-committers"]
+
+[project.plugins."git-revision-date-localized"]
+fallback_to_build_date = true
+enable_creation_date = true
+type = "iso_datetime"
+
+[project.plugins.rss]
+limit = 20
+enable_sitemap = false
+match_path = ".*"
+date_from_meta = { as_creation = "date" }
+categories = ["categories", "tags"]
+
+[project.plugins."section-index"]
+
+[project.plugins.i18n]
+docs_structure = "suffix"
+fallback_to_default = true
+
+[[project.plugins.i18n.languages]]
+locale = "en"
+build = true
+default = true
+name = "English"
+
+[[project.plugins.i18n.languages]]
+locale = "zh"
+build = true
+default = false
+name = "汉语"
+
+reconfigure_material = true
+reconfigure_search = true
+
+[project.plugins.search]
+separator = "[\\s\\u200b\\-]"
+
+[project.plugins.tags]

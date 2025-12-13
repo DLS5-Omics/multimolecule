@@ -41,10 +41,6 @@ def dot_bracket_to_pairs(dot_bracket: str) -> np.ndarray:
     """
     Convert a dot-bracket notation string to a list of base-pair indices.
 
-    Args:
-        dot_bracket: Dot-bracket notation. Supports pseudoknots via multiple
-            bracket types, including (), [], {}, <>, and A-Z/a-z.
-
     Returns:
         A numpy array of shape (n, 2) with pairs ``(i, j)`` where ``0 <= i < j < len(dot_bracket)``.
 

@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Dict
 from warnings import warn
 
@@ -35,17 +36,12 @@ class RnaSecondaryStructurePipeline(Pipeline):
     RNA secondary structure prediction pipeline using any `ModelWithSecondaryStructureHead`.
 
     Examples:
-
-    ```python
-    >>> import multimolecule
-    >>> from transformers import pipeline
-
-    >>> predictor = pipeline("rna-secondary-structure")
-    >>> output = predictor("UAGCUUAUCAGACUGAUGUUG")
-    >>> output["secondary_structure"]
-    '.....................'
-
-    ```
+        >>> import multimolecule
+        >>> from transformers import pipeline
+        >>> predictor = pipeline("rna-secondary-structure")
+        >>> output = predictor("UAGCUUAUCAGACUGAUGUUG")
+        >>> output["secondary_structure"]
+        '.....................'
 
     Learn more about the basics of using a pipeline in the [pipeline tutorial](../pipeline_tutorial)
 
@@ -201,17 +197,19 @@ class RnaSecondaryStructurePipeline(Pipeline):
                 )
             self.output_contact_map = output_contact_map
 
-    def __call__(self, inputs, **kwargs):
+    def __call__(
+        self, inputs: str | Sequence[str], threshold: float | None = None, output_contact_map: bool | None = None
+    ):
         """
         Predict the secondary structure of the RNA sequence(s) given as inputs.
 
         Args:
-            inputs (`str` or `List[str]`):
+            inputs:
                 One or several RNA sequences.
-            threshold (`float`, *optional*):
+            threshold:
                 The threshold to use for determining if a contact is present or not. If not provided, the default is
                 `0.5`. The value must be between 0 and 1.
-            output_contact_map (`bool`, *optional*):
+            output_contact_map:
                 Whether to output the contact map along with the secondary structure. If not provided, the default is
                 `False`.
 
@@ -223,7 +221,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
             - **token** (`int`) -- The predicted token id (to replace the masked one).
             - **token_str** (`str`) -- The predicted token (to replace the masked one).
         """
-        outputs = super().__call__(inputs, **kwargs)
+        outputs = super().__call__(inputs, threshold=threshold, output_contact_map=output_contact_map)
         if isinstance(inputs, list) and len(inputs) == 1:
             return outputs[0]
         return outputs

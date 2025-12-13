@@ -146,7 +146,7 @@ class Dataset(datasets.Dataset):
         fill_value: The value to fill NaN and inf values with.
             Defaults to 0.
         info: The dataset info.
-        indices_table: The indices table.
+        indices: The indices table.
         fingerprint: The fingerprint of the dataset.
     """
 

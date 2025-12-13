@@ -35,7 +35,7 @@ class HeadConfig(BaseHeadConfig):
     r"""
     Configuration class for a prediction head.
 
-    Args:
+    Attrs:
         num_labels:
             Number of labels to use in the last layer added to the model, typically for a classification task.
 
@@ -88,7 +88,7 @@ class MaskedLMHeadConfig(BaseHeadConfig):
     r"""
     Configuration class for a Masked Language Modeling head.
 
-    Args:
+    Attrs:
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
 
