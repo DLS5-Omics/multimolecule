@@ -111,7 +111,7 @@ class SinusoidalEmbedding(nn.Embedding):
         "Attention Is All You Need".
         """
         if device is None:
-            device = torch.get_default_device()
+            device = get_default_device()
         half_dim = embedding_dim // 2
         emb = torch.exp(torch.arange(half_dim, dtype=torch.float) * -(math.log(10000) / (half_dim - 1)))
         emb = torch.arange(num_embeddings, dtype=torch.float).unsqueeze(1) * emb.unsqueeze(0)
@@ -150,3 +150,10 @@ class SinusoidalEmbedding(nn.Embedding):
         # Need to shift the position ids by the padding index
         position_ids = self.get_position_ids(input_ids, self.padding_idx) + self.bias
         return super().forward(position_ids)
+
+
+def get_default_device() -> torch.device:
+    try:
+        return torch.get_default_device()
+    except ArithmeticError:
+        return torch.device("cpu")
