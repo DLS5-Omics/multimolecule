@@ -4,12 +4,17 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
           cache: "pip"
-      - uses: pre-commit/action@v3.0.0
+          cache-dependency-path: |
+            .pre-commit-config.yaml
+            requirements.txt
+            pyproject.toml
+            setup.py
+      - uses: pre-commit/action@v3.0.1
   test:
     runs-on: ubuntu-latest
     environment: test
@@ -17,33 +22,37 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-      - name: Install dependencies for testing
-        run: pip install pytest pytest-cov
-      - name: Install module
-        run: pip install -r requirements.txt && pip install -e .
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            setup.py
+      - name: Install dependencies
+        run: pip install -r requirements.txt -e . pytest pytest-cov
       - name: pytest
-        run: pytest --cov=materialx --cov-report=xml --cov-report=html
+        run: pytest --cov=multimolecule --cov-report=xml --cov-report=html
       - name: Upload coverage report for documentation
         uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.14'
         with:
           name: coverage
           path: htmlcov
-          retention-days: 5
+          retention-days: 90
           overwrite: true
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.14'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload coverage reports to Codacy
         uses: codacy/codacy-coverage-reporter-action@v1
+        if: matrix.python-version == '3.14'
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.xml
@@ -57,19 +66,18 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
-      - name: Get pip cache dir
-        id: pip-cache
-        run: echo "::set-output name=dir::$(pip cache dir)"
-      - uses: actions/cache@v3
-        with:
-          key: ${{ github.ref }}
-          path: .cache
+          cache: "pip"
+          cache-dependency-path: |
+            docs/requirements.txt
+            requirements.txt
+            pyproject.toml
+            setup.py
       - run: pip install -r docs/requirements.txt
       - run: pip install -e .
       - name: Download coverage report
@@ -93,11 +101,17 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
           cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            setup.py
       - name: Install dependencies for building
         run: pip install wheel setuptools_scm
       - name: build package
@@ -119,13 +133,17 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
           cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            setup.py
       - name: Install dependencies for building
         run: pip install wheel setuptools_scm
       - name: build package
