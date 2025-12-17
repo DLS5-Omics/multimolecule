@@ -218,11 +218,7 @@ DanLing 团队可以通过书面沟通，根据具体情况授予协作者额外
 
 要请求单独的许可，请通过 [license@danling.org](mailto:license@danling.org) 与我们联系。
 
-## 10. 如果我是美国政府的联邦雇员，我可以使用 MultiMolecule 吗？
-
-根据[美国法典第 17 卷第 105 条](https://www.law.cornell.edu/uscode/text/17/105)，美国政府的联邦雇员以其官方身份行事时创作的作品通常在美国境内不受版权保护。因此，此类雇员可能普遍无法遵守本协议中基于版权的许可义务（该义务要求根据 AGPL 授予修改的许可），故被排除在其官方身份下根据本协议使用 MultiMolecule。
-
-## 11. 我们会更新此 FAQ 吗？
+## 10. 我们会更新此 FAQ 吗？
 
 !!! tip "简而言之"
 

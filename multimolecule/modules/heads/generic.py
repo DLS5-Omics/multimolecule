@@ -100,10 +100,10 @@ class BasePredictionHead(nn.Module):
 
         Args:
             input_ids: Input token IDs as either a NestedTensor with embedded mask
-                or a regular Tensor of shape `(batch_size, seq_len)`.
+                or a regular Tensor of shape `(batch_size, seq_length)`.
 
         Returns:
-            Binary attention mask of shape `(batch_size, seq_len)` where 1 indicates
+            Binary attention mask of shape `(batch_size, seq_length)` where 1 indicates
             tokens to attend to and 0 indicates tokens to ignore.
 
         Raises:
@@ -151,9 +151,9 @@ class BasePredictionHead(nn.Module):
         - Output cleanup: Multiplies output by attention mask to zero out padding positions
 
         Args:
-            output: Model output tensor of shape `(batch_size, seq_len, hidden_size)`.
-            attention_mask: Attention mask of shape `(batch_size, seq_len)`.
-            input_ids: Optional input token IDs of shape `(batch_size, seq_len)`.
+            output: Model output tensor of shape `(batch_size, seq_length, hidden_size)`.
+            attention_mask: Attention mask of shape `(batch_size, seq_length)`.
+            input_ids: Optional input token IDs of shape `(batch_size, seq_length)`.
                 Used for precise EOS token location when available.
 
         Returns:
@@ -219,9 +219,9 @@ class BasePredictionHead(nn.Module):
         - Updates attention mask: Creates 2D mask from 1D sequence mask
 
         Args:
-            output: 2D model output of shape `(batch_size, seq_len, seq_len, channels)`.
-            attention_mask: 1D attention mask of shape `(batch_size, seq_len)`.
-            input_ids: Optional input token IDs of shape `(batch_size, seq_len)`.
+            output: 2D model output of shape `(batch_size, seq_length, seq_length, channels)`.
+            attention_mask: 1D attention mask of shape `(batch_size, seq_length)`.
+            input_ids: Optional input token IDs of shape `(batch_size, seq_length)`.
 
         Returns:
             Tuple containing:
@@ -278,7 +278,7 @@ class BasePredictionHead(nn.Module):
         Make output symmetric by averaging the tensor with its transpose.
 
         Args:
-            x: Input tensor of shape (batch_size, seq_len, seq_len, channels).
+            x: Input tensor of shape (batch_size, seq_length, seq_length, channels).
 
         Returns:
             Symmetric tensor with the same shape as input.
@@ -312,7 +312,7 @@ class BasePredictionHead(nn.Module):
         This is essential for accurate contact prediction across DNA, RNA, and protein structures.
 
         Args:
-            x: Contact map tensor of shape `(batch_size, seq_len, seq_len, channels)`
+            x: Contact map tensor of shape `(batch_size, seq_length, seq_length, channels)`
 
         Returns:
             Bias-corrected contact map with the same shape as input

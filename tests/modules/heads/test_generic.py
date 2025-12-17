@@ -63,10 +63,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_both_bos_eos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, hidden_size)
 
         new_output, new_attention_mask, _ = head.remove_special_tokens(output, attention_mask)
         assert torch.equal(new_output, NestedTensor.from_tensor_mask(output, attention_mask)[:, 1:-1, :].tensor)
@@ -75,10 +75,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_only_bos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, eos_token_id=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, hidden_size)
 
         new_output, new_attention_mask, new_input_ids = head.remove_special_tokens(output, attention_mask, input_ids)
 
@@ -89,10 +89,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_only_eos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, bos_token_id=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, hidden_size)
 
         new_output, new_attention_mask, new_input_ids = head.remove_special_tokens(output, attention_mask, input_ids)
 
@@ -103,10 +103,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_none(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, bos_token_id=None, eos_token_id=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, hidden_size)
 
         new_output, new_attention_mask, new_input_ids = head.remove_special_tokens(output, attention_mask, input_ids)
 
@@ -117,10 +117,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_2d_both_bos_eos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, seq_length, hidden_size)
 
         new_output, new_attention_mask, _ = head.remove_special_tokens_2d(output, attention_mask)
 
@@ -134,10 +134,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_2d_only_bos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, eos_token_id=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, seq_length, hidden_size)
 
         new_output, new_attention_mask, new_input_ids = head.remove_special_tokens_2d(output, attention_mask, input_ids)
 
@@ -152,10 +152,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_2d_only_eos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, bos_token_id=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, seq_length, hidden_size)
 
         new_output, new_attention_mask, new_input_ids = head.remove_special_tokens_2d(output, attention_mask, input_ids)
 
@@ -170,10 +170,10 @@ class TestBasePredictionHead:
     def test_remove_special_tokens_2d_none(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, bos_token_id=None, eos_token_id=None))
 
-        batch_size, seq_len, hidden_size = 2, 5, 4
+        batch_size, seq_length, hidden_size = 2, 5, 4
         input_ids = torch.tensor([[1, 3, 4, 5, 2], [1, 3, 2, 0, 0]])
         attention_mask = head.get_attention_mask(input_ids)
-        output = torch.randn(batch_size, seq_len, seq_len, hidden_size)
+        output = torch.randn(batch_size, seq_length, seq_length, hidden_size)
 
         new_output, new_attention_mask, new_input_ids = head.remove_special_tokens_2d(output, attention_mask, input_ids)
 
@@ -220,15 +220,15 @@ class TestPredictionHead:
         ],
     )
     def test_forward(self, labels):
-        batch_size, seq_len, hidden_size = 2, 28, 768
-        embeddings = torch.randn(batch_size, seq_len, hidden_size)
+        batch_size, seq_length, hidden_size = 2, 28, 768
+        embeddings = torch.randn(batch_size, seq_length, hidden_size)
         if labels is not None:
             labels = labels.unsqueeze(-1)
 
         output = self.head(embeddings, labels=labels)
 
         assert isinstance(output.logits, (Tensor, NestedTensor))
-        assert output.logits.shape == (batch_size, seq_len, self.head.num_labels)
+        assert output.logits.shape == (batch_size, seq_length, self.head.num_labels)
         if labels is None:
             assert output.loss is None
         else:

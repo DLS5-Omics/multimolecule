@@ -211,11 +211,7 @@ Certain organizations, such as [Google](https://opensource.google/documentation/
 
 To request a separate license, please contact us at [license@danling.org](mailto:license@danling.org).
 
-## 10. Can I use MultiMolecule if I am a federal employee of the United States Government?
-
-Pursuant to [17 U.S. Code § 105](https://www.law.cornell.edu/uscode/text/17/105), the federal employees of the United States Government acting in their official capacity are generally unable to comply with the copyright-based terms of the License and are therefore precluded from utilizing MultiMolecule under this Agreement.
-
-## 11. Do we make updates to this FAQ?
+## 10. Do we make updates to this FAQ?
 
 !!! tip "In Short"
 

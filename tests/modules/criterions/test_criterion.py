@@ -117,60 +117,60 @@ class TestCriterion:
 class TestCriterionConsistency:
     """Test consistency between generic and specialized criterions."""
 
-    @pytest.mark.parametrize("batch_size,seq_len,num_labels", [(4, 1, 1), (2, 10, 1), (8, 5, 1)])
-    def test_binary_consistency(self, batch_size, seq_len, num_labels):
+    @pytest.mark.parametrize("batch_size,seq_length,num_labels", [(4, 1, 1), (2, 10, 1), (8, 5, 1)])
+    def test_binary_consistency(self, batch_size, seq_length, num_labels):
         """Test that generic and specialized binary criterions produce the same results"""
         config = HeadConfig(num_labels=num_labels, problem_type="binary")
         generic = Criterion(config)
         specialized = BCEWithLogitsLoss(config)
 
-        logits = torch.randn(batch_size, seq_len, num_labels)
-        labels = torch.randint(0, 2, (batch_size, seq_len, num_labels)).float()
+        logits = torch.randn(batch_size, seq_length, num_labels)
+        labels = torch.randint(0, 2, (batch_size, seq_length, num_labels)).float()
 
         loss_generic = generic(logits, labels)
         loss_specialized = specialized(logits, labels)
 
         torch.testing.assert_close(loss_generic, loss_specialized, rtol=1e-4, atol=1e-4)
 
-    @pytest.mark.parametrize("batch_size,seq_len,num_labels", [(4, 1, 5), (2, 10, 3), (8, 5, 7)])
-    def test_multiclass_consistency(self, batch_size, seq_len, num_labels):
+    @pytest.mark.parametrize("batch_size,seq_length,num_labels", [(4, 1, 5), (2, 10, 3), (8, 5, 7)])
+    def test_multiclass_consistency(self, batch_size, seq_length, num_labels):
         """Test that generic and specialized multiclass criterions produce the same results"""
         config = HeadConfig(num_labels=num_labels, problem_type="multiclass")
         generic = Criterion(config)
         specialized = CrossEntropyLoss(config)
 
-        logits = torch.randn(batch_size, seq_len, num_labels)
-        labels = torch.randint(0, num_labels, (batch_size, seq_len))
+        logits = torch.randn(batch_size, seq_length, num_labels)
+        labels = torch.randint(0, num_labels, (batch_size, seq_length))
 
         loss_generic = generic(logits, labels)
         loss_specialized = specialized(logits, labels)
 
         torch.testing.assert_close(loss_generic, loss_specialized, rtol=1e-4, atol=1e-4)
 
-    @pytest.mark.parametrize("batch_size,seq_len,num_labels", [(4, 1, 5), (2, 10, 3), (8, 5, 7)])
-    def test_multilabel_consistency(self, batch_size, seq_len, num_labels):
+    @pytest.mark.parametrize("batch_size,seq_length,num_labels", [(4, 1, 5), (2, 10, 3), (8, 5, 7)])
+    def test_multilabel_consistency(self, batch_size, seq_length, num_labels):
         """Test that generic and specialized multilabel criterions produce the same results"""
         config = HeadConfig(num_labels=num_labels, problem_type="multilabel")
         generic = Criterion(config)
         specialized = MultiLabelSoftMarginLoss(config)
 
-        logits = torch.randn(batch_size, seq_len, num_labels)
-        labels = torch.randint(0, 2, (batch_size, seq_len, num_labels)).float()
+        logits = torch.randn(batch_size, seq_length, num_labels)
+        labels = torch.randint(0, 2, (batch_size, seq_length, num_labels)).float()
 
         loss_generic = generic(logits, labels)
         loss_specialized = specialized(logits, labels)
 
         torch.testing.assert_close(loss_generic, loss_specialized, rtol=1e-4, atol=1e-4)
 
-    @pytest.mark.parametrize("batch_size,seq_len,num_labels", [(4, 1, 1), (2, 10, 1), (8, 5, 3)])
-    def test_regression_consistency(self, batch_size, seq_len, num_labels):
+    @pytest.mark.parametrize("batch_size,seq_length,num_labels", [(4, 1, 1), (2, 10, 1), (8, 5, 3)])
+    def test_regression_consistency(self, batch_size, seq_length, num_labels):
         """Test that generic and specialized regression criterions produce the same results"""
         config = HeadConfig(num_labels=num_labels, problem_type="regression")
         generic = Criterion(config)
         specialized = MSELoss(config)
 
-        logits = torch.randn(batch_size, seq_len, num_labels)
-        labels = torch.randn(batch_size, seq_len, num_labels)
+        logits = torch.randn(batch_size, seq_length, num_labels)
+        labels = torch.randn(batch_size, seq_length, num_labels)
 
         loss_generic = generic(logits, labels)
         loss_specialized = specialized(logits, labels)
