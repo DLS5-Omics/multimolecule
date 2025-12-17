@@ -107,8 +107,8 @@ class Tokenizer(PreTrainedTokenizer):
         if vocab_file is not None:
             alphabet = self.load_vocabulary(vocab_file)
 
-        self._id_to_token = OrderedDict(enumerate(alphabet))
-        self._token_to_id = OrderedDict({tok: ind for ind, tok in enumerate(alphabet)})
+        self._id_to_token: OrderedDict[int, str] = OrderedDict(enumerate(alphabet))
+        self._token_to_id: OrderedDict[str, int] = OrderedDict({tok: ind for ind, tok in enumerate(alphabet)})
 
         if cls_token is ...:
             cls_token = self.identify_special_token(alphabet, "cls")
@@ -159,10 +159,16 @@ class Tokenizer(PreTrainedTokenizer):
         return list(text)
 
     def _convert_token_to_id(self, token: str) -> int:
-        return self._token_to_id.get(token, self.unk_token_id)
+        id = self._token_to_id.get(token, self.unk_token_id)
+        if id is None:
+            raise ValueError(f"Token {token} is not in the vocabulary, and no UNK token is set!")
+        return id
 
     def _convert_id_to_token(self, index: int) -> str:
-        return self._id_to_token.get(index, self.unk_token)
+        token = self._id_to_token.get(index, self.unk_token)
+        if token is None:
+            raise ValueError(f"ID {index} is not in the vocabulary, and no UNK token is set!")
+        return token
 
     def token_to_id(self, token: str) -> int:
         return self._convert_token_to_id(token)
