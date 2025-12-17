@@ -58,7 +58,7 @@ class TestBCEWithLogitsLoss:
         torch.testing.assert_close(loss_generic, loss_specialized, rtol=1e-4, atol=1e-4)
 
     def test_3d_input(self, generic_criterion, criterion):
-        """Test 3D input: (batch_size, seq_len, 1)"""
+        """Test 3D input: (batch_size, seq_length, 1)"""
         logits = torch.randn(2, 10, 1)
         labels = torch.randint(0, 2, (2, 10, 1)).float()
 
