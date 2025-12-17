@@ -60,10 +60,10 @@ class TestSinusoidalEmbedding:
         sinusoidal_emb = SinusoidalEmbedding(num_embeddings, embedding_dim)
 
         input_ids = torch.tensor([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
-        batch_size, seq_len = input_ids.shape
+        batch_size, seq_length = input_ids.shape
 
         embeddings = sinusoidal_emb(input_ids)
-        assert embeddings.shape == (seq_len, embedding_dim)
+        assert embeddings.shape == (seq_length, embedding_dim)
 
         embeddings2 = sinusoidal_emb(input_ids)
         assert torch.equal(embeddings, embeddings2)
@@ -81,8 +81,8 @@ class TestSinusoidalEmbedding:
         input_ids = torch.tensor([[1, 2, 0, 0], [3, 4, 5, 0]])
         embeddings = sinusoidal_emb(input_ids)
 
-        batch_size, seq_len = input_ids.shape
-        assert embeddings.shape == (batch_size, seq_len, embedding_dim)
+        batch_size, seq_length = input_ids.shape
+        assert embeddings.shape == (batch_size, seq_length, embedding_dim)
 
         position_ids = sinusoidal_emb.get_position_ids(input_ids, padding_idx) + sinusoidal_emb.bias
 
