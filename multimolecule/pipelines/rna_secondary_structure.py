@@ -40,7 +40,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
     >>> import multimolecule
     >>> from transformers import pipeline
 
-    >>> predictor = pipeline("rna-secondary-structure")
+    >>> predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
     >>> output = predictor("UAGCUUAUCAGACUGAUGUUG")
     >>> output["secondary_structure"]
     '.....................'
@@ -85,7 +85,8 @@ class RnaSecondaryStructurePipeline(Pipeline):
         return model_outputs
 
     def _postprocess(self, contact_map: GenericTensor) -> GenericTensor:
-        contact_map = contact_map.squeeze(-1)
+        if contact_map.ndim == 3:
+            contact_map = contact_map.squeeze(-1)
         if contact_map.ndim != 2:
             raise ValueError(
                 "Expected a 2D contact map of shape (L, L) or a 3D tensor of shape (L, L, 1), "

@@ -214,7 +214,7 @@ class TestHuggingFaceDataset:
         dataset = Dataset(file, split="test", preprocess=True)
         elem = dataset[0]
         assert isinstance(elem["sequence"], torch.LongTensor)
-        assert isinstance(elem["secondary_structure"], torch.LongTensor)
+        assert isinstance(elem["secondary_structure"], torch.BoolTensor)
         batch = dataset[list(range(3))]
         assert isinstance(batch["sequence"], dl.NestedTensor)
         assert isinstance(batch["secondary_structure"], dl.NestedTensor)

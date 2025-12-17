@@ -9,227 +9,300 @@
 
 # 许可协议常见问题解答
 
-本许可协议常见问题解答（FAQ）阐明了由 DanLing 团队（也称为 DanLing）（“我们”、“我方”或“我们的”）提供的 MultiMolecule 项目（“MultiMolecule”）中 MultiMolecule 组件的使用条款和条件。
-本 FAQ 作为 [GNU Affero 通用公共许可证（AGPL）](license.zh.md)（“许可证”）的附录，并以引用方式纳入其中。
-本 FAQ 和许可证共同构成您与我们之间关于您使用 MultiMolecule 的完整协议（“协议”）。
-本 FAQ 中使用但未定义的大写术语具有 AGPL 中赋予它们的含义。
+本许可协议常见问题解答（Frequently Asked Questions，FAQ）用于澄清 DanLing 团队（亦称 DanLing）（“我们”、“我方”或“我们的”）在 MultiMolecule 项目（“MultiMolecule”）中提供之材料的使用条款与条件。
+本 FAQ 作为 [GNU Affero 通用公共许可证（AGPL）](license.md)（“许可证（License）”）的补充文件，并以引用方式并入该许可证。
+本 FAQ 与许可证共同构成你与我们就使用 MultiMolecule 所达成的完整协议（“协议（Agreement）”）。
+本 FAQ 中使用但未定义之首字母大写术语，具有 AGPL 中赋予之含义。
 
-## 0. 要点摘要
+## 0. 要点摘要 {#0-summary-of-key-points}
 
-本摘要重点介绍了我们许可的关键方面。有关更多详细信息，请参阅下面的相应部分并阅读[许可证](license.md)。
+本节概述本许可证的关键要点。
+如需更详细信息，请参阅下文对应章节并阅读[许可证](license.md)。
 
 <div class="grid cards" markdown>
 
-!!! question "在 MultiMolecule 中，什么是源代码和目标代码？"
+!!! question "MultiMolecule 中的源代码与目标代码是什么？"
 
-    源代码包括开发、训练、评估、运行一个模型所需的全部材料，包括数据、代码、配置和文档。目标代码包括模型权重。
+    源代码（Source Code）包括开发、训练、评估与运行模型所需的全部材料，包括数据、代码、配置与文档。
+    目标代码（Object Code）包括模型权重文件与编译后的代码。
 
-    [:octicons-arrow-right-24: 在 MultiMolecule 中，什么是源代码和目标代码？](#1-multimolecule)
+    [:octicons-arrow-right-24: MultiMolecule 中的源代码与目标代码是什么？](#1-what-are-source-code-and-object-code-in-multimolecule)
 
-!!! question "我是否需要共享我训练的模型？"
+!!! question "我是否必须共享我训练得到的模型？"
 
-    是的，任何模型必须根据协议条款提供，同时提供相应源代码。
+    若你传播（Convey）由 MultiMolecule 托管并分发的模型权重文件，则你必须在协议条款下传播这些权重文件，并同时提供相应源代码（Corresponding Source）。
+    若你传播上述权重文件的修改版本（例如微调后的权重），则你必须在协议条款下传播这些修改后的权重文件，并同时提供相应源代码（Corresponding Source）。
+    无论你是使用 MultiMolecule、第三方库，或自定义训练流水线来生成被传播的权重，上述义务均适用。
 
-    [:octicons-arrow-right-24: 我是否需要共享我训练的模型？](#2)
+    [:octicons-arrow-right-24: 我是否必须共享我训练得到的模型？](#2-am-i-required-to-share-my-trained-model)
 
-!!! question "我是否需要共享用于训练的数据？"
+!!! question "我是否必须共享用于训练的数据？"
 
-    是的，所有用于训练模型的数据必须根据协议条款提供。
+    若你传播第 2 节所涵盖的任何模型权重，则你还必须在协议条款下向接收者提供用于训练、更新或修改该等权重的任何训练数据集，并排除仅用于评估的数据（详见第 3 节的澄清）。
 
-    [:octicons-arrow-right-24: 我是否需要共享用于训练的数据？](#3)
+    [:octicons-arrow-right-24: 我是否必须共享用于训练的数据？](#3-am-i-required-to-share-the-data-used-for-training)
 
-!!! question "我需要致谢 MultiMolecule 吗？"
+!!! question "我是否需要致谢 MultiMolecule？"
 
-    是的，如果您在研究论文或其他项目中使用 MultiMolecule，则需要致谢 MultiMolecule。
+    当 MultiMolecule 对你的工作有贡献时，我们强烈鼓励你进行致谢。
+    我们强烈建议所有研究论文进行引用，但仅在你依赖第 5 节或第 8 节所授予的额外许可时，引用才构成该额外许可的强制条件。
+    在某些已分发的交互式界面中，适当的法律声明（Appropriate Legal Notices）中需要保留合理的作者署名信息（author attribution）。
 
-    [:octicons-arrow-right-24: 我需要致谢 MultiMolecule 吗？](#4-multimolecule)
+    [:octicons-arrow-right-24: 我是否需要致谢 MultiMolecule？](#4-do-i-need-to-acknowledge-multimolecule)
 
 !!! question "我可以使用 MultiMolecule 发表研究论文吗？"
 
-    视情况而定。您可以在某些开放获取和非盈利性场所发表研究论文。对于封闭获取或作者付费的场所，您必须获得单独的许可。
+    若你的手稿或补充材料包含 MultiMolecule 材料（如第 5 节所述），则除非适用额外许可，否则手稿与补充材料必须在许可证条款下分发。
+    第 5 节与第 8 节在第 6 节约束下授予额外许可，以便在特定场所依据“手稿共享许可”发表。
+    若你无法遵守许可证且不满足额外许可条件，则你不得在包含 MultiMolecule 材料的情况下分发该手稿或补充材料。
 
-    [:octicons-arrow-right-24: 我可以使用 MultiMolecule 发表研究论文吗？](#5-multimolecule)
+    [:octicons-arrow-right-24: 我可以使用 MultiMolecule 发表研究论文吗？](#5-can-i-publish-research-papers-using-multimolecule)
 
-!!! question "在某些场所发表研究论文是否有任何限制？"
+!!! question "在某些出版场所发表研究论文是否存在限制？"
 
-    是的，在某些场所发表研究论文有一些限制。
+    是的，本 FAQ 授予的额外许可在某些出版场所有相应限制。
+    第 6 节仅限制本 FAQ 授予的额外许可。
+    第 6 节不限制你在[许可证](license.md)本身框架下的发表。
 
-    [:octicons-arrow-right-24: 在某些场所发表研究论文的限制](#6)
+    [:octicons-arrow-right-24: 在某些出版场所发表研究论文的限制](#6-restrictions-on-publishing-research-papers-in-certain-venues)
 
 !!! question "我可以将 MultiMolecule 用于商业目的吗？"
 
-    是的，您可以根据协议条款将 MultiMolecule 用于商业目的。
+    可以，你可以在协议条款下将 MultiMolecule 用于商业目的。
+    若你希望在不承担传播受覆盖材料时所适用义务的情况下进行商业使用，你必须获得我们单独授予的许可。
 
-    [:octicons-arrow-right-24: 我可以将 MultiMolecule 用于商业目的吗？](#7-multimolecule)
+    [:octicons-arrow-right-24: 我可以将 MultiMolecule 用于商业目的吗？](#7-can-i-use-multimolecule-for-commercial-purposes)
 
-!!! question "MultiMolecule 协作者社否有特别权利？"
+!!! question "MultiMolecule 协作者是否有特殊许可？"
 
-    是的，根据许可证第7章，受认可的协作者被授予特定的额外权利。
+    是的，经认可的协作者将依据许可证第 7 节获得特定额外许可。
+    这些许可受所述条件与第 6 节约束。
 
-    [:octicons-arrow-right-24: MultiMolecule 协作者社否有特别权利？](#8-multimolecule)
+    [:octicons-arrow-right-24: MultiMolecule 协作者是否有特殊许可？](#8-are-there-special-permissions-for-multimolecule-collaborators)
 
 </div>
 
-## 1. 在 MultiMolecule 中，什么是源代码和目标代码？
+## 1. 在 MultiMolecule 中，什么是源代码和目标代码？ {#1-what-are-source-code-and-object-code-in-multimolecule}
 
-对于 MultiMolecule 项目提供的所有材料，以下定义阐明和补充[许可证](license.md)：
+对于 MultiMolecule 项目中的所有材料，下列定义用于澄清并补充[许可证](license.md)中的定义。
 
-!!! note "源代码"
+> [!TIP] MultiMolecule 托管材料的范围
+> 除非在相关模型卡、数据集卡、文件头、目录说明或随附的 LICENSE/NOTICE 中另有明确声明，否则所有由 MultiMolecule 托管并分发的模型权重、数据集、代码、配置与文档均在本协议下提供。
+> 若我们未来以不同条款托管任何特定项目，我们将对该项目作出明确标注，并以标注条款为准。
 
-    **源代码** 是指根据本协议许可的材料中，用于对其进行修改的首选形式，与许可证第 1 条保持一致。它包含开发、训练、评估和运行模型所需的所有材料。
+> [!IMPORTANT] 源代码（Source Code）
+> **源代码（Source Code）** 是指受许可材料用于进行修改的首选形式，且与许可证第 1 条保持一致。
+> 源代码（Source Code）涵盖开发、训练、评估与运行模型所需的全部材料。
 
-源代码包括但不限于：
+源代码（Source Code）包括但不限于：
 
-- **数据**：以处理所需的形式提供的、用于训练、评估或微调所提供或生成的模型的数据集。
-- **代码**：处理数据、训练模型、执行评估、部署模型或以其他方式操作和修改许可材料所需的所有脚本、程序、库（包括模型架构和流程定义）和实用工具的源代码。
-- **配置**：控制许可材料相关的安装、编译、训练、评估或执行过程的配置文件、设置参数、环境规范以及任何脚本。
-- **文档**：接口定义文件、构建说明、手册、指南、描述所使用的具体方法、架构和参数的相关研究论文，以及理解、安装、操作和修改许可材料所需的任何其他技术文档。
+- **数据（Data）**：以处理所需的形式提供的、训练、评估或运行受许可材料所提供或生成模型所需的数据集。
+- **代码（Code）**：处理数据、训练模型、执行评估、部署模型或以其他方式运行与修改受许可材料所需的全部源代码脚本、程序、库（包括模型结构与流水线定义）及工具。
+- **配置（Configuration）**：与受许可材料相关的安装、编译、训练、评估、运行或执行过程所需的配置文件、参数设置、环境规范及控制脚本。
+- **文档（Documentation）**：接口定义文件、构建说明、手册、指南、作为受许可材料一部分由 MultiMolecule 分发的研究论文与技术报告（用于描述具体方法、结构与参数），以及理解、安装、运行与修改受许可材料所需的其他技术文档。
 
-*提供此处定义的源代码是满足在传递目标代码或提供网络访问时根据[许可证](license.md)提供“相应源代码”要求所必需的。*
+*按上述定义提供源代码（Source Code），是在传播目标代码（Object Code）时满足协议项下提供“相应源代码（Corresponding Source）”要求所必需的（在适用情况下亦用于满足许可证项下之对应要求）。*
 
-!!! note "目标代码"
+> [!IMPORTANT] 目标代码（Object Code）
+> **目标代码（Object Code）** 是指不属于源代码（Source Code）的任何形式之受许可材料。
 
-    **目标代码** 是指根据本协议许可的材料中，除源代码之外的任何形式。
+目标代码（Object Code）主要包括但不限于：
 
-目标代码主要包括但不限于：
+- **模型权重（Model Weights）**：训练后表征模型学习状态的数值参数（例如 SafeTensors、HDF5 或类似格式文件）。
+  这包括除非另有声明之外所有由 MultiMolecule 提供或托管的模型权重。
+  这也包括从由 MultiMolecule 提供或托管的模型权重派生的任何微调模型权重。
+- **编译代码（Compiled Code）**：非人类可读的可执行软件代码，例如 Python 包中可能包含的已编译 C++ 扩展。
 
-- **模型权重**：代表模型训练后学到的状态的数值参数（例如，SafeTensors、HDF5 或类似格式的文件）。
-- **已编译代码**：任何非人类可读源代码形式的可执行软件代码，例如有时在 Python 包中可以找到的已编译 C++ 扩展。
+*对于在 MultiMolecule 中被视为目标代码（Object Code）的模型权重，相应源代码（Corresponding Source）至少包括复现被传播权重所需的训练数据与脚本。*
 
-## 2. 我是否需要共享我训练的模型？
+理解上述区分有助于澄清你在本协议项下的义务。
+例如，若你传播目标代码（Object Code）（如模型权重），则你还必须确保相应的源代码（Source Code）（包括必要的数据、代码、配置与文档）亦在协议条款下可获得。
 
-是的，您必须根据协议条款使您训练的模型和其权重可用。
+## 2. 我是否必须共享我训练得到的模型？ {#2-am-i-required-to-share-my-trained-model}
 
-如本 FAQ 第 1 节所定义，模型权重在 MultiMolecule 中被视为目标代码。因此，除了提供修改后的模型权重外，您还必须提供相应源代码，如[许可证](license.md)第 1 节所定义并在本 FAQ 第 1 节中扩展说明的，以复现修改后的模型。这包括但不限于训练过程中使用的任何代码、数据、配置文件和脚本，以及修改后的模型权重本身。
+若你传播本协议所涵盖的模型权重，则你必须在本协议条款下传播这些权重，并同时提供相应源代码（Corresponding Source）。
 
-如果您出于任何目的使用本工作，您有义务根据协议条款提供所有相关材料，包括代码、数据集和模型。这种方法可确保所有增强功能、修改和相关资源对社区保持自由可用。
+如本 FAQ 第 1 节所述，模型权重在 MultiMolecule 中被视为目标代码（Object Code）。
+每当你依据本协议传播目标代码（Object Code）时，你亦必须提供相应源代码（Corresponding Source）。
+对于受本协议覆盖的模型权重，相应源代码（Corresponding Source）至少包括复现、安装、运行与修改被传播权重所需的代码、训练数据、配置与脚本，并如本 FAQ 第 1 节所澄清。
 
-## 3. 我是否需要共享用于训练的数据？
+若你修改 MultiMolecule 且你通过计算机网络向用户提供对你修改版本的远程交互，则你必须遵守许可证第 13 节。
+你必须向与该修改版本远程交互的所有用户提供获得你该修改版本相应源代码（Corresponding Source）的机会。
+本第 13 节义务所指向的是对“修改后的 MultiMolecule 程序（Program）”本身的远程交互。
 
-是的，您必须根据协议条款提供用于训练的数据集。
+第 3 节进一步规定训练数据要求。
 
-如本 FAQ 第 1 节所定义，用于训练的数据被视为源代码的一部分。因此，他属于[许可证](license.md)要求的相应源代码定义范畴。此义务确保其他人可以使用用于训练这些模型的相同数据输入来复现或进一步开发模型。
+## 3. 我是否必须共享用于训练的数据？ {#3-am-i-required-to-share-the-data-used-for-training}
 
-此要求特别适用于用于训练、更新或修改模型权重的数据。_仅_ 用于评估模型性能的数据（例如，在私有测试集上运行推理）**无需** 根据此规定提供，前提是该数据未被用于该模型的任何训练中。
+若你传播本协议所涵盖的模型权重，则你还必须在本协议条款下向接收者提供用于训练、更新或修改该等权重的任何训练数据集，并排除仅用于评估的数据（详见下文澄清）。
 
-## 4. 我需要致谢 MultiMolecule 吗？
+如本 FAQ 第 1 节所述，训练数据集在 MultiMolecule 中被视为源代码（Source Code）。
+因此，当你依据本协议需要提供相应源代码（Corresponding Source）时，所需相应源代码（Corresponding Source）应包含复现被传播权重所需的训练数据，并如本 FAQ 第 1 节所澄清。
 
-是的，您需要致谢 MultiMolecule，如果您在研究论文或其他项目中使用它。
+该要求仅适用于用于训练、更新或修改被传播模型权重的数据。
+仅用于评估的数据不在本条要求之列，前提是该数据未同时用于训练。
 
-!!! paper "研究论文"
+若所需训练数据无法在本协议项下向接收者提供，则你不得在本协议项下传播相应权重。
 
-    研究论文应包含对 MultiMolecule 项目的正式引用。
+## 4. 我是否需要致谢 MultiMolecule？ {#4-do-i-need-to-acknowledge-multimolecule}
 
-任何利用本工作的研究论文 _都应包含_ 对 MultiMolecule 项目的正式引用。具体的引用格式可能因出版场所的风格指南而异，但至少必须包含项目名称（“MultiMolecule”）和DOI（[10.5281/zenodo.12638419](https://doi.org/10.5281/zenodo.12638419)）。如果由于场所限制无法进行正式引用，则 _应_ 在致谢部分提及 MultiMolecule 项目名称和 DOI。
+当 MultiMolecule 对你的工作有贡献时，我们强烈鼓励你进行致谢。
+本节区分以下两类内容：
 
-!!! code "项目"
+- (a) 作为社区规范我们强烈请求的内容，以及
+- (b) 仅在你依赖本 FAQ 授予的额外许可时才成为强制条件的内容。
 
-    其他项目应包含对 MultiMolecule 项目的适当致谢。
+> [!NOTE]
+> 我们强烈建议任何使用 MultiMolecule 的研究论文对 MultiMolecule 进行正式引用。
+> 若你仅依据[许可证](license.md)发表论文，则引用不是许可证合规条件，但我们强烈请求你进行引用。
+> 若你依赖第 5 节或第 8 节的额外许可，则正式引用是该额外许可的条件。
 
-任何其他利用 MultiMolecule 的项目（包括软件、网络服务和其他衍生作品）_都应提供_ 对 MultiMolecule 项目的适当致谢。
+当本 FAQ 要求引用时（例如作为第 5 节或第 8 节额外许可的条件），引用至少必须包含项目名称（“MultiMolecule”）与 DOI（[10.5281/zenodo.12638419](https://doi.org/10.5281/zenodo.12638419)）。
+若出版场所不支持正式引用，则项目名称与 DOI 必须改为出现在致谢部分。
 
-- **软件**：任何利用 MultiMolecule 的软件必须在其文档中包含 MultiMolecule 项目名称和 URL 的显著显示。此外，在每次启动生成的程序（或任何依赖于它的程序）时，_都应_ 向用户呈现 MultiMolecule 项目名称和 URL 的显著显示（例如，启动屏幕或横幅文本）。
-- **网络服务**：任何利用 MultiMolecule 的网络服务必须在服务的主页或其他易于访问的位置包含 MultiMolecule 项目名称和 URL 的显著显示。
-- **其他衍生作品**：任何其他衍生作品必须包含明确的致谢。
+> [!IMPORTANT]
+> 若你传播包含 MultiMolecule 的程序，你必须在适当的法律声明（Appropriate Legal Notices）中保留对 MultiMolecule 的合理作者署名信息。
 
-## 5. 我可以使用 MultiMolecule 发表研究论文吗？
+若程序具有交互式用户界面，则其必须展示适当的法律声明（Appropriate Legal Notices）。
+该等声明必须包含对 MultiMolecule 的合理作者署名信息，包括项目名称与官方仓库或网站链接。
 
-任何使用 MultiMolecule 的出版物，无论出版场所如何，_必须包含_ 对 MultiMolecule 项目的正式引用，如第 4 节所述。
+对于命令行程序，该署名应在启动时显著展示，并在适用情况下可通过 `--help`、`--version` 或 `--about` 获取。
+对于网络服务，该署名应在主页或其他易于访问的位置显著展示。
 
-!!! success "开放获取"
+对于库或非交互组件，该署名应在文档中显著展示，并在组件提供任何交互界面时在该界面中显著展示。
 
-    您可以在钻石开放获取场所发表研究论文。
+## 5. 我可以使用 MultiMolecule 发表研究论文吗？ {#5-can-i-publish-research-papers-using-multimolecule}
 
-您可以在完全开放获取的期刊、会议或平台上发表研究论文，这些期刊、会议或平台不对作者或读者收取费用，前提是所有已发表的手稿均根据以下允许共享手稿的许可证之一提供：
+> [!IMPORTANT]
+> 如第 1 节所述，文档（Documentation）属于 MultiMolecule 源代码（Source Code）的一部分。
+> 因此，若你的手稿或补充材料包含 MultiMolecule 材料（即包含或复制 MultiMolecule 的代码、权重、数据集、文档文本、图表或其他 MultiMolecule 材料），则该手稿与补充材料将被视为与这些 MultiMolecule 材料一并分发的文档（Documentation）。
+> 该要求仅适用于“包含 MultiMolecule 材料”的手稿与补充材料，而不适用于仅与 MultiMolecule 一同分发但彼此独立的作品。
+> 因此，在无额外许可的情况下，在手稿或补充材料包含或复制 MultiMolecule 材料的范围内，手稿与补充材料必须作为同一份 MultiMolecule 材料分发的一部分，依据许可证条款进行分发。
+> 若你无法遵守许可证，则你不得在本协议项下于包含 MultiMolecule 材料的情况下分发该手稿或补充材料。
 
-- [GNU 自由文档许可证 (GFDL)](https://www.gnu.org/licenses/fdl.html)
-- [知识共享许可证](https://creativecommons.org/licenses)
-- [OSI 批准的许可证](https://opensource.org/licenses)
+本节依据许可证第 7 节授予额外许可，用于作者希望在“手稿共享许可”下发布手稿的特定出版场景。
+为避免疑义，本第 5 节中的额外许可仅适用于手稿文本与其他文档类材料。
+该等额外许可不改变你所传播的任何 MultiMolecule 代码、模型权重或数据集所适用的许可证。
+除非另有明确声明，否则你所传播的上述 MultiMolecule 材料仍受本协议约束。
 
-此许可是根据[许可证](license.md)第 7 节授予的额外许可。
+> [!IMPORTANT]
+> 若你依赖本第 5 节授予的任何额外许可，则第 4 节所述正式引用要求是该额外许可的条件。
+> 本第 5 节授予的任何额外许可仍受第 6 节约束。
 
-!!! warning "非盈利"
+> [!TIP] 钻石开放获取（Diamond Open Access）
+> 下述额外许可允许在钻石开放获取场所发表。
 
-    您可以在某些非盈利性场所发表研究论文。
+你可以在完全开放获取的期刊、会议或平台发表传播 MultiMolecule 材料的手稿。
+该等场所不得向作者或读者收取费用。
 
-您可以在某些非盈利性期刊、会议或平台上发表研究论文。具体来说，这包括：
+手稿的公开版本必须以允许共享手稿的许可证发布。
+你可以使用下列许可证之一。
 
-- [美国科学促进会 (AAAS) 出版的所有期刊](https://www.aaas.org/journals)
-- [eLife](https://elifesciences.org)
+- GNU 自由文档许可证（GFDL）
+- 知识共享许可证（Creative Commons）
+- OSI 认可许可证
 
-此许可是根据[许可证](license.md)第 7 节授予的额外许可。
+该许可作为许可证第 7 节项下的额外许可授予。
 
-!!! failure "封闭获取/作者付费"
+> [!WARNING] 非营利（Non-Profit）
+> 下述额外许可允许在特定非营利场所发表。
 
-    您必须获得单独的许可才能在封闭获取/作者付费场所发表。
+你可以在某些非营利期刊、会议或平台发表传播 MultiMolecule 材料的手稿。
+该范围包括如下场所。
 
-我们不赞成在封闭获取或作者付费场所发表。在封闭获取或作者付费场所发表需要 _事先_ 获得我们的单独书面许可协议。此类协议可能涉及共同作者身份或对项目的财务贡献等条件。
+- eLife
 
-## 6. 在某些场所发表研究论文的限制
+该许可作为许可证第 7 节项下的额外许可授予。
 
-我们认为，免费和开放获取研究是机器学习社区的基石。受[《自然-机器智能》声明](https://openaccess.engineering.oregonstate.edu)以及持续的[零成本开放获取](https://diamasproject.eu)文化的启发，我们认为研究应该在没有作者或读者障碍的情况下普遍可访问。
+> [!CAUTION] 封闭获取 / 作者付费（Closed-Access / Author-Fee）
+> 封闭获取或作者付费场所往往使合规变得不可能。
 
-以下出版场所采用封闭获取或作者付费模式，这与这些基本价值观相矛盾。我们认为这种做法是机器学习研究传播演变中的倒退，它破坏了社区促进开放协作和知识共享的努力：
+我们不赞成在封闭获取或作者付费场所发表 MultiMolecule 材料。
 
-- [《自然-机器智能》](https://www.nature.com/natmachintell)
+若某出版场所的条款将阻止你就与发表相关而传播的任何 MultiMolecule 材料遵守许可证，则你必须在投稿或发表前与我们达成单独的书面许可协议。
+该等协议可能包含共同作者身份或对项目的资金支持等条件。
 
-我们强烈建议不要在上述场所发表使用 MultiMolecule 的作品，因为它们采用封闭获取或作者付费模式。
+## 6. 在某些出版场所发表研究论文的限制 {#6-restrictions-on-publishing-research-papers-in-certain-venues}
 
-**尽管根据[许可证](license.md)第 7 节或通过与我们签订的任何单独书面许可协议授予了任何额外许可，但在上述场所发表 _未经授权_，除非该单独协议明确且具体地另有说明。** 此限制优先于此类额外许可或协议中的任何其他条款，并取代任何先前的弃权、豁免或许可，除非附加条款明确声明其优先于本节。
+> [!IMPORTANT]
+> 本节仅限制本 FAQ 授予的额外许可。
+> 本节不限制你在[许可证](license.md)本身框架下的发表。
+> 若你在发表中传播 MultiMolecule 材料并就该等材料遵守许可证，则第 6 节不适用。
 
-## 7. 我可以将 MultiMolecule 用于商业目的吗？
+因此，第 6 节仅约束第 5 节与第 8 节中的额外许可。
+第 6 节亦约束任何引用或并入本 FAQ 的单独书面许可协议，除非该单独协议以书面形式明确声明不适用本节。
 
-可以！您可以将 MultiMolecule 用于商业目的，前提是您遵守协议的所有条款。这包括根据协议条款提供 MultiMolecule 任何修改版本的相应源代码（如[许可证](license.md)第 1 节和本 FAQ 第 1 节中所定义）以及任何相关工件（包括您的训练数据（如第 3 节所阐明）和训练模型（如第 2 节所阐明））的要求。
+我们认为，免费和开放获取研究是机器学习社区的基石。
+受《自然·机器智能》声明与持续的零成本开放获取文化启发，我们认为研究应该在没有作者或读者障碍的情况下普遍可访问。
 
-如果您希望将 MultiMolecule 用于商业目的而不根据[许可证](license.md)提供您的修改和相关材料，则必须获得我们的单独书面许可协议。这可能涉及支持该项目的财务贡献。请通过 [license@danling.org](mailto:license@danling.org) 与我们联系以获取更多详细信息。
+以下出版场所采用封闭获取或作者付费模式，这与这些基本价值观相矛盾。
+我们认为这种做法是机器学习研究传播演变中的倒退，会削弱社区推动开放协作与知识共享的努力。
 
-## 8. MultiMolecule 协作者是否有特殊权限？
+- Nature Machine Intelligence
 
-是的！如果您是 MultiMolecule 项目的协作者（由 DanLing 团队认可），您有权根据[许可证](license.md)第 7 节获得以下额外权限：
+尽管有第 5 节与第 8 节的规定，本 FAQ 授予的任何额外许可均不授权你在上述场所投稿或发表传播 MultiMolecule 材料的手稿。
+只有在你与我们另行签署单独书面许可协议，且该协议以明确条款允许你在不受本第 6 节限制的情况下发表时，你才可以在上述场所投稿或发表该等手稿。
 
-!!! tip "内部网络使用豁免"
-    协作者在涉及修改后的本工作的内部研发网络使用方面，获得 AGPL 第 13 节源代码共享义务的豁免。
+我们强烈建议不要在上述场所发表传播 MultiMolecule 材料的作品。
 
-尽管有[许可证](license.md)第 13 节的规定，作为受认可的协作者，您无需向通过计算机网络与已修改的 MultiMolecule（包括根据本协议许可的代码、模型或数据）远程交互的用户提供相应源代码，_前提是_ 此类交互仅用于其各自团队内部的研究和开发目的。
+## 7. 我可以将 MultiMolecule 用于商业目的吗？ {#7-can-i-use-multimolecule-for-commercial-purposes}
 
-!!! success "扩展的论文发表权限"
-    与第 5 节相比，协作者获得扩展的论文发表权限，允许使用大多数同行评审的场所。
+可以。
+你可以在本协议条款下将 MultiMolecule 用于商业目的，前提是你遵守本协议。
 
-您可以在任何同行评审的科学场所（包括期刊和会议论文集，无论其访问模式或作者费用如何）发表利用 MultiMolecule 的研究论文，或发布预印本（例如，在 arXiv 上）。此权限意味着您不受第 5 节中提到的特定类型场所或手稿许可证的限制，并且无需获得我们的单独许可协议以发表。**根据本 FAQ 第 6 节，此扩展权限 _不_ 适用于某些列出的场所。** 因此，在本协议授予的额外权限范围内不涵盖在此类场所发表。您仍必须遵守第 4 节中描述的致谢和引用要求。
+若你传播经修改的 MultiMolecule 材料，则你必须提供许可证与本 FAQ 所要求的相应源代码（Corresponding Source）及相关工件。
 
-!!! warning "关于出版物的源代码发布时间"
-    协作者在发布与出版物相关的源代码的时间方面有特定条件（接受或预印本发布后 366 天）。
+在适用情况下，这包括第 3 节所澄清的训练数据与第 2 节所澄清的模型权重。
 
-以下条件适用于在[许可证](license.md)要求时（例如，在转让时或对于上述豁免未涵盖的网络使用）提供修改的相应源代码的时间安排：如果您的修改用于手稿中描述的研究，则根据[许可证](license.md)公开提供相应源代码的义务将在以下事件中 **首先发生** 的事件 **触发**：
+若你希望在商业使用中不按许可证公开上述材料，则你必须与我们达成单独的书面许可协议。
+请通过 [license@danling.org](mailto:license@danling.org) 联系我们以获取更多信息。
 
-- a) 手稿在同行评审场所（例如期刊、会议论文集）被正式 _接受_ 发表。
-- b) 自手稿首次发布在公共预印本服务器（例如 arXiv）上已过去 366 天。
+## 8. MultiMolecule 协作者是否有特殊许可？ {#8-are-there-special-permissions-for-multimolecule-collaborators}
 
-您必须在第一个适用触发事件发生时立即提供相应源代码。如果修改的转让或使用方式与出版物或预印本无关，则适用[许可证](license.md)关于源代码提供时间的标准条款。
+是的。
+若你被 DanLing 团队认可为协作者，则你有权依据[许可证](license.md)第 7 节获得以下额外许可。
 
-**适用于协作者权限的一般条件：**
-这些权限仅授予由 DanLing 团队认可的活跃、受邀的协作者。未被这些额外权限明确修改的[许可证](license.md)和本 FAQ 的所有其他规定仍然完全有效。这些额外权限不可转让且不可再许可。
+> [!TIP] 内部网络使用豁免
+> 尽管有许可证第 13 节的规定，协作者在其团队内部研发场景中使用经修改的 MultiMolecule 版本并通过计算机网络供团队成员远程交互时，可豁免向该等用户提供相应源代码（Corresponding Source）的义务。
+> 该豁免不适用于外部用户、公开部署或传播（Conveyance）。
 
-DanLing 团队可以通过书面沟通，根据具体情况授予协作者额外的特定权限。
+> [!TIP] 论文发表的扩展许可
+> 协作者可以在任何同行评审的科学出版场所发表传播 MultiMolecule 材料的手稿，包括期刊与会议论文集，而不受访问模式或作者费用影响。
+> 该扩展许可作为许可证第 7 节项下的额外许可授予。
+> 该扩展许可仍受本 FAQ 第 6 节约束。
+> 该扩展许可仅影响手稿与补充文档的许可方式，而不改变你所传播的任何 MultiMolecule 材料所适用的许可证。
+> 作为该扩展许可的条件，你必须遵守第 4 节的致谢与引用要求。
 
-## 9. 如果我的组织禁止使用 AGPL 许可下的代码，我如何使用 MultiMolecule？
+> [!IMPORTANT] 与出版相关的源代码发布时间
+> 该额外许可仅涉及与出版相关修改的公开发布时间点。
+> 该额外许可并不延后你在传播时向接收者提供相应源代码的义务，也不延后你在第 13 节项下对网络远程交互用户提供相应源代码的义务。
+> 若你的修改被用于手稿所描述的研究，则你必须在以下事件中最先发生者发生时，公开发布与该出版相关修改的相应源代码（Corresponding Source）。
+>
+> - 手稿在同行评审场所被正式接收发表。
+> - 自手稿首次发布于公共预印本服务器起已过去 366 天。
+>
+> 你必须在首个适用触发事件发生时立即进行公开发布。
+> 若修改的传播或网络远程交互与出版或预印本无关，则适用许可证的标准时间规则。
 
-某些组织，例如 [Google](https://opensource.google/documentation/reference/using/agpl-policy)，禁止使用 AGPL 许可的代码。如果您隶属于一个不允许使用 AGPL 许可软件的组织，您必须获得我们的单独许可才能使用 MultiMolecule。
+> [!NOTE] 协作者额外许可的一般条件
+> 上述额外许可仅授予由 DanLing 团队认可的活跃、受邀协作者。
+> 上述额外许可不可转让且不可再许可。
+> 除非上文明确修改，否则许可证与本 FAQ 的其他条款仍完全有效。
+> DanLing 团队可通过书面沟通按个案授予额外许可。
 
-要请求单独的许可，请通过 [license@danling.org](mailto:license@danling.org) 与我们联系。
+## 9. 如果我的组织禁止使用 AGPL 许可下的代码，我如何使用 MultiMolecule？ {#9-how-can-i-use-multimolecule-if-my-organization-forbids-the-use-of-code-under-the-agpl-license}
 
-## 10. 如果我是美国政府的联邦雇员，我可以使用 MultiMolecule 吗？
+某些组织（例如 [Google](https://opensource.google/documentation/reference/using/agpl-policy)）禁止使用 AGPL 许可的代码。
+若你所属组织不允许使用 AGPL 许可的软件，则你必须获得我们的单独许可方可使用 MultiMolecule。
+如需申请单独许可，请通过 [license@danling.org](mailto:license@danling.org) 联系我们。
 
-根据[美国法典第 17 卷第 105 条](https://www.law.cornell.edu/uscode/text/17/105)，美国政府的联邦雇员以其官方身份行事时创作的作品通常在美国境内不受版权保护。因此，此类雇员可能普遍无法遵守本协议中基于版权的许可义务（该义务要求根据 AGPL 授予修改的许可），故被排除在其官方身份下根据本协议使用 MultiMolecule。
+## 10. 我们会更新此 FAQ 吗？ {#10-do-we-make-updates-to-this-faq}
 
-## 11. 我们会更新此 FAQ 吗？
+> [!TIP] 简而言之
+> 是的，我们将根据需要更新本 FAQ，以保持对相关法律的合规。
 
-!!! tip "简而言之"
-
-    是的，我们将根据需要更新此 FAQ，以保持符合相关法律。
-
-我们可能会不时更新此许可 FAQ。
-更新后的版本将在此许可 FAQ 底部的“上次修订时间”中注明。
-如果我们进行任何重大更改，我们将通过在此页面上发布新的许可 FAQ 来通知您。
-由于我们不收集您的任何联系信息，因此无法直接通知您。
-我们鼓励您经常查看此许可 FAQ，以随时了解您如何使用我们的数据、模型、代码、配置和文档。
+我们可能不时更新本许可 FAQ。
+更新版本将通过本页底部“最后修订时间（Last Revised Time）”的更新予以标示。
+若我们作出任何重大变更，我们将通过在本页面发布新的许可 FAQ 的方式进行通知。
+由于我们不会收集你的联系信息，我们无法向你进行直接通知。
+我们建议你定期查阅本许可 FAQ，以了解你如何使用我们的数据、模型、代码、配置与文档。
