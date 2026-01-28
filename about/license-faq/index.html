@@ -1485,64 +1485,88 @@ This FAQ serves as an addendum to, and is incorporated by reference into, the <a
 This FAQ and the License together constitute the entire agreement (the &ldquo;Agreement&rdquo;) between you and us regarding your use of MultiMolecule.
 Capitalized terms used but not defined in this FAQ have the meanings given to them in the AGPL.</p>
 <h2 id="0-summary-of-key-points">0. Summary of Key Points<a class="headerlink" href="#0-summary-of-key-points" title="Permanent link">&para;</a></h2>
-<p>This summary highlights the key aspects of our license. For more detailed information, please refer to the corresponding sections below and read the <a href="../license/">License</a>.</p>
+<p>This summary highlights the key aspects of our license.
+For more detailed information, please refer to the corresponding sections below and read the <a href="../license/">License</a>.</p>
 <div class="grid cards">
 <div class="admonition question">
 <p class="admonition-title">What are source code and object code in MultiMolecule?</p>
-<p>The Source Code includes all materials necessary to develop, train, evaluate and run a model, including data, code, configuration and documentation. The Object Code include the model weights.</p>
+<p>The Source Code includes all materials necessary to develop, train, evaluate, and run a model, including data, code, configuration, and documentation.
+The Object Code includes model weight files and compiled code.</p>
 <p><a href="#1-what-are-source-code-and-object-code-in-multimolecule"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> What are source code and object code in MultiMolecule?</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Am I required to share my trained model?</p>
-<p>Yes, all models must be made available under the terms of the Agreement, along with the Corresponding Source.</p>
+<p>If you Convey model weight files hosted and distributed by MultiMolecule, you must make those weight files available under the terms of the Agreement, along with the Corresponding Source.
+If you Convey modified versions of such weight files (for example, fine-tuned weights), you must make those modified weight files available under the terms of the Agreement, along with the Corresponding Source.
+If you train or fine-tune model weights in the manner defined in Section 1 and described in Section 2&copy; and you then Convey those weights, you must make those weights available under the terms of the Agreement, along with the Corresponding Source.
+These obligations apply regardless of whether you used MultiMolecule, a third-party library, or a customized training pipeline to produce the conveyed weights.</p>
 <p><a href="#2-am-i-required-to-share-my-trained-model"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Am I required to share my trained model?</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Am I required to share the data used for training?</p>
-<p>Yes, all data used for training a model must be made available under the terms of the Agreement.</p>
+<p>If you Convey any model weights covered by Section 2, you must also make available the datasets used to train, update, or modify those weights under the terms of the Agreement.</p>
 <p><a href="#3-am-i-required-to-share-the-data-used-for-training"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Am I required to share the data used for training?</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Do I need to acknowledge MultiMolecule?</p>
-<p>Yes, you need to acknowledge MultiMolecule if you use it in your research papers or other projects.</p>
+<p>We strongly encourage acknowledgement whenever MultiMolecule contributes to your work.
+Citation is strongly requested for all research papers and becomes mandatory only as a condition of additional permissions granted in Section 5 or Section 8.
+Reasonable author attribution in Appropriate Legal Notices is required in certain distributed interactive interfaces.</p>
 <p><a href="#4-do-i-need-to-acknowledge-multimolecule"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Do I need to acknowledge MultiMolecule?</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Can I publish research papers using MultiMolecule?</p>
-<p>It depends. You may publish research papers in certain open access and non-profit venues. For closed access or author fee venues, you must obtain a separate license.</p>
+<p>If your manuscript or supplements include MultiMolecule materials (as described in Section 5), then the manuscript and supplements must be distributed under the License unless an additional permission applies.
+Section 5 and Section 8 grant additional permissions to enable publication in certain venues under manuscript-sharing licenses, subject to Section 6.
+If you cannot comply with the License and do not qualify for an additional permission, you may not distribute the manuscript or supplements with MultiMolecule materials.</p>
 <p><a href="#5-can-i-publish-research-papers-using-multimolecule"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Can I publish research papers using MultiMolecule?</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Is there any restriction on publishing research papers in certain venues?</p>
-<p>Yes, there are some restrictions on publishing research papers in certain venues.</p>
+<p>Yes, there are restrictions on publishing research papers in certain venues under the additional permissions granted by this FAQ.
+Section 6 limits only additional permissions granted by this FAQ.
+Section 6 does not restrict publication under the <a href="../license/">License</a> itself.</p>
 <p><a href="#6-restrictions-on-publishing-research-papers-in-certain-venues"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Restrictions on Publishing Research Papers in Certain Venues</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Can I use MultiMolecule for commercial purposes?</p>
-<p>Yes, you can use MultiMolecule for commercial purposes under the terms of the Agreement.</p>
+<p>Yes, you can use MultiMolecule for commercial purposes under the terms of the Agreement.
+If you prefer commercial use without the obligations that apply when you Convey or provide network access to covered materials, you must obtain a separate license.</p>
 <p><a href="#7-can-i-use-multimolecule-for-commercial-purposes"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Can I use MultiMolecule for commercial purposes?</a></p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Are there special permissions for MultiMolecule Collaborators?</p>
-<p>Yes, recognized Collaborators are granted specific additional permissions pursuant to Section 7 of the License.</p>
+<p>Yes, recognized Collaborators are granted specific additional permissions pursuant to Section 7 of the License.
+These permissions are subject to the stated conditions and to Section 6.</p>
 <p><a href="#8-are-there-special-permissions-for-multimolecule-collaborators"><span class="gemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Are there special permissions for MultiMolecule Collaborators?</a></p>
 </div>
 </div>
 <h2 id="1-what-are-source-code-and-object-code-in-multimolecule">1. What are source code and object code in MultiMolecule?<a class="headerlink" href="#1-what-are-source-code-and-object-code-in-multimolecule" title="Permanent link">&para;</a></h2>
-<p>For all materials in the MultiMolecule project, the following definitions clarify and supplement those found in the <a href="../license/">License</a>:</p>
+<p>For all materials in the MultiMolecule project, the following definitions clarify and supplement those found in the <a href="../license/">License</a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Scope of materials hosted by MultiMolecule</p>
+<p>Unless explicitly stated otherwise in the relevant model card, dataset card, file header, directory notice, or accompanying LICENSE/NOTICE, all model weights, datasets, code, configuration, and documentation hosted and distributed by MultiMolecule are provided under the Agreement.
+If we host any specific item under different terms in the future, we will explicitly label that item, and the stated terms will control for that item.</p>
+</div>
 <div class="admonition note">
+<p class="admonition-title">Trained or Fine-Tuned using MultiMolecule</p>
+<p>“Trained or fine-tuned using MultiMolecule” means that the training or fine-tuning process executes MultiMolecule Runner (or another substantial portion of MultiMolecule code) to perform the parameter-update step that produces the weight file.
+Use of MultiMolecule solely for data preprocessing, evaluation, or visualization does not by itself make resulting weight files covered under Section 2&copy;.</p>
+</div>
+<div class="admonition important">
 <p class="admonition-title">Source Code</p>
-<p><strong>Source Code</strong> refers to the preferred form of the licensed materials for making modifications thereto, consistent with Section 1 of the License. It encompasses all materials necessary for developing, training, evaluating and running the models.</p>
+<p><strong>Source Code</strong> refers to the preferred form of the licensed materials for making modifications thereto, consistent with Section 1 of the License.
+It encompasses all materials necessary for developing, training, evaluating and running the models.</p>
 </div>
 <p>Source Code includes, but is not limited to:</p>
 <ul>
 <li><strong>Data</strong>: The datasets, in the form needed for processing, that are required for training, evaluating, or running the models provided or generated as part of the licensed materials.</li>
 <li><strong>Code</strong>: All source code for scripts, programs, libraries (including model architecture and pipeline definitions), and utilities required to process data, train models, perform evaluations, deploy the models, or otherwise operate and modify the licensed materials.</li>
 <li><strong>Configuration</strong>: Configuration files, settings parameters, environmental specifications, and any scripts used to control the installation, compilation, training, evaluation, running, or execution processes related to the licensed materials.</li>
-<li><strong>Documentation</strong>: Interface definition files, build instructions, manuals, guides, relevant research papers describing the specific methodologies, architectures and parameters used, and any other technical documentation necessary to understand, install, operate, and modify the licensed materials.</li>
+<li><strong>Documentation</strong>: Interface definition files, build instructions, manuals, guides, research papers and technical reports distributed by MultiMolecule as part of the licensed materials describing the specific methodologies, architectures and parameters used, and any other technical documentation necessary to understand, install, operate, and modify the licensed materials.</li>
 </ul>
-<p><em>Providing the Source Code as defined here is necessary to satisfy the requirement to provide the &ldquo;Corresponding Source&rdquo; under the License when conveying Object Code or providing network access.</em></p>
-<div class="admonition note">
+<p><em>Providing the Source Code as defined here is necessary to satisfy the requirement to provide the &ldquo;Corresponding Source&rdquo; under the Agreement when conveying Object Code or providing network access.</em></p>
+<div class="admonition important">
 <p class="admonition-title">Object Code</p>
 <p><strong>Object Code</strong> refers to any form of the licensed materials that is not Source Code.</p>
 </div>
@@ -1551,98 +1575,170 @@ Capitalized terms used but not defined in this FAQ have the meanings given to th
 <li><strong>Model Weights</strong>: The numerical parameters representing the learned state of a model after training (e.g., files in SafeTensors, HDF5, or similar formats).</li>
 <li><strong>Compiled Code</strong>: Any executable software code not in human-readable source form, like compiled C++ extensions sometimes found in Python packages.</li>
 </ul>
-<p>Understanding this distinction helps clarify your obligations under the AGPL. For instance, if you share or provide network access to Object Code (like a trained model), you must also ensure the corresponding Source Code (including the necessary data, code, configuration, and documentation) is available under the terms of the Agreement.</p>
+<p>Understanding this distinction helps clarify your obligations under the Agreement.
+For instance, if you share or provide network access to Object Code (like model weights), you must also ensure the corresponding Source Code (including the necessary data, code, configuration, and documentation) is available under the terms of the Agreement.</p>
+<div class="admonition important">
+<p class="admonition-title">Network Access</p>
+<p>You “provide network access” to MultiMolecule if you operate any network-accessible service whose functionality depends on or uses any part of MultiMolecule, including any materials hosted or provided by MultiMolecule.
+This includes, but is not limited to, services that use or serve model weights or datasets hosted or provided by MultiMolecule.</p>
+</div>
 <h2 id="2-am-i-required-to-share-my-trained-model">2. Am I required to share my trained model?<a class="headerlink" href="#2-am-i-required-to-share-my-trained-model" title="Permanent link">&para;</a></h2>
-<p>Yes, you must make your trained model and their weights available under the terms of the Agreement.</p>
-<p>As defined in Section 1 of this FAQ, model weights are considered object code in MultiMolecule. Therefore, in addition to making the modified model weights available, you must also provide the Corresponding Source, as defined in Section 1 of the <a href="../license/">License</a> and expanded in Section 1 of this FAQ, necessary to reproduce the modified model. This includes, but is not limited to, any code, data, models, configuration files, and scripts used in the fine-tuning process, along with the modified model weights themselves.</p>
-<p>If you use the work for any purpose, you are obligated to make available the entire project, including code, datasets, and models, under the terms of the Agreement. This approach ensures that all enhancements, modifications, and related resources remain freely available to the community.</p>
-<h2 id="3-am-i-required-to-share-the-data-used-for-training">3. Am I required to share the data used for training?<a class="headerlink" href="#3-am-i-required-to-share-the-data-used-for-training" title="Permanent link">&para;</a></h2>
-<p>Yes, you must make the datasets used for that training available under the terms of the Agreement.</p>
-<p>As defined in Section 1 of this FAQ, data used for training are considered source code in MultiMolecule. Therefore, it falls under the definition of Corresponding Source required by the <a href="../license/">License</a>. This obligation ensures that others can reproduce or further develop the model using the same data inputs that used for train such models.</p>
-<p>This requirement applies specifically to data that was used to train, update, or modify the model weights. Data used <em>solely</em> for the purpose of evaluating the performance of a model (e.g., running inference on a private test set) <strong>does not</strong> need to be made available under this provision, provided it was not also used in any training for that model.</p>
-<h2 id="4-do-i-need-to-acknowledge-multimolecule">4. Do I need to acknowledge MultiMolecule?<a class="headerlink" href="#4-do-i-need-to-acknowledge-multimolecule" title="Permanent link">&para;</a></h2>
-<p>Yes, you need to acknowledge MultiMolecule if you use it in your research papers or other projects.</p>
-<div class="admonition paper">
-<p class="admonition-title">Research Papers</p>
-<p>Research Papers should contain formal citation to the MultiMolecule project.</p>
-</div>
-<p>Any research paper utilizing the work <em>shall include a formal citation</em> to the MultiMolecule project. The specific citation format may vary depending on the publication venue&rsquo;s style guidelines, but must, at a minimum, include the project name (&ldquo;MultiMolecule&rdquo;) and the DOI (<a href="https://doi.org/10.5281/zenodo.12638419">10.5281/zenodo.12638419</a>). If formal citation is not possible due to venue restrictions, the MultiMolecule project name and DOI <em>shall</em> be mentioned in the acknowledgments section.</p>
-<div class="admonition code">
-<p class="admonition-title">Projects</p>
-<p>Other projects should contain proper acknowledgement to the MultiMolecule project.</p>
-</div>
-<p>Any other project (including software, web services, and other derivative works) that utilizes MultiMolecule <em>shall provide proper acknowledgement</em> of the MultiMolecule project.</p>
+<p>This section addresses obligations that apply when you Convey or provide network access to model weight files covered by the Agreement.
+This includes</p>
 <ul>
-<li><strong>Software</strong>: Any software utilizing MultiMolecule must include a prominent display of the MultiMolecule project name and URL in its documentation. Additionally, upon each launch of the resulting executable program (or any program dependent thereon), a prominent display (e.g., a splash screen or banner text) of the MultiMolecule project name and URL <em>shall</em> be presented to the user.</li>
-<li><strong>Web Services</strong>: Any web service utilizing MultiMolecule must include a prominent display of the MultiMolecule project name and URL on the service&rsquo;s main page or other readily accessible location.</li>
-<li><strong>Other Derivative Works</strong>: Any other derivative works must include clear acknowledgement.</li>
+<li>(a) model weights hosted and distributed by MultiMolecule, and</li>
+<li>(b) modified versions of such weights (including fine-tuned weights, merged weights, adapters, or distilled variants), and</li>
+<li>&copy; model weights that you train or fine-tune using MultiMolecule, if you then Convey those weights or provide network access to those weights under the Agreement.</li>
 </ul>
-<h2 id="5-can-i-publish-research-papers-using-multimolecule">5. Can I publish research papers using MultiMolecule?<a class="headerlink" href="#5-can-i-publish-research-papers-using-multimolecule" title="Permanent link">&para;</a></h2>
-<p>Any publication utilizing MultiMolecule, regardless of the publication venue, <em>shall include a formal citation</em> to the MultiMolecule project as described in Section 4.</p>
-<div class="admonition success">
-<p class="admonition-title">Open Access</p>
-<p>You may publish research papers in diamond open access venues.</p>
-</div>
-<p>You are permitted to publish research papers in fully open access journals, conferences, or platforms that do not charge fees to either authors or readers, provided that all published manuscripts are made available under one of the following licenses that permits the sharing of manuscripts:</p>
+<p>For avoidance of doubt, if you fine-tune a model weight file hosted and distributed by MultiMolecule, these obligations apply regardless of whether you used MultiMolecule, a third-party library (such as Lightning or Transformers), or a customized training pipeline.</p>
+<p>If you Convey model weights covered by this section (including fine-tuned weights), you must make those weights available under the terms of the Agreement.</p>
+<p>If you provide network access (as defined in Section 1) to model weights covered by this section, you must make those weights available under the terms of the Agreement.</p>
+<p>As explained in Section 1 of this FAQ, model weights are treated as Object Code in MultiMolecule.
+Whenever you are required to provide Object Code under the Agreement, you must also provide the Corresponding Source.
+For model weights covered by this section, Corresponding Source includes, at a minimum, the code, training data, configuration, and scripts needed to reproduce, install, run, and modify the conveyed weights, as clarified in Section 1 of this FAQ.</p>
+<p>If you modify MultiMolecule and you provide users remote interaction with your modified version through a computer network, you must comply with Section 13 of the License by offering the Corresponding Source of your modified version to those users.
+This Section 13 obligation concerns remote interaction with the modified MultiMolecule Program itself.</p>
+<p>Section 3 specifies the training-data requirement.</p>
+<h2 id="3-am-i-required-to-share-the-data-used-for-training">3. Am I required to share the data used for training?<a class="headerlink" href="#3-am-i-required-to-share-the-data-used-for-training" title="Permanent link">&para;</a></h2>
+<p>This section addresses the training-data component of Corresponding Source when you Convey or provide network access to model weights covered by Section 2.</p>
+<p>If you Convey model weights covered by Section 2, you must also make available the datasets used to train, update, or modify those weights under the terms of the Agreement.</p>
+<p>If you provide network access (as defined in Section 1) to model weights covered by Section 2, you must also make available the datasets used to train, update, or modify those weights under the terms of the Agreement.</p>
+<p>As explained in Section 1 of this FAQ, training datasets are treated as Source Code in MultiMolecule.
+Accordingly, whenever you are required to provide Corresponding Source under the Agreement, the required Corresponding Source includes the training data, as clarified in Section 1 of this FAQ.</p>
+<p>This requirement applies only to data used to train, update, or modify the conveyed model weights.
+Data used solely for evaluation is not required under this provision, provided it was not also used for training.</p>
+<p>If the required training data cannot be made available, you may not Convey the resulting weights or provide network access to the resulting weights under the Agreement.</p>
+<h2 id="4-do-i-need-to-acknowledge-multimolecule">4. Do I need to acknowledge MultiMolecule?<a class="headerlink" href="#4-do-i-need-to-acknowledge-multimolecule" title="Permanent link">&para;</a></h2>
+<p>We strongly encourage acknowledgement whenever MultiMolecule contributes to your work.
+This section distinguishes</p>
 <ul>
-<li><a href="https://www.gnu.org/licenses/fdl.html">GNU Free Documentation License (GFDL)</a></li>
-<li><a href="https://creativecommons.org/licenses">Creative Commons Licenses</a></li>
-<li><a href="https://opensource.org/licenses">OSI-Approved Licenses</a></li>
+<li>(a) what we strongly request as a community norm, and</li>
+<li>(b) what becomes mandatory as a condition of additional permissions granted by this FAQ.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We strongly encourage formal citation in any research paper that uses MultiMolecule.
+If you publish a paper solely under the <a href="../license/">License</a>, citation is not a condition of license compliance, but it is strongly requested.
+If you rely on an additional permission in Section 5 or Section 8, formal citation is a condition of that additional permission.</p>
+</div>
+<p>The citation must include, at a minimum, the project name (“MultiMolecule”) and the DOI (<a href="https://doi.org/10.5281/zenodo.12638419">10.5281/zenodo.12638419</a>).
+If a venue does not support formal citations, the project name and DOI must appear in the acknowledgments section.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you Convey a program that incorporates MultiMolecule, you must preserve a reasonable author attribution for MultiMolecule in the Appropriate Legal Notices.</p>
+</div>
+<p>If the Program has an interactive user interface, it must display Appropriate Legal Notices.
+Those notices must include a reasonable author attribution for MultiMolecule, including the project name and a link to the official repository or website.</p>
+<p>For command-line programs, this attribution must be shown prominently at startup and be available via <code>--help</code>, <code>--version</code>, or <code>--about</code> where applicable.
+For web services, this attribution must be shown prominently on the main page or another readily accessible location.</p>
+<p>For libraries or non-interactive components, this attribution must be shown prominently in the documentation and, if the component provides any interactive interface, in that interface.</p>
+<h2 id="5-can-i-publish-research-papers-using-multimolecule">5. Can I publish research papers using MultiMolecule?<a class="headerlink" href="#5-can-i-publish-research-papers-using-multimolecule" title="Permanent link">&para;</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>As clarified in Section 1, Documentation is part of Source Code in MultiMolecule.
+Accordingly, if your manuscript or supplements include MultiMolecule materials (i.e., contain or reproduce MultiMolecule code, weights, datasets, documentation text, figures, or other MultiMolecule materials), then the manuscript and supplements are treated as Documentation distributed with those MultiMolecule materials.
+This requirement concerns manuscripts and supplements that include MultiMolecule materials, not separate and independent works that are merely distributed alongside MultiMolecule.
+Therefore, absent an additional permission, the manuscript and supplements that include MultiMolecule materials must be distributed under the License to the extent the manuscript or supplements contain or reproduce MultiMolecule materials, as part of the same distribution of those MultiMolecule materials.
+If you cannot comply with the License, you may not distribute the manuscript or supplements with MultiMolecule materials under the Agreement.</p>
+</div>
+<p>This section grants additional permissions under Section 7 of the License for specific publication scenarios in which authors prefer to release manuscripts under manuscript-sharing licenses.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you rely on any additional permission in this Section 5, formal citation as described in Section 4 is a condition of that additional permission.
+Any additional permission granted in this Section 5 remains subject to Section 6.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Diamond Open Access</p>
+<p>Diamond open access venues are permitted under the additional permissions below.</p>
+</div>
+<p>You may publish manuscripts that Convey MultiMolecule materials in fully open access journals, conferences, or platforms that do not charge fees to either authors or readers.</p>
+<p>The public version of the manuscript must be made available under a license that permits sharing of manuscripts.
+You may use one of the following licenses.</p>
+<ul>
+<li>GNU Free Documentation License (GFDL).</li>
+<li>Creative Commons licenses.</li>
+<li>OSI-approved licenses.</li>
 </ul>
 <p>This permission is granted as an additional permission under Section 7 of the <a href="../license/">License</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Non-Profit</p>
-<p>You may publish research papers in certain non-profit venues.</p>
+<p>Certain non-profit venues are permitted under the additional permissions below.</p>
 </div>
-<p>You are permitted to publish research papers in certain non-profit journals, conferences, or platforms. Specifically, this includes:</p>
+<p>You may publish manuscripts that Convey MultiMolecule materials in certain non-profit journals, conferences, or platforms.</p>
+<p>This includes the following venue.</p>
 <ul>
-<li><a href="https://www.aaas.org/journals">All journals published by the American Association for the Advancement of Science (AAAS)</a></li>
-<li><a href="https://elifesciences.org">eLife</a></li>
+<li>eLife.</li>
 </ul>
 <p>This permission is granted as an additional permission under Section 7 of the <a href="../license/">License</a>.</p>
-<div class="admonition failure">
-<p class="admonition-title">Closed Access / Author Fee</p>
-<p>You must obtain a separate license to publish in closed access / author fee venues.</p>
+<div class="admonition caution">
+<p class="admonition-title">Closed-Access / Author-Fee</p>
+<p>Closed-access or author-fee venues often make compliance impossible.</p>
 </div>
-<p>We do not endorse publishing in closed access or author fee venues. Publishing in closed access or author-fee venues requires a separate, written license agreement from us <em>prior</em> to submission or publication. Such an agreement may involve conditions such as co-authorship or financial contributions to the project.</p>
+<p>We do not endorse publishing MultiMolecule materials in closed-access or author-fee venues.</p>
+<p>If a venue’s terms would prevent you from complying with the License for any MultiMolecule materials you Convey in connection with the publication, you must obtain a separate written license agreement from us prior to submission or publication.
+Such an agreement may involve conditions such as co-authorship or financial contributions to the project.</p>
 <h2 id="6-restrictions-on-publishing-research-papers-in-certain-venues">6. Restrictions on Publishing Research Papers in Certain Venues<a class="headerlink" href="#6-restrictions-on-publishing-research-papers-in-certain-venues" title="Permanent link">&para;</a></h2>
-<p>We believe that free and open access to research is a cornerstone of the machine learning community. Inspired by the <a href="https://openaccess.engineering.oregonstate.edu">Statement on Nature Machine Intelligence</a>, and by the ongoing culture of <a href="https://diamasproject.eu">zero-cost open access</a>, we hold that research should be universally accessible without barriers to authors or readers.</p>
-<p>The following publication venues adopt closed-access or author-fee models that contradict these fundamental values. We view such practices as a regressive step in the evolution of machine learning research dissemination, one that undermines community efforts to foster open collaboration and knowledge sharing:</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This section limits only additional permissions granted by this FAQ.
+This section does not restrict publication under the <a href="../license/">License</a> itself.
+If you Convey MultiMolecule materials as part of a publication and you comply with the License for those materials, Section 6 does not apply.</p>
+</div>
+<p>Accordingly, Section 6 constrains only the additional permissions in Section 5 and Section 8.
+Section 6 also constrains any separate written license agreement that incorporates or references this FAQ, unless that separate agreement expressly states otherwise in writing.</p>
+<p>We believe that free and open access to research is a cornerstone of the machine learning community.
+Inspired by the <a href="https://openaccess.engineering.oregonstate.edu">Statement on Nature Machine Intelligence</a>, and by the ongoing culture of <a href="https://diamasproject.eu">zero-cost open access</a>, we hold that research should be universally accessible without barriers to authors or readers.</p>
+<p>The following publication venues adopt closed-access or author-fee models that contradict these fundamental values.
+We view such practices as a regressive step in the evolution of machine learning research dissemination, one that undermines community efforts to foster open collaboration and knowledge sharing.</p>
 <ul>
-<li><a href="https://www.nature.com/natmachintell">Nature Machine Intelligence</a></li>
+<li>Nature Machine Intelligence.</li>
 </ul>
-<p>We strongly discourage publishing work that uses MultiMolecule in the venues listed above due to their closed-access or author-fee models.</p>
-<p><strong>Notwithstanding any additional permissions granted under Section 7 of the <a href="../license/">License</a>, or through any separate written license agreement with us, publication in the venues listed above is <em>not authorized</em> unless that separate agreement explicitly and specifically states otherwise.</strong> This restriction takes precedence over any other terms in such additional permissions or agreements and supersedes any prior waivers, exemptions, or permissions, unless an additional term explicitly states that it preempts this section.</p>
+<p>Notwithstanding Sections 5 and 8, none of the additional permissions granted by this FAQ authorize submission or publication of a manuscript that Conveys MultiMolecule materials in the venues listed above.
+You may submit or publish such a manuscript in the venues listed above only if you have a separate written license agreement from us that expressly permits publication notwithstanding this Section 6.</p>
+<p>We strongly discourage publishing work that Conveys MultiMolecule materials in the venues listed above.</p>
 <h2 id="7-can-i-use-multimolecule-for-commercial-purposes">7. Can I use MultiMolecule for commercial purposes?<a class="headerlink" href="#7-can-i-use-multimolecule-for-commercial-purposes" title="Permanent link">&para;</a></h2>
-<p>YES! MultiMolecule can be used for commercial purposes, provided you comply with all terms of the Agreement. This includes the requirement to make the Corresponding Source (as defined in Section 1 of the <a href="../license/">License</a> and Section 1 of this FAQ) of any modified versions of MultiMolecule, and any related artifacts, including your training data (as clarified in Section 3) and trained models (as clarified in Section 2), available under the terms of the Agreement.</p>
-<p>If you prefer to use MultiMolecule for commercial purposes without making your modifications and related materials available under the <a href="../license/">License</a>, you must obtain a separate, written license agreement from us. This may involve financial contributions to support the project. Contact us at <a href="mailto:license@danling.org">license@danling.org</a> for further details.</p>
+<p>Yes.
+You may use MultiMolecule for commercial purposes, provided you comply with the Agreement.</p>
+<p>If you Convey modified MultiMolecule materials, you must provide the Corresponding Source and related artifacts required by the License and this FAQ.</p>
+<p>If you provide network access (as defined in Section 1) to modified MultiMolecule materials, you must provide the Corresponding Source and related artifacts required by the License and this FAQ.</p>
+<p>Where applicable, this includes training data as clarified in Section 3 and model weights as clarified in Section 2.</p>
+<p>If you prefer commercial use without making such materials available under the License, you must obtain a separate written license agreement from us.
+Please contact <a href="mailto:license@danling.org">license@danling.org</a> for details.</p>
 <h2 id="8-are-there-special-permissions-for-multimolecule-collaborators">8. Are there special permissions for MultiMolecule Collaborators?<a class="headerlink" href="#8-are-there-special-permissions-for-multimolecule-collaborators" title="Permanent link">&para;</a></h2>
-<p>YES! If you are a Collaborator of the MultiMolecule project (as recognized by the DanLing Team), you are entitled to the following additional permissions granted under Section 7 of the <a href="../license/">License</a>:</p>
+<p>Yes.
+If you are recognized as a Collaborator by the DanLing Team, you are entitled to the following additional permissions granted under Section 7 of the <a href="../license/">License</a>.</p>
 <div class="admonition tip">
-<p class="admonition-title">Internal Network Use Waiver</p>
-<p>Collaborators receive a waiver for AGPL Section 13 source sharing obligations related to internal R&amp;D network use involving modified the work.</p>
+<p class="admonition-title">Internal network use waiver</p>
+<p>Notwithstanding Section 13 of the License, Collaborators receive a waiver of the obligation to offer Corresponding Source to users interacting remotely through a computer network with a modified version of MultiMolecule, provided that the interaction is solely for internal research and development within the Collaborator’s team.
+This waiver does not apply to external users, public deployments, or Conveyance.</p>
 </div>
-<p>Notwithstanding Section 13 of the <a href="../license/">License</a>, as a recognized Collaborator, you are not required to offer Corresponding Source to users interacting remotely through a computer network with MultiMolecule (including code, models, or data licensed under this Agreement) that have been modified, <em>provided that</em> such interaction is solely for internal research and development purposes within their respective team.</p>
-<div class="admonition success">
-<p class="admonition-title">Expanded Permission for Publishing Papers</p>
-<p>Collaborators receive expanded permission to publish papers compared to Section 5, allowing use of most peer-reviewed venues.</p>
+<div class="admonition tip">
+<p class="admonition-title">Expanded permission for publishing papers</p>
+<p>Collaborators may publish manuscripts that Convey MultiMolecule materials in any peer-reviewed scientific venue, including journals and conference proceedings, regardless of access model or author fees.
+This expanded permission is granted as an additional permission under Section 7 of the <a href="../license/">License</a>.
+This expanded permission remains subject to Section 6 of this FAQ.
+As a condition of this expanded permission, you must comply with the acknowledgement and citation requirements in Section 4.</p>
 </div>
-<p>You may publish research papers utilizing MultiMolecule in any peer-reviewed scientific venue (including journals and conference proceedings, regardless of their access model or author fees) or post preprints (e.g., on arXiv). This permission means you are not limited to the specific types of venues or manuscript licenses mentioned in Section 5 and do not require a separate license agreement from us for publication. <strong>Pursuant to Section 6 of this FAQ, this expanded permission does <em>not</em> apply to certain enumerated venues.</strong> Publication in such venues is therefore not covered by the additional permissions granted in this Agreement. You must still comply with the Acknowledgment and Citation requirements described in Section 4.</p>
-<div class="admonition warning">
-<p class="admonition-title">Source Release Timing Regarding Publications</p>
-<p>Collaborators receive specific conditions regarding the timing for releasing source code related to publications (acceptance or 366 days post-preprint).</p>
-</div>
-<p>The following conditions apply regarding the timing for providing Corresponding Source for modifications when required by the <a href="../license/">License</a> (e.g., upon conveyance or for network use not covered by the waiver above): If your modifications are utilized in research described in a manuscript, the obligation under the <a href="../license/">License</a> to make the Corresponding Source publicly available <strong>is triggered upon</strong> whichever of the following events occurs <em>first</em>:</p>
+<div class="admonition important">
+<p class="admonition-title">Source release timing related to publications</p>
+<p>When the License requires you to make Corresponding Source available, and the obligation is triggered by Conveyance or by providing network access to users, the obligation is triggered by the first of the following events.</p>
 <ul>
-<li>a) The manuscript&rsquo;s formal <em>acceptance</em> for publication in a peer-reviewed venue (e.g., journal, conference proceedings).</li>
-<li>b) 366 days have passed since the manuscript was first posted on a public preprint server (e.g., arXiv).</li>
+<li>The manuscript’s formal acceptance for publication in a peer-reviewed venue.</li>
+<li>366 days have passed since the manuscript was first posted on a public preprint server.</li>
 </ul>
-<p>You must provide the Corresponding Source immediately upon the occurrence of the first applicable trigger event. If modifications are conveyed or used in ways not tied to a publication or preprint, the standard terms of the <a href="../license/">License</a> regarding the timing of source provision apply.</p>
-<p><strong>General Conditions Applicable to Collaborator Permissions</strong>:
-These permissions are granted only to active, invited Collaborators recognized by the DanLing Team. All other provisions of the <a href="../license/">License</a> and this FAQ, which are not explicitly modified by these additional permissions, remain in full force and effect. These additional permissions are non-transferable and non-sublicensable.</p>
-<p>The DanLing Team may grant additional, specific permissions to Collaborators on a case-by-case basis through written communication.</p>
+<p>You must provide the Corresponding Source immediately upon the first applicable trigger event.
+If modifications are Conveyed or provided through a network in ways not tied to a publication or preprint, the standard timing rules of the License apply.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">General conditions for Collaborator permissions</p>
+<p>These permissions are granted only to active, invited Collaborators recognized by the DanLing Team.
+These permissions are non-transferable and non-sublicensable.
+All other provisions of the License and this FAQ remain in full force and effect unless explicitly modified above.
+The DanLing Team may grant additional case-specific permissions through written communication.</p>
+</div>
 <h2 id="9-how-can-i-use-multimolecule-if-my-organization-forbids-the-use-of-code-under-the-agpl-license">9. How can I use MultiMolecule if my organization forbids the use of code under the AGPL License?<a class="headerlink" href="#9-how-can-i-use-multimolecule-if-my-organization-forbids-the-use-of-code-under-the-agpl-license" title="Permanent link">&para;</a></h2>
-<p>Certain organizations, such as <a href="https://opensource.google/documentation/reference/using/agpl-policy">Google</a>, prohibit the use of AGPL-licensed code. If you are affiliated with an organization that disallows the use of AGPL-licensed software, you must obtain a separate license from us to use MultiMolecule.</p>
+<p>Certain organizations, such as <a href="https://opensource.google/documentation/reference/using/agpl-policy">Google</a>, prohibit the use of AGPL-licensed code.</p>
+<p>If you are affiliated with an organization that disallows the use of AGPL-licensed software, you must obtain a separate license from us to use MultiMolecule.</p>
 <p>To request a separate license, please contact us at <a href="mailto:license@danling.org">license@danling.org</a>.</p>
 <h2 id="10-do-we-make-updates-to-this-faq">10. Do we make updates to this FAQ?<a class="headerlink" href="#10-do-we-make-updates-to-this-faq" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
