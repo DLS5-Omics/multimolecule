@@ -117,6 +117,7 @@ class RnaFmConfig(PreTrainedConfig):
         token_dropout: bool = False,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -141,6 +142,7 @@ class RnaFmConfig(PreTrainedConfig):
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention
 
 
 class RnaFmSecondaryStructureHeadConfig(BaseHeadConfig):

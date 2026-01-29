@@ -114,6 +114,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
         output_attention_biases: bool = False,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -136,6 +137,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.output_attention_biases = output_attention_biases
+        self.add_cross_attention = add_cross_attention
 
 
 class ErnieRnaSecondaryStructureHeadConfig(BaseHeadConfig):

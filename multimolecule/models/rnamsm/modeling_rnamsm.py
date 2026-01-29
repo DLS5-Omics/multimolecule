@@ -702,7 +702,7 @@ class RnaMsmLearnedPositionalEmbedding(nn.Embedding):
         self.max_positions = num_embeddings
 
     def forward(self, position_ids: torch.LongTensor) -> Tensor:
-        """Input is expected to be of size [bsz x seq_len]."""
+        """Input is expected to be of size [bsz x seq_length]."""
 
         # This is a bug in the original implementation
         positions = position_ids + 1

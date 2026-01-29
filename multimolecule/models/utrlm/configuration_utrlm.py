@@ -117,6 +117,7 @@ class UtrLmConfig(PreTrainedConfig):
         lm_head: MaskedLMHeadConfig | None = None,
         structure_head: HeadConfig | None = None,
         mfe_head: HeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -140,3 +141,4 @@ class UtrLmConfig(PreTrainedConfig):
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.structure_head = HeadConfig(**structure_head) if structure_head is not None else None
         self.mfe_head = HeadConfig(**mfe_head) if mfe_head is not None else None
+        self.add_cross_attention = add_cross_attention

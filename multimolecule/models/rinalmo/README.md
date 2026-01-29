@@ -113,39 +113,11 @@ pip install multimolecule
 You can use this model directly with a pipeline for masked language modeling:
 
 ```python
-<<<<<<< HEAD
 import multimolecule  # you must import multimolecule to register models
 from transformers import pipeline
 
-predictor = pipeline("fill-mask", model="multimolecule/rinalmo")
+predictor = pipeline("fill-mask", model="multimolecule/rinalmo-giga")
 output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
-=======
->>> import multimolecule  # you must import multimolecule to register models
->>> from transformers import pipeline
-
->>> unmasker = pipeline("fill-mask", model="multimolecule/rinalmo-giga")
->>> unmasker("gguc<mask>cucugguuagaccagaucugagccu")
-[{'score': 0.9774785041809082,
-  'token': 6,
-  'token_str': 'A',
-  'sequence': 'G G U C A C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.004996326752007008,
-  'token': 22,
-  'token_str': 'X',
-  'sequence': 'G G U C X C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.0035297079011797905,
-  'token': 3,
-  'token_str': '<unk>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.002614670665934682,
-  'token': 10,
-  'token_str': 'N',
-  'sequence': 'G G U C N C U C U G G U U A G A C C A G A U C U G A G C C U'},
- {'score': 0.00249761575832963,
-  'token': 5,
-  'token_str': '<null>',
-  'sequence': 'G G U C C U C U G G U U A G A C C A G A U C U G A G C C U'}]
->>>>>>> 6fbb6942... update RiNALMo models
 ```
 
 ### Downstream Use
