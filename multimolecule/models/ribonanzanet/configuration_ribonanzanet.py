@@ -41,7 +41,7 @@ class RibonanzaNetConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the RibonanzaNet model. Defines the number of different tokens that can be represented by
-            the `inputs_ids` passed when calling [`RibonanzaNetModel`].
+            the `input_ids` passed when calling [`RibonanzaNetModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -50,13 +50,29 @@ class RibonanzaNetConfig(PreTrainedConfig):
             Number of attention heads for each attention layer in the Transformer encoder.
         intermediate_size:
             Dimensionality of the "intermediate" (often named feed-forward) layer in the Transformer encoder.
+        pairwise_size:
+            Dimensionality of the pairwise representation.
+        pairwise_attention_size:
+            Dimensionality of the pairwise attention projections.
+        pairwise_intermediate_size:
+            Dimensionality of the intermediate layer in the pairwise feed-forward network.
+        pairwise_num_attention_heads:
+            Number of attention heads for the pairwise attention layers.
+        kernel_size:
+            Kernel size used in convolutional components.
+        use_triangular_attention:
+            Whether to use triangular attention for pairwise representations.
         hidden_act:
             The non-linear activation function (function or string) in the encoder and pooler. If string, `"gelu"`,
             `"relu"`, `"silu"` and `"gelu_new"` are supported.
+        pairwise_hidden_act:
+            The non-linear activation function used in the pairwise network.
         hidden_dropout:
             The dropout probability for all fully connected layers in the embeddings, encoder, and pooler.
         attention_dropout:
             The dropout ratio for the attention probabilities.
+        output_pairwise_states:
+            Whether to return pairwise states from the encoder.
         initializer_range:
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
         layer_norm_eps:
@@ -65,6 +81,12 @@ class RibonanzaNetConfig(PreTrainedConfig):
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        fix_attention_mask:
+            Whether to apply compatibility fixes to the attention mask behavior.
+        fix_attention_residual:
+            Whether to apply compatibility fixes to attention residual connections.
+        fix_pairwise_dropout:
+            Whether to apply compatibility fixes to pairwise dropout behavior.
 
     Examples:
         >>> from multimolecule import RibonanzaNetConfig, RibonanzaNetModel

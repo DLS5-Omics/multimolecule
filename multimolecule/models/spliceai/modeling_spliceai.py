@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 import torch
 from danling import NestedTensor
@@ -33,6 +33,9 @@ from torch.nn import functional as F
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 from transformers.modeling_utils import PreTrainedModel
+from transformers.processing_utils import Unpack
+from transformers.utils import TransformersKwargs
+from transformers.utils.generic import check_model_inputs
 
 from .configuration_spliceai import SpliceAiConfig
 
@@ -46,6 +49,11 @@ class SpliceAiPreTrainedModel(PreTrainedModel):
     config_class = SpliceAiConfig
     base_model_prefix = "spliceai"
     supports_gradient_checkpointing = True
+    _supports_flash_attn = True
+    _supports_sdpa = True
+    _supports_flex_attn = True
+    _supports_attention_backend = True
+    _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["SpliceAiBlock"]
 
     def _init_weights(self, module):
@@ -78,29 +86,29 @@ class SpliceAiModel(SpliceAiPreTrainedModel):
 
     def __init__(self, config: SpliceAiConfig):
         super().__init__(config)
+        self.gradient_checkpointing = False
         self.embeddings = SpliceAiEmbedding(config)
         self.networks = nn.ModuleList([SpliceAiModule(config) for _ in range(5)])
+        # Initialize weights and apply final processing
+        self.post_init()
 
+    @check_model_inputs
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
-        output_contexts: bool | None = None,
-        output_hidden_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
-    ) -> SpliceAiModelOutput | Tuple[Tensor, Tuple[Tensor, ...]] | Tensor:
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> SpliceAiModelOutput | Tuple[Tensor, ...]:
         if input_ids is not None and inputs_embeds is not None:
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
         elif input_ids is None and inputs_embeds is None:
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
-        output_contexts = output_contexts if output_contexts is not None else self.config.output_contexts
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
-        )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        output_contexts = kwargs.get("output_contexts", self.config.output_contexts)
+        output_hidden_states = kwargs.get("output_hidden_states", self.config.output_hidden_states)
+        kwargs["output_contexts"] = output_contexts or output_hidden_states
+        kwargs["output_hidden_states"] = output_hidden_states
 
         if isinstance(input_ids, NestedTensor):
             input_ids, attention_mask = input_ids.tensor, input_ids.mask
@@ -111,24 +119,18 @@ class SpliceAiModel(SpliceAiPreTrainedModel):
             inputs_embeds=inputs_embeds,
         )
 
-        all_outputs = [
-            module(
-                embedding_output,
-                output_contexts=output_contexts,
-                output_hidden_states=output_hidden_states,
-                return_dict=return_dict,
-            )
-            for module in self.networks
-        ]
-
-        if not return_dict:
-            return tuple(average_output(output) for output in zip(*all_outputs))
+        all_outputs = [module(embedding_output, **kwargs) for module in self.networks]
 
         outputs: Dict = {k: [outputs[k] for outputs in all_outputs] for k in all_outputs[0]}
         for key, output in outputs.items():
             outputs[key] = average_output(output)
 
-        return SpliceAiModelOutput(**outputs)
+        output = SpliceAiModelOutput(**outputs)
+        output._last_context = average_output(tuple(module._last_context for module in all_outputs))
+        output._num_networks = len(self.networks)
+        output._output_contexts = output_contexts
+        output._output_hidden_states = output_hidden_states
+        return output
 
 
 class SpliceAiEmbedding(nn.Module):
@@ -157,7 +159,6 @@ class SpliceAiEmbedding(nn.Module):
 
 
 class SpliceAiModule(nn.Module):
-
     def __init__(self, config: SpliceAiConfig):
         super().__init__()
         self.projection = nn.Conv1d(config.vocab_size, config.hidden_size, 1)
@@ -170,74 +171,59 @@ class SpliceAiModule(nn.Module):
         self,
         inputs_embeds: Tensor,
         labels: torch.LongTensor | None = None,
-        output_contexts: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
-    ) -> SpliceAiModelOutput | Tuple[Tensor, Tuple[Tensor, ...]] | Tensor:
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> SpliceAiModelOutput:
         embedding = self.projection(inputs_embeds)
-        outputs = self.encoder(
-            embedding,
-            output_contexts=output_contexts,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-        )
-        context = outputs.last_context if return_dict else outputs[0]
+        outputs = self.encoder(embedding, **kwargs)
+        context = outputs.last_context
         logits = self.prediction(context).transpose(1, 2)
 
         loss = self.criterion(logits, labels) if labels is not None else None
 
-        if not return_dict:
-            output = (logits,) + outputs[1:]
-            return (loss,) + output if loss is not None else output
+        output = SpliceAiModelOutput(loss=loss, logits=logits)
+        output._last_context = context
+        return output
 
-        return SpliceAiModelOutput(
-            loss=loss, logits=logits, contexts=outputs.contexts, hidden_states=outputs.hidden_states
-        )
+
+class SpliceAiContextRecorder(nn.Module):
+    def forward(self, context: Tensor) -> Tensor:
+        return context
 
 
 class SpliceAiEncoder(nn.Module):
-
     def __init__(self, config: SpliceAiConfig):
         super().__init__()
+        self.config = config
         self.context = config.context
         self.padding = config.context // 2
         self.conv = nn.Conv1d(config.hidden_size, config.hidden_size, 1, padding="same")
         self.stages = nn.ModuleList([SpliceAiStage(config, **s) for s in config.stages])
+        self.context_recorder = SpliceAiContextRecorder()
         self.gradient_checkpointing = False
 
     def forward(
         self,
         hidden_state: Tensor,
-        output_contexts: bool = False,
-        output_hidden_states: bool = False,
-        return_dict: bool = True,
-    ) -> SpliceAiModuleOutput | Tuple[Tensor, Tuple[Tensor, ...]] | Tensor:
-        contexts = () if output_contexts else None
-        hidden_states = () if output_hidden_states else None
-
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> SpliceAiModuleOutput:
+        record_contexts = kwargs.get("output_contexts", self.config.output_contexts) or kwargs.get(
+            "output_hidden_states", self.config.output_hidden_states
+        )
         context = self.conv(hidden_state)
+        if record_contexts:
+            trimmed_context = context[:, :, self.padding : -self.padding].transpose(1, 2)
+            self.context_recorder(trimmed_context)
         for stage in self.stages:
-            if output_contexts:
-                contexts = contexts + (context[:, :, self.padding : -self.padding].transpose(1, 2),)  # type: ignore[operator] # noqa: E501
-            if output_hidden_states:
-                hidden_states = hidden_states + (context[:, :, self.padding : -self.padding].transpose(1, 2),)  # type: ignore[operator] # noqa: E501
-
             if self.gradient_checkpointing and self.training:
                 hidden_state, context = self._gradient_checkpointing_func(stage.__call__, hidden_state, context)
             else:
                 hidden_state, context = stage(hidden_state, context)
+            if record_contexts:
+                trimmed_context = context[:, :, self.padding : -self.padding].transpose(1, 2)
+                self.context_recorder(trimmed_context)
 
         context = context[:, :, self.padding : -self.padding]
-
-        if output_contexts:
-            contexts = contexts + (context.transpose(1, 2),)  # type: ignore[operator]
-        if output_hidden_states:
-            hidden_states = hidden_states + (context.transpose(1, 2),)  # type: ignore[operator]
-
-        if not return_dict:
-            return context, hidden_states if output_hidden_states else context
-
-        return SpliceAiModuleOutput(last_context=context, contexts=contexts, hidden_states=hidden_states)
+        return SpliceAiModuleOutput(last_context=context)
 
 
 class SpliceAiStage(nn.Module):
@@ -320,9 +306,53 @@ class SpliceAiModelOutput(ModelOutput):
     contexts: Tuple[torch.FloatTensor, ...] | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
 
+    def _average_across_networks(self, value: Tuple[torch.FloatTensor, ...] | None):
+        num_networks = getattr(self, "_num_networks", 0)
+        if value is None or num_networks <= 1:
+            return value
+        if len(value) % num_networks != 0:
+            return value
+        num_stages = len(value) // num_networks
+        grouped = [value[i * num_stages : (i + 1) * num_stages] for i in range(num_networks)]
+        return tuple(torch.mean(torch.stack([group[idx] for group in grouped]), dim=0) for idx in range(num_stages))
+
+    def __setitem__(self, key, value):
+        if key == "contexts":
+            averaged = self._average_across_networks(value)
+            super().__setattr__("_contexts_value", averaged)
+            if getattr(self, "_output_contexts", False):
+                super().__setitem__(key, averaged)
+            if getattr(self, "_output_hidden_states", False):
+                super().__setitem__("hidden_states", averaged)
+            return
+        super().__setitem__(key, value)
+
+    def to_tuple(self) -> tuple:
+        values = []
+        if self.loss is not None:
+            values.append(self.loss)
+        if self.logits is not None:
+            values.append(self.logits)
+        if getattr(self, "_output_hidden_states", False):
+            hidden_states = getattr(self, "hidden_states", None)
+            if hidden_states is None:
+                hidden_states = getattr(self, "_contexts_value", None)
+            if hidden_states is not None:
+                values.append(hidden_states)
+        else:
+            last_context = getattr(self, "_last_context", None)
+            if last_context is not None:
+                values.append(last_context)
+        return tuple(values)
+
 
 @dataclass
 class SpliceAiModuleOutput(ModelOutput):
     last_context: torch.FloatTensor
     contexts: Tuple[torch.FloatTensor, ...] | None = None
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
+
+
+SpliceAiPreTrainedModel._can_record_outputs = {
+    "contexts": SpliceAiContextRecorder,
+}

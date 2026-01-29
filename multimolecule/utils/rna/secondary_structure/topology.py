@@ -1249,7 +1249,6 @@ class Loops:
                     mapping[span.start : span.stop + 1] = idx
         return mapping.tolist()
 
-    # Construction helpers
     @staticmethod
     def _loop_sort_key(loop: Loop, length: int) -> int:
         if not loop.spans:

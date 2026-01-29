@@ -22,10 +22,9 @@
 
 from __future__ import annotations
 
-import math
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Any, Tuple
 from warnings import warn
 
 import torch
@@ -33,9 +32,13 @@ from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers.activations import ACT2FN
+from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import ModelOutput
-from transformers.modeling_utils import PreTrainedModel
-from transformers.pytorch_utils import apply_chunking_to_forward, find_pruneable_heads_and_indices, prune_linear_layer
+from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.processing_utils import Unpack
+from transformers.pytorch_utils import apply_chunking_to_forward
+from transformers.utils import TransformersKwargs
+from transformers.utils.generic import can_return_tuple, check_model_inputs
 
 from multimolecule.modules import (
     BasePredictionHead,
@@ -59,28 +62,12 @@ class RibonanzaNetPreTrainedModel(PreTrainedModel):
     config_class = RibonanzaNetConfig
     base_model_prefix = "ribonanzanet"
     supports_gradient_checkpointing = True
+    _supports_flash_attn = True
+    _supports_sdpa = True
+    _supports_flex_attn = True
+    _supports_attention_backend = True
+    _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["RibonanzaNetLayer", "RibonanzaNetEmbeddings"]
-
-    # Copied from transformers.models.bert.modeling_bert.BertPreTrainedModel._init_weights
-    def _init_weights(self, module: nn.Module):
-        """Initialize the weights"""
-        if isinstance(module, nn.Linear):
-            # Slightly different from the TF version which uses truncated_normal for initialization
-            # cf https://github.com/pytorch/pytorch/pull/5617
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
-            if module.bias is not None:
-                module.bias.data.zero_()
-        elif isinstance(module, nn.Embedding):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
-            if module.padding_idx is not None:
-                module.weight.data[module.padding_idx].zero_()
-        elif isinstance(module, nn.LayerNorm):
-            module.bias.data.zero_()
-            module.weight.data.fill_(1.0)
-        for n, m in module.named_modules():
-            if "_gate" in n:
-                m.weight.data.zero_()
-                m.bias.data.fill_(1.0)
 
 
 class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
@@ -102,6 +89,7 @@ class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
     def __init__(self, config: RibonanzaNetConfig, add_pooling_layer: bool = True):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
+        self.gradient_checkpointing = False
         self.embeddings = RibonanzaNetEmbeddings(config)
         self.encoder = RibonanzaNetEncoder(config)
         self.pooler = RibonanzaNetPooler(config) if add_pooling_layer else None
@@ -116,41 +104,14 @@ class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embeddings.word_embeddings = value
 
-    def _prune_heads(self, heads_to_prune):
-        """
-        Prunes heads of the model. heads_to_prune: dict of {layer_num: list of heads to prune in this layer} See base
-        class PreTrainedModel
-        """
-        for layer, heads in heads_to_prune.items():
-            self.encoder.layer[layer].attention.prune_heads(heads)
-
+    @check_model_inputs
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetModelOutputWithPooling:
-        if kwargs:
-            warn(
-                f"Additional keyword arguments `{', '.join(kwargs)}` are detected in "
-                f"`{self.__class__.__name__}.forward`, they will be ignored.\n"
-                "This is provided for backward compatibility and may lead to unexpected behavior."
-            )
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
-        )
-        output_pairwise_states = (
-            output_pairwise_states if output_pairwise_states is not None else self.config.output_pairwise_states
-        )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
         if isinstance(input_ids, NestedTensor):
             input_ids, attention_mask = input_ids.tensor, input_ids.mask
         if input_ids is not None and inputs_embeds is not None:
@@ -184,12 +145,7 @@ class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
         extended_attention_mask: Tensor = self.get_extended_attention_mask(attention_mask, input_shape)
         attention_mask = attention_mask.unsqueeze(-1)
 
-        # Prepare head mask if needed
-        # 1.0 in head_mask indicate we keep the head
         # attention_probs has shape bsz x n_heads x N x N
-        # input head_mask has shape [num_heads] or [num_hidden_layers x num_heads]
-        # and head_mask is converted to shape [num_hidden_layers x batch x num_heads x seq_length x seq_length]
-        head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
 
         embedding_output = self.embeddings(
             input_ids=input_ids,
@@ -199,24 +155,14 @@ class RibonanzaNetModel(RibonanzaNetPreTrainedModel):
             embedding_output,
             attention_mask=attention_mask,
             extended_attention_mask=extended_attention_mask,
-            head_mask=head_mask,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            **kwargs,
         )
         sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
 
-        if not return_dict:
-            return (sequence_output, pooled_output) + encoder_outputs[1:]
-
         return RibonanzaNetModelOutputWithPooling(
             last_hidden_state=sequence_output,
             pooler_output=pooled_output,
-            hidden_states=encoder_outputs.hidden_states,
-            pairwise_states=encoder_outputs.pairwise_states,
-            attentions=encoder_outputs.attentions,
         )
 
     def get_extended_attention_mask(
@@ -284,37 +230,24 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetSequencePredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetSequencePredictorOutput(
             loss=loss,
@@ -350,37 +283,24 @@ class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetTokenPredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetTokenPredictorOutput(
             loss=loss,
@@ -412,43 +332,34 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
         self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
         self.contact_head = ContactPredictionHead(config)
         self.head_config = self.contact_head.config
+        self.require_attentions = self.contact_head.require_attentions
 
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetContactPredictorOutput:
-        if output_attentions is False:
-            warn("output_attentions must be True for contact classification and will be ignored.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        if self.require_attentions:
+            output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
+            if output_attentions is False:
+                warn("output_attentions must be True since prediction head requires attentions.")
+            kwargs["output_attentions"] = True
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=True,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
         output = self.contact_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
-
-        if not return_dict:
-            output = (logits,) + outputs[2:]
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetContactPredictorOutput(
             loss=loss,
@@ -460,7 +371,6 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
 
 
 class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
-
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
         self.ribonanzanet = RibonanzaNetModel(config, add_pooling_layer=False)
@@ -471,30 +381,21 @@ class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels_2a3: Tensor | None = None,
         labels_dms: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForPreTrainingOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
 
@@ -506,12 +407,6 @@ class RibonanzaNetForPreTraining(RibonanzaNetPreTrainedModel):
 
         losses = tuple(l for l in (loss_2a3, loss_dms) if l is not None)  # noqa: E741
         loss = torch.mean(torch.stack(losses)) if losses else None
-
-        if not return_dict:
-            output = outputs[2:]
-            output = ((logits_dms, loss_dms) + output) if loss_dms is not None else ((logits_dms,) + output)
-            output = ((logits_2a3, loss_2a3) + output) if loss_2a3 is not None else ((logits_2a3,) + output)
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetForPreTrainingOutput(
             loss=loss,
@@ -552,33 +447,26 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels_ss: Tensor | None = None,
         labels_2a3: Tensor | None = None,
         labels_dms: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool = True,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForSecondaryStructurePredictorOutput:
+        output_pairwise_states = kwargs.get("output_pairwise_states", self.config.output_pairwise_states)
         if not output_pairwise_states:
             warn("output_pairwise_states must be True since prediction head requires pairwise states.")
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        kwargs["output_pairwise_states"] = True
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=True,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
 
@@ -593,13 +481,6 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
 
         losses = tuple(l for l in (loss_2a3, loss_dms, loss_ss) if l is not None)  # noqa: E741
         loss = torch.mean(torch.stack(losses)) if losses else None
-
-        if not return_dict:
-            output = outputs[2:]
-            output = ((logits_dms, loss_dms) + output) if loss_dms is not None else ((logits_dms,) + output)
-            output = ((logits_2a3, loss_2a3) + output) if loss_2a3 is not None else ((logits_2a3,) + output)
-            output = ((logits_ss, loss_ss) + output) if loss_ss is not None else ((logits_ss,) + output)
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetForSecondaryStructurePredictorOutput(
             loss=loss,
@@ -643,33 +524,24 @@ class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels_reactivity: Tensor | None = None,
         labels_deg_Mg_pH10: Tensor | None = None,
         labels_deg_pH10: Tensor | None = None,
         labels_deg_Mg_50C: Tensor | None = None,
         labels_deg_50C: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
 
@@ -694,33 +566,6 @@ class RibonanzaNetForDegradationPrediction(RibonanzaNetPreTrainedModel):
             if l is not None
         )
         loss = torch.mean(torch.stack(losses)) if losses else None
-
-        if not return_dict:
-            output = outputs[2:]
-            output = (
-                ((logits_deg_50C, loss_deg_50C) + output) if loss_deg_50C is not None else ((logits_deg_50C,) + output)
-            )
-            output = (
-                ((logits_deg_Mg_50C, loss_deg_Mg_50C) + output)
-                if loss_deg_Mg_50C is not None
-                else ((logits_deg_Mg_50C,) + output)
-            )
-            output = (
-                ((logits_deg_pH10, loss_deg_pH10) + output)
-                if loss_deg_pH10 is not None
-                else ((logits_deg_pH10,) + output)
-            )
-            output = (
-                ((logits_deg_Mg_pH10, loss_deg_Mg_pH10) + output)
-                if loss_deg_Mg_pH10 is not None
-                else ((logits_deg_Mg_pH10,) + output)
-            )
-            output = (
-                ((logits_reactivity, loss_reactivity) + output)
-                if loss_reactivity is not None
-                else ((logits_reactivity,) + output)
-            )
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetForDegradationPredictorOutput(
             loss=loss,
@@ -763,30 +608,21 @@ class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        head_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels_2a3: Tensor | None = None,
         labels_dms: Tensor | None = None,
-        output_attentions: bool | None = None,
-        output_hidden_states: bool | None = None,
-        output_pairwise_states: bool | None = None,
-        return_dict: bool | None = None,
-        **kwargs,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         outputs = self.ribonanzanet(
             input_ids,
             attention_mask=attention_mask,
-            head_mask=head_mask,
             inputs_embeds=inputs_embeds,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            output_pairwise_states=output_pairwise_states,
-            return_dict=return_dict,
+            return_dict=True,
             **kwargs,
         )
 
@@ -798,12 +634,6 @@ class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
 
         losses = tuple(l for l in (loss_2a3, loss_dms) if l is not None)  # noqa: E741
         loss = torch.mean(torch.stack(losses)) if losses else None
-
-        if not return_dict:
-            output = outputs[2:]
-            output = ((logits_dms, loss_dms) + output) if loss_dms is not None else ((logits_dms,) + output)
-            output = ((logits_2a3, loss_2a3) + output) if loss_2a3 is not None else ((logits_2a3,) + output)
-            return ((loss,) + output) if loss is not None else output
 
         return RibonanzaNetSequenceDropoutPredictorOutput(
             loss=loss,
@@ -895,7 +725,6 @@ class RibonanzaNetEncoder(nn.Module):
         layers = [RibonanzaNetLayer(config) for _ in range(config.num_hidden_layers - 1)]
         layers.append(RibonanzaNetLayer(config, kernel_size=1))
         self.layer = nn.ModuleList(layers)
-        self.gradient_checkpointing = False
         self.fix_attention_mask = config.fix_attention_mask
 
     def forward(
@@ -903,16 +732,8 @@ class RibonanzaNetEncoder(nn.Module):
         hidden_states: Tensor,
         attention_mask: torch.FloatTensor | None = None,
         extended_attention_mask: torch.FloatTensor | None = None,
-        head_mask: torch.FloatTensor | None = None,
-        output_attentions: bool = False,
-        output_hidden_states: bool = False,
-        output_pairwise_states: bool = False,
-        return_dict: bool = True,
-    ) -> Tuple[Tensor, ...] | RibonanzaNetModelOutput:
-        all_hidden_states = () if output_hidden_states else None
-        all_pairwise_states = () if output_pairwise_states else None
-        all_self_attentions = () if output_attentions else None
-
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> RibonanzaNetModelOutput:
         pairwise_states = self.pairwise_embeddings(hidden_states)
         attention_mask_ = attention_mask.clone() if attention_mask is not None else None
 
@@ -923,63 +744,15 @@ class RibonanzaNetEncoder(nn.Module):
                     attention_mask = (attention_mask_ == 1).float() if i == 0 else attention_mask_.clone()  # type: ignore[union-attr]  # noqa: E501
                 hidden_states = hidden_states * attention_mask
 
-            if output_hidden_states:
-                all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore[operator]
-
-            if output_pairwise_states:
-                all_pairwise_states = all_pairwise_states + (pairwise_states,)  # type: ignore[operator]
-
-            layer_head_mask = head_mask[i] if head_mask is not None else None
-
-            if self.gradient_checkpointing and self.training:
-                layer_outputs = self._gradient_checkpointing_func(
-                    layer_module.__call__,
-                    hidden_states,
-                    pairwise_states,
-                    extended_attention_mask,
-                    layer_head_mask,
-                    output_attentions,
-                )
-            else:
-                layer_outputs = layer_module(
-                    hidden_states,
-                    pairwise_states,
-                    extended_attention_mask,
-                    layer_head_mask,
-                    output_attentions,
-                )
-
+            layer_outputs = layer_module(hidden_states, pairwise_states, extended_attention_mask, **kwargs)
             hidden_states, pairwise_states = layer_outputs[:2]
-            if output_attentions:
-                all_self_attentions = all_self_attentions + (layer_outputs[2],)  # type: ignore[operator]
-
-        if output_hidden_states:
-            all_hidden_states = all_hidden_states + (hidden_states,)  # type: ignore[operator]
-
-        if output_pairwise_states:
-            all_pairwise_states = all_pairwise_states + (pairwise_states,)  # type: ignore[operator]
-
-        if not return_dict:
-            return tuple(
-                v
-                for v in [
-                    hidden_states,
-                    all_hidden_states,
-                    all_pairwise_states,
-                    all_self_attentions,
-                ]
-                if v is not None
-            )
 
         return RibonanzaNetModelOutput(
             last_hidden_state=hidden_states,
-            hidden_states=all_hidden_states,
-            pairwise_states=all_pairwise_states,
-            attentions=all_self_attentions,
         )
 
 
-class RibonanzaNetLayer(nn.Module):
+class RibonanzaNetLayer(GradientCheckpointingLayer):
     def __init__(self, config: RibonanzaNetConfig, kernel_size: int = None):  # type: ignore[assignment]
         super().__init__()
         self.chunk_size_feed_forward = config.chunk_size_feed_forward
@@ -1000,8 +773,7 @@ class RibonanzaNetLayer(nn.Module):
         hidden_states: Tensor,
         pairwise_states: torch.FloatTensor | None = None,
         attention_mask: Tensor | None = None,
-        head_mask: torch.FloatTensor | None = None,
-        output_attentions: bool = False,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...]:
         hidden_states = hidden_states + self.conv(hidden_states.transpose(1, 2)).transpose(1, 2)
         hidden_states = self.conv_norm(hidden_states)
@@ -1011,8 +783,7 @@ class RibonanzaNetLayer(nn.Module):
             hidden_states,
             attention_mask=attention_mask,
             attention_bias=pairwise_bias,
-            head_mask=head_mask,
-            output_attentions=output_attentions,
+            **kwargs,
         )
         attention_output = self_attention_outputs[0]
 
@@ -1035,40 +806,19 @@ class RibonanzaNetAttention(nn.Module):
         super().__init__()
         self.self = RibonanzaNetSelfAttention(config)
         self.output = RibonanzaNetSelfOutput(config)
-        self.pruned_heads: set = set()
-
-    def prune_heads(self, heads):
-        if len(heads) == 0:
-            return
-        heads, index = find_pruneable_heads_and_indices(
-            heads, self.self.num_attention_heads, self.self.attention_head_size, self.pruned_heads
-        )
-
-        # Prune linear layers
-        self.self.query = prune_linear_layer(self.self.query, index)
-        self.self.key = prune_linear_layer(self.self.key, index)
-        self.self.value = prune_linear_layer(self.self.value, index)
-        self.output.dense = prune_linear_layer(self.output.dense, index, dim=1)
-
-        # Update hyper params and store pruned heads
-        self.self.num_attention_heads = self.self.num_attention_heads - len(heads)
-        self.self.all_head_size = self.self.attention_head_size * self.self.num_attention_heads
-        self.pruned_heads = self.pruned_heads.union(heads)
 
     def forward(
         self,
         hidden_states: Tensor,
         attention_mask: torch.FloatTensor | None = None,
         attention_bias: torch.FloatTensor | None = None,
-        head_mask: torch.FloatTensor | None = None,
-        output_attentions: bool = False,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...]:
         self_outputs = self.self(
             hidden_states,
             attention_mask,
             attention_bias,
-            head_mask,
-            output_attentions,
+            **kwargs,
         )
         attention_output = self.output(self_outputs[0], hidden_states)
         outputs = (attention_output,) + self_outputs[1:]  # add attentions if we output them
@@ -1084,9 +834,11 @@ class RibonanzaNetSelfAttention(nn.Module):
                 f"heads ({config.num_attention_heads})"
             )
 
+        self.config = config
         self.num_attention_heads = config.num_attention_heads
         self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
+        self.scaling = self.attention_head_size**-0.5
 
         self.query = nn.Linear(config.hidden_size, self.all_head_size, bias=False)
         self.key = nn.Linear(config.hidden_size, self.all_head_size, bias=False)
@@ -1094,6 +846,7 @@ class RibonanzaNetSelfAttention(nn.Module):
 
         self.dropout = nn.Dropout(config.attention_dropout)
         self.fix_attention_mask = config.fix_attention_mask
+        self.is_causal = False
 
     def transpose_for_scores(self, x: Tensor) -> Tensor:
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
@@ -1105,18 +858,39 @@ class RibonanzaNetSelfAttention(nn.Module):
         hidden_states: Tensor,
         attention_mask: torch.FloatTensor | None = None,
         attention_bias: torch.FloatTensor | None = None,
-        head_mask: torch.FloatTensor | None = None,
-        output_attentions: bool = False,
+        **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...]:
+        input_shape = hidden_states.shape[:-1]
         mixed_query_layer = self.query(hidden_states)
 
         query_layer = self.transpose_for_scores(mixed_query_layer)
         key_layer = self.transpose_for_scores(self.key(hidden_states))
         value_layer = self.transpose_for_scores(self.value(hidden_states))
 
+        attention_interface: Callable | None = None
+        if self.config._attn_implementation != "eager":
+            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
+
+        if attention_interface is not None:
+            attn_mask = attention_bias
+            if self.fix_attention_mask and attention_mask is not None:
+                attn_mask = attention_mask if attn_mask is None else attn_mask + attention_mask
+            attn_output, attn_weights = attention_interface(
+                self,
+                query_layer,
+                key_layer,
+                value_layer,
+                attn_mask,
+                dropout=0.0 if not self.training else self.dropout.p,
+                scaling=self.scaling,
+                **kwargs,
+            )
+            attn_output = attn_output.reshape(*input_shape, -1).contiguous()
+            return attn_output, attn_weights
+
         # Take the dot product between "query" and "key" to get the raw attention scores.
         attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))  # type: ignore[attr-defined]
-        attention_scores = attention_scores / math.sqrt(self.attention_head_size)
+        attention_scores = attention_scores * self.scaling
 
         if attention_bias is not None:
             attention_scores = attention_scores + attention_bias
@@ -1136,8 +910,6 @@ class RibonanzaNetSelfAttention(nn.Module):
         attention_probs = self.dropout(attention_probs)
 
         # Mask heads if we want to
-        if head_mask is not None:
-            attention_probs = attention_probs * head_mask
 
         context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
 
@@ -1145,17 +917,15 @@ class RibonanzaNetSelfAttention(nn.Module):
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(new_context_layer_shape)
 
-        outputs = (context_layer, attention_probs) if output_attentions else (context_layer,)
-
-        return outputs
+        return context_layer, attention_probs
 
 
 class RibonanzaNetSelfOutput(nn.Module):
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
-        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.fix_attention_residual = config.fix_attention_residual
         self.layer_norm2 = None
         if not self.fix_attention_residual:
@@ -1190,8 +960,8 @@ class RibonanzaNetOutput(nn.Module):
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__()
         self.dense = nn.Linear(config.intermediate_size, config.hidden_size)
-        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(self, hidden_states: Tensor, input_tensor: Tensor) -> Tensor:
         hidden_states = self.dense(hidden_states)
@@ -1296,37 +1066,16 @@ class RibonanzaNetPairwiseAttention(nn.Module):
         super().__init__()
         self.triangle = RibonanzaNetPairwiseTriangleAttention(config, axis)
         self.output = RibonanzaNetPairwiseTriangleOutput(config, axis)
-        self.pruned_heads: set = set()
-
-    def prune_heads(self, heads):
-        if len(heads) == 0:
-            return
-        heads, index = find_pruneable_heads_and_indices(
-            heads, self.self.num_attention_heads, self.self.attention_head_size, self.pruned_heads
-        )
-
-        # Prune linear layers
-        self.self.query = prune_linear_layer(self.self.query, index)
-        self.self.key = prune_linear_layer(self.self.key, index)
-        self.self.value = prune_linear_layer(self.self.value, index)
-        self.output.dense = prune_linear_layer(self.output.dense, index, dim=1)
-
-        # Update hyper params and store pruned heads
-        self.self.num_attention_heads = self.self.num_attention_heads - len(heads)
-        self.self.all_head_size = self.self.attention_head_size * self.self.num_attention_heads
-        self.pruned_heads = self.pruned_heads.union(heads)
 
     def forward(
         self,
         pairwise_states: Tensor,
         attention_mask: torch.FloatTensor | None = None,
-        head_mask: torch.FloatTensor | None = None,
         output_attentions: bool = False,
     ) -> Tuple[Tensor, ...]:
         triangle_outputs = self.triangle(
             pairwise_states,
             attention_mask,
-            head_mask,
             output_attentions,
         )
         attention_output = self.output(triangle_outputs[0], pairwise_states)
@@ -1368,7 +1117,6 @@ class RibonanzaNetPairwiseTriangleAttention(nn.Module):
         self,
         pairwise_states: Tensor,
         attention_mask: torch.FloatTensor | None = None,
-        head_mask: torch.FloatTensor | None = None,
         output_attentions: bool = False,
     ):
         """
@@ -1413,9 +1161,6 @@ class RibonanzaNetPairwiseTriangleAttention(nn.Module):
                 attention_scores = attention_scores.masked_fill(attention_mask == -1, -1e-9)
 
         attention_probs = F.softmax(attention_scores, dim=-1)
-
-        if head_mask is not None:
-            attention_probs = attention_probs * head_mask
 
         if self.axis == "row":
             value_layer = value_layer.transpose(2, 3)
@@ -1606,7 +1351,6 @@ class RibonanzaNetSecondaryStructurePredictionHead(BasePredictionHead):
 
 
 class RibonanzaNetSequenceDropoutPredictionHead(BasePredictionHead):
-
     def __init__(self, config: RibonanzaNetConfig, head_config: HeadConfig | None = None):
         if head_config is None:
             head_config = config.head or HeadConfig(num_labels=1)
@@ -1739,3 +1483,13 @@ class RibonanzaNetSequenceDropoutPredictorOutput(ModelOutput):
     hidden_states: Tuple[torch.FloatTensor, ...] | None = None
     pairwise_states: Tuple[torch.FloatTensor, ...] | None = None
     attentions: Tuple[torch.FloatTensor, ...] | None = None
+
+
+RibonanzaNetPreTrainedModel._can_record_outputs = {
+    "hidden_states": RibonanzaNetLayer,
+    "pairwise_states": [
+        OutputRecorder(PairwiseEmbeddings, index=0),
+        OutputRecorder(RibonanzaNetLayer, index=1),
+    ],
+    "attentions": OutputRecorder(RibonanzaNetAttention, index=1, layer_name="attention"),
+}

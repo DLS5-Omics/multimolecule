@@ -30,7 +30,7 @@ from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 class AidoRnaConfig(PreTrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`AidoRnaModel`][multimolecule.models.AidoRnaModel].
-    It is used to instantiate a AIDO.RNA model according to the specified arguments, defining the model architecture.
+    It is used to instantiate an AIDO.RNA model according to the specified arguments, defining the model architecture.
     Instantiating a configuration with the defaults will yield a similar configuration to that of the AIDO.RNA
     [genbio-ai/AIDO.RNA](https://github.com/genbio-ai/AIDO.RNA) architecture.
 
@@ -41,7 +41,7 @@ class AidoRnaConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the AIDO.RNA model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`AidoRnaModel`].
+            `input_ids` passed when calling [`AidoRnaModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -76,6 +76,12 @@ class AidoRnaConfig(PreTrainedConfig):
         use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
+        head:
+            The configuration of the prediction head.
+        lm_head:
+            The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import AidoRnaConfig, AidoRnaModel
@@ -107,6 +113,7 @@ class AidoRnaConfig(PreTrainedConfig):
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -126,6 +133,7 @@ class AidoRnaConfig(PreTrainedConfig):
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention
 
 
 class AidoRnaSecondaryStructureHeadConfig(BaseHeadConfig):
@@ -144,6 +152,16 @@ class AidoRnaSecondaryStructureHeadConfig(BaseHeadConfig):
             Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
         dropout:
             The dropout ratio for the hidden states.
+        kernel_size:
+            Kernel size of the 1D convolutional layers in the head.
+        num_layers:
+            Number of convolutional layers in the head.
+        num_channels:
+            Number of channels in the convolutional layers.
+        bias:
+            Whether to include bias terms in the convolutional layers.
+        activation:
+            Activation function used in the head.
     """
 
     num_labels: int = 1

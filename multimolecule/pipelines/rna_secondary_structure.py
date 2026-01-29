@@ -64,7 +64,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
         self, inputs, return_tensors=None, tokenizer_kwargs=None, **preprocess_parameters
     ) -> Dict[str, GenericTensor]:
         if return_tensors is None:
-            return_tensors = self.framework
+            return_tensors = "pt"
         if tokenizer_kwargs is None:
             tokenizer_kwargs = {}
 
@@ -179,7 +179,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
 
     def __init__(self, *args, threshold: float | None = None, output_contact_map: bool | None = None, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.framework != "pt":
+        if not isinstance(self.model, torch.nn.Module):
             raise NotImplementedError("Only PyTorch is supported for RNA secondary structure prediction.")
         if threshold is not None:
             if threshold >= 1:

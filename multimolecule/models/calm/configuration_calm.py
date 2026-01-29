@@ -39,7 +39,7 @@ class CaLmConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the CaLM model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`CaLmModel`].
+            `input_ids` passed when calling [`CaLmModel`].
             Defaults to 131 if `codon=True` else 26.
         codon:
             Whether to use codon tokenization.
@@ -85,6 +85,8 @@ class CaLmConfig(PreTrainedConfig):
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import CaLmConfig, CaLmModel
@@ -119,6 +121,7 @@ class CaLmConfig(PreTrainedConfig):
         token_dropout: bool = False,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -143,3 +146,4 @@ class CaLmConfig(PreTrainedConfig):
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention

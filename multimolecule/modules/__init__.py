@@ -23,6 +23,7 @@
 from .backbones import BACKBONES, SEQUENCES, SequenceBackbone
 from .criterions import CRITERIONS, Criterion
 from .embeddings import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF, RotaryEmbedding, SinusoidalEmbedding
+from .functional import eager_attention_forward
 from .heads import (
     HEAD_TRANSFORMS,
     HEAD_TRANSFORMS_HF,
@@ -93,4 +94,5 @@ __all__ = [
     "CRITERIONS",
     "Criterion",
     "LayerNorm2d",
+    "eager_attention_forward",
 ]

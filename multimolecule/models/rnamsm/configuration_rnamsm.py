@@ -39,7 +39,7 @@ class RnaMsmConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the RnaMsm model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`RnaMsmModel`].
+            `input_ids` passed when calling [`RnaMsmModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -73,6 +73,16 @@ class RnaMsmConfig(PreTrainedConfig):
         use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
+        max_tokens_per_msa:
+            Maximum number of tokens per MSA batch before chunking.
+        layer_type:
+            Type of encoder layer to use. Typically `"standard"` or model-specific variants.
+        attention_type:
+            Type of attention implementation to use in the MSA encoder.
+        embed_positions_msa:
+            Whether to embed positions along the MSA dimension.
+        attention_bias:
+            Whether to add attention bias terms in the MSA attention layers.
         head:
             The configuration of the head.
         lm_head:

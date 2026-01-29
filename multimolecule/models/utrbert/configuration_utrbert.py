@@ -39,7 +39,7 @@ class UtrBertConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the 3UTRBERT model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`UtrBertModel`].
+            `input_ids` passed when calling [`UtrBertModel`].
         nmers:
             kmer size of the 3UTRBERT model. Defines the vocabulary size of the model.
         hidden_size:
@@ -79,6 +79,8 @@ class UtrBertConfig(PreTrainedConfig):
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertModel
@@ -111,12 +113,13 @@ class UtrBertConfig(PreTrainedConfig):
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
         if vocab_size is None:
             if nmers is None:
-                raise ValueError("`nmers` must be specified if `vocab_size` is not provided.")
+                nmers = 3
             vocab_size = 5**nmers + 6
         self.vocab_size = vocab_size
         self.nmers = nmers
@@ -136,3 +139,4 @@ class UtrBertConfig(PreTrainedConfig):
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention

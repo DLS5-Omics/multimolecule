@@ -28,6 +28,18 @@ from ..configuration_utils import PreTrainedConfig
 
 
 class SpliceAiStageConfig(FlatDict):
+    r"""
+    Configuration for a single SpliceAI stage.
+
+    Args:
+        num_blocks:
+            Number of convolutional blocks in the stage.
+        kernel_size:
+            Convolution kernel size for the stage.
+        dilation:
+            Dilation factor for the stage.
+    """
+
     num_blocks: int = 4
     kernel_size: int = 11
     dilation: int = 1
@@ -48,7 +60,7 @@ class SpliceAiConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the SpliceAI model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`SpliceAiModel`].
+            `input_ids` passed when calling [`SpliceAiModel`].
             Defaults to 5.
         context:
             The length of the context window. The input sequence will be padded with zeros of length `context // 2` on
@@ -66,6 +78,8 @@ class SpliceAiConfig(PreTrainedConfig):
             The epsilon used by the batch normalization layers.
         batch_norm_momentum:
             The momentum used by the batch normalization layers.
+        num_labels:
+            Number of output labels.
         output_contexts:
             Whether to output the context vectors for each stage.
 

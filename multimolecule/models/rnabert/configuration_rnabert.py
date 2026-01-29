@@ -39,9 +39,13 @@ class RnaBertConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the RNABERT model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`RnaBertModel`].
+            `input_ids` passed when calling [`RnaBertModel`].
+        ss_vocab_size:
+            Vocabulary size for secondary-structure tokens.
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
+        multiple:
+            Optional multiplier used to derive `hidden_size` from `num_attention_heads` when `hidden_size` is not set.
         num_hidden_layers:
             Number of hidden layers in the Transformer encoder.
         num_attention_heads:
@@ -77,6 +81,8 @@ class RnaBertConfig(PreTrainedConfig):
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import RnaBertConfig, RnaBertModel
@@ -110,6 +116,7 @@ class RnaBertConfig(PreTrainedConfig):
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -133,3 +140,4 @@ class RnaBertConfig(PreTrainedConfig):
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention

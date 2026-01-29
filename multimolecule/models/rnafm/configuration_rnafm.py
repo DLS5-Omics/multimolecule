@@ -41,7 +41,7 @@ class RnaFmConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the RNA-FM model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`RnaFmModel`].
+            `input_ids` passed when calling [`RnaFmModel`].
             Defaults to 26 if `codon=False` else 131.
         codon:
             Whether to use codon tokenization.
@@ -83,6 +83,12 @@ class RnaFmConfig(PreTrainedConfig):
             Whether to apply layer normalization after embeddings but before the main stem of the network.
         token_dropout:
             When this is enabled, masked tokens are treated as if they had been dropped out by input dropout.
+        head:
+            The configuration of the prediction head.
+        lm_head:
+            The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import RnaFmConfig, RnaFmModel
@@ -117,6 +123,7 @@ class RnaFmConfig(PreTrainedConfig):
         token_dropout: bool = False,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -141,6 +148,7 @@ class RnaFmConfig(PreTrainedConfig):
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention
 
 
 class RnaFmSecondaryStructureHeadConfig(BaseHeadConfig):
@@ -159,6 +167,20 @@ class RnaFmSecondaryStructureHeadConfig(BaseHeadConfig):
             Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
         dropout:
             The dropout ratio for the hidden states.
+        kernel_size:
+            Kernel size of the 1D convolutional layers in the head.
+        num_layers:
+            Number of convolutional layers in the head.
+        num_channels:
+            Number of channels in the convolutional layers.
+        bias:
+            Whether to include bias terms in the convolutional layers.
+        activation:
+            Activation function used in the head.
+        hidden_size:
+            Hidden size used by the head.
+        intermediate_size:
+            Intermediate size used by the head.
     """
 
     num_labels: int = 1

@@ -89,6 +89,7 @@ class SinusoidalEmbedding(nn.Embedding):
         del self.weight
         self.register_buffer("weight", weight, persistent=False)
         self.bias = bias
+        self._initialized = False
 
     def update_weight(self, num_embeddings: int):
         weight = self.get_embedding(
@@ -113,10 +114,9 @@ class SinusoidalEmbedding(nn.Embedding):
         if device is None:
             device = get_default_device()
         half_dim = embedding_dim // 2
-        emb = torch.exp(torch.arange(half_dim, dtype=torch.float) * -(math.log(10000) / (half_dim - 1)))
-        emb = torch.arange(num_embeddings, dtype=torch.float).unsqueeze(1) * emb.unsqueeze(0)
+        emb = torch.exp(torch.arange(half_dim, device=device, dtype=dtype) * -(math.log(10000) / (half_dim - 1)))
+        emb = torch.arange(num_embeddings, device=device, dtype=dtype).unsqueeze(1) * emb.unsqueeze(0)
         emb = torch.cat([torch.sin(emb), torch.cos(emb)], dim=1).view(num_embeddings, -1)
-        emb = emb.to(device=device, dtype=dtype)
         if embedding_dim % 2 == 1:
             emb = torch.cat([emb, torch.zeros(num_embeddings, 1, dtype=dtype, device=device)], dim=1)
         if padding_idx is not None:
@@ -140,6 +140,9 @@ class SinusoidalEmbedding(nn.Embedding):
         return torch.cumsum(mask, dim=1, dtype=torch.long) * mask + padding_idx
 
     def forward(self, input_ids: Tensor) -> Tensor:
+        if not self._initialized:
+            self.update_weight(self.num_embeddings)
+            self._initialized = True
         _, seq_length = input_ids.shape[:2]
         # expand embeddings if needed
         max_position = seq_length + self.bias + 1

@@ -59,6 +59,7 @@ class RotaryEmbedding(nn.Module):
         OrderedDict()
     """
 
+    _is_hf_initialized = True
     _seq_len_cached: int | None = None
     _cos_cached: Tensor | None = None
     _sin_cached: Tensor | None = None
@@ -81,9 +82,12 @@ class RotaryEmbedding(nn.Module):
             dtype: Data type for computations. Defaults to torch.float32.
         """
         super().__init__()
-        inv_freq = 1.0 / (base ** (torch.arange(0, embedding_dim, 2, dtype=dtype) / embedding_dim))
-        self.register_buffer("inv_freq", inv_freq, persistent=False)
+        self.embedding_dim = embedding_dim
+        self.base = base
         self.scale = scale
+        self.register_buffer("inv_freq", torch.empty(0, dtype=dtype), persistent=False)
+        self.inv_freq: Tensor
+        self._initialized = False
 
     def forward(self, q: Tensor, k: Tensor, offset: int = 0, seq_length: int | None = None) -> Tuple[Tensor, Tensor]:
         """
@@ -100,6 +104,12 @@ class RotaryEmbedding(nn.Module):
         Returns:
             Tuple of (rotated_query, rotated_key) tensors with the same shapes as inputs.
         """
+        if not self._initialized:
+            inv_freq_exponent = (
+                torch.arange(0, self.embedding_dim, 2, device=q.device, dtype=self.inv_freq.dtype) / self.embedding_dim
+            )
+            self.inv_freq = 1.0 / (self.base**inv_freq_exponent)
+            self._initialized = True
         if offset > 0 and seq_length is None:
             raise ValueError("seq_length must be provided when offset > 0")
 
@@ -123,14 +133,14 @@ class RotaryEmbedding(nn.Module):
         if seq_length is None:
             seq_length = x.shape[seq_len_dim]
 
-        if seq_length != self._seq_len_cached or self._cos_cached is None or self._cos_cached.device != x.device:
+        needs_update = (
+            seq_length != self._seq_len_cached or self._cos_cached is None or self._cos_cached.device != x.device
+        )
+        if needs_update:
             self._seq_len_cached = seq_length
-            inv_freq = self.inv_freq
-            if not isinstance(inv_freq, Tensor):
-                raise RuntimeError("inv_freq buffer is not a Tensor")
-            t = torch.arange(seq_length, device=x.device, dtype=inv_freq.dtype)
+            t = torch.arange(seq_length, device=x.device, dtype=self.inv_freq.dtype)
             # Apply scaling: divide frequencies by scale to extend context length
-            freqs = torch.outer(t, inv_freq) / self.scale
+            freqs = torch.outer(t, self.inv_freq) / self.scale
             emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
             self._cos_cached = emb.cos()[None, None, :, :]
             self._sin_cached = emb.sin()[None, None, :, :]

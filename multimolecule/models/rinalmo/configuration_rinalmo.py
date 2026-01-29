@@ -41,7 +41,7 @@ class RiNALMoConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the RiNALMo model. Defines the number of different tokens that can be represented by the
-            `inputs_ids` passed when calling [`RiNALMoModel`].
+            `input_ids` passed when calling [`RiNALMoModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -78,12 +78,16 @@ class RiNALMoConfig(PreTrainedConfig):
             relevant if `config.is_decoder=True`.
         emb_layer_norm_before:
             Whether to apply layer normalization after embeddings but before the main stem of the network.
+        learnable_beta:
+            Whether to make the swish-gate beta parameter learnable.
         token_dropout:
             When this is enabled, masked tokens are treated as if they had been dropped out by input dropout.
         head:
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import RiNALMoConfig, RiNALMoModel
@@ -118,6 +122,7 @@ class RiNALMoConfig(PreTrainedConfig):
         token_dropout: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -140,6 +145,7 @@ class RiNALMoConfig(PreTrainedConfig):
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.emb_layer_norm_before = emb_layer_norm_before
+        self.add_cross_attention = add_cross_attention
 
 
 class RiNALMoSecondaryStructureHeadConfig(BaseHeadConfig):
@@ -158,6 +164,26 @@ class RiNALMoSecondaryStructureHeadConfig(BaseHeadConfig):
             Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
         dropout:
             The dropout ratio for the hidden states.
+        kernel_size:
+            Kernel size of the 1D convolutional layers in the head.
+        num_layers:
+            Number of convolutional layers in the head.
+        num_channels:
+            Number of channels in the convolutional layers.
+        bias:
+            Whether to include bias terms in the convolutional layers.
+        activation:
+            Activation function used in the head.
+        kernel_size:
+            Kernel size of the 1D convolutional layers in the head.
+        num_layers:
+            Number of convolutional layers in the head.
+        num_channels:
+            Number of channels in the convolutional layers.
+        bias:
+            Whether to include bias terms in the convolutional layers.
+        activation:
+            Activation function used in the head.
     """
 
     num_labels: int = 1

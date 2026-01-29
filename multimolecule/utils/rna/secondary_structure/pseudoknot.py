@@ -272,7 +272,6 @@ def _numpy_split_pseudoknot_pairs(pairs: np.ndarray) -> Tuple[np.ndarray, np.nda
 def _numpy_mwis_segments(start_i: np.ndarray, start_j: np.ndarray, lengths: np.ndarray) -> np.ndarray:
     if start_i.size == 0:
         return np.empty((0,), dtype=int)
-
     _, ci, cj, comp_len = _numpy_compress_endpoints(start_i, start_j)
     if comp_len <= 1:
         return np.empty((0,), dtype=int)

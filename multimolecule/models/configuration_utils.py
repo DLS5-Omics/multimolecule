@@ -34,6 +34,22 @@ __all__ = ["PreTrainedConfig", "BaseHeadConfig", "HeadConfig", "MaskedLMHeadConf
 class PreTrainedConfig(PretrainedConfig):
     r"""
     Base class for all model configuration classes.
+
+    Args:
+        pad_token_id:
+            The ID of the padding token.
+        bos_token_id:
+            The ID of the beginning-of-sequence token.
+        eos_token_id:
+            The ID of the end-of-sequence token.
+        unk_token_id:
+            The ID of the unknown token.
+        mask_token_id:
+            The ID of the mask token.
+        null_token_id:
+            The ID of the null or placeholder token.
+        num_labels:
+            Default number of labels for prediction heads.
     """
 
     head: HeadConfig | None = None
@@ -59,6 +75,8 @@ class PreTrainedConfig(PretrainedConfig):
         num_labels: int = 1,
         **kwargs,
     ):
+        if "attn_implementation" not in kwargs and "_attn_implementation" not in kwargs:
+            kwargs["attn_implementation"] = "eager"
         super().__init__(
             pad_token_id=pad_token_id,
             bos_token_id=bos_token_id,

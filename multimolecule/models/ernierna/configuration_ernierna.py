@@ -30,7 +30,7 @@ from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 class ErnieRnaConfig(PreTrainedConfig):
     r"""
     This is the configuration class to store the configuration of a
-    [`ErnieRnaModel`][multimolecule.models.ErnieRnaModel]. It is used to instantiate a ErnieRna model according to the
+    [`ErnieRnaModel`][multimolecule.models.ErnieRnaModel]. It is used to instantiate an ErnieRna model according to the
     specified arguments, defining the model architecture. Instantiating a configuration with the defaults will yield a
     similar configuration to that of the ErnieRna [Bruce-ywj/ERNIE-RNA](https://github.com/Bruce-ywj/ERNIE-RNA)
     architecture.
@@ -42,7 +42,7 @@ class ErnieRnaConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the ErnieRna model. Defines the number of different tokens that can be represented by
-            the `inputs_ids` passed when calling [`ErnieRnaModel`].
+            the `input_ids` passed when calling [`ErnieRnaModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -65,6 +65,8 @@ class ErnieRnaConfig(PreTrainedConfig):
             The standard deviation of the truncated_normal_initializer for initializing all weight matrices.
         layer_norm_eps:
             The epsilon used by the layer normalization layers.
+        pairwise_alpha:
+            Scaling factor for pairwise bias in the attention mechanism.
         position_embedding_type:
             Type of position embedding. Choose one of `"absolute"`, `"relative_key"`, `"relative_key_query"`,
             `"sinusoidal"`.
@@ -81,6 +83,10 @@ class ErnieRnaConfig(PreTrainedConfig):
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        output_attention_biases:
+            Whether to return attention bias maps.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import ErnieRnaConfig, ErnieRnaModel
@@ -114,6 +120,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
         output_attention_biases: bool = False,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -136,6 +143,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.output_attention_biases = output_attention_biases
+        self.add_cross_attention = add_cross_attention
 
 
 class ErnieRnaSecondaryStructureHeadConfig(BaseHeadConfig):
@@ -154,6 +162,16 @@ class ErnieRnaSecondaryStructureHeadConfig(BaseHeadConfig):
             Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
         dropout:
             The dropout ratio for the hidden states.
+        kernel_size:
+            Kernel size of the 1D convolutional layers in the head.
+        num_layers:
+            Number of convolutional layers in the head.
+        num_channels:
+            Number of channels in the convolutional layers.
+        bias:
+            Whether to include bias terms in the convolutional layers.
+        activation:
+            Activation function used in the head.
     """
 
     num_labels: int = 1

@@ -40,7 +40,7 @@ class RnaErnieConfig(PreTrainedConfig):
     Args:
         vocab_size:
             Vocabulary size of the RnaErnie model. Defines the number of different tokens that can be represented by
-            the `inputs_ids` passed when calling [`RnaErnieModel`].
+            the `input_ids` passed when calling [`RnaErnieModel`].
         hidden_size:
             Dimensionality of the encoder layers and the pooler layer.
         num_hidden_layers:
@@ -78,6 +78,8 @@ class RnaErnieConfig(PreTrainedConfig):
             The configuration of the head.
         lm_head:
             The configuration of the masked language model head.
+        add_cross_attention:
+            Whether to add cross-attention layers when the model is used as a decoder.
 
     Examples:
         >>> from multimolecule import RnaErnieConfig, RnaErnieModel
@@ -109,6 +111,7 @@ class RnaErnieConfig(PreTrainedConfig):
         use_cache: bool = True,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
+        add_cross_attention: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -129,3 +132,4 @@ class RnaErnieConfig(PreTrainedConfig):
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        self.add_cross_attention = add_cross_attention
