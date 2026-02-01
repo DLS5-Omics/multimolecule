@@ -170,8 +170,8 @@ class RnaBertModel(RnaBertPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor):
-            input_ids, attention_mask = input_ids.tensor, input_ids.mask
+        if isinstance(input_ids, NestedTensor) and attention_mask is None:
+            attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -631,6 +631,10 @@ class RnaBertEmbeddings(nn.Module):
                             device=embeddings.device,
                         ).unsqueeze(0)
             position_embeddings = self.position_embeddings(position_ids)
+            if isinstance(embeddings, NestedTensor):
+                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
+                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
+                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
             embeddings += position_embeddings
 
         embeddings = self.layer_norm(embeddings)
@@ -1098,6 +1102,14 @@ class RnaBertLayerNorm(nn.Module):
         self.variance_epsilon = eps
 
     def forward(self, x: Tensor) -> Tensor:
+        if isinstance(x, NestedTensor):
+            storage = []
+            for t in x._storage:
+                u = t.mean(-1, keepdim=True)
+                s = (t - u).pow(2).mean(-1, keepdim=True)
+                t = (t - u) / torch.sqrt(s + self.variance_epsilon)
+                storage.append(self.weight * t + self.bias)
+            return NestedTensor(storage, **x._state)
         u = x.mean(-1, keepdim=True)
         s = (x - u).pow(2).mean(-1, keepdim=True)
         x = (x - u) / torch.sqrt(s + self.variance_epsilon)

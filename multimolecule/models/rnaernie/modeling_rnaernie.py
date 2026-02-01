@@ -169,8 +169,8 @@ class RnaErnieModel(RnaErniePreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor):
-            input_ids, attention_mask = input_ids.tensor, input_ids.mask
+        if isinstance(input_ids, NestedTensor) and attention_mask is None:
+            attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -567,6 +567,10 @@ class RnaErnieEmbeddings(nn.Module):
                             device=embeddings.device,
                         ).unsqueeze(0)
             position_embeddings = self.position_embeddings(position_ids)
+            if isinstance(embeddings, NestedTensor):
+                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
+                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
+                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
             embeddings += position_embeddings
 
         embeddings = self.layer_norm(embeddings)

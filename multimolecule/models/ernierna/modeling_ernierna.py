@@ -137,6 +137,8 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
     def get_pairwise_bias(
         self, input_ids: Tensor | NestedTensor, attention_mask: Tensor | NestedTensor | None = None
     ) -> Tensor | NestedTensor:
+        if isinstance(input_ids, NestedTensor):
+            input_ids = input_ids.tensor
         batch_size, seq_length = input_ids.shape
 
         # Broadcasting data indices to compute indices
@@ -219,8 +221,8 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         pairwise_bias = self.get_pairwise_bias(input_ids, attention_mask)
         attention_bias = self.pairwise_bias_proj(pairwise_bias.unsqueeze(-1)).transpose(1, 3)
 
-        if isinstance(input_ids, NestedTensor):
-            input_ids, attention_mask = input_ids.tensor, input_ids.mask
+        if isinstance(input_ids, NestedTensor) and attention_mask is None:
+            attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -671,11 +673,19 @@ class ErnieRnaEmbeddings(nn.Module):
 
         if self.position_embedding_type == "sinusoidal":
             position_embeddings = self.position_embeddings(input_ids)
+            if isinstance(embeddings, NestedTensor):
+                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
+                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
+                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
             embeddings += position_embeddings
         elif self.position_embedding_type == "absolute":
             if position_ids is None:
                 position_ids = self.position_ids[:, past_key_values_length : seq_length + past_key_values_length]
             position_embeddings = self.position_embeddings(position_ids)
+            if isinstance(embeddings, NestedTensor):
+                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
+                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
+                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
             embeddings += position_embeddings
 
         embeddings = self.layer_norm(embeddings)

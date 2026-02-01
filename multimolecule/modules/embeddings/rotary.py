@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import Tuple
 
 import torch
+from danling import NestedTensor
 from torch import Tensor, nn
 
 from .registry import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF
@@ -69,6 +70,7 @@ class RotaryEmbedding(nn.Module):
         embedding_dim: int,
         base: float = 10000.0,
         scale: float = 1.0,
+        device: torch.device | None = None,
         dtype: torch.dtype = torch.float32,
     ):
         """
@@ -85,8 +87,8 @@ class RotaryEmbedding(nn.Module):
         self.embedding_dim = embedding_dim
         self.base = base
         self.scale = scale
-        self.register_buffer("inv_freq", torch.empty(0, dtype=dtype), persistent=False)
-        self.inv_freq: Tensor
+        inv_freq_exponent = torch.arange(0, self.embedding_dim, 2, device=device, dtype=dtype) / self.embedding_dim
+        self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
         self._initialized = False
 
     def forward(self, q: Tensor, k: Tensor, offset: int = 0, seq_length: int | None = None) -> Tuple[Tensor, Tensor]:
@@ -108,7 +110,7 @@ class RotaryEmbedding(nn.Module):
             inv_freq_exponent = (
                 torch.arange(0, self.embedding_dim, 2, device=q.device, dtype=self.inv_freq.dtype) / self.embedding_dim
             )
-            self.inv_freq = 1.0 / (self.base**inv_freq_exponent)
+            self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
             self._initialized = True
         if offset > 0 and seq_length is None:
             raise ValueError("seq_length must be provided when offset > 0")
@@ -162,6 +164,17 @@ class RotaryEmbedding(nn.Module):
         """
         if self._cos_cached is None or self._sin_cached is None:
             raise RuntimeError("Cos/sin tables not initialized. Call forward() or _update_cos_sin_tables() first.")
+
+        if isinstance(x, NestedTensor):
+            storage = []
+            for t in x._storage:
+                seq_len = t.shape[-2]
+                cos = self._cos_cached[:, :, offset : offset + seq_len, :]
+                sin = self._sin_cached[:, :, offset : offset + seq_len, :]
+                cos = cos.squeeze(0).squeeze(0)
+                sin = sin.squeeze(0).squeeze(0)
+                storage.append((t * cos) + (self.rotate_half(t) * sin))
+            return NestedTensor(storage, **x._state)
 
         cos = self._cos_cached[:, :, offset : offset + x.shape[-2], :]
         sin = self._sin_cached[:, :, offset : offset + x.shape[-2], :]
