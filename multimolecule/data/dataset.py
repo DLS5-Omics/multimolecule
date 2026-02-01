@@ -501,7 +501,13 @@ class Dataset(datasets.Dataset):
         self._sequence_cols = sequence_cols or []
         self._sequence_type = sequence_type  # type: ignore[assignment]
 
-        string_cols = [k for k, v in self.features.items() if k not in self.id_cols and v.pa_type == "string"]
+        string_cols = [
+            k
+            for k, v in self.features.items()
+            if k not in self.id_cols
+            and v.pa_type is not None  # noqa: W503
+            and (pa.types.is_string(v.pa_type) or pa.types.is_large_string(v.pa_type))  # noqa: W503
+        ]
         unique_chars = {
             k: {ch for s in flatten_column(self._data.column(k))[0] for ch in s.as_py()} for k in string_cols
         }
