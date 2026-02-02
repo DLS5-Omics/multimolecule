@@ -935,8 +935,6 @@
       
         
       
-        
-      
     
     
     
@@ -988,34 +986,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../aido_rna/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AIDO.RNA
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2282,7 +2252,7 @@
             <td>
               <div class="doc-md-description">
                 <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
-<p>Optional, returned when <code>labels</code> is provided</p>
+<p>Optional, returned when <code>labels</code> is provided.</p>
               </div>
             </td>
             <td>
@@ -2317,7 +2287,7 @@
               <div class="doc-md-description">
                 <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
-<p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
+<p>Optional, returned when <code>output_hidden_states=True</code> is passed or when <code>config.output_hidden_states=True</code>.</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
               </div>
             </td>
@@ -2336,7 +2306,7 @@ one for the output of each layer) of shape <code>(batch_size, sequence_length, h
               <div class="doc-md-description">
                 <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
-<p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
+<p>Optional, returned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code>.</p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
               </div>
@@ -2399,7 +2369,7 @@ heads.</p>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        loss:</span>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">            `torch.FloatTensor` of shape `(1,)`.</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            Optional, returned when `labels` is provided</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            Optional, returned when `labels` is provided.</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">        logits:</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">            `torch.FloatTensor` of shape `(batch_size, sequence_length, config.num_labels)`</span>
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>
@@ -2408,14 +2378,14 @@ heads.</p>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +</span>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True`.</span>
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">            Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        attentions:</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">            sequence_length)`.</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">            Optional, eturned when `output_attentions=True` is passed or when `config.output_attentions=True`</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">            Optional, returned when `output_attentions=True` is passed or when `config.output_attentions=True`.</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">            heads.</span>
@@ -2492,7 +2462,7 @@ heads.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
-<p>Optional, returned when <code>labels</code> is provided</p>
+<p>Optional, returned when <code>labels</code> is provided.</p>
               </div>
             </td>
             <td>
@@ -2527,7 +2497,7 @@ heads.</p>
               <div class="doc-md-description">
                 <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
-<p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
+<p>Optional, returned when <code>output_hidden_states=True</code> is passed or when <code>config.output_hidden_states=True</code>.</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
               </div>
             </td>
@@ -2546,7 +2516,7 @@ one for the output of each layer) of shape <code>(batch_size, sequence_length, h
               <div class="doc-md-description">
                 <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
-<p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
+<p>Optional, returned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code>.</p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
               </div>
@@ -2609,7 +2579,7 @@ heads.</p>
 </span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">        loss:</span>
 </span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">            `torch.FloatTensor` of shape `(1,)`.</span>
 </span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">            Optional, returned when `labels` is provided</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">            Optional, returned when `labels` is provided.</span>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">        logits:</span>
 </span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">            `torch.FloatTensor` of shape `(batch_size, sequence_length, config.num_labels)`</span>
 </span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>
@@ -2618,14 +2588,14 @@ heads.</p>
 </span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +</span>
 </span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.</span>
 </span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>
-</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True</span>
+</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True`.</span>
 </span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>
 </span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">            Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</span>
 </span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="sd">        attentions:</span>
 </span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,</span>
 </span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">            sequence_length)`.</span>
 </span><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a>
-</span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">            Optional, eturned when `output_attentions=True` is passed or when `config.output_attentions=True`</span>
+</span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">            Optional, returned when `output_attentions=True` is passed or when `config.output_attentions=True`.</span>
 </span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>
 </span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="sd">            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention</span>
 </span><span id="__span-0-97"><a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="sd">            heads.</span>
@@ -2702,7 +2672,7 @@ heads.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>torch.FloatTensor</code> of shape <code>(1,)</code>.</p>
-<p>Optional, returned when <code>labels</code> is provided</p>
+<p>Optional, returned when <code>labels</code> is provided.</p>
               </div>
             </td>
             <td>
@@ -2737,7 +2707,7 @@ heads.</p>
               <div class="doc-md-description">
                 <p>Tuple of <code>torch.FloatTensor</code> (one for the output of the embeddings, if the model has an embedding layer, +
 one for the output of each layer) of shape <code>(batch_size, sequence_length, hidden_size)</code>.</p>
-<p>Optional, returned when <code>output_hidden_states=True</code> is passed or when `config.output_hidden_states=True</p>
+<p>Optional, returned when <code>output_hidden_states=True</code> is passed or when <code>config.output_hidden_states=True</code>.</p>
 <p>Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</p>
               </div>
             </td>
@@ -2756,7 +2726,7 @@ one for the output of each layer) of shape <code>(batch_size, sequence_length, h
               <div class="doc-md-description">
                 <p>Tuple of <code>torch.FloatTensor</code> (one for each layer) of shape <code>(batch_size, num_heads, sequence_length,
 sequence_length)</code>.</p>
-<p>Optional, eturned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code></p>
+<p>Optional, returned when <code>output_attentions=True</code> is passed or when <code>config.output_attentions=True</code>.</p>
 <p>Attentions weights after the attention softmax, used to compute the weighted average in the self-attention
 heads.</p>
               </div>
@@ -2819,7 +2789,7 @@ heads.</p>
 </span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">        loss:</span>
 </span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">            `torch.FloatTensor` of shape `(1,)`.</span>
 </span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a>
-</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">            Optional, returned when `labels` is provided</span>
+</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">            Optional, returned when `labels` is provided.</span>
 </span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">        logits:</span>
 </span><span id="__span-0-117"><a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">            `torch.FloatTensor` of shape `(batch_size, sequence_length, config.num_labels)`</span>
 </span><span id="__span-0-118"><a id="__codelineno-0-118" name="__codelineno-0-118"></a>
@@ -2828,14 +2798,14 @@ heads.</p>
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="sd">            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +</span>
 </span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="sd">            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.</span>
 </span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True</span>
+</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">            Optional, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True`.</span>
 </span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>
 </span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="sd">            Hidden-states of the model at the output of each layer plus the optional initial embedding outputs.</span>
 </span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        attentions:</span>
 </span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,</span>
 </span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">            sequence_length)`.</span>
 </span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>
-</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">            Optional, eturned when `output_attentions=True` is passed or when `config.output_attentions=True`</span>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">            Optional, returned when `output_attentions=True` is passed or when `config.output_attentions=True`.</span>
 </span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>
 </span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">            Attentions weights after the attention softmax, used to compute the weighted average in the self-attention</span>
 </span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">            heads.</span>
