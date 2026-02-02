@@ -38,12 +38,13 @@ This is an UNOFFICIAL release of the [GENCODE](https://www.gencodegenes.org) by 
 
 ## License
 
-This dataset is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
+This dataset is licensed under the [GNU Affero General Public License](license.md).
+
+For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 
 ```spdx
 SPDX-License-Identifier: AGPL-3.0-or-later
 ```
-
 ## Datasets
 
 The GENCODE dataset is available in Human and Mouse:
@@ -125,5 +126,22 @@ The GENCODE dataset is available in Human and Mouse:
   title     = {{GENCODE}: producing a reference annotation for {ENCODE}},
   volume    = {7 Suppl 1},
   year      = 2006
+}
+```
+
+> [!NOTE]
+> The artifacts distributed in this repository are part of the MultiMolecule project.
+> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+
+```bibtex
+@software{chen_2024_12638419,
+  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
+  title     = {MultiMolecule},
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
 }
 ```

@@ -48,7 +48,9 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 
 ## Citation
 
-If you use MultiMolecule in your research, please cite us as follows:
+> [!NOTE]
+> The artifacts distributed in this repository are part of the MultiMolecule project.
+> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
 
 ```bibtex
 @software{chen_2024_12638419,

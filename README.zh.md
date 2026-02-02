@@ -48,7 +48,9 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 
 ## 引用
 
-如果您在研究中使用 MultiMolecule，请按照以下方式引用我们：
+> [!NOTE]
+> 本仓库提供的内容是 MultiMolecule 项目的一部分。
+> 如果你在你的研究中使用 MultiMolecule，你必须以如下方式引用 MultiMolecule。
 
 ```bibtex
 @software{chen_2024_12638419,

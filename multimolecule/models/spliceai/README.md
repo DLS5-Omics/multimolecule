@@ -126,8 +126,6 @@ The model was trained to minimize a cross-entropy loss, comparing its predicted 
 
 ## Citation
 
-**BibTeX**:
-
 ```bibtex
 @article{jaganathan2019the,
   abstract  = {The splicing of pre-mRNAs into mature transcripts is remarkable for its precision, but the mechanisms by which the cellular machinery achieves such specificity are incompletely understood. Here, we describe a deep neural network that accurately predicts splice junctions from an arbitrary pre-mRNA transcript sequence, enabling precise prediction of noncoding genetic variants that cause cryptic splicing. Synonymous and intronic mutations with predicted splice-altering consequence validate at a high rate on RNA-seq and are strongly deleterious in the human population. De novo mutations with predicted splice-altering consequence are significantly enriched in patients with autism and intellectual disability compared to healthy controls and validate against RNA-seq in 21 out of 28 of these patients. We estimate that 9\%-11\% of pathogenic mutations in patients with rare genetic disorders are caused by this previously underappreciated class of disease variation.},
@@ -146,6 +144,23 @@ The model was trained to minimize a cross-entropy loss, comparing its predicted 
 }
 ```
 
+> [!NOTE]
+> The artifacts distributed in this repository are part of the MultiMolecule project.
+> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+
+```bibtex
+@software{chen_2024_12638419,
+  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
+  title     = {MultiMolecule},
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
+}
+```
+
 ## Contact
 
 Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
@@ -154,7 +169,9 @@ Please contact the authors of the [SpliceAI paper](https://doi.org/10.1016/j.cel
 
 ## License
 
-This model is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html) and the [CC-BY-NC-4.0 License](https://creativecommons.org/licenses/by-nc/4.0/).
+This model is licensed under the [GNU Affero General Public License](license.md) and the [CC-BY-NC-4.0 License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 
 ```spdx
 SPDX-License-Identifier: AGPL-3.0-or-later AND CC-BY-NC-4.0

@@ -129,6 +129,14 @@ def write_model(
     shutil.copy2(os.path.join(model_path, readme), os.path.join(output_path, "README.md"))
     update_readme(os.path.join(output_path, "README.md"), output_path)
 
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    for license_name in ("license.md", "license-faq.md"):
+        license_path = os.path.join(repo_root, license_name)
+        if os.path.exists(license_path):
+            shutil.copy2(license_path, os.path.join(output_path, license_name))
+        else:
+            warn(f"License file not found: {license_path}")
+
 
 def update_readme(readme_path: str, model: str) -> None:
     post = fm.load(readme_path)

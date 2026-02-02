@@ -127,12 +127,13 @@ The MultiMolecule team preprocess this dataset by the following steps:
 
 ## License
 
-This dataset is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
+This dataset is licensed under the [GNU Affero General Public License](license.md).
+
+For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 
 ```spdx
 SPDX-License-Identifier: AGPL-3.0-or-later
 ```
-
 ## Citation
 
 ```bibtex
@@ -142,5 +143,22 @@ SPDX-License-Identifier: AGPL-3.0-or-later
   month   = oct,
   title   = {Deep learning models for predicting {RNA} degradation via dual crowdsourcing},
   year    = 2021
+}
+```
+
+> [!NOTE]
+> The artifacts distributed in this repository are part of the MultiMolecule project.
+> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+
+```bibtex
+@software{chen_2024_12638419,
+  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
+  title     = {MultiMolecule},
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
 }
 ```

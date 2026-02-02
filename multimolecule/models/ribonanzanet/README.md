@@ -243,8 +243,6 @@ Sequence flip augmentation was applied to the training data.
 
 ## Citation
 
-**BibTeX**:
-
 ```bibtex
 @article{He2024.02.24.581671,
   author       = {He, Shujun and Huang, Rui and Townley, Jill and Kretsch, Rachael C. and Karagianes, Thomas G. and Cox, David B.T. and Blair, Hamish and Penzar, Dmitry and Vyaltsev, Valeriy and Aristova, Elizaveta and Zinkevich, Arsenii and Bakulin, Artemy and Sohn, Hoyeol and Krstevski, Daniel and Fukui, Takaaki and Tatematsu, Fumiya and Uchida, Yusuke and Jang, Donghoon and Lee, Jun Seong and Shieh, Roger and Ma, Tom and Martynov, Eduard and Shugaev, Maxim V. and Bukhari, Habib S.T. and Fujikawa, Kazuki and Onodera, Kazuki and Henkel, Christof and Ron, Shlomo and Romano, Jonathan and Nicol, John J. and Nye, Grace P. and Wu, Yuan and Choe, Christian and Reade, Walter and Eterna participants and Das, Rhiju},
@@ -260,6 +258,23 @@ Sequence flip augmentation was applied to the training data.
 }
 ```
 
+> [!NOTE]
+> The artifacts distributed in this repository are part of the MultiMolecule project.
+> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+
+```bibtex
+@software{chen_2024_12638419,
+  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
+  title     = {MultiMolecule},
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
+}
+```
+
 ## Contact
 
 Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
@@ -268,7 +283,9 @@ Please contact the authors of the [RibonanzaNet paper](https://doi.org/10.1101/2
 
 ## License
 
-This model is licensed under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.html).
+This model is licensed under the [GNU Affero General Public License](license.md).
+
+For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 
 ```spdx
 SPDX-License-Identifier: AGPL-3.0-or-later
