@@ -55,8 +55,6 @@ class PreTrainedConfig(PretrainedConfig):
     head: HeadConfig | None = None
     num_labels: int = 1
 
-    hidden_size: int
-
     pad_token_id: int = 0
     bos_token_id: int = 1
     eos_token_id: int = 2

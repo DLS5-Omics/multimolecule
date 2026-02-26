@@ -41,7 +41,8 @@ from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder,
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
-from transformers.utils.generic import can_return_tuple, check_model_inputs
+from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
+from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import (
     BasePredictionHead,
@@ -160,7 +161,8 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
             self._inited = True
         return self.pairwise_bias_map[data_index_x, data_index_y]
 
-    @check_model_inputs
+    @merge_with_config_defaults
+    @capture_outputs
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,

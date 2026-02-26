@@ -40,7 +40,8 @@ from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import ModelOutput
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
-from transformers.utils.generic import can_return_tuple, check_model_inputs
+from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
+from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import (
     ContactAttentionHead,
@@ -110,7 +111,8 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embeddings.word_embeddings = value
 
-    @check_model_inputs
+    @merge_with_config_defaults
+    @capture_outputs
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
@@ -327,10 +329,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
         if self.require_attentions:
-            output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
-            if output_attentions is False:
-                warn("output_attentions must be True since prediction head requires attentions.")
-            kwargs["output_attentions"] = True
+            kwargs["output_row_attentions"] = True
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -463,10 +462,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
         if self.require_attentions:
-            output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
-            if output_attentions is False:
-                warn("output_attentions must be True since prediction head requires attentions.")
-            kwargs["output_attentions"] = True
+            kwargs["output_row_attentions"] = True
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -531,10 +527,7 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
         **kwargs: Unpack[TransformersKwargs],
     ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
         if self.require_attentions:
-            output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
-            if output_attentions is False:
-                warn("output_attentions must be True since prediction head requires attentions.")
-            kwargs["output_attentions"] = True
+            kwargs["output_row_attentions"] = True
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
