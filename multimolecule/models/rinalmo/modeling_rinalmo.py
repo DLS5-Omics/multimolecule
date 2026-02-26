@@ -46,7 +46,8 @@ from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder,
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
-from transformers.utils.generic import can_return_tuple, check_model_inputs
+from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
+from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import (
     BasePredictionHead,
@@ -123,7 +124,8 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embeddings.word_embeddings = value
 
-    @check_model_inputs
+    @merge_with_config_defaults
+    @capture_outputs
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
