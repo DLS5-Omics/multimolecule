@@ -304,6 +304,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
@@ -358,6 +359,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -418,6 +420,7 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.contact_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -493,6 +496,7 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 

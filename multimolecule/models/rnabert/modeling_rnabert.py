@@ -299,6 +299,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
@@ -353,6 +354,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -413,6 +415,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.contact_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -480,6 +483,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 

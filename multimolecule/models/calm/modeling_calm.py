@@ -298,6 +298,7 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
@@ -352,6 +353,7 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -412,6 +414,7 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.contact_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -487,6 +490,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 

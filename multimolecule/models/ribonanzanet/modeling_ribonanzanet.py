@@ -246,6 +246,7 @@ class RibonanzaNetForSequencePrediction(RibonanzaNetPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
@@ -299,6 +300,7 @@ class RibonanzaNetForTokenPrediction(RibonanzaNetPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -358,6 +360,7 @@ class RibonanzaNetForContactPrediction(RibonanzaNetPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.contact_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 

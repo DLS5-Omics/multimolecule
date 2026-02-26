@@ -221,6 +221,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.sequence_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
@@ -276,6 +277,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.token_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -337,6 +339,7 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.contact_head(outputs, attention_mask, input_ids, labels)
         logits, loss = output.logits, output.loss
 
@@ -409,6 +412,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
             return_dict=True,
             **kwargs,
         )
+
         output = self.lm_head(outputs, labels)
         logits, loss = output.logits, output.loss
 
