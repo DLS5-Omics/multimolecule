@@ -49,6 +49,14 @@ from .modeling_auto import (
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
+from .progen2 import (
+    ProGen2Config,
+    ProGen2ForCausalLM,
+    ProGen2ForPreTraining,
+    ProGen2ForSequencePrediction,
+    ProGen2ForTokenPrediction,
+    ProGen2Model,
+)
 from .ribonanzanet import (
     RibonanzaNetConfig,
     RibonanzaNetForContactPrediction,
@@ -166,6 +174,12 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "ProGen2Config",
+    "ProGen2Model",
+    "ProGen2ForSequencePrediction",
+    "ProGen2ForTokenPrediction",
+    "ProGen2ForCausalLM",
+    "ProGen2ForPreTraining",
     "RibonanzaNetConfig",
     "RibonanzaNetModel",
     "RibonanzaNetForContactPrediction",
