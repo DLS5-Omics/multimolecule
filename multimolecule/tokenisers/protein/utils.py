@@ -103,6 +103,6 @@ VOCAB_MAPPING = {
 }
 
 TOKENIZER_CONFIG = {
-    "tokenizer_class": "RnaTokenizer",
+    "tokenizer_class": "ProteinTokenizer",
     "clean_up_tokenization_spaces": True,
 }

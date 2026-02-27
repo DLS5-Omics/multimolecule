@@ -216,33 +216,35 @@ def update_readme(readme_path: str, model: str) -> None:
 
 
 def prepare_sequence(ppl: Pipeline, sequence: str) -> tuple[str, Dict[str, object]]:
-    if ppl.task != "fill-mask":
-        return sequence, {}
-    mask_token = getattr(ppl.tokenizer, "mask_token", None) or "<mask>"
-    nmers = getattr(ppl.tokenizer, "nmers", 1) or 1
-    is_codon = bool(getattr(ppl.tokenizer, "codon", False))
+    if ppl.task == "text-generation":
+        return sequence[:-1], {"expected_suffix": sequence[-1:]}
+    if ppl.task == "fill-mask":
+        mask_token = getattr(ppl.tokenizer, "mask_token", None) or "<mask>"
+        nmers = getattr(ppl.tokenizer, "nmers", 1) or 1
+        is_codon = bool(getattr(ppl.tokenizer, "codon", False))
 
-    if is_codon:
-        span, step = 3, 3
-    elif nmers > 1:
-        span, step = nmers, 1
-    else:
-        span, step = 1, 1
+        if is_codon:
+            span, step = 3, 3
+        elif nmers > 1:
+            span, step = nmers, 1
+        else:
+            span, step = 1, 1
 
-    search_start = 10 if len(sequence) > 10 else 0
-    if step > 1 and search_start % step != 0:
-        search_start = ((search_start + step - 1) // step) * step
-    search_start = min(search_start, max(len(sequence) - span, 0))
+        search_start = 10 if len(sequence) > 10 else 0
+        if step > 1 and search_start % step != 0:
+            search_start = ((search_start + step - 1) // step) * step
+        search_start = min(search_start, max(len(sequence) - span, 0))
 
-    start = None
-    for i in range(search_start, len(sequence) - span + 1, step):
-        if sequence[i] == "A":
-            start = i
-            break
-    if start is None:
-        start = search_start
-    prepared = sequence[:start] + mask_token + sequence[start + span :]
-    return prepared, build_mask_meta(sequence, start)
+        start = None
+        for i in range(search_start, len(sequence) - span + 1, step):
+            if sequence[i] == "A":
+                start = i
+                break
+        if start is None:
+            start = search_start
+        prepared = sequence[:start] + mask_token + sequence[start + span :]
+        return prepared, build_mask_meta(sequence, start)
+    return sequence, {}
 
 
 def build_mask_meta(sequence: str, pos: int | None) -> Dict[str, object]:
@@ -267,9 +269,13 @@ def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
             {"label": i["token_str"], "score": round(i["score"], 6)}
             for i in ppl(sequence, tokenizer_kwargs=tokenizer_kwargs)
         ]
+    if ppl.task == "text-generation":
+        result = ppl(sequence, max_new_tokens=50, truncation=True)
+        return {"text": result[0]["generated_text"]}
     if ppl.task == "rna-secondary-structure":
         return {"text": ppl(sequence, tokenizer_kwargs=tokenizer_kwargs)["secondary_structure"]}
-    raise RecursionError(f"Pipeline {ppl.task} is not supported")
+    return {}
+    raise RuntimeError(f"Pipeline {ppl.task} is not supported")
 
 
 def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str = "model"):

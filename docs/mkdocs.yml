@@ -54,6 +54,8 @@ nav:
           - SpliceBERT: models/splicebert.md
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md
+      - Protein:
+          - ProGen2: models/progen2.md
       - utils:
           - configuration_utils: models/configuration_utils.md
           - modeling_outputs: models/modeling_outputs.md
