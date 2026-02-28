@@ -43,7 +43,7 @@ RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 
 | Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
 | ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 6          | 120         | 12        | 40                | 0.48               | 0.15      | 0.08     | 440            |
+| 6          | 120         | 12        | 40                | 0.48               | 0.96      | 0.46     | 440            |
 
 ### Links
 

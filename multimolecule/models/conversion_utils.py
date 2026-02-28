@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import os
+import re
 import shutil
 from typing import Dict, List
 from warnings import warn
@@ -35,8 +36,6 @@ from tqdm import tqdm
 from transformers import PreTrainedModel, pipeline
 from transformers.models.auto.tokenization_auto import tokenizer_class_from_name
 from transformers.pipelines.base import Pipeline
-
-from multimolecule.tokenisers.rna.utils import get_tokenizer_config
 
 try:
     from huggingface_hub import HfApi
@@ -106,27 +105,70 @@ def load_checkpoint(model: nn.Module, state_dict: Dict[str, torch.Tensor]) -> No
             raise ValueError("State dicts do not match after conversion.")
 
 
+def _normalize_variant_name(name: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def _bold_variant_in_table(content: str, output_path: str) -> str:
+    normalized_target = _normalize_variant_name(output_path)
+    pattern = re.compile(r"<td>([^<]+)</td>")
+
+    # Try exact normalized match first
+    def exact_replacer(match: re.Match) -> str:
+        cell_text = match.group(1)
+        if _normalize_variant_name(cell_text) == normalized_target:
+            return f"<td><b>{cell_text}</b></td>"
+        return match.group(0)
+
+    result = pattern.sub(exact_replacer, content)
+    if result != content:
+        return result
+
+    # Fall back to suffix match (handles e.g. "3UTRBERT-3mer" vs "utrbert-3mer")
+    def suffix_replacer(match: re.Match) -> str:
+        cell_text = match.group(1)
+        normalized_cell = _normalize_variant_name(cell_text)
+        if normalized_cell.endswith(normalized_target) and len(normalized_target) > 3:
+            return f"<td><b>{cell_text}</b></td>"
+        return match.group(0)
+
+    return pattern.sub(suffix_replacer, content)
+
+
+def customize_readme_for_variant(readme_path: str, output_path: str, default_variant: str | None = None) -> None:
+    with open(readme_path) as f:
+        content = f.read()
+
+    content = _bold_variant_in_table(content, output_path)
+
+    if default_variant and default_variant != output_path:
+        content = content.replace(f"multimolecule/{default_variant}", f"multimolecule/{output_path}")
+
+    with open(readme_path, "w") as f:
+        f.write(content)
+
+
 def write_model(
     model_path: str,
     output_path: str,
     model: PreTrainedModel,
-    tokenizer_config: Dict | None = None,
+    tokenizer_config: Dict,
+    default_variant: str | None = None,
 ):
     model.save_pretrained(output_path, safe_serialization=True)
     model.save_pretrained(output_path, safe_serialization=False)
-    if tokenizer_config is None:
-        tokenizer_config = get_tokenizer_config()
-        if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
-            position_embedding_type = getattr(model.config, "position_embedding_type", None)
-            if position_embedding_type == "absolute":
-                tokenizer_config["model_max_length"] = model.config.max_position_embeddings
-            else:
-                tokenizer_config["model_max_length"] = None
+    if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
+        position_embedding_type = getattr(model.config, "position_embedding_type", None)
+        if position_embedding_type == "absolute":
+            tokenizer_config["model_max_length"] = model.config.max_position_embeddings
+        else:
+            tokenizer_config["model_max_length"] = None
     tokenizer = tokenizer_class_from_name(tokenizer_config["tokenizer_class"])(**tokenizer_config)
     tokenizer.save_pretrained(output_path)
 
     readme = f"README.{output_path}.md" if f"README.{output_path}.md" in os.listdir(model_path) else "README.md"
     shutil.copy2(os.path.join(model_path, readme), os.path.join(output_path, "README.md"))
+    customize_readme_for_variant(os.path.join(output_path, "README.md"), output_path, default_variant)
     update_readme(os.path.join(output_path, "README.md"), output_path)
 
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -246,14 +288,14 @@ def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str 
 def save_checkpoint(
     convert_config: ConvertConfig,
     model: PreTrainedModel,
-    tokenizer_config: Dict | None = None,
+    tokenizer_config: Dict,
 ):
     model_path, output_path = convert_config.root, convert_config.output_path
     if os.path.exists(output_path):
         warn(f"Output directory: {output_path} already exists. Deleting it.")
         shutil.rmtree(output_path)
     os.makedirs(output_path)
-    write_model(model_path, output_path, model, tokenizer_config)
+    write_model(model_path, output_path, model, tokenizer_config, default_variant=convert_config.default_variant)
     push_to_hub(convert_config, output_path)
 
 
@@ -261,6 +303,7 @@ class ConvertConfig(Config):
     checkpoint_path: str
     root: str
     output_path: str
+    default_variant: str | None = None
     push_to_hub: bool = False
     delete_existing: bool = False
     repo_id: str | None = None

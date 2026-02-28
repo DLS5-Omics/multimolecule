@@ -35,7 +35,7 @@ from multimolecule.models import (
 )
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
 
@@ -71,7 +71,7 @@ def convert_checkpoint(convert_config):
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     load_checkpoint(model, state_dict)
-    save_checkpoint(convert_config, model)
+    save_checkpoint(convert_config, model, tokenizer_config=get_tokenizer_config())
     print(f"Checkpoint saved to {convert_config.output_path}")
 
 

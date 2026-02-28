@@ -79,7 +79,7 @@ Please refer to the [Training Details](#training-details) section for more infor
 
 | Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
 | ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 9          | 256         | 8         | 1024              | 11.37              | 53.65     | 26.66    | inf            |
+| 9          | 256         | 8         | 1024              | 11.37              | 755.42    | 372.81   | inf            |
 
 ### Links
 

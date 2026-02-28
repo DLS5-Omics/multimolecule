@@ -33,7 +33,7 @@ SpliceAI is a convolutional neural network (CNN) trained to predict mRNA splicin
 
 | Num Layers | Hidden Size | Num Parameters (M) | FLOPs (G) | MACs (G) |
 | ---------- | ----------- | ------------------ | --------- | -------- |
-| 16         | 32          | 3.48               | 70.39     | 35.11    |
+| 16         | 32          | 3.48               | 73.17     | 36.44    |
 
 ### Links
 

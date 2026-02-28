@@ -64,8 +64,8 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
     <td rowspan="3">20</td>
     <td>5120</td>
     <td>650.88</td>
-    <td>168.92</td>
-    <td>84.43</td>
+    <td>709.59</td>
+    <td>354.31</td>
     <td rowspan="3">1022</td>
   </tr>
   <tr>
@@ -74,8 +74,8 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
     <td>640</td>
     <td>2560</td>
     <td>148.04</td>
-    <td>39.03</td>
-    <td>19.5</td>
+    <td>171.76</td>
+    <td>85.54</td>
   </tr>
   <tr>
     <td>RiNALMo-Micro</td>
@@ -83,8 +83,8 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
     <td>480</td>
     <td>1920</td>
     <td>33.48</td>
-    <td>8.88</td>
-    <td>4.44</td>
+    <td>40.26</td>
+    <td>20.01</td>
   </tr>
 </tbody>
 </table>

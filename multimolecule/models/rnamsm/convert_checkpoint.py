@@ -32,7 +32,7 @@ from multimolecule.models import RnaMsmConfig as Config
 from multimolecule.models import RnaMsmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
 
@@ -58,7 +58,7 @@ def convert_checkpoint(convert_config):
 
     load_checkpoint(model, state_dict)
 
-    save_checkpoint(convert_config, model)
+    save_checkpoint(convert_config, model, tokenizer_config=get_tokenizer_config())
 
 
 def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_list):

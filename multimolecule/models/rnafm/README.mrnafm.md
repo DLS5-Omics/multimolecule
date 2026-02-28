@@ -54,22 +54,22 @@ RNA-FM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 </thead>
 <tbody>
   <tr>
-    <td>RNA-FM</td>
+    <td>mRNA-FM</td>
     <td rowspan="2">12</td>
-    <td>640</td>
+    <td>1280</td>
     <td rowspan="2">20</td>
     <td rowspan="2">5120</td>
-    <td>99.52</td>
-    <td>25.68</td>
-    <td>12.83</td>
+    <td>239.26</td>
+    <td>258.08</td>
+    <td>128.85</td>
     <td rowspan="2">1024</td>
   </tr>
   <tr>
-    <td>mRNA-FM</td>
-    <td>1280</td>
-    <td>239.25</td>
-    <td>61.43</td>
-    <td>30.7</td>
+    <td>RNA-FM</td>
+    <td>640</td>
+    <td>99.52</td>
+    <td>109.02</td>
+    <td>54.36</td>
   </tr>
 </tbody>
 </table>

@@ -77,8 +77,8 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
     <td rowspan="2">16</td>
     <td rowspan="2">512</td>
     <td rowspan="2">1.21</td>
-    <td rowspan="2">0.35</td>
-    <td rowspan="2">0.18</td>
+    <td rowspan="2">2.10</td>
+    <td rowspan="2">1.01</td>
     <td rowspan="2">1022</td>
   </tr>
   <tr>

@@ -77,6 +77,7 @@ class PreTrainedConfig(PretrainedConfig):
     ):
         if "attn_implementation" not in kwargs and "_attn_implementation" not in kwargs:
             kwargs["attn_implementation"] = "eager"
+        kwargs.setdefault("tie_word_embeddings", True)
         super().__init__(
             pad_token_id=pad_token_id,
             bos_token_id=bos_token_id,
