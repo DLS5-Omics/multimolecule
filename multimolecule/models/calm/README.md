@@ -52,7 +52,7 @@ CaLM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style mod
 
 | Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
 | ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 12         | 768         | 12        | 3072              | 85.75              | 22.36     | 11.17    | 1024           |
+| 12         | 768         | 12        | 3072              | 85.75              | 96.86     | 48.32    | 1024           |
 
 ### Links
 

@@ -40,9 +40,8 @@ nav:
       - heads: modules/heads.md
   - models:
       - models/index.md
-      - DNA:
-          - CaLM: models/calm.md
       - RNA:
+          - CaLM: models/calm.md
           - ERNIE-RNA: models/ernierna.md
           - RibonanzaNet: models/ribonanzanet.md
           - RiNALMo: models/rinalmo.md

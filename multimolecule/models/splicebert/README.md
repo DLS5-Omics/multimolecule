@@ -61,13 +61,15 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
     <td rowspan="3">16</td>
     <td rowspan="3">2048</td>
     <td>19.72</td>
-    <td rowspan="3">5.04</td>
-    <td rowspan="3">2.52</td>
+    <td>22.66</td>
+    <td>11.27</td>
     <td>1024</td>
   </tr>
   <tr>
     <td>splicebert.510</td>
     <td rowspan="2">19.45</td>
+    <td rowspan="2">22.56</td>
+    <td rowspan="2">11.22</td>
     <td rowspan="2">510</td>
   </tr>
   <tr>
@@ -82,7 +84,7 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
 - **Data**: [UCSC Genome Browser](https://genome.ucsc.edu)
 - **Paper**: [Self-supervised learning on millions of pre-mRNA sequences improves sequence-based RNA splicing prediction](https://doi.org/10.1101/2023.01.31.526427)
 - **Developed by**: Ken Chen, Yue Zhou, Maolin Ding, Yu Wang, Zhixiang Ren, Yuedong Yang
-- **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [FlashAttention](https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention)
+- **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased)
 - **Original Repository**: [chenkenbio/SpliceBERT](https://github.com/chenkenbio/SpliceBERT)
 
 ## Usage

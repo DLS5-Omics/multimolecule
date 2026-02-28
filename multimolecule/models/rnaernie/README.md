@@ -55,7 +55,7 @@ Note that during the conversion process, additional tokens such as `[IND]` and n
 
 | Num Layers | Hidden Size | Num Heads | Intermediate Size | Num Parameters (M) | FLOPs (G) | MACs (G) | Max Num Tokens |
 | ---------- | ----------- | --------- | ----------------- | ------------------ | --------- | -------- | -------------- |
-| 12         | 768         | 12        | 3072              | 86.06              | 22.37     | 11.17    | 512            |
+| 12         | 768         | 12        | 3072              | 86.06              | 96.88     | 48.32    | 512            |
 
 ### Links
 
