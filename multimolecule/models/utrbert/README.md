@@ -56,27 +56,27 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 </thead>
 <tbody>
   <tr>
-    <td>3UTRBERT-3mer</td>
+    <td>3UTRBERT-6mer</td>
     <td rowspan="4">12</td>
     <td rowspan="4">768</td>
     <td rowspan="4">12</td>
     <td rowspan="4">3072</td>
-    <td>86.14</td>
-    <td rowspan="4">22.36</td>
-    <td rowspan="4">11.17</td>
+    <td>98.05</td>
+    <td rowspan="4">96.86</td>
+    <td rowspan="4">48.32</td>
     <td rowspan="4">512</td>
-  </tr>
-  <tr>
-    <td>3UTRBERT-4mer</td>
-    <td>86.53</td>
   </tr>
   <tr>
     <td>3UTRBERT-5mer</td>
     <td>88.45</td>
   </tr>
   <tr>
-    <td>3UTRBERT-6mer</td>
-    <td>98.05</td>
+    <td>3UTRBERT-4mer</td>
+    <td>86.53</td>
+  </tr>
+  <tr>
+    <td>3UTRBERT-3mer</td>
+    <td>86.14</td>
   </tr>
 </tbody>
 </table>
@@ -87,7 +87,7 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 - **Data**: [multimolecule/gencode-human](https://huggingface.co/datasets/multimolecule/gencode-human)
 - **Paper**: [Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning](https://doi.org/10.1101/2023.09.08.556883)
 - **Developed by**: Yuning Yang, Gen Li, Kuan Pang, Wuxinhao Cao, Xiangtao Li, Zhaolei Zhang
-- **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [FlashAttention](https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention)
+- **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased)
 - **Original Repository**: [yangyn533/3UTRBERT](https://github.com/yangyn533/3UTRBERT)
 
 ## Usage
