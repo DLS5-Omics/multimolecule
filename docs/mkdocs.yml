@@ -42,6 +42,7 @@ nav:
       - models/index.md
       - DNA:
           - CaLM: models/calm.md
+          - DNABERT: models/dnabert.md
       - RNA:
           - ERNIE-RNA: models/ernierna.md
           - RibonanzaNet: models/ribonanzanet.md

@@ -33,6 +33,15 @@ from .calm import (
     CaLmModel,
 )
 from .configuration_utils import PreTrainedConfig
+from .dnabert import (
+    DnaBertConfig,
+    DnaBertForContactPrediction,
+    DnaBertForMaskedLM,
+    DnaBertForPreTraining,
+    DnaBertForSequencePrediction,
+    DnaBertForTokenPrediction,
+    DnaBertModel,
+)
 from .ernierna import (
     ErnieRnaConfig,
     ErnieRnaForContactPrediction,
@@ -166,6 +175,13 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "DnaBertConfig",
+    "DnaBertModel",
+    "DnaBertForContactPrediction",
+    "DnaBertForSequencePrediction",
+    "DnaBertForTokenPrediction",
+    "DnaBertForMaskedLM",
+    "DnaBertForPreTraining",
     "ErnieRnaConfig",
     "ErnieRnaModel",
     "ErnieRnaForContactPrediction",
