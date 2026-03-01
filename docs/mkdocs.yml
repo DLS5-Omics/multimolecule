@@ -40,6 +40,8 @@ nav:
       - heads: modules/heads.md
   - models:
       - models/index.md
+      - DNA:
+          - DNABERT: models/dnabert.md
       - RNA:
           - CaLM: models/calm.md
           - ERNIE-RNA: models/ernierna.md
@@ -69,7 +71,7 @@ nav:
       - RNA Secondary Structure: pipelines/rna_secondary_structure.md
   - utils:
       - RNA:
-        - Secondary Structure: utils/rna/secondary_structure.md
+          - Secondary Structure: utils/rna/secondary_structure.md
   - about:
       - about/index.md
       - License: about/license.md
@@ -202,8 +204,8 @@ markdown_extensions:
 plugins:
   - redirects:
       redirect_maps:
-        'license.md': 'about/license.md'
-        'license-faq.md': 'about/license-faq.md'
+        "license.md": "about/license.md"
+        "license-faq.md": "about/license-faq.md"
   - git-committers
   - mkdocstrings:
       handlers:

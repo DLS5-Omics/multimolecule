@@ -8,3 +8,4 @@ gir
 cna
 ine
 SHS
+transferrable
