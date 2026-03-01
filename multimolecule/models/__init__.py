@@ -70,6 +70,14 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
+from .hyenadna import (
+    HyenaDnaConfig,
+    HyenaDnaForCausalLM,
+    HyenaDnaForPreTraining,
+    HyenaDnaForSequencePrediction,
+    HyenaDnaForTokenPrediction,
+    HyenaDnaModel,
+)
 from .modeling_auto import (
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
@@ -222,6 +230,12 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "HyenaDnaConfig",
+    "HyenaDnaModel",
+    "HyenaDnaForCausalLM",
+    "HyenaDnaForPreTraining",
+    "HyenaDnaForSequencePrediction",
+    "HyenaDnaForTokenPrediction",
     "ProGen2Config",
     "ProGen2Model",
     "ProGen2ForSequencePrediction",
