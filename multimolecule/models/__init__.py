@@ -51,6 +51,15 @@ from .dnabert2 import (
     DnaBert2ForTokenPrediction,
     DnaBert2Model,
 )
+from .dnaberts import (
+    DnaBertSConfig,
+    DnaBertSForContactPrediction,
+    DnaBertSForMaskedLM,
+    DnaBertSForPreTraining,
+    DnaBertSForSequencePrediction,
+    DnaBertSForTokenPrediction,
+    DnaBertSModel,
+)
 from .ernierna import (
     ErnieRnaConfig,
     ErnieRnaForContactPrediction,
@@ -198,6 +207,13 @@ __all__ = [
     "DnaBert2ForTokenPrediction",
     "DnaBert2ForMaskedLM",
     "DnaBert2ForPreTraining",
+    "DnaBertSConfig",
+    "DnaBertSModel",
+    "DnaBertSForContactPrediction",
+    "DnaBertSForSequencePrediction",
+    "DnaBertSForTokenPrediction",
+    "DnaBertSForMaskedLM",
+    "DnaBertSForPreTraining",
     "ErnieRnaConfig",
     "ErnieRnaModel",
     "ErnieRnaForContactPrediction",
