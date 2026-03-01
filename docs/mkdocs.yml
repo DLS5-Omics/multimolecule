@@ -45,6 +45,7 @@ nav:
           - DNABERT: models/dnabert.md
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md
+          - HyenaDNA: models/hyenadna.md
       - RNA:
           - ERNIE-RNA: models/ernierna.md
           - RibonanzaNet: models/ribonanzanet.md
