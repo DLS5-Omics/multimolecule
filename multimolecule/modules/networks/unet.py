@@ -28,7 +28,7 @@ from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers.activations import ACT2FN
 
-from ..normlizations import LayerNorm2d
+from ..layers import LayerNorm2d, SymmetricConv2d, SymmetricConvTranspose2d
 from .registry import NETWORKS
 from .resnet import BasicBlock, BottleneckBlock, conv1x1
 
@@ -46,6 +46,7 @@ class UNet(nn.Module):
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
         zero_init_residual: bool = True,
+        symmetric: bool = False,
     ) -> None:
         if not num_layers % 2 == 0:
             raise ValueError(f"{self.__class__.__name__} requires an even number of layers, but got {num_layers}.")
@@ -65,7 +66,7 @@ class UNet(nn.Module):
         if normalization is None:
             normalization = LayerNorm2d
 
-        self.projection = conv1x1(hidden_size, num_channels)
+        self.projection = conv1x1(hidden_size, num_channels, symmetric=symmetric)
         self.norm = normalization(num_channels)
         self.activation = ACT2FN[activation]
         self.encoder = Encoder(
@@ -75,6 +76,7 @@ class UNet(nn.Module):
             projection=projection,
             normalization=normalization,
             activation=activation,
+            symmetric=symmetric,
         )
         self.decoder = Decoder(
             num_layers // 2,
@@ -83,6 +85,7 @@ class UNet(nn.Module):
             projection=projection,
             normalization=normalization,
             activation=activation,
+            symmetric=symmetric,
         )
         self.prediction = nn.Linear(num_channels, num_labels)
         self.nonlinearity = activation
@@ -124,11 +127,12 @@ class Encoder(nn.Module):
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
         projection: str = "conv",
+        symmetric: bool = False,
     ):
         super().__init__()
         layers = []
         for _ in range(num_layers):
-            layers.append(EncoderLayer(num_channels, block, normalization, activation, projection))
+            layers.append(EncoderLayer(num_channels, block, normalization, activation, projection, symmetric=symmetric))
             num_channels *= 2
         self.layers = nn.ModuleList(layers)
 
@@ -148,13 +152,17 @@ class EncoderLayer(nn.Module):
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
         projection: str = "conv",
+        symmetric: bool = False,
     ):
         super().__init__()
         if projection == "conv":
-            self.projection = nn.Conv2d(num_channels, num_channels * 2, kernel_size=2, stride=2)
+            Layer = SymmetricConv2d if symmetric else nn.Conv2d
+            self.projection = Layer(num_channels, num_channels * 2, kernel_size=2, stride=2)
         else:
             self.projection = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.layer = block(num_channels * 2, stride=1, normalization=normalization, activation=activation)
+        self.layer = block(
+            num_channels * 2, stride=1, normalization=normalization, activation=activation, symmetric=symmetric
+        )
 
     def forward(self, contact_map: Tensor) -> Tensor:
         return self.layer(self.projection(contact_map))
@@ -169,12 +177,13 @@ class Decoder(nn.Module):
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
         projection: str = "conv",
+        symmetric: bool = False,
     ):
         super().__init__()
         layers = []
         num_channels = num_channels * 2**num_layers
         for _ in range(num_layers):
-            layers.append(DecoderLayer(num_channels, block, normalization, activation, projection))
+            layers.append(DecoderLayer(num_channels, block, normalization, activation, projection, symmetric=symmetric))
             num_channels //= 2
         self.layers = nn.ModuleList(layers)
 
@@ -193,13 +202,17 @@ class DecoderLayer(nn.Module):
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
         projection: str = "conv",
+        symmetric: bool = False,
     ):
         super().__init__()
         if projection == "conv":
-            self.projection = nn.ConvTranspose2d(num_channels, num_channels // 2, kernel_size=2, stride=2)
+            Layer = SymmetricConvTranspose2d if symmetric else nn.ConvTranspose2d
+            self.projection = Layer(num_channels, num_channels // 2, kernel_size=2, stride=2)
         else:
             self.projection = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
-        self.layer = block(num_channels // 2, stride=1, normalization=normalization, activation=activation)
+        self.layer = block(
+            num_channels // 2, stride=1, normalization=normalization, activation=activation, symmetric=symmetric
+        )
 
     def forward(self, contact_map: Tensor, residual: Tensor) -> Tensor:
         contact_map = self.projection(contact_map)
