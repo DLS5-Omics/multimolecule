@@ -22,9 +22,12 @@
 
 from .layer_normlizations import LayerNorm2d
 from .symmetric_convolutions import SymmetricConv2d, SymmetricConvTranspose2d
+from .triangular_convolutions import TriangularConv2d, TriangularConvTranspose2d
 
 __all__ = [
     "LayerNorm2d",
     "SymmetricConv2d",
     "SymmetricConvTranspose2d",
+    "TriangularConv2d",
+    "TriangularConvTranspose2d",
 ]

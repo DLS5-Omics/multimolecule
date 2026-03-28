@@ -48,7 +48,13 @@ from .heads import (
     TokenKMerHead,
     TokenPredictionHead,
 )
-from .layers import LayerNorm2d, SymmetricConv2d, SymmetricConvTranspose2d
+from .layers import (
+    LayerNorm2d,
+    SymmetricConv2d,
+    SymmetricConvTranspose2d,
+    TriangularConv2d,
+    TriangularConvTranspose2d,
+)
 from .model import MultiMoleculeModel
 from .necks import NECKS, CatNeck
 from .networks import NETWORKS, ResNet, UNet
@@ -97,4 +103,6 @@ __all__ = [
     "eager_attention_forward",
     "SymmetricConv2d",
     "SymmetricConvTranspose2d",
+    "TriangularConv2d",
+    "TriangularConvTranspose2d",
 ]
