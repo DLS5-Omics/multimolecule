@@ -26,7 +26,7 @@ from typing import Callable, Type
 from torch import Tensor, nn
 from transformers.activations import ACT2FN
 
-from ..normlizations import LayerNorm2d
+from ..layers import LayerNorm2d, SymmetricConv2d
 from .registry import NETWORKS
 
 
@@ -42,6 +42,7 @@ class ResNet(nn.Module):
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
         zero_init_residual: bool = True,
+        symmetric: bool = False,
     ) -> None:
         super().__init__()
         if isinstance(block, str):
@@ -59,11 +60,14 @@ class ResNet(nn.Module):
         if normalization is None:
             normalization = LayerNorm2d
 
-        self.projection = conv1x1(hidden_size, num_channels)
+        self.projection = conv1x1(hidden_size, num_channels, symmetric=symmetric)
         self.norm = normalization(num_channels)
         self.activation = ACT2FN[activation]
         self.layers = nn.Sequential(
-            *[block(num_channels, normalization=normalization, activation=activation) for _ in range(num_layers)]
+            *[
+                block(num_channels, normalization=normalization, activation=activation, symmetric=symmetric)
+                for _ in range(num_layers)
+            ]
         )
         self.prediction = nn.Linear(num_channels, num_labels)
         self.nonlinearity = activation
@@ -108,6 +112,7 @@ class BottleneckBlock(nn.Module):
         dilation: int = 1,
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
+        symmetric: bool = False,
     ) -> None:
         super().__init__()
         if out_channels is None:
@@ -117,11 +122,11 @@ class BottleneckBlock(nn.Module):
         if normalization is None:
             normalization = LayerNorm2d
         # Both self.conv2 and self.downsample layers downsample the input when stride != 1
-        self.conv1 = conv1x1(in_channels, hidden_channels)
+        self.conv1 = conv1x1(in_channels, hidden_channels, symmetric=symmetric)
         self.norm1 = normalization(hidden_channels)
-        self.conv2 = conv3x3(hidden_channels, hidden_channels, stride, groups, dilation)
+        self.conv2 = conv3x3(hidden_channels, hidden_channels, stride, groups, dilation, symmetric=symmetric)
         self.norm2 = normalization(hidden_channels)
-        self.conv3 = conv1x1(hidden_channels, out_channels)
+        self.conv3 = conv1x1(hidden_channels, out_channels, symmetric=symmetric)
         self.norm3 = normalization(out_channels)
         self.activation = ACT2FN[activation]
         self.downsample = downsample
@@ -163,6 +168,7 @@ class BasicBlock(nn.Module):
         dilation: int = 1,
         normalization: Callable[..., nn.Module] | None = None,
         activation: str = "relu",
+        symmetric: bool = False,
     ) -> None:
         super().__init__()
         if out_channels is None:
@@ -176,10 +182,10 @@ class BasicBlock(nn.Module):
         if groups != 1:
             raise NotImplementedError(f"{self.__class__.__name__} only supports groups=1")
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
-        self.conv1 = conv3x3(in_channels, hidden_channels, stride)
+        self.conv1 = conv3x3(in_channels, hidden_channels, stride, symmetric=symmetric)
         self.norm1 = normalization(hidden_channels)
         self.activation = ACT2FN[activation]
-        self.conv2 = conv3x3(hidden_channels, out_channels)
+        self.conv2 = conv3x3(hidden_channels, out_channels, symmetric=symmetric)
         self.norm2 = normalization(out_channels)
         self.downsample = downsample
         self.stride = stride
@@ -203,11 +209,26 @@ class BasicBlock(nn.Module):
         return out
 
 
+def conv1x1(
+    in_channels: int, out_channels: int, stride: int = 1, bias: bool = False, symmetric: bool = False
+) -> nn.Conv2d:
+    """1x1 convolution"""
+    Layer = SymmetricConv2d if symmetric else nn.Conv2d
+    return Layer(in_channels, out_channels, kernel_size=1, stride=stride, bias=bias)
+
+
 def conv3x3(
-    in_channels: int, out_channels: int, stride: int = 1, groups: int = 1, dilation: int = 1, bias: bool = False
+    in_channels: int,
+    out_channels: int,
+    stride: int = 1,
+    groups: int = 1,
+    dilation: int = 1,
+    bias: bool = False,
+    symmetric: bool = False,
 ) -> nn.Conv2d:
     """3x3 convolution with padding"""
-    return nn.Conv2d(
+    Layer = SymmetricConv2d if symmetric else nn.Conv2d
+    return Layer(
         in_channels,
         out_channels,
         kernel_size=3,
@@ -217,8 +238,3 @@ def conv3x3(
         bias=bias,
         dilation=dilation,
     )
-
-
-def conv1x1(in_channels: int, out_channels: int, stride: int = 1, bias: bool = False) -> nn.Conv2d:
-    """1x1 convolution"""
-    return nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=bias)

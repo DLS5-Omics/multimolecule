@@ -96,7 +96,8 @@ class ContactPredictionHead(BasePredictionHead):
 
         if attention_mask is None:
             attention_mask = self.get_attention_mask(input_ids)
-        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
+        output, attention_mask, _ = self.remove_special_tokens(output, attention_mask, input_ids)
+        output = NestedTensor.from_tensor_mask(output, attention_mask)
 
         output = self.dropout(output)
         output = self.transform(output)
@@ -140,6 +141,7 @@ class ContactPredictionResNetHead(ContactPredictionHead):
             hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
             block=self.config.get("block", "auto"),
             num_channels=self.config.get("num_channels"),
+            symmetric=self.config.get("symmetric", True),
             num_labels=self.num_labels,
         )
 
@@ -171,6 +173,7 @@ class ContactPredictionUNetHead(ContactPredictionHead):
             hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
             block=self.config.get("block", "auto"),
             num_channels=self.config.get("num_channels"),
+            symmetric=self.config.get("symmetric", True),
             num_labels=self.num_labels,
         )
 
@@ -235,7 +238,9 @@ class ContactAttentionHead(BasePredictionHead):
 
         if attention_mask is None:
             attention_mask = self.get_attention_mask(input_ids)
-        contact_map, _, _ = self.remove_special_tokens_2d(contact_map, attention_mask, input_ids)
+        contact_map, attention_mask, _ = self.remove_special_tokens_2d(contact_map, attention_mask, input_ids)
+        contact_map = NestedTensor.from_tensor_mask(contact_map, attention_mask)
+        contact_map = self.symmetrize(contact_map)
 
         contact_map = self.dropout(contact_map)
         contact_map = self.transform(contact_map)
@@ -278,6 +283,7 @@ class ContactAttentionResNetHead(ContactAttentionHead):
             hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
             block=self.config.get("block", "auto"),
             num_channels=self.config.get("num_channels"),
+            symmetric=self.config.get("symmetric", True),
             num_labels=self.num_labels,
         )
 
@@ -315,6 +321,7 @@ class ContactAttentionUNetHead(ContactAttentionHead):
             hidden_size=self.config.hidden_size,  # type: ignore[arg-type]
             block=self.config.get("block", "auto"),
             num_channels=self.config.get("num_channels"),
+            symmetric=self.config.get("symmetric", True),
             num_labels=self.num_labels,
         )
 
