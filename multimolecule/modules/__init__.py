@@ -49,10 +49,10 @@ from .heads import (
     TokenKMerHead,
     TokenPredictionHead,
 )
+from .layers import LayerNorm2d, SymmetricConv2d, SymmetricConvTranspose2d
 from .model import MultiMoleculeModel
 from .necks import NECKS, CatNeck
 from .networks import NETWORKS, ResNet, UNet
-from .normlizations import LayerNorm2d
 from .registry import MODELS
 
 __all__ = [
@@ -92,6 +92,8 @@ __all__ = [
     "NETWORKS",
     "ResNet",
     "UNet",
+    "SymmetricConv2d",
+    "SymmetricConvTranspose2d",
     "CRITERIONS",
     "Criterion",
     "LayerNorm2d",
