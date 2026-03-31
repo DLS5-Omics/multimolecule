@@ -28,6 +28,7 @@ from typing import Tuple, Type
 
 import torch
 from torch import nn
+from torch.nn.utils.rnn import PackedSequence
 
 # Registry mapping nn.Module subclasses to functions computing (flops, macs).
 # Hook signature: (module, input, output) -> tuple[int, int]
@@ -54,16 +55,27 @@ def _register(*module_types: type):
 def _get_output_tensor(output) -> torch.Tensor:
     if isinstance(output, torch.Tensor):
         return output
+    if isinstance(output, PackedSequence):
+        return output.data
     if isinstance(output, (tuple, list)):
         for o in output:
-            if isinstance(o, torch.Tensor):
-                return o
+            try:
+                return _get_output_tensor(o)
+            except TypeError:
+                continue
     # HuggingFace ModelOutput
     if hasattr(output, "last_hidden_state"):
         return output.last_hidden_state
     if hasattr(output, "logits"):
         return output.logits
     raise TypeError(f"Cannot extract tensor from output of type {type(output)}")
+
+
+def _resolve_module_ops(module: nn.Module, ops_registry: Mapping[type, Callable]) -> Callable | None:
+    for module_type in type(module).mro():
+        if module_type in ops_registry:
+            return ops_registry[module_type]
+    return None
 
 
 def _estimate_attention_ops(model: nn.Module, seq_length: int) -> Tuple[int, int]:
@@ -129,9 +141,9 @@ def _calculate_ops(
             continue
         if excluded_modules and isinstance(module, excluded_modules):
             continue
-        module_type = type(module)
-        if module_type in ops_registry:
-            hooks.append(module.register_forward_hook(_make_hook(ops_registry[module_type])))
+        ops_fn = _resolve_module_ops(module, ops_registry)
+        if ops_fn is not None:
+            hooks.append(module.register_forward_hook(_make_hook(ops_fn)))
 
     training = model.training
     model.eval()
@@ -384,4 +396,47 @@ def _mha_ops(module, input, output):
     out_proj_macs = batch_seq * embed_dim * embed_dim
     macs = proj_macs + attn_macs + out_proj_macs
     flops = 2 * macs
+    return flops, macs
+
+
+@_register(nn.LSTM)
+def _lstm_ops(module, input, output):
+    sequence = input[0] if isinstance(input, tuple) else input
+    if isinstance(sequence, PackedSequence):
+        total_steps = int(sequence.batch_sizes.sum().item())
+    elif isinstance(sequence, torch.Tensor):
+        if sequence.dim() == 2:
+            total_steps = sequence.shape[0]
+        elif sequence.dim() >= 3:
+            total_steps = sequence.shape[0] * sequence.shape[1]
+        else:
+            raise ValueError(f"Unsupported LSTM input shape {tuple(sequence.shape)}")
+    else:
+        raise TypeError(f"Unsupported LSTM input type {type(sequence)}")
+
+    hidden_size = module.hidden_size
+    proj_size = getattr(module, "proj_size", 0)
+    recurrent_size = proj_size or hidden_size
+    num_directions = 2 if module.bidirectional else 1
+    layer_input_size = module.input_size
+
+    flops = 0
+    macs = 0
+    pointwise_flops_per_step = hidden_size * (3 * 4 + 2 * 5 + 4)
+    bias_flops_per_step = 8 * hidden_size if module.bias else 0
+
+    for _ in range(module.num_layers):
+        for _ in range(num_directions):
+            gate_macs = total_steps * 4 * hidden_size * (layer_input_size + recurrent_size)
+            macs += gate_macs
+            flops += 2 * gate_macs
+            flops += total_steps * (bias_flops_per_step + pointwise_flops_per_step)
+
+            if proj_size > 0:
+                proj_macs = total_steps * hidden_size * proj_size
+                macs += proj_macs
+                flops += 2 * proj_macs
+
+        layer_input_size = recurrent_size * num_directions
+
     return flops, macs
