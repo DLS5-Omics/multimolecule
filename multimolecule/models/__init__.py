@@ -164,6 +164,10 @@ from .splicebert import (
     SpliceBertForTokenPrediction,
     SpliceBertModel,
 )
+from .spotrna import (
+    SpotRnaConfig,
+    SpotRnaModel,
+)
 from .utrbert import (
     UtrBertConfig,
     UtrBertForContactPrediction,
@@ -291,6 +295,8 @@ __all__ = [
     "RnaMsmForSecondaryStructurePrediction",
     "SpliceAiConfig",
     "SpliceAiModel",
+    "SpotRnaConfig",
+    "SpotRnaModel",
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertForContactPrediction",
