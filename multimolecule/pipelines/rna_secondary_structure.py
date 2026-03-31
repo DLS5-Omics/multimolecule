@@ -182,6 +182,8 @@ class RnaSecondaryStructurePipeline(Pipeline):
         super().__init__(*args, **kwargs)
         if not isinstance(self.model, torch.nn.Module):
             raise NotImplementedError("Only PyTorch is supported for RNA secondary structure prediction.")
+        if threshold is None:
+            threshold = getattr(getattr(self.model, "config", None), "threshold", None)
         if threshold is not None:
             if threshold >= 1:
                 raise PipelineException(
