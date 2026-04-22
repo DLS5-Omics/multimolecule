@@ -78,6 +78,10 @@ from .hyenadna import (
     HyenaDnaForTokenPrediction,
     HyenaDnaModel,
 )
+from .mxfold2 import (
+    Mxfold2Config,
+    Mxfold2Model,
+)
 from .modeling_auto import (
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
@@ -240,6 +244,8 @@ __all__ = [
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",
     "HyenaDnaForTokenPrediction",
+    "Mxfold2Config",
+    "Mxfold2Model",
     "ProGen2Config",
     "ProGen2Model",
     "ProGen2ForSequencePrediction",

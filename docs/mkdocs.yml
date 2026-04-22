@@ -48,6 +48,7 @@ nav:
       - RNA:
           - CaLM: models/calm.md
           - ERNIE-RNA: models/ernierna.md
+          - MXfold2: models/mxfold2.md
           - RibonanzaNet: models/ribonanzanet.md
           - RiNALMo: models/rinalmo.md
           - RNABERT: models/rnabert.md
