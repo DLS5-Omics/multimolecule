@@ -25,7 +25,7 @@ import numpy as np
 import pytest
 import torch
 
-from multimolecule.utils.rna.secondary_structure import noncanonical
+from multimolecule.utils.rna.secondary_structure import noncanonical, noncanonical_pair_mask
 from tests.utils.rna.secondary_structure.conftest import as_list, as_tuple_list, make_indices, make_pairs
 
 SEQUENCE_ACGU = "ACGU"
@@ -90,6 +90,12 @@ def test_noncanonical_pairs_set_empty(backend: str) -> None:
     assert noncanonical.noncanonical_pairs_set(make_pairs([], backend), SEQUENCE_ACGA) == set()
 
 
+def test_noncanonical_pair_mask_public_export() -> None:
+    mask = noncanonical_pair_mask([0], [1], "GU")
+
+    assert mask == [False]
+
+
 def test_noncanonical_pairs_set_unsafe_self_pair() -> None:
     assert noncanonical.noncanonical_pairs_set([(1, 1)], SEQUENCE_ACGA, unsafe=True) == set()
 
@@ -112,9 +118,7 @@ def test_noncanonical_invalid_types_and_masks() -> None:
 
 
 @pytest.mark.parametrize(
-    "pairs",
-    [[[1, 2, 3]], np.array([1, 2, 3]), torch.tensor([1, 2, 3])],
-    ids=["list", "numpy", "torch"],
+    "pairs", [[[1, 2, 3]], np.array([1, 2, 3]), torch.tensor([1, 2, 3])], ids=["list", "numpy", "torch"]
 )
 def test_noncanonical_pairs_errors(pairs) -> None:
     with pytest.raises(ValueError, match="shape"):

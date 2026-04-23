@@ -21,9 +21,7 @@
 
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
-from .data import (
-    Dataset,
-)
+from .data import Dataset
 from .models import (
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,

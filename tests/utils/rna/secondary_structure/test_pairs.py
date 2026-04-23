@@ -93,11 +93,7 @@ def test_normalize_pairs_empty(backend: str) -> None:
         assert normalized.shape == (0, 2)
 
 
-@pytest.mark.parametrize(
-    "bad_pairs",
-    [np.array([1, 2, 3]), torch.tensor([1, 2, 3])],
-    ids=["numpy_1d", "torch_1d"],
-)
+@pytest.mark.parametrize("bad_pairs", [np.array([1, 2, 3]), torch.tensor([1, 2, 3])], ids=["numpy_1d", "torch_1d"])
 def test_normalize_pairs_shape_errors(bad_pairs) -> None:
     with pytest.raises(ValueError, match="shape"):
         pairs_utils.normalize_pairs(bad_pairs)
@@ -117,11 +113,7 @@ def test_sort_pairs_empty(backend: str) -> None:
         assert sorted_pairs.shape == (0, 2)
 
 
-@pytest.mark.parametrize(
-    "bad_pairs",
-    [np.array([1, 2, 3]), torch.tensor([1, 2, 3])],
-    ids=["numpy_1d", "torch_1d"],
-)
+@pytest.mark.parametrize("bad_pairs", [np.array([1, 2, 3]), torch.tensor([1, 2, 3])], ids=["numpy_1d", "torch_1d"])
 def test_sort_pairs_shape_errors(bad_pairs) -> None:
     with pytest.raises(ValueError, match="shape"):
         pairs_utils.sort_pairs(bad_pairs)

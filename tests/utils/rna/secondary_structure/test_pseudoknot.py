@@ -46,12 +46,7 @@ NESTED_PAIRS = [(0, 3), (1, 2)]
         pytest.param([], [], [], id="empty"),
     ],
 )
-def test_split_pseudoknot_pairs_consistency(
-    backend: str,
-    pairs,
-    expected_primary,
-    expected_pseudoknot,
-) -> None:
+def test_split_pseudoknot_pairs_consistency(backend: str, pairs, expected_primary, expected_pseudoknot) -> None:
     nested_pairs, pseudoknot_pairs = pseudoknot.split_pseudoknot_pairs(make_pairs(pairs, backend))
     assert as_tuple_list(nested_pairs) == expected_primary
     assert as_tuple_list(pseudoknot_pairs) == expected_pseudoknot
@@ -190,12 +185,7 @@ def test_crossing_pairs_non_crossing_empty(backend: str) -> None:
         pytest.param(NESTED_PAIRS, NESTED_PAIRS, [], id="nested"),
     ],
 )
-def test_split_crossing_pairs_basic(
-    backend: str,
-    pairs,
-    expected_primary,
-    expected_crossing,
-) -> None:
+def test_split_crossing_pairs_basic(backend: str, pairs, expected_primary, expected_crossing) -> None:
     nested_pairs, crossing_pairs = pseudoknot.split_crossing_pairs(make_pairs(pairs, backend))
     assert as_tuple_list(nested_pairs) == expected_primary
     assert as_tuple_list(crossing_pairs) == expected_crossing

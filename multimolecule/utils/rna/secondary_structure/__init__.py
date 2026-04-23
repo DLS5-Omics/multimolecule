@@ -21,7 +21,7 @@
 
 
 from .bprna import annotate, annotate_function, annotate_structure
-from .noncanonical import noncanonical_pairs, noncanonical_pairs_set
+from .noncanonical import noncanonical_pair_mask, noncanonical_pairs, noncanonical_pairs_set
 from .notations import (
     contact_map_to_dot_bracket,
     contact_map_to_pairs,
@@ -139,6 +139,7 @@ __all__ = [
     "pairs_to_duplex_segment_arrays",
     "pairs_to_stem_segment_arrays",
     "segment_arrays_to_pairs",
+    "noncanonical_pair_mask",
     "noncanonical_pairs",
     "noncanonical_pairs_set",
 ]

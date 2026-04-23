@@ -187,13 +187,7 @@ def _torch_mwis_segments(start_i: Tensor, start_j: Tensor, lengths: Tensor) -> T
     return selected
 
 
-def _torch_mwis_select(
-    ci_sorted: Tensor,
-    order: Tensor,
-    prefix: Tensor,
-    comp_sorted: Tensor,
-    comp_len: int,
-) -> Tensor:
+def _torch_mwis_select(ci_sorted: Tensor, order: Tensor, prefix: Tensor, comp_sorted: Tensor, comp_len: int) -> Tensor:
     comp_count = int(comp_sorted.shape[0])
     device = ci_sorted.device
     dp = torch.zeros((comp_count, comp_len, comp_len), dtype=torch.long, device=device)
@@ -291,11 +285,7 @@ def _numpy_mwis_segments(start_i: np.ndarray, start_j: np.ndarray, lengths: np.n
 
 
 def _numpy_mwis_select(
-    ci_sorted: np.ndarray,
-    order: np.ndarray,
-    prefix: np.ndarray,
-    comp_sorted: np.ndarray,
-    comp_len: int,
+    ci_sorted: np.ndarray, order: np.ndarray, prefix: np.ndarray, comp_sorted: np.ndarray, comp_len: int
 ) -> np.ndarray:
     comp_count = comp_sorted.shape[0]
     dp = np.zeros((comp_count, comp_len, comp_len), dtype=np.int64)

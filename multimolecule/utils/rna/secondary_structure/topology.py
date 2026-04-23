@@ -80,8 +80,7 @@ SegmentT = TypeVar("SegmentT", StemSegment, HelixSegment)
 
 
 def compute_loop_spans(
-    open_to_close: Tensor | Sequence[int],
-    length: int,
+    open_to_close: Tensor | Sequence[int], length: int
 ) -> Tuple[List[int], List[List[int]], List[Tuple[int, int, LoopSegmentType, EndSide | None]]]:
     """
     Build loop intervals and opener/child relationships from an open-to-close map.
@@ -297,6 +296,45 @@ class RnaSecondaryStructureTopology(UndirectedGraph):
     def helices(self, view: StructureView | str | None = None) -> List[HelixSegment]:
         tiers = self._tiers_for_view(view)
         return [segment for tier in tiers for segment in tier.helix_segments.segments]
+
+    def loop_segments(self, view: StructureView | str | None = None) -> List[LoopSegment]:
+        """Return flattened loop segments for the requested structure view."""
+        tiers = self._tiers_for_view(view)
+        return [segment for tier in tiers for segment in tier.loop_segments.segments]
+
+    def stem_graph_components(
+        self,
+        view: StructureView | str | None = None,
+    ) -> Tuple[List[StemSegment], List[Tuple[int, int, int]]]:
+        """Return flattened stem segments and globally indexed stem edges."""
+        tiers = self._tiers_for_view(view)
+        segments: List[StemSegment] = []
+        edges: List[Tuple[int, int, int]] = []
+        offset = 0
+        for tier in tiers:
+            tier_segments = tier.stem_segments.segments
+            segments.extend(tier_segments)
+            for edge in tier.stem_segments.edges:
+                edges.append((int(edge.src) + offset, int(edge.dst) + offset, int(edge.type)))
+            offset += len(tier_segments)
+        return segments, edges
+
+    def helix_graph_components(
+        self,
+        view: StructureView | str | None = None,
+    ) -> Tuple[List[HelixSegment], List[Tuple[int, int, int]]]:
+        """Return flattened helix segments and globally indexed helix edges."""
+        tiers = self._tiers_for_view(view)
+        segments: List[HelixSegment] = []
+        edges: List[Tuple[int, int, int]] = []
+        offset = 0
+        for tier in tiers:
+            tier_segments = tier.helix_segments.segments
+            segments.extend(tier_segments)
+            for edge in tier.helix_segments.edges:
+                edges.append((int(edge.src) + offset, int(edge.dst) + offset, int(edge.type)))
+            offset += len(tier_segments)
+        return segments, edges
 
     @cached_property
     def _partner_map_all(self) -> Tensor:
