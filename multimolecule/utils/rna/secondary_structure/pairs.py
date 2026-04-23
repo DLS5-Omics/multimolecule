@@ -1056,11 +1056,7 @@ def _torch_segment_arrays_to_pairs(start_i: Tensor, start_j: Tensor, lengths: Te
 
 
 def _torch_duplex_segment_arrays_to_pairs(
-    pair_i: Tensor,
-    pair_j: Tensor,
-    seg_start: Tensor,
-    seg_len: Tensor,
-    mask: Tensor,
+    pair_i: Tensor, pair_j: Tensor, seg_start: Tensor, seg_len: Tensor, mask: Tensor
 ) -> Tensor:
     if mask.numel() == 0 or not bool(mask.any().item()):
         return pair_i.new_empty((0, 2), dtype=torch.long)
@@ -1085,11 +1081,7 @@ def _torch_duplex_segment_arrays_to_pairs(
 
 
 def _numpy_segment_arrays_to_pairs(
-    start_i: np.ndarray,
-    start_j: np.ndarray,
-    lengths: np.ndarray,
-    mask: np.ndarray,
-    empty: np.ndarray,
+    start_i: np.ndarray, start_j: np.ndarray, lengths: np.ndarray, mask: np.ndarray, empty: np.ndarray
 ) -> np.ndarray:
     if mask.size == 0 or not np.any(mask):
         return empty

@@ -48,8 +48,10 @@ dependencies = [
   "danling[torch]>=0.3.11",
   "datasets",
   "pandas",
+  "scipy",
   "strenum; python_version<'3.11'",
   "torch",
+  "torchmetrics",
   "transformers",
 ]
 urls.documentation = "https://multimolecule.danling.org"

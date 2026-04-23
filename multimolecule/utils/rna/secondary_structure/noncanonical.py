@@ -129,11 +129,7 @@ def _numpy_noncanonical_pairs(pairs: np.ndarray, sequence: str, unsafe: bool) ->
     return _numpy_sort_pairs(out)
 
 
-def noncanonical_pairs_set(
-    pairs: Tensor | np.ndarray | Pairs,
-    sequence: str,
-    unsafe: bool = False,
-) -> set[Pair]:
+def noncanonical_pairs_set(pairs: Tensor | np.ndarray | Pairs, sequence: str, unsafe: bool = False) -> set[Pair]:
     """
     Return non-canonical base pairs as a set of ``(i, j)`` tuples.
 

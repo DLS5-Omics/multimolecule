@@ -113,9 +113,7 @@ def test_pairs_to_contact_map_empty(backend: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "pairs",
-    [np.array([1, 2, 3]), torch.tensor([1, 2, 3]), [1, 2, 3]],
-    ids=["numpy", "torch", "list"],
+    "pairs", [np.array([1, 2, 3]), torch.tensor([1, 2, 3]), [1, 2, 3]], ids=["numpy", "torch", "list"]
 )
 def test_pairs_to_contact_map_shape_errors(pairs) -> None:
     with pytest.raises(ValueError, match="pairs must be"):

@@ -25,6 +25,7 @@ from __future__ import annotations
 import string
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
+from numbers import Real
 from typing import Dict, List, overload
 from warnings import warn
 
@@ -104,9 +105,7 @@ def pairs_to_contact_map(  # type: ignore[overload-cannot-match]
 
 
 def pairs_to_contact_map(
-    pairs: Tensor | np.ndarray | Pairs,
-    length: int | None = None,
-    unsafe: bool = False,
+    pairs: Tensor | np.ndarray | Pairs, length: int | None = None, unsafe: bool = False
 ) -> Tensor | np.ndarray | List[List[bool]]:
     """
     Convert base pairs to a symmetric contact map.
@@ -200,7 +199,7 @@ def _numpy_pairs_to_contact_map(pairs: np.ndarray, length: int | None, unsafe: b
     if length is None:
         length = max_index + 1 if max_index >= 0 else 0
 
-    contact_map = np.zeros((length, length), dtype=bool)
+    contact_map: np.ndarray = np.zeros((length, length), dtype=bool)
     if pairs.size == 0:
         return contact_map
 
@@ -224,29 +223,23 @@ def _numpy_pairs_to_contact_map(pairs: np.ndarray, length: int | None, unsafe: b
 
 
 @overload
-def contact_map_to_pairs(contact_map: Tensor, unsafe: bool = False, *, threshold: float = 0.5) -> Tensor: ...
+def contact_map_to_pairs(contact_map: Tensor, *, unsafe: bool = False, threshold: float | None = None) -> Tensor: ...
 
 
 @overload
 def contact_map_to_pairs(  # type: ignore[overload-cannot-match]
-    contact_map: np.ndarray,
-    unsafe: bool = False,
-    *,
-    threshold: float = 0.5,
+    contact_map: np.ndarray, *, unsafe: bool = False, threshold: float | None = None
 ) -> np.ndarray: ...
 
 
 @overload
 def contact_map_to_pairs(  # type: ignore[overload-cannot-match]
-    contact_map: Sequence,
-    unsafe: bool = False,
-    *,
-    threshold: float = 0.5,
+    contact_map: Sequence, *, unsafe: bool = False, threshold: float | None = None
 ) -> PairsList: ...
 
 
 def contact_map_to_pairs(
-    contact_map: Tensor | np.ndarray | Sequence, unsafe: bool = False, *, threshold: float = 0.5
+    contact_map: Tensor | np.ndarray | Sequence, *, unsafe: bool = False, threshold: float | None = None
 ) -> Tensor | np.ndarray | PairsList:
     """
     Convert a contact map to a list of base pairs.
@@ -286,6 +279,12 @@ def contact_map_to_pairs(
         >>> contact_map_to_pairs([[0, 1], [1, 0]])
         [(0, 1)]
     """
+    if threshold is None:
+        threshold = 0.5
+    if isinstance(threshold, bool) or not isinstance(threshold, Real):
+        raise TypeError("threshold must be a real number")
+    threshold = float(threshold)
+
     if isinstance(contact_map, Tensor):
         if contact_map.ndim != 2 or contact_map.shape[0] != contact_map.shape[1]:
             raise ValueError("Contact map must be a square 2D matrix.")
@@ -501,7 +500,7 @@ def _numpy_contact_map_to_pairs_float(contact_map: np.ndarray, unsafe: bool, thr
     if not (0 <= threshold <= 1):
         raise ValueError(f"threshold must be between 0 and 1, but got {threshold}.")
 
-    contact_map_values = contact_map.astype(float, copy=False)
+    contact_map_values: np.ndarray = contact_map.astype(float, copy=False)
     n = contact_map_values.shape[0]
 
     if np.isnan(contact_map_values).any():
@@ -599,7 +598,7 @@ def _torch_greedy_match(ii: Tensor, jj: Tensor, length: int) -> Tensor:
 def _numpy_greedy_match(ii: np.ndarray, jj: np.ndarray, length: int) -> np.ndarray:
     if ii.size == 0:
         return np.empty((0, 2), dtype=int)
-    used = np.zeros(length, dtype=bool)
+    used: np.ndarray = np.zeros(length, dtype=bool)
     keep = np.zeros(ii.shape[0], dtype=bool)
     for idx in range(ii.shape[0]):
         i = ii[idx]
@@ -615,11 +614,7 @@ def _numpy_greedy_match(ii: np.ndarray, jj: np.ndarray, length: int) -> np.ndarr
     return out[order]
 
 
-def pairs_to_dot_bracket(
-    pairs: Tensor | np.ndarray | Pairs,
-    length: int,
-    unsafe: bool = False,
-) -> str:
+def pairs_to_dot_bracket(pairs: Tensor | np.ndarray | Pairs, length: int, unsafe: bool = False) -> str:
     """
     Convert base pairs to a dot-bracket string (backend-aware input, string output).
 
@@ -680,7 +675,7 @@ def _numpy_pairs_to_dot_bracket(pairs: np.ndarray, length: int, unsafe: bool) ->
         raise ValueError(f"Pair ({int(i[idx])}, {int(j[idx])}) is out of bounds for length {length}.")
     pairs = np.column_stack((i[keep], j[keep]))
 
-    seen = np.zeros(length, dtype=bool)
+    seen: np.ndarray = np.zeros(length, dtype=bool)
     order = np.lexsort((pairs[:, 1], pairs[:, 0]))
     pairs = pairs[order]
     keep_idx: List[int] = []
@@ -735,7 +730,7 @@ def dot_bracket_to_contact_map(dot_bracket: str) -> np.ndarray:
 
 
 def contact_map_to_dot_bracket(
-    contact_map: Tensor | np.ndarray, unsafe: bool = False, *, threshold: float = 0.5
+    contact_map: Tensor | np.ndarray, *, unsafe: bool = False, threshold: float | None = None
 ) -> str:
     """
     Convert a contact map (NumPy or Torch) to a dot-bracket notation string.

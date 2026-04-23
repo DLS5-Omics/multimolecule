@@ -34,13 +34,7 @@ from torch.nn.utils.rnn import PackedSequence
 # Hook signature: (module, input, output) -> tuple[int, int]
 _MODULE_OPS: dict[type, Callable] = {}
 
-_IGNORED_MODULES: tuple[type, ...] = (
-    nn.Identity,
-    nn.Flatten,
-    nn.Sequential,
-    nn.ModuleList,
-    nn.ModuleDict,
-)
+_IGNORED_MODULES: tuple[type, ...] = (nn.Identity, nn.Flatten, nn.Sequential, nn.ModuleList, nn.ModuleDict)
 
 
 def _register(*module_types: type):
