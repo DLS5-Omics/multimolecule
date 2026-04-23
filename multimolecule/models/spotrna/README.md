@@ -15,7 +15,6 @@ pipeline: rna-secondary-structure
 
 Pre-trained model for RNA secondary structure prediction using an ensemble of two-dimensional deep neural networks and transfer learning.
 
-
 ## Disclaimer
 
 This is an UNOFFICIAL implementation of the [RNA secondary structure prediction using an ensemble of two-dimensional deep neural networks and transfer learning](https://doi.org/10.1038/s41467-019-13395-9) by Jaswinder Singh, et al.

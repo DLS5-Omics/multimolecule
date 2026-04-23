@@ -73,6 +73,8 @@ nav:
   - pipelines:
       - pipelines/index.md
       - RNA Secondary Structure: pipelines/rna_secondary_structure.md
+  - interpret:
+      - interpret/index.md
   - utils:
       - RNA:
           - Secondary Structure: utils/rna/secondary_structure.md

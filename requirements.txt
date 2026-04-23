@@ -1,4 +1,5 @@
 biopython
+captum
 pandas
 psycopg2
 pymysql

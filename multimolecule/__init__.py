@@ -21,8 +21,22 @@
 
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
-from .data import (
-    Dataset,
+from .data import Dataset
+from .interpret import (
+    ActivationOutput,
+    AttentionOutput,
+    AttributionOutput,
+    JacobianOutput,
+    SaeOutput,
+    ScalarTarget,
+    attribute,
+    capture_activations,
+    categorical_jacobian,
+    format_topk_substitutions,
+    plot_attention_map,
+    plot_sae_features,
+    plot_token_scores,
+    run_sae,
 )
 from .models import (
     AutoModelForContactPrediction,
@@ -220,6 +234,20 @@ from .utils import (
 __all__ = [
     "modeling_auto",
     "modeling_outputs",
+    "ActivationOutput",
+    "AttentionOutput",
+    "AttributionOutput",
+    "JacobianOutput",
+    "SaeOutput",
+    "ScalarTarget",
+    "attribute",
+    "categorical_jacobian",
+    "capture_activations",
+    "format_topk_substitutions",
+    "plot_attention_map",
+    "plot_sae_features",
+    "plot_token_scores",
+    "run_sae",
     "Dataset",
     "dot_bracket_to_contact_map",
     "contact_map_to_dot_bracket",
