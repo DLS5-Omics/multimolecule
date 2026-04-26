@@ -86,10 +86,10 @@ class CaLmModel(CaLmPreTrainedModel):
     """
     Examples:
         >>> import torch
-        >>> from multimolecule import CaLmConfig, CaLmModel, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmModel, DnaTokenizer
         >>> config = CaLmConfig()
         >>> model = CaLmModel(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> tokenizer = DnaTokenizer.from_pretrained("multimolecule/dna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input)
         >>> output["last_hidden_state"].shape
@@ -261,10 +261,10 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
     """
     Examples:
         >>> import torch
-        >>> from multimolecule import CaLmConfig, CaLmForSequencePrediction, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForSequencePrediction, DnaTokenizer
         >>> config = CaLmConfig()
         >>> model = CaLmForSequencePrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> tokenizer = DnaTokenizer.from_pretrained("multimolecule/dna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.tensor([[1]]))
         >>> output["logits"].shape
@@ -316,10 +316,10 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
     """
     Examples:
         >>> import torch
-        >>> from multimolecule import CaLmConfig, CaLmForTokenPrediction, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForTokenPrediction, DnaTokenizer
         >>> config = CaLmConfig()
         >>> model = CaLmForTokenPrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> tokenizer = DnaTokenizer.from_pretrained("multimolecule/dna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5)))
         >>> output["logits"].shape
@@ -371,10 +371,10 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
     """
     Examples:
         >>> import torch
-        >>> from multimolecule import CaLmConfig, CaLmForContactPrediction, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForContactPrediction, DnaTokenizer
         >>> config = CaLmConfig()
         >>> model = CaLmForContactPrediction(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> tokenizer = DnaTokenizer.from_pretrained("multimolecule/dna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=torch.randint(2, (1, 5, 5)))
         >>> output["logits"].shape
@@ -432,10 +432,10 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
     """
     Examples:
         >>> import torch
-        >>> from multimolecule import CaLmConfig, CaLmForMaskedLM, RnaTokenizer
+        >>> from multimolecule import CaLmConfig, CaLmForMaskedLM, DnaTokenizer
         >>> config = CaLmConfig()
         >>> model = CaLmForMaskedLM(config)
-        >>> tokenizer = RnaTokenizer.from_pretrained("multimolecule/rna")
+        >>> tokenizer = DnaTokenizer.from_pretrained("multimolecule/dna")
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape

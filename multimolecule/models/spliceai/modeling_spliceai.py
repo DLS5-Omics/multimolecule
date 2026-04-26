@@ -192,9 +192,10 @@ class SpliceAiModule(nn.Module):
         embedding = self.projection(inputs_embeds)
         outputs = self.encoder(embedding, **kwargs)
         context = outputs.last_context
-        logits = self.prediction(context).transpose(1, 2)
+        logits = self.prediction(context)
 
         loss = self.criterion(logits, labels) if labels is not None else None
+        logits = logits.transpose(1, 2)
 
         output = SpliceAiModelOutput(loss=loss, logits=logits)
         output._last_context = context

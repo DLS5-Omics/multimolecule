@@ -32,7 +32,7 @@ from multimolecule.models import CaLmConfig as Config
 from multimolecule.models import CaLmForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
-from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
+from multimolecule.tokenisers.dna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
 
@@ -48,7 +48,7 @@ def convert_checkpoint(convert_config):
     model = Model(config)
 
     ckpt = dl.load(convert_config.checkpoint_path)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
+    state_dict = _convert_checkpoint(config, ckpt, vocab_list, [token.replace("U", "T") for token in original_vocab_list])
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["codon"] = True
@@ -170,7 +170,6 @@ original_vocab_list = [
     "GGG",
     "<mask>",
 ]
-
 
 class ConvertConfig(ConvertConfig_):
     root: str = os.path.dirname(__file__)

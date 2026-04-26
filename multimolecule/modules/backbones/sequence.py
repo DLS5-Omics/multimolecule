@@ -33,16 +33,26 @@ from .sequences import SEQUENCES
 
 @BACKBONES.register("sequence", default=True)
 class SequenceBackbone(nn.Module):
-    def __init__(self, sequence) -> None:
+    def __init__(self, sequence, dense_input: bool | None = None) -> None:
         super().__init__()
         sequence_dropout = sequence.pop("dropout", 0)
         self.sequence = SEQUENCES.build(**sequence)
+        self.dense_input = self._resolve_dense_input(dense_input)
         self.sequence_dropout = nn.Dropout(sequence_dropout)
         self.config = self.sequence.config
         self.out_channels = self.config.hidden_size
 
+    def _resolve_dense_input(self, dense_input: bool | None) -> bool:
+        if dense_input is not None:
+            return dense_input
+        attention_backend = getattr(self.sequence.config, "_attn_implementation", None)
+        return attention_backend != "sdpa"
+
     def forward(self, sequence: NestedTensor | Tensor, *args, **kwargs) -> tuple[FlatDict, FlatDict]:
         attentions = None
+        if isinstance(sequence, NestedTensor) and self.dense_input:
+            kwargs.setdefault("attention_mask", sequence.mask)
+            sequence = sequence.tensor
         sequence_output = self.sequence(sequence.int(), **kwargs)
         if "last_hidden_state" in sequence_output:
             sequence_output["last_hidden_state"] = self.sequence_dropout(sequence_output["last_hidden_state"])

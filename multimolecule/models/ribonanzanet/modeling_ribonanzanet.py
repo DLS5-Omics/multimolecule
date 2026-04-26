@@ -443,10 +443,7 @@ class RibonanzaNetForSecondaryStructurePrediction(RibonanzaNetForPreTraining):
 
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__(config)
-        self.model = RibonanzaNetModel(config, add_pooling_layer=False)
         self.ss_head = RibonanzaNetSecondaryStructurePredictionHead(config)
-        self.a3c_head = TokenPredictionHead(config)
-        self.dms_head = TokenPredictionHead(config)
         self.head_config = self.ss_head.config
 
         # Initialize weights and apply final processing

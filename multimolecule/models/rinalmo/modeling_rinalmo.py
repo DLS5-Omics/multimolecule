@@ -580,6 +580,19 @@ class RiNALMoForSecondaryStructurePrediction(RiNALMoForMaskedLM):
             attentions=outputs.attentions,
         )
 
+    def postprocess(self, outputs, input_ids=None, **kwargs):
+        contact_map = outputs["logits"].squeeze(-1).clone()
+        minima = torch.finfo(contact_map.dtype).min
+        contact_map.masked_fill_(torch.eye(contact_map.shape[-1], device=contact_map.device, dtype=torch.bool), minima)
+        if isinstance(input_ids, NestedTensor):
+            input_ids = input_ids.tensor
+        if input_ids is not None:
+            dummy = contact_map.new_zeros((*input_ids.shape, 1))
+            _, _, input_ids = self.ss_head.remove_special_tokens(dummy, None, input_ids)
+            contact_map.masked_fill_(~self.ss_head._get_canonical_pair_constraint_matrix(input_ids), minima)
+            contact_map.masked_fill_(self.ss_head._get_sharp_loop_constraint_matrix(input_ids), minima)
+        return contact_map.sigmoid().unsqueeze(-1)
+
 
 class RiNALMoEmbeddings(nn.Module):
     def __init__(self, config: RiNALMoConfig):
@@ -1166,10 +1179,6 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
         contact_map = triangular + triangular.transpose(-1, -2)
         contact_map = contact_map.squeeze(1)
 
-        minima = torch.finfo(contact_map.dtype).min
-        contact_map.masked_fill_(torch.eye(contact_map.shape[-1], device=contact_map.device, dtype=torch.bool), minima)
-        contact_map.masked_fill_(self._get_canonical_pair_constraint_matrix(input_ids), minima)
-        contact_map.masked_fill_(self._get_sharp_loop_constraint_matrix(input_ids), minima)
         contact_map = contact_map.unsqueeze(-1)
 
         if labels is not None:
@@ -1194,9 +1203,6 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
         right = hidden_states.unsqueeze(1).expand(batch_size, seq_length, seq_length, hidden_size)
 
         return torch.concat((left, right), dim=-1)
-
-    def postprocess(self, outputs: RiNALMoForSecondaryStructurePredictorOutput) -> Tensor:
-        return outputs["logits_ss"]
 
     @staticmethod
     def _get_canonical_pair_constraint_matrix(input_ids: Tensor) -> Tensor:

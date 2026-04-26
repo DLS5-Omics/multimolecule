@@ -133,14 +133,19 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         else:
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
-        batch_size, seq_length = input_shape
+        if len(input_shape) not in {2, 3}:
+            raise ValueError(
+                "RNA-MSM expects input_ids with shape (batch_size, sequence_length) or "
+                "(batch_size, num_alignments, sequence_length), "
+                f"but got {tuple(input_shape)}."
+            )
         device = input_ids.device if input_ids is not None else inputs_embeds.device  # type: ignore[union-attr]
 
         if attention_mask is None:
             if input_ids is not None and self.pad_token_id is not None:
                 attention_mask = input_ids.ne(self.pad_token_id)
             else:
-                attention_mask = torch.ones(((batch_size, seq_length)), device=device)
+                attention_mask = torch.ones(input_shape, device=device)
                 warn(
                     "attention_mask is not specified, and cannot be inferred from input_ids."
                     "Assuming all tokens are not masked."
