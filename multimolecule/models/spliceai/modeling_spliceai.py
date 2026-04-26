@@ -155,7 +155,7 @@ class SpliceAiEmbedding(nn.Module):
                 for t in input_ids._storage:
                     one_hot = F.one_hot(t, num_classes=self.num_tokens)[..., : self.vocab_size].float()
                     storage.append(one_hot)
-                inputs_embeds = NestedTensor(storage, **input_ids._state)
+                inputs_embeds = NestedTensor(storage, **input_ids._meta())
             else:
                 inputs_embeds = F.one_hot(input_ids, num_classes=self.num_tokens)[..., : self.vocab_size].float()
         if attention_mask is not None and not isinstance(inputs_embeds, NestedTensor):
@@ -166,7 +166,7 @@ class SpliceAiEmbedding(nn.Module):
             for t in inputs_embeds._storage:
                 pad = torch.zeros(t.size(0), self.padding, device=t.device, dtype=t.dtype)
                 storage.append(torch.cat([pad, t, pad], dim=1))
-            inputs_embeds = NestedTensor(storage, **inputs_embeds._state)
+            inputs_embeds = NestedTensor(storage, **inputs_embeds._meta())
         else:
             batch_size = inputs_embeds.size(0)
             padding = torch.zeros(batch_size, self.vocab_size, self.padding, device=inputs_embeds.device)
@@ -298,7 +298,7 @@ def average_output(output: Tuple[Tensor, ...] | Tuple[Tuple[Tensor, ...], ...]) 
     if isinstance(output[0], NestedTensor):
         stacked = torch.stack([o.tensor for o in output], dim=0)  # type: ignore[union-attr]
         mean = stacked.mean(dim=0)
-        return NestedTensor.from_tensor_mask(mean, output[0].mask, **output[0]._state)
+        return NestedTensor.from_tensor_mask(mean, output[0].mask, **output[0]._meta())
     if isinstance(output[0], Tensor):
         return torch.mean(torch.stack(output), dim=0)
     return tuple(average_output(o) for o in zip(*output))

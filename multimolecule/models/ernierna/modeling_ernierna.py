@@ -990,6 +990,13 @@ class ErnieRnaSelfAttention(nn.Module):
             attention_scores = (
                 torch.matmul(query_layer, key_layer.transpose(-1, -2)) * self.scaling  # type: ignore[attr-defined]
             )
+            if isinstance(attention_scores, NestedTensor):
+                if relative_position_scores is not None and not isinstance(relative_position_scores, NestedTensor):
+                    relative_position_scores = attention_scores.nested_like(relative_position_scores, strict=False)
+                if attention_mask is not None and not isinstance(attention_mask, NestedTensor):
+                    attention_mask = attention_scores.nested_like(attention_mask, strict=False)
+                if not isinstance(attention_bias, NestedTensor):
+                    attention_bias = attention_scores.nested_like(attention_bias, strict=False)
             if relative_position_scores is not None:
                 attention_scores = attention_scores + relative_position_scores
             if attention_mask is not None:

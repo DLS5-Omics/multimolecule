@@ -24,11 +24,13 @@ import pytest
 import torch
 
 from multimolecule.modules.criterions import (
+    CRITERIONS,
     BCEWithLogitsLoss,
     Criterion,
     CrossEntropyLoss,
     MSELoss,
     MultiLabelSoftMarginLoss,
+    RMSELoss,
 )
 from multimolecule.modules.heads.config import HeadConfig
 
@@ -112,6 +114,13 @@ class TestCriterion:
 
         with pytest.raises(ValueError, match="problem_type should be one of"):
             criterion(logits, labels)
+
+    def test_explicit_criterion_overrides_problem_type(self):
+        config = HeadConfig(num_labels=1, problem_type="regression", criterion="rmse")
+
+        criterion = CRITERIONS.build(config)
+
+        assert isinstance(criterion, RMSELoss)
 
 
 class TestCriterionConsistency:

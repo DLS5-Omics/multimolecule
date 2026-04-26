@@ -222,8 +222,6 @@ class TestPredictionHead:
     def test_forward(self, labels):
         batch_size, seq_length, hidden_size = 2, 28, 768
         embeddings = torch.randn(batch_size, seq_length, hidden_size)
-        if labels is not None:
-            labels = labels.unsqueeze(-1)
 
         output = self.head(embeddings, labels=labels)
 
@@ -234,3 +232,29 @@ class TestPredictionHead:
         else:
             assert isinstance(output.loss, Tensor)
             assert output.loss.requires_grad
+
+    def test_loss_weight(self):
+        batch_size, seq_length, hidden_size = 2, 28, 768
+        embeddings = torch.randn(batch_size, seq_length, hidden_size)
+        labels = torch.randint(0, 3, (batch_size, seq_length))
+
+        base_head = PredictionHead(self.config, self.head_config)
+        weighted_head = PredictionHead(
+            self.config,
+            HeadConfig(
+                num_labels=3,
+                hidden_size=hidden_size,
+                dropout=0.1,
+                act="gelu",
+                problem_type="multiclass",
+                loss_weight=0.25,
+            ),
+        )
+        weighted_head.load_state_dict(base_head.state_dict())
+        base_head.eval()
+        weighted_head.eval()
+
+        base_output = base_head(embeddings, labels=labels)
+        weighted_output = weighted_head(embeddings, labels=labels)
+
+        torch.testing.assert_close(weighted_output.loss, base_output.loss * 0.25)

@@ -1115,7 +1115,7 @@ class RnaBertLayerNorm(nn.Module):
                 s = (t - u).pow(2).mean(-1, keepdim=True)
                 t = (t - u) / torch.sqrt(s + self.variance_epsilon)
                 storage.append(self.weight * t + self.bias)
-            return NestedTensor(storage, **x._state)
+            return NestedTensor(storage, **x._meta())
         u = x.mean(-1, keepdim=True)
         s = (x - u).pow(2).mean(-1, keepdim=True)
         x = (x - u) / torch.sqrt(s + self.variance_epsilon)

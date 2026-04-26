@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 
@@ -35,12 +36,29 @@ from .registry import CRITERIONS
 
 @CRITERIONS.register("regression")
 class MSELoss(nn.MSELoss):
+    ignore_nan: bool = True
+
     def __init__(self, config: HeadConfig) -> None:
-        super().__init__(**config.get("loss", {}))
+        loss_config = dict(config.get("loss", {}))
+        self.ignore_nan = loss_config.pop("ignore_nan", True)
+        super().__init__(**loss_config)
         self.config = config
         self.num_labels = config.num_labels
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
         if input.ndim == target.ndim + 1:
             input = input.squeeze(-1)
+        if self.ignore_nan:
+            mask = ~torch.isnan(target)
+            if not bool(mask.all()):
+                if isinstance(target, NestedTensor) and not isinstance(input, NestedTensor):
+                    input = target.nested_like(input, strict=False)
+                input = input[mask]
+                target = target[mask]
         return super().forward(input, target.to(input.dtype))
+
+
+@CRITERIONS.register("rmse")
+class RMSELoss(MSELoss):
+    def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
+        return torch.sqrt(super().forward(input, target))

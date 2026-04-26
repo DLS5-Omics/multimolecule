@@ -152,10 +152,7 @@ from .rnamsm import (
     RnaMsmForTokenPrediction,
     RnaMsmModel,
 )
-from .spliceai import (
-    SpliceAiConfig,
-    SpliceAiModel,
-)
+from .spliceai import SpliceAiConfig, SpliceAiModel
 from .splicebert import (
     SpliceBertConfig,
     SpliceBertForContactPrediction,

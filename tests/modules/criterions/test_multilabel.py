@@ -102,6 +102,17 @@ class TestMultiLabelSoftMarginLoss:
         loss = criterion(logits, labels)
         assert loss is not None
 
+    def test_ignore_index(self):
+        config = HeadConfig(num_labels=2, problem_type="multilabel", loss={"ignore_index": -100})
+        criterion = MultiLabelSoftMarginLoss(config)
+        logits = torch.tensor([[0.6, -0.5], [0.7, 0.3]])
+        labels = torch.tensor([[1.0, 0.0], [1.0, -100.0]])
+
+        loss = criterion(logits, labels)
+
+        expected = torch.nn.functional.multilabel_soft_margin_loss(logits[:1], labels[:1])
+        torch.testing.assert_close(loss, expected)
+
     def test_gradient_flow(self, criterion):
         """Test that gradients flow correctly"""
         logits = torch.randn(4, 5, requires_grad=True)

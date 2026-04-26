@@ -35,17 +35,20 @@ from .registry import CRITERIONS
 
 @CRITERIONS.register("multilabel")
 class MultiLabelSoftMarginLoss(nn.MultiLabelSoftMarginLoss):
+    ignore_index: int | float | None = None
+
     def __init__(self, config: HeadConfig) -> None:
-        super().__init__(**config.get("loss", {}))
+        loss_config = dict(config.get("loss", {}))
+        self.ignore_index = loss_config.pop("ignore_index", -100)
+        super().__init__(**loss_config)
         self.config = config
 
     def forward(self, input: NestedTensor | Tensor, target: NestedTensor | Tensor) -> Tensor:
-        if isinstance(input, NestedTensor) and not isinstance(target, NestedTensor):
-            target = target[input.mask.bool()]
-            input = input.concat
-        if isinstance(target, NestedTensor) and not isinstance(input, NestedTensor):
-            input = input[target.mask.bool()]
-            target = target.concat
-        if target.ndim > 2:
-            input, target = input.view(-1, input.size(-1)), target.view(-1, target.size(-1))
+        if self.ignore_index is not None:
+            mask = (target != self.ignore_index).all(dim=-1)
+            if not bool(mask.all()):
+                if isinstance(target, NestedTensor) and not isinstance(input, NestedTensor):
+                    input = target.nested_like(input, strict=False)
+                input = input[mask]
+                target = target[mask]
         return super().forward(input, target.float())

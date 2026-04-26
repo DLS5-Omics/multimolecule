@@ -25,10 +25,10 @@ from torch import nn
 
 
 class Registry(Registry_):  # pylint: disable=too-few-public-methods
-    key = "problem_type"
+    key = "criterion"
 
     def build(self, config) -> nn.Module:  # type: ignore[override]
-        name = getattr(config, self.getattr("key"))
+        name = getattr(config, self.getattr("key"), None) or config.problem_type
         return self.init(self.lookup(name), config)  # type: ignore[arg-type]
 
 
