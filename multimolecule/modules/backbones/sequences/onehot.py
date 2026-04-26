@@ -22,7 +22,8 @@
 
 import torch
 from chanfig import FlatDict
-from torch import nn
+from danling import NestedTensor
+from torch import Tensor, nn
 from transformers import AutoConfig
 
 from .registry import SEQUENCES
@@ -35,11 +36,16 @@ class OneHot(nn.Module):
         self.config = AutoConfig.from_pretrained(str(pretrained))
         self.module = nn.Embedding(self.config.vocab_size, self.config.hidden_size)
 
-    def forward(self, input_ids, attn_mask) -> FlatDict:
+    def forward(self, input_ids: NestedTensor | Tensor, attention_mask: Tensor | None = None) -> FlatDict:
         output = FlatDict()
         output["last_hidden_state"] = self.module(input_ids)
-        valid_length = attn_mask.sum(dim=1)
-        output["pooler_output"] = torch.stack(
-            [t[: valid_length[i]].sum(0) for i, t in enumerate(output["last_hidden_state"])]
-        )
+        if isinstance(output["last_hidden_state"], NestedTensor):
+            output["pooler_output"] = torch.stack([hidden_state.sum(0) for hidden_state in output["last_hidden_state"]])
+        else:
+            if attention_mask is None:
+                attention_mask = input_ids.ne(self.config.pad_token_id)
+            valid_length = attention_mask.sum(dim=1)
+            output["pooler_output"] = torch.stack(
+                [t[: valid_length[i]].sum(0) for i, t in enumerate(output["last_hidden_state"])]
+            )
         return output

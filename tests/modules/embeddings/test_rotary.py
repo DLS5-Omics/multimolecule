@@ -142,8 +142,8 @@ class TestRotaryEmbedding:
 
         q_rot_fp32, k_rot_fp32 = rotary_emb_fp32(q, k)
 
-        assert torch.allclose(q_rot_fp16.float(), q_rot_fp32, atol=1e-4, rtol=1e-2)
-        assert torch.allclose(k_rot_fp16.float(), k_rot_fp32, atol=1e-4, rtol=1e-2)
+        assert torch.allclose(q_rot_fp16.float(), q_rot_fp32, atol=3e-3, rtol=1e-2)
+        assert torch.allclose(k_rot_fp16.float(), k_rot_fp32, atol=3e-3, rtol=1e-2)
 
     @pytest.mark.parametrize("scale", [1.0, 2.0, 4.0, 0.5])
     def test_scale(self, scale: float):

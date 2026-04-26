@@ -29,6 +29,7 @@ from warnings import warn
 import pyarrow as pa
 import pyarrow.compute as pc
 from pyarrow import Array, ChunkedArray, ListArray, StringArray
+from torch import Tensor
 
 from multimolecule import defaults
 from multimolecule.tasks import Task, TaskLevel, TaskType
@@ -133,8 +134,16 @@ def truncate_value(value: Any, max_seq_length: int, level: TaskLevel | None = No
     if level == TaskLevel.Token:
         return value[:max_seq_length]
     if level == TaskLevel.Contact:
+        if isinstance(value, Tensor):
+            return value[:max_seq_length, :max_seq_length]
         return [i[:max_seq_length] for i in value[:max_seq_length]]
     return value
+
+
+def truncate_batch(value: Any, max_seq_length: int, level: TaskLevel | None = None) -> Any:
+    if isinstance(value, list):
+        return [truncate_value(item, max_seq_length, level) for item in value]
+    return truncate_value(value, max_seq_length, level)
 
 
 def flatten_column(

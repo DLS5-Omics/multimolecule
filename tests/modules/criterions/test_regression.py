@@ -24,7 +24,7 @@ import pytest
 import torch
 from danling import NestedTensor
 
-from multimolecule.modules.criterions import Criterion, MSELoss
+from multimolecule.modules.criterions import Criterion, MSELoss, RMSELoss
 from multimolecule.modules.heads.config import HeadConfig
 
 
@@ -108,6 +108,26 @@ class TestMSELoss:
 
         loss = criterion(logits, labels)
         assert loss is not None
+
+    def test_ignore_nan(self):
+        criterion = MSELoss(HeadConfig(num_labels=1, problem_type="regression"))
+        logits = torch.tensor([0.5, 1.2, 3.4, 2.0])
+        labels = torch.tensor([0.7, 1.0, float("nan"), float("nan")])
+
+        loss = criterion(logits, labels)
+
+        expected = torch.nn.functional.mse_loss(logits[:2], labels[:2])
+        torch.testing.assert_close(loss, expected)
+
+    def test_rmse(self):
+        criterion = RMSELoss(HeadConfig(num_labels=1, problem_type="regression"))
+        logits = torch.tensor([0.5, 1.2, 3.4])
+        labels = torch.tensor([0.7, 1.0, 3.0])
+
+        loss = criterion(logits, labels)
+
+        expected = torch.sqrt(torch.nn.functional.mse_loss(logits, labels))
+        torch.testing.assert_close(loss, expected)
 
     def test_dtype_conversion(self):
         """Test that dtype conversion works correctly"""

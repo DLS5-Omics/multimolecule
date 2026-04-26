@@ -56,7 +56,7 @@ from multimolecule.tokenisers.rna.utils import STANDARD_ALPHABET as RNA_COMPLETE
 from multimolecule.utils import dot_bracket_to_contact_map
 
 from .registry import DATASETS
-from .utils import flatten_column, infer_discrete_map, infer_task, map_value, truncate_value
+from .utils import flatten_column, infer_discrete_map, infer_task, map_value, truncate_batch, truncate_value
 
 alphabets = {
     "dna": {
@@ -429,7 +429,7 @@ class Dataset(datasets.Dataset):
             elif col in self.discrete_map:
                 data = map_value(data, self.discrete_map[col])
             if col in self.tasks:
-                data = truncate_value(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
+                data = truncate_batch(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
         if col in self.tasks:
             ignore_value = float("nan") if self.tasks[col].type == TaskType.Regression else -100
             if isinstance(data[0], list):

@@ -174,7 +174,7 @@ class RotaryEmbedding(nn.Module):
                 cos = cos.squeeze(0).squeeze(0)
                 sin = sin.squeeze(0).squeeze(0)
                 storage.append((t * cos) + (self.rotate_half(t) * sin))
-            return NestedTensor(storage, **x._state)
+            return NestedTensor(storage, **x._meta())
 
         cos = self._cos_cached[:, :, offset : offset + x.shape[-2], :]
         sin = self._sin_cached[:, :, offset : offset + x.shape[-2], :]

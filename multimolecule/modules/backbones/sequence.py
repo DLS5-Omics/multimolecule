@@ -43,8 +43,7 @@ class SequenceBackbone(nn.Module):
 
     def forward(self, sequence: NestedTensor | Tensor, *args, **kwargs) -> tuple[FlatDict, FlatDict]:
         attentions = None
-        input_ids, attention_mask = sequence.tensor, sequence.mask
-        sequence_output = self.sequence(input_ids.int(), attention_mask)
+        sequence_output = self.sequence(sequence.int(), **kwargs)
         if "last_hidden_state" in sequence_output:
             sequence_output["last_hidden_state"] = self.sequence_dropout(sequence_output["last_hidden_state"])
         elif "logits" in sequence_output:

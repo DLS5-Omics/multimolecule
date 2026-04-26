@@ -19,20 +19,32 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+import torch
 
-from .binary import BCEWithLogitsLoss
-from .generic import Criterion
-from .multiclass import CrossEntropyLoss
-from .multilabel import MultiLabelSoftMarginLoss
-from .registry import CRITERIONS
-from .regression import MSELoss, RMSELoss
+from multimolecule.data.utils import truncate_batch, truncate_value
+from multimolecule.tasks import TaskLevel
 
-__all__ = [
-    "CRITERIONS",
-    "Criterion",
-    "MSELoss",
-    "RMSELoss",
-    "BCEWithLogitsLoss",
-    "CrossEntropyLoss",
-    "MultiLabelSoftMarginLoss",
-]
+
+class TestTruncateValue:
+    def test_contact_tensor(self):
+        value = torch.arange(25).reshape(5, 5)
+
+        output = truncate_value(value, 3, TaskLevel.Contact)
+
+        torch.testing.assert_close(output, value[:3, :3])
+
+
+class TestTruncateBatch:
+    def test_token_batch(self):
+        batch = [torch.arange(5), torch.arange(7)]
+
+        output = truncate_batch(batch, 3, TaskLevel.Token)
+
+        assert [tuple(item.shape) for item in output] == [(3,), (3,)]
+
+    def test_contact_batch(self):
+        batch = [torch.arange(25).reshape(5, 5), torch.arange(49).reshape(7, 7)]
+
+        output = truncate_batch(batch, 3, TaskLevel.Contact)
+
+        assert [tuple(item.shape) for item in output] == [(3, 3), (3, 3)]

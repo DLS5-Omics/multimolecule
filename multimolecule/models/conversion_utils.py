@@ -317,11 +317,7 @@ def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str 
         api.upload_folder(repo_id=repo_id, repo_type=repo_type, token=token, folder_path=output_path)
 
 
-def save_checkpoint(
-    convert_config: ConvertConfig,
-    model: PreTrainedModel,
-    tokenizer_config: Dict,
-):
+def save_checkpoint(convert_config: ConvertConfig, model: PreTrainedModel, tokenizer_config: Dict):
     model_path, output_path = convert_config.root, convert_config.output_path
     if os.path.exists(output_path):
         warn(f"Output directory: {output_path} already exists. Deleting it.")

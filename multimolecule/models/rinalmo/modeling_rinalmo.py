@@ -624,7 +624,7 @@ class RiNALMoEmbeddings(nn.Module):
                 storage = []
                 for t, m in zip(embeddings._storage, mask._storage):
                     storage.append(t.masked_fill(m.unsqueeze(-1), 0.0))
-                embeddings = NestedTensor(storage, **embeddings._state)
+                embeddings = NestedTensor(storage, **embeddings._meta())
             else:
                 embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RiNALMo model training runs
@@ -638,7 +638,7 @@ class RiNALMoEmbeddings(nn.Module):
                 storage = []
                 for t, s in zip(embeddings._storage, scale):
                     storage.append((t * s).to(t.dtype))
-                embeddings = NestedTensor(storage, **embeddings._state)
+                embeddings = NestedTensor(storage, **embeddings._meta())
             else:
                 embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
                 embeddings = embeddings.to(embeddings)
@@ -924,7 +924,7 @@ class RiNALMoSelfAttention(nn.Module):
             )
 
         attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager" and not isinstance(hidden_states, NestedTensor):
+        if self.config._attn_implementation != "eager":
             attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
 
         attn_output, attn_weights = attention_interface(
@@ -1048,7 +1048,7 @@ class RiNALMoCrossAttention(nn.Module):
             )
 
         attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager" and not isinstance(hidden_states, NestedTensor):
+        if self.config._attn_implementation != "eager":
             attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
 
         attn_output, attn_weights = attention_interface(

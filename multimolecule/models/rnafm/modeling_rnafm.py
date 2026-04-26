@@ -693,7 +693,7 @@ class RnaFmEmbeddings(nn.Module):
                 storage = []
                 for t, m in zip(embeddings._storage, mask._storage):
                     storage.append(t.masked_fill(m.unsqueeze(-1), 0.0))
-                embeddings = NestedTensor(storage, **embeddings._state)
+                embeddings = NestedTensor(storage, **embeddings._meta())
             else:
                 embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RNA-FM model training runs

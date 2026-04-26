@@ -101,6 +101,17 @@ class TestBCEWithLogitsLoss:
         loss = criterion(logits, labels)
         assert loss is not None
 
+    def test_ignore_index(self):
+        config = HeadConfig(num_labels=1, problem_type="binary", loss={"ignore_index": -100})
+        criterion = BCEWithLogitsLoss(config)
+        logits = torch.tensor([0.6, -0.5, 0.7, 0.3])
+        labels = torch.tensor([1.0, 0.0, -100.0, -100.0])
+
+        loss = criterion(logits, labels)
+
+        expected = torch.nn.functional.binary_cross_entropy_with_logits(logits[:2], labels[:2])
+        torch.testing.assert_close(loss, expected)
+
     def test_gradient_flow(self, criterion):
         """Test that gradients flow correctly"""
         logits = torch.randn(4, 1, requires_grad=True)
