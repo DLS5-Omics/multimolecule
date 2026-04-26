@@ -93,10 +93,10 @@ output = predictor("agc<mask>cattatggcgaaccttggctgctg")
 Here is how to use this model to get the features of a given sequence in PyTorch:
 
 ```python
-from multimolecule import RnaTokenizer, CaLmModel
+from multimolecule import DnaTokenizer, CaLmModel
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/calm")
+tokenizer = DnaTokenizer.from_pretrained("multimolecule/calm")
 model = CaLmModel.from_pretrained("multimolecule/calm")
 
 text = "GCCAGTCGCTGACAGCCGCGG"
@@ -114,10 +114,10 @@ Here is how to use this model as backbone to fine-tune for a sequence-level task
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, CaLmForSequencePrediction
+from multimolecule import DnaTokenizer, CaLmForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/calm")
+tokenizer = DnaTokenizer.from_pretrained("multimolecule/calm")
 model = CaLmForSequencePrediction.from_pretrained("multimolecule/calm")
 
 text = "GCCAGTCGCTGACAGCCGCGG"
@@ -136,10 +136,10 @@ Here is how to use this model as backbone to fine-tune for a nucleotide-level ta
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, CaLmForTokenPrediction
+from multimolecule import DnaTokenizer, CaLmForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/calm")
+tokenizer = DnaTokenizer.from_pretrained("multimolecule/calm")
 model = CaLmForTokenPrediction.from_pretrained("multimolecule/calm")
 
 text = "GCCAGTCGCTGACAGCCGCGG"
@@ -158,10 +158,10 @@ Here is how to use this model as backbone to fine-tune for a contact-level task 
 
 ```python
 import torch
-from multimolecule import RnaTokenizer, CaLmForContactPrediction
+from multimolecule import DnaTokenizer, CaLmForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/calm")
+tokenizer = DnaTokenizer.from_pretrained("multimolecule/calm")
 model = CaLmForContactPrediction.from_pretrained("multimolecule/calm")
 
 text = "GCCAGTCGCTGACAGCCGCGG"
@@ -190,7 +190,7 @@ To reduce redundancy, CaLM grouped the entries by organism, and apply CD-HIT (CD
 
 The final dataset contains 9,858,385 cDNA sequences.
 
-Note that the alphabet in the original implementation is RNA instead of DNA, therefore, we use [`RnaTokenizer`][multimolecule.RnaTokenizer] to tokenize the sequences. `RnaTokenizer` of `multimolecule` will convert "U"s to "T"s for you, you may disable this behaviour by passing `replace_T_with_U=False`.
+The original checkpoint uses RNA codon spelling internally, but MultiMolecule converts the checkpoint to DNA codon order and exposes CaLM with [`DnaTokenizer`][multimolecule.DnaTokenizer]. `DnaTokenizer` will convert "U"s to "T"s by default; you may disable this behaviour by passing `replace_U_with_T=False`.
 
 ### Training Procedure
 

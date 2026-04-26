@@ -189,7 +189,7 @@ class BasePredictionHead(nn.Module):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
                 if isinstance(input_ids, Tensor):
-                    input_ids.masked_fill_(~eos_mask, self.pad_token_id or 0)
+                    input_ids = input_ids.masked_fill(~eos_mask, self.pad_token_id or 0)
                 if isinstance(eos_mask, NestedTensor):
                     eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]
@@ -256,7 +256,7 @@ class BasePredictionHead(nn.Module):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
                 if isinstance(input_ids, Tensor):
-                    input_ids.masked_fill_(~eos_mask, self.pad_token_id or 0)
+                    input_ids = input_ids.masked_fill(~eos_mask, self.pad_token_id or 0)
                 if isinstance(eos_mask, NestedTensor):
                     eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]

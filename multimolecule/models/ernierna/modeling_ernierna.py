@@ -620,7 +620,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
         output_ss = self.ss_head(outputs, attention_mask, input_ids, labels_ss)
         logits_ss, loss_ss = output_ss.logits, output_ss.loss
         losses = tuple(l for l in (loss_lm, loss_ss) if l is not None)  # noqa: E741
-        loss = torch.mean(torch.tensor(losses)) if losses else None
+        loss = torch.mean(torch.stack(losses)) if losses else None
 
         return ErnieRnaForSecondaryStructurePredictorOutput(
             loss=loss,
@@ -632,6 +632,9 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
             attentions=outputs.attentions,
             attention_biases=outputs.attention_biases,
         )
+
+    def postprocess(self, outputs, input_ids=None, **kwargs):
+        return outputs["logits_ss"]
 
 
 class ErnieRnaEmbeddings(nn.Module):
@@ -1258,13 +1261,13 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
             grad_adjacency = grad_adjacency.unsqueeze(-1).expand(output.shape) - output / 2
             gradient = adjacency * constraint * (grad_adjacency + grad_adjacency.transpose(-1, -2))
 
-            adjacency -= lr_min * gradient
+            adjacency = adjacency - lr_min * gradient
             lr_min = lr_min * 0.99
             adjacency = self.activation(torch.abs(adjacency) - sparsity * lr_min)
 
             matrix_adj = self._get_squared_adjacency_matrix(adjacency, constraint)
             lambda_gradient = self.activation(torch.sum(matrix_adj, dim=-1) - 1)
-            lambda_values += lr_max * lambda_gradient
+            lambda_values = lambda_values + lr_max * lambda_gradient
             lr_max = lr_max * 0.99
 
         output = adjacency * adjacency

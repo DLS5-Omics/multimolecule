@@ -17,17 +17,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # For additional terms and clarifications, please refer to our License FAQ at:
-# https://multimolecule.danling.org/about/license-faq
+# <https://multimolecule.danling.org/about/license-faq>.
 
-from .dataloader import DataLoader
-from .dataset import Dataset, SampleDataset
-from .registry import DATASETS
-from .utils import no_collate
+from __future__ import annotations
 
-__all__ = [
-    "DATASETS",
-    "DataLoader",
-    "Dataset",
-    "SampleDataset",
-    "no_collate",
-]
+from typing import TYPE_CHECKING
+
+from chanfig import ConfigRegistry
+
+if TYPE_CHECKING:
+    from .config import Config
+    from .runner import Runner
+
+
+class Registry(ConfigRegistry):
+    key = "runner"
+
+    def build(self, config: Config) -> Runner:
+        return super().build(config)
+
+
+RUNNERS = Registry()
+
+__all__ = ["RUNNERS"]

@@ -75,10 +75,10 @@ class RnaSecondaryStructurePipeline(Pipeline):
         model_outputs = self.model(**model_inputs)
         model_outputs["input_ids"] = model_inputs["input_ids"]
 
-        if len(model_inputs["input_ids"]) > 1 and getattr(self.model, "supports_batch_process", False):
+        if len(model_inputs["input_ids"]) > 1 and not getattr(self.model, "supports_batch_process", False):
             warn(
                 "The pipeline received a batch of sequences as input.\n"
-                "Most RNA Secondary Structure models are designed and trained with a single sequence.\n"
+                "This RNA secondary-structure model does not declare batch-processing support.\n"
                 "The results may be less reliable in batch processing.\n",
                 RuntimeWarning,
             )

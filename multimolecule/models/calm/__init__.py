@@ -46,7 +46,7 @@ from .modeling_calm import (
 )
 
 __all__ = [
-    "RnaTokenizer",
+    "DnaTokenizer",
     "CaLmConfig",
     "CaLmModel",
     "CaLmPreTrainedModel",
