@@ -57,6 +57,7 @@ nav:
           - SPOT-RNA: models/spotrna.md
           - SpliceAI: models/spliceai.md
           - SpliceBERT: models/splicebert.md
+          - UFold: models/ufold.md
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md
       - Protein:

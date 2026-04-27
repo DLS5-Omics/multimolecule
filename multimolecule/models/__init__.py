@@ -165,6 +165,7 @@ from .splicebert import (
     SpliceBertModel,
 )
 from .spotrna import SpotRnaConfig, SpotRnaModel
+from .ufold import UfoldConfig, UfoldModel
 from .utrbert import (
     UtrBertConfig,
     UtrBertForContactPrediction,
@@ -294,6 +295,8 @@ __all__ = [
     "SpliceAiModel",
     "SpotRnaConfig",
     "SpotRnaModel",
+    "UfoldConfig",
+    "UfoldModel",
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertForContactPrediction",
