@@ -21,6 +21,7 @@
 
 
 from .backbones import BACKBONES, SEQUENCES, SequenceBackbone
+from .context import preserve_batch_norm_stats
 from .criterions import CRITERIONS, Criterion
 from .embeddings import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF, RotaryEmbedding, SinusoidalEmbedding
 from .functional import eager_attention_forward
@@ -95,4 +96,5 @@ __all__ = [
     "Criterion",
     "LayerNorm2d",
     "eager_attention_forward",
+    "preserve_batch_norm_stats",
 ]
