@@ -23,6 +23,7 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
+from .bpfold import BpfoldConfig, BpfoldModel
 from .calm import (
     CaLmConfig,
     CaLmForContactPrediction,
@@ -196,6 +197,8 @@ __all__ = [
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
+    "BpfoldConfig",
+    "BpfoldModel",
     "CaLmConfig",
     "CaLmModel",
     "CaLmForContactPrediction",
