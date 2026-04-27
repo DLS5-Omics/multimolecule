@@ -46,6 +46,7 @@ nav:
           - DNABERT-S: models/dnaberts.md
           - HyenaDNA: models/hyenadna.md
       - RNA:
+          - BPfold: models/bpfold.md
           - CaLM: models/calm.md
           - ERNIE-RNA: models/ernierna.md
           - RibonanzaNet: models/ribonanzanet.md
