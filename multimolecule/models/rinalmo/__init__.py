@@ -39,7 +39,10 @@ from ..modeling_auto import (
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
-from .configuration_rinalmo import RiNALMoConfig
+from .configuration_rinalmo import (
+    RiNALMoConfig,
+    RiNALMoSecondaryStructureHeadConfig,
+)
 from .modeling_rinalmo import (
     RiNALMoForContactPrediction,
     RiNALMoForMaskedLM,
@@ -54,6 +57,7 @@ from .modeling_rinalmo import (
 __all__ = [
     "RnaTokenizer",
     "RiNALMoConfig",
+    "RiNALMoSecondaryStructureHeadConfig",
     "RiNALMoModel",
     "RiNALMoPreTrainedModel",
     "RiNALMoForContactPrediction",

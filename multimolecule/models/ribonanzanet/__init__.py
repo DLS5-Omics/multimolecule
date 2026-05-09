@@ -40,29 +40,47 @@ from ..modeling_auto import (
 )
 from .configuration_ribonanzanet import RibonanzaNetConfig
 from .modeling_ribonanzanet import (
+    RibonanzaNetContactPredictorOutput,
     RibonanzaNetForContactPrediction,
     RibonanzaNetForDegradationPrediction,
+    RibonanzaNetForDegradationPredictorOutput,
     RibonanzaNetForPreTraining,
+    RibonanzaNetForPreTrainingOutput,
     RibonanzaNetForSecondaryStructurePrediction,
+    RibonanzaNetForSecondaryStructurePredictorOutput,
     RibonanzaNetForSequenceDropoutPrediction,
     RibonanzaNetForSequencePrediction,
     RibonanzaNetForTokenPrediction,
     RibonanzaNetModel,
+    RibonanzaNetModelOutput,
+    RibonanzaNetModelOutputWithPooling,
     RibonanzaNetPreTrainedModel,
+    RibonanzaNetSequenceDropoutPredictorOutput,
+    RibonanzaNetSequencePredictorOutput,
+    RibonanzaNetTokenPredictorOutput,
 )
 
 __all__ = [
     "RnaTokenizer",
     "RibonanzaNetConfig",
     "RibonanzaNetModel",
+    "RibonanzaNetModelOutput",
+    "RibonanzaNetModelOutputWithPooling",
     "RibonanzaNetPreTrainedModel",
     "RibonanzaNetForContactPrediction",
+    "RibonanzaNetContactPredictorOutput",
     "RibonanzaNetForSequencePrediction",
+    "RibonanzaNetSequencePredictorOutput",
     "RibonanzaNetForTokenPrediction",
+    "RibonanzaNetTokenPredictorOutput",
     "RibonanzaNetForPreTraining",
+    "RibonanzaNetForPreTrainingOutput",
     "RibonanzaNetForSecondaryStructurePrediction",
+    "RibonanzaNetForSecondaryStructurePredictorOutput",
     "RibonanzaNetForDegradationPrediction",
+    "RibonanzaNetForDegradationPredictorOutput",
     "RibonanzaNetForSequenceDropoutPrediction",
+    "RibonanzaNetSequenceDropoutPredictorOutput",
 ]
 
 AutoConfig.register("ribonanzanet", RibonanzaNetConfig)

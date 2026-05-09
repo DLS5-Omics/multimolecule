@@ -114,7 +114,6 @@ def convert_checkpoint(convert_config):
     config.vocab_size = len(new_vocab)
     config = Config.from_dict(config)
     del config._name_or_path
-    config.architectures = ["DnaBertForMaskedLM"]
 
     model = Model(config)
 
@@ -164,7 +163,7 @@ def _convert_checkpoint(config, original_state_dict, original_vocab, new_vocab):
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = decoder_bias
     state_dict["lm_head.bias"] = decoder_bias
 

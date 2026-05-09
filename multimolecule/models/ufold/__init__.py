@@ -26,17 +26,18 @@ from multimolecule.tokenisers import RnaTokenizer
 
 from ..modeling_auto import AutoModelForRnaSecondaryStructurePrediction
 from .configuration_ufold import UfoldConfig
-from .modeling_ufold import UfoldModel, UfoldModelOutput, UfoldPreTrainedModel
+from .modeling_ufold import UfoldForRnaSecondaryStructurePrediction, UfoldModel, UfoldModelOutput, UfoldPreTrainedModel
 
 __all__ = [
     "RnaTokenizer",
     "UfoldConfig",
     "UfoldModel",
+    "UfoldForRnaSecondaryStructurePrediction",
     "UfoldModelOutput",
     "UfoldPreTrainedModel",
 ]
 
 AutoConfig.register("ufold", UfoldConfig)
 AutoModel.register(UfoldConfig, UfoldModel)
-AutoModelForRnaSecondaryStructurePrediction.register(UfoldConfig, UfoldModel)
+AutoModelForRnaSecondaryStructurePrediction.register(UfoldConfig, UfoldForRnaSecondaryStructurePrediction)
 AutoTokenizer.register(UfoldConfig, RnaTokenizer)

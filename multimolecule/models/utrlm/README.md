@@ -4,7 +4,7 @@ tags:
   - Biology
   - RNA
   - 5' UTR
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/ensembl-genome-browser
 library_name: multimolecule
@@ -249,10 +249,10 @@ Note [`RnaTokenizer`][multimolecule.RnaTokenizer] will convert "T"s to "U"s for 
 
 UTR-LM used masked language modeling (MLM) as one of the pre-training objectives. The masking procedure is similar to the one used in BERT:
 
-- 15% of the tokens are masked.
-- In 80% of the cases, the masked tokens are replaced by `<mask>`.
-- In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
-- In the 10% remaining cases, the masked tokens are left as is.
+- Mask rate: 15%
+- Replacement: `<mask>` for 80% of masked tokens
+- Replacement: random token for 10% of masked tokens
+- Replacement: unchanged token for 10% of masked tokens
 
 #### Pre-training
 

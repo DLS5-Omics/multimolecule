@@ -28,7 +28,23 @@ from transformers.configuration_utils import PretrainedConfig
 
 from multimolecule.modules import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
 
-__all__ = ["PreTrainedConfig", "BaseHeadConfig", "HeadConfig", "MaskedLMHeadConfig"]
+__all__ = [
+    "PreTrainedConfig",
+    "BaseHeadConfig",
+    "HeadConfig",
+    "MaskedLMHeadConfig",
+    "validate_attention_dimensions",
+]
+
+
+def validate_attention_dimensions(hidden_size: int, num_attention_heads: int) -> None:
+    """Validate the standard transformer hidden-size/head-count relationship."""
+    if num_attention_heads <= 0:
+        raise ValueError(f"num_attention_heads ({num_attention_heads}) must be positive.")
+    if hidden_size % num_attention_heads != 0:
+        raise ValueError(
+            f"hidden_size ({hidden_size}) must be divisible by num_attention_heads ({num_attention_heads})."
+        )
 
 
 class PreTrainedConfig(PretrainedConfig):

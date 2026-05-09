@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class RnaMsmConfig(PreTrainedConfig):
@@ -117,15 +117,34 @@ class RnaMsmConfig(PreTrainedConfig):
         is_decoder: bool = False,
         use_cache: bool = True,
         max_tokens_per_msa: int = 2**14,
-        layer_type: str = "standard",
+        layer_type: str = "axial",
         attention_type: str = "standard",
         embed_positions_msa: bool = True,
         attention_bias: bool = True,
+        num_features: int | None = None,
+        pkm_attention_heads: int | None = None,
+        num_product_keys: int | None = None,
+        pkm_topk: int | None = None,
+        pkm_head_size: int | None = None,
         head: HeadConfig | None = None,
         lm_head: MaskedLMHeadConfig | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
+        validate_attention_dimensions(hidden_size, num_attention_heads)
+        if layer_type not in {"axial", "standard", "pkm"}:
+            raise ValueError(f"layer_type must be one of 'axial', 'standard', 'pkm', got {layer_type!r}.")
+        if attention_type not in {"standard", "performer"}:
+            raise ValueError(f"attention_type must be one of 'standard', 'performer', got {attention_type!r}.")
+        if attention_type == "performer" and num_features is None:
+            raise ValueError("attention_type='performer' requires num_features to be set.")
+        if layer_type == "pkm" and any(
+            v is None for v in (pkm_attention_heads, num_product_keys, pkm_topk, pkm_head_size)
+        ):
+            raise ValueError(
+                "layer_type='pkm' requires pkm_attention_heads, num_product_keys, "
+                "pkm_topk, and pkm_head_size to all be set."
+            )
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
@@ -145,5 +164,10 @@ class RnaMsmConfig(PreTrainedConfig):
         self.attention_type = attention_type
         self.embed_positions_msa = embed_positions_msa
         self.attention_bias = attention_bias
+        self.num_features = num_features
+        self.pkm_attention_heads = pkm_attention_heads
+        self.num_product_keys = num_product_keys
+        self.pkm_topk = pkm_topk
+        self.pkm_head_size = pkm_head_size
         self.head = HeadConfig(**head) if head is not None else None
         self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None

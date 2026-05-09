@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class UtrLmConfig(PreTrainedConfig):
@@ -127,6 +127,7 @@ class UtrLmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers

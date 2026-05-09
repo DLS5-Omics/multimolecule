@@ -46,7 +46,6 @@ def convert_checkpoint(convert_config) -> None:
         raise FileNotFoundError(f"No BPfold checkpoints found in {checkpoint_dir}.")
 
     config = Config(num_members=len(checkpoint_paths))
-    config.architectures = ["BpfoldModel"]
     model = Model(config)
     vocab_list = list(get_alphabet("streamline").vocabulary)
 
@@ -109,6 +108,11 @@ def _convert_original_state_dict_key(key: str) -> str:
     key = re.sub(r"(encoder\.pairwise_blocks\.\d+)\.conv\.2\.excitation\.0\.", r"\1.squeeze_excitation.dense1.", key)
     key = re.sub(r"(encoder\.pairwise_blocks\.\d+)\.conv\.2\.excitation\.2\.", r"\1.squeeze_excitation.dense2.", key)
     key = re.sub(r"(encoder\.pairwise_blocks\.\d+)\.res\.0\.", r"\1.residual.", key)
+    # Dynamic position bias: split the per-step Sequential into named (linear/norm) sub-modules
+    # and rename the trailing bare Linear from mlp.<depth> to head.
+    key = re.sub(r"(dynamic_position_bias)\.mlp\.(\d+)\.0\.", r"\1.blocks.\2.linear.", key)
+    key = re.sub(r"(dynamic_position_bias)\.mlp\.(\d+)\.1\.", r"\1.blocks.\2.norm.", key)
+    key = re.sub(r"(dynamic_position_bias)\.mlp\.\d+\.(weight|bias)$", r"\1.head.\2", key)
     return key
 
 

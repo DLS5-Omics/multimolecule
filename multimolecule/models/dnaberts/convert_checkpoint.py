@@ -49,7 +49,6 @@ def convert_checkpoint(convert_config):
         config.pop(field, None)
     config = Config.from_dict(config)
     del config._name_or_path
-    config.architectures = ["DnaBertSModel"]
 
     model = Model(config)
 

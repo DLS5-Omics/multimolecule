@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import HeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class RibonanzaNetConfig(PreTrainedConfig):
@@ -79,8 +79,6 @@ class RibonanzaNetConfig(PreTrainedConfig):
             The epsilon used by the layer normalization layers.
         head:
             The configuration of the head.
-        lm_head:
-            The configuration of the masked language model head.
         fix_attention_mask:
             Whether to apply compatibility fixes to the attention mask behavior.
         fix_attention_residual:
@@ -121,13 +119,16 @@ class RibonanzaNetConfig(PreTrainedConfig):
         initializer_range: float = 0.02,
         layer_norm_eps: float = 1e-12,
         head: HeadConfig | None = None,
-        lm_head: MaskedLMHeadConfig | None = None,
         fix_attention_mask: bool = False,
         fix_attention_residual: bool = False,
         fix_pairwise_dropout: bool = False,
         **kwargs,
     ):
+        # No MLM head, so embedding/output tying is not applicable.
+        kwargs.setdefault("tie_word_embeddings", False)
         super().__init__(**kwargs)
+        validate_attention_dimensions(hidden_size, num_attention_heads)
+        validate_attention_dimensions(pairwise_size, pairwise_num_attention_heads)
         self.vocab_size = vocab_size
         self.type_vocab_size = 2
         self.hidden_size = hidden_size
@@ -148,7 +149,6 @@ class RibonanzaNetConfig(PreTrainedConfig):
         self.initializer_range = initializer_range
         self.layer_norm_eps = layer_norm_eps
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.fix_attention_mask = fix_attention_mask
         self.fix_attention_residual = fix_attention_residual
         self.fix_pairwise_dropout = fix_pairwise_dropout

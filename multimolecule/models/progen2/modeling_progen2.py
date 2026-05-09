@@ -23,11 +23,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Tuple
+from typing import Any
 
 import torch
 from danling import NestedTensor
 from torch import Tensor, nn
+from transformers import initialization as init
 from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache
 from transformers.generation import GenerationMixin
@@ -62,18 +63,20 @@ class ProGen2PreTrainedModel(PreTrainedModel):
     _no_split_modules = ["ProGen2Block"]
     _skip_keys_device_placement = ["past_key_values"]
 
+    @torch.no_grad()
     def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
         if isinstance(module, nn.Linear):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+            init.normal_(module.weight, mean=0.0, std=self.config.initializer_range)
             if module.bias is not None:
-                module.bias.data.zero_()
+                init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
-            if module.padding_idx is not None:
+            init.normal_(module.weight, mean=0.0, std=self.config.initializer_range)
+            if module.padding_idx is not None and not getattr(module.weight, "_is_hf_initialized", False):
                 module.weight.data[module.padding_idx].zero_()
         elif isinstance(module, nn.LayerNorm):
-            module.bias.data.zero_()
-            module.weight.data.fill_(1.0)
+            init.ones_(module.weight)
+            init.zeros_(module.bias)
 
 
 class ProGen2Model(ProGen2PreTrainedModel):
@@ -116,7 +119,7 @@ class ProGen2Model(ProGen2PreTrainedModel):
         use_cache: bool | None = None,
         cache_position: torch.LongTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         if isinstance(input_ids, NestedTensor):
             input_ids, attention_mask = input_ids.tensor, input_ids.mask
 
@@ -229,14 +232,14 @@ class ProGen2ForCausalLM(ProGen2PreTrainedModel, GenerationMixin):
         )
 
         hidden_states = outputs.last_hidden_state
-        # Only compute necessary logits; cast to float32 for stability
+        # Only compute necessary logits; the loss path casts to float32 for cross-entropy stability
         slice_indices = slice(-logits_to_keep, None) if isinstance(logits_to_keep, int) else logits_to_keep
-        lm_logits = self.lm_head(hidden_states[:, slice_indices, :]).to(torch.float32)
+        lm_logits = self.lm_head(hidden_states[:, slice_indices, :])
 
         loss = None
         if labels is not None:
             loss = self.loss_function(
-                logits=lm_logits,
+                logits=lm_logits.to(torch.float32),
                 labels=labels,
                 vocab_size=self.config.vocab_size,
                 **kwargs,
@@ -508,9 +511,7 @@ class ProGen2Attention(nn.Module):
 
         attention_interface: Callable = eager_attention_forward
         if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS.get_interface(
-                self.config._attn_implementation, eager_attention_forward
-            )
+            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
 
         attn_output, attn_weights = attention_interface(
             self,
@@ -579,6 +580,9 @@ class ProGen2RotaryEmbedding(nn.Module):
             ``(batch_size, 1, seq_length, rotary_dim)``.
         """
         if not self._initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device once
+            # the real device is known.
             inv_freq = 1.0 / (
                 10000.0 ** (torch.arange(0, self.dim, 2, device=x.device, dtype=torch.float32) / self.dim)
             )

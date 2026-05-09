@@ -31,6 +31,8 @@ from .registry import SEQUENCES
 
 @SEQUENCES.register("onehot")
 class OneHot(nn.Module):
+    supports_nested_tensor: bool = True
+
     def __init__(self, pretrained: str) -> None:
         super().__init__()
         self.config = AutoConfig.from_pretrained(str(pretrained))

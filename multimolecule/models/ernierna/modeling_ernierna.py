@@ -24,14 +24,14 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
 from chanfig import FlatDict
 from danling import NestedTensor
 from torch import Tensor, nn
-from transformers import AutoTokenizer, PreTrainedTokenizer
+from transformers import initialization as init
 from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache, EncoderDecoderCache
 from transformers.masking_utils import create_bidirectional_mask, create_causal_mask
@@ -55,6 +55,7 @@ from multimolecule.modules import (
     TokenPredictionHead,
     eager_attention_forward,
 )
+from multimolecule.tokenisers.rna.utils import get_alphabet
 
 from .configuration_ernierna import ErnieRnaConfig, ErnieRnaSecondaryStructureHeadConfig
 
@@ -75,6 +76,14 @@ class ErnieRnaPreTrainedModel(PreTrainedModel):
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["ErnieRnaLayer", "ErnieRnaEmbeddings"]
 
+    @torch.no_grad()
+    def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
+        if isinstance(module, ErnieRnaEmbeddings):
+            # `position_ids` is a non-persistent buffer; under transformers v5 meta-init it
+            # stays on the meta device after `from_pretrained`, so populate it here.
+            init.copy_(module.position_ids, torch.arange(module.position_ids.shape[-1]).expand((1, -1)))
+
 
 class ErnieRnaModel(ErnieRnaPreTrainedModel):
     """
@@ -94,33 +103,22 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
 
     pairwise_bias_map: Tensor
 
-    def __init__(
-        self, config: ErnieRnaConfig, add_pooling_layer: bool = True, tokenizer: PreTrainedTokenizer | None = None
-    ):
+    def __init__(self, config: ErnieRnaConfig, add_pooling_layer: bool = True):
         super().__init__(config)
-        if tokenizer is None:
-            tokenizer = AutoTokenizer.from_pretrained("multimolecule/rna")
-        self.tokenizer = tokenizer
-        self.pad_token_id = tokenizer.pad_token_id
+        self.pad_token_id = config.pad_token_id
         self.gradient_checkpointing = False
-        self.vocab_size = len(self.tokenizer)
-        if self.vocab_size != config.vocab_size:
+        alphabet_size = len(get_alphabet().vocabulary)
+        if alphabet_size != config.vocab_size:
             raise ValueError(
-                f"Vocab size in tokenizer ({self.vocab_size}) does not match the one in config ({config.vocab_size})"
+                f"Vocab size in MultiMolecule RNA alphabet ({alphabet_size}) "
+                f"does not match the one in config ({config.vocab_size})"
             )
-        token_to_ids = self.tokenizer._token_to_id
-        tokens = sorted(token_to_ids, key=token_to_ids.get)
-        pairwise_bias_dict = get_pairwise_bias_dict(config.pairwise_alpha)
         self.register_buffer(
             "pairwise_bias_map",
-            torch.tensor([[pairwise_bias_dict.get(f"{i}{j}", 0) for i in tokens] for j in tokens]),
+            _build_pairwise_bias_map(config.pairwise_alpha),
             persistent=False,
         )
-        self.pairwise_bias_proj = nn.Sequential(
-            nn.Linear(1, config.num_attention_heads // 2),
-            nn.GELU(),
-            nn.Linear(config.num_attention_heads // 2, config.num_attention_heads),
-        )
+        self.pairwise_bias_proj = ErnieRnaPairwiseBiasProjection(config)
         self.embeddings = ErnieRnaEmbeddings(config)
         self.encoder = ErnieRnaEncoder(config)
         self.pooler = ErnieRnaPooler(config) if add_pooling_layer else None
@@ -148,14 +146,12 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
 
         # Get bias from pairwise_bias_map
         if not self._inited:
-            token_to_ids = self.tokenizer._token_to_id
-            tokens = sorted(token_to_ids, key=token_to_ids.get)
-            pairwise_bias_dict = get_pairwise_bias_dict(self.config.pairwise_alpha)
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device once
+            # the real device is known.
             self.register_buffer(
                 "pairwise_bias_map",
-                torch.tensor(
-                    [[pairwise_bias_dict.get(f"{i}{j}", 0) for i in tokens] for j in tokens], device=input_ids.device
-                ),
+                _build_pairwise_bias_map(self.config.pairwise_alpha, device=input_ids.device),
                 persistent=False,
             )
             self._inited = True
@@ -176,7 +172,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         cache_position: Tensor | None = None,
         output_attention_biases: bool | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | ErnieRnaModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -220,13 +216,14 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        pairwise_bias = self.get_pairwise_bias(input_ids, attention_mask)
-        attention_bias = self.pairwise_bias_proj(pairwise_bias.unsqueeze(-1)).transpose(1, 3)
-
-        if isinstance(input_ids, NestedTensor) and attention_mask is None:
-            attention_mask = input_ids.mask
+        if isinstance(input_ids, NestedTensor):
+            if attention_mask is None:
+                attention_mask = input_ids.mask
+            input_ids = input_ids.tensor
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
+        if inputs_embeds is not None and isinstance(inputs_embeds, NestedTensor):
+            raise TypeError("ErnieRnaModel does not support NestedTensor inputs_embeds")
         if input_ids is not None:
             device = input_ids.device
             seq_length = input_ids.shape[1]
@@ -248,6 +245,12 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
             inputs_embeds=inputs_embeds,
             past_key_values_length=past_key_values_length,
         )
+        if input_ids is not None:
+            pairwise_bias = self.get_pairwise_bias(input_ids, attention_mask)
+        else:
+            batch_size = embedding_output.shape[0]
+            pairwise_bias = embedding_output.new_zeros((batch_size, seq_length, seq_length))
+        attention_bias = self.pairwise_bias_proj(pairwise_bias.unsqueeze(-1)).transpose(1, 3)
         attention_mask, encoder_attention_mask = self._create_attention_masks(
             attention_mask=attention_mask,
             encoder_attention_mask=encoder_attention_mask,
@@ -291,20 +294,20 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         if self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
                 cache_position=cache_position,
                 past_key_values=past_key_values,
             )
         else:
             attention_mask = create_bidirectional_mask(
-                config=self.config, input_embeds=embedding_output, attention_mask=attention_mask
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
             )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=encoder_attention_mask,
                 encoder_hidden_states=encoder_hidden_states,
             )
@@ -344,7 +347,7 @@ class ErnieRnaForSequencePrediction(ErnieRnaPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | ErnieRnaSequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -400,7 +403,7 @@ class ErnieRnaForTokenPrediction(ErnieRnaPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | ErnieRnaTokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -456,7 +459,7 @@ class ErnieRnaForContactPrediction(ErnieRnaPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ErnieRnaContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -535,7 +538,7 @@ class ErnieRnaForMaskedLM(ErnieRnaPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaForMaskedLMOutput:
+    ) -> tuple[Tensor, ...] | ErnieRnaForMaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -599,7 +602,7 @@ class ErnieRnaForSecondaryStructurePrediction(ErnieRnaForPreTraining):
         labels_lm: Tensor | None = None,
         labels_ss: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaForSecondaryStructurePredictorOutput:
+    ) -> tuple[Tensor, ...] | ErnieRnaForSecondaryStructurePredictorOutput:
         if self.require_attention_biases:
             output_attention_biases = kwargs.get("output_attention_biases", self.config.output_attention_biases)
             if output_attention_biases is False:
@@ -720,7 +723,7 @@ class ErnieRnaEncoder(nn.Module):
         cache_position: torch.Tensor | None = None,
         output_attention_biases: bool = False,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ErnieRnaModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | ErnieRnaModelOutputWithPastAndCrossAttentions:
         all_attention_biases = () if output_attention_biases else None
         for layer_module in self.layer:
             layer_outputs = layer_module(
@@ -755,7 +758,7 @@ class ErnieRnaLayer(GradientCheckpointingLayer):
         self.add_cross_attention = config.add_cross_attention
         if self.add_cross_attention:
             if not self.is_decoder:
-                raise RuntimeError(f"{self} should be used as a decoder model if cross attention is added")
+                raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
             self.crossattention = ErnieRnaAttention(
                 config,
                 position_embedding_type="absolute",
@@ -776,7 +779,7 @@ class ErnieRnaLayer(GradientCheckpointingLayer):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         self_attention_output, attention_bias, attn_weights = self.attention(
             hidden_states,
             attention_mask,
@@ -848,7 +851,7 @@ class ErnieRnaAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if self.is_cross_attention:
             attention_output, attn_weights = self.self(
                 hidden_states,
@@ -919,7 +922,7 @@ class ErnieRnaSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -1056,7 +1059,7 @@ class ErnieRnaCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -1154,7 +1157,6 @@ class ErnieRnaIntermediate(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertOutput with Bert->Ernie
 class ErnieRnaOutput(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
@@ -1169,7 +1171,6 @@ class ErnieRnaOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class ErnieRnaPooler(nn.Module):
     def __init__(self, config: ErnieRnaConfig):
         super().__init__()
@@ -1183,6 +1184,21 @@ class ErnieRnaPooler(nn.Module):
         pooled_output = self.dense(first_token_tensor)
         pooled_output = self.activation(pooled_output)
         return pooled_output
+
+
+class ErnieRnaPairwiseBiasProjection(nn.Module):
+    def __init__(self, config: ErnieRnaConfig):
+        super().__init__()
+        hidden_size = config.num_attention_heads // 2
+        self.dense1 = nn.Linear(1, hidden_size)
+        self.activation = nn.GELU()
+        self.dense2 = nn.Linear(hidden_size, config.num_attention_heads)
+
+    def forward(self, hidden_states: Tensor) -> Tensor:
+        hidden_states = self.dense1(hidden_states)
+        hidden_states = self.activation(hidden_states)
+        hidden_states = self.dense2(hidden_states)
+        return hidden_states
 
 
 class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
@@ -1215,7 +1231,7 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: ErnieRnaModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
+        outputs: ErnieRnaModelOutput | Mapping[str, Tensor] | tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -1273,7 +1289,7 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         output = adjacency * adjacency
         output = (output + output.transpose(-1, -2)) / 2
         output = output * constraint
-        output = output.unsqueeze(-1)
+        output = output.clamp(0, 1).unsqueeze(-1)
 
         if labels is not None:
             if isinstance(labels, NestedTensor) and not isinstance(output, NestedTensor):
@@ -1290,16 +1306,23 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         Watson-Crick and wobble base pairing rules (A-U, C-G, G-U).
 
         Args:
-            input_ids: Token IDs where 6=A, 7=C, 8=G, 9=U
+            input_ids: Token IDs in the MultiMolecule RNA vocabulary.
 
         Returns:
             A binary matrix where 1 indicates positions that can form valid base pairs
         """
+        vocabulary = get_alphabet().vocabulary
+        a_id, c_id, g_id, u_id = (
+            vocabulary.index("A"),
+            vocabulary.index("C"),
+            vocabulary.index("G"),
+            vocabulary.index("U"),
+        )
         dtype = torch.get_default_dtype()
-        base_a = (input_ids == 6).to(dtype)
-        base_c = (input_ids == 7).to(dtype)
-        base_g = (input_ids == 8).to(dtype)
-        base_u = (input_ids == 9).to(dtype)
+        base_a = (input_ids == a_id).to(dtype)
+        base_c = (input_ids == c_id).to(dtype)
+        base_g = (input_ids == g_id).to(dtype)
+        base_u = (input_ids == u_id).to(dtype)
         batch_size, seq_length = input_ids.shape
 
         au = torch.matmul(base_a.view(batch_size, seq_length, 1), base_u.view(batch_size, 1, seq_length))
@@ -1325,11 +1348,11 @@ class ErnieRnaSecondaryStructurePredictionHead(BasePredictionHead):
         return adjacency * constraint
 
 
-class ErnieRnaConvNet(nn.Sequential):
+class ErnieRnaConvNet(nn.Module):
     def __init__(self, config: ErnieRnaSecondaryStructureHeadConfig) -> None:
-        layers = []
-        for i in range(config.num_layers):
-            layers.append(
+        super().__init__()
+        self.blocks = nn.ModuleList(
+            [
                 ErnieRnaConvBlock(
                     config.num_channels,
                     dilation=pow(2, (i % 3)),
@@ -1337,9 +1360,16 @@ class ErnieRnaConvNet(nn.Sequential):
                     activation=config.activation,
                     bias=config.bias,
                 )
-            )
-        layers.append(nn.Conv2d(config.num_channels, config.num_labels, kernel_size=3, padding=1))
-        super().__init__(*layers)
+                for i in range(config.num_layers)
+            ]
+        )
+        self.projection = nn.Conv2d(config.num_channels, config.num_labels, kernel_size=3, padding=1)
+
+    def forward(self, hidden_state: Tensor) -> Tensor:
+        for block in self.blocks:
+            hidden_state = block(hidden_state)
+        hidden_state = self.projection(hidden_state)
+        return hidden_state
 
 
 class ErnieRnaConvBlock(nn.Module):
@@ -1379,83 +1409,6 @@ class ErnieRnaConvBlock(nn.Module):
         return hidden_state + residual
 
 
-@dataclass
-class ErnieRnaModelOutput(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaModelOutputWithPoolingAndCrossAttentions(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    pooler_output: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    past_key_values: Tuple[Tuple[torch.FloatTensor, ...]] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    cross_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaModelOutputWithPastAndCrossAttentions(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    past_key_values: Tuple[Tuple[torch.FloatTensor, ...]] | None = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    cross_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaSequencePredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaTokenPredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaContactPredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaForMaskedLMOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
-@dataclass
-class ErnieRnaForSecondaryStructurePredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits_lm: torch.FloatTensor = None
-    loss_lm: torch.FloatTensor = None
-    logits_ss: torch.FloatTensor = None
-    loss_ss: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
-
-
 def get_pairwise_bias_dict(alpha):
     return FlatDict(
         {
@@ -1469,6 +1422,13 @@ def get_pairwise_bias_dict(alpha):
     )
 
 
+def _build_pairwise_bias_map(alpha: float, device: torch.device | None = None) -> Tensor:
+    """Build the pairwise base-pairing bias matrix in MultiMolecule alphabet order."""
+    tokens = get_alphabet().vocabulary
+    pairwise_bias_dict = get_pairwise_bias_dict(alpha)
+    return torch.tensor([[pairwise_bias_dict.get(f"{i}{j}", 0) for i in tokens] for j in tokens], device=device)
+
+
 class ErnieRnaSoftsign(nn.Module):
     def __init__(self, k: float = 1.0):
         super().__init__()
@@ -1476,6 +1436,83 @@ class ErnieRnaSoftsign(nn.Module):
 
     def forward(self, input: Tensor) -> Tensor:
         return 1.0 / (1.0 + torch.exp(-2 * self.k * input))
+
+
+@dataclass
+class ErnieRnaModelOutput(ModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaModelOutputWithPoolingAndCrossAttentions(ModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    pooler_output: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    past_key_values: tuple[tuple[torch.FloatTensor, ...]] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    cross_attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaModelOutputWithPastAndCrossAttentions(ModelOutput):
+    last_hidden_state: torch.FloatTensor = None
+    past_key_values: tuple[tuple[torch.FloatTensor, ...]] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    cross_attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaSequencePredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaTokenPredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaContactPredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaForMaskedLMOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
+
+
+@dataclass
+class ErnieRnaForSecondaryStructurePredictorOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits_lm: torch.FloatTensor = None
+    loss_lm: torch.FloatTensor = None
+    logits_ss: torch.FloatTensor = None
+    loss_ss: torch.FloatTensor = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
+    attention_biases: tuple[torch.FloatTensor, ...] | None = None
 
 
 ErnieRnaPreTrainedModel._can_record_outputs = {

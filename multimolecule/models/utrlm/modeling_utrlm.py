@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -135,7 +135,7 @@ class UtrLmModel(UtrLmPreTrainedModel):
         use_cache: bool | None = None,
         cache_position: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -242,7 +242,7 @@ class UtrLmModel(UtrLmPreTrainedModel):
         if self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
                 cache_position=cache_position,
                 past_key_values=past_key_values,
@@ -250,14 +250,14 @@ class UtrLmModel(UtrLmPreTrainedModel):
         else:
             attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
             )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=encoder_attention_mask,
                 encoder_hidden_states=encoder_hidden_states,
             )
@@ -299,7 +299,7 @@ class UtrLmForSequencePrediction(UtrLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | SequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -354,7 +354,7 @@ class UtrLmForTokenPrediction(UtrLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | TokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -410,7 +410,7 @@ class UtrLmForContactPrediction(UtrLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -489,7 +489,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> tuple[Tensor, ...] | MaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -558,7 +558,7 @@ class UtrLmForPreTraining(UtrLmForMaskedLM):
         labels_structure: Tensor | None = None,
         labels_mfe: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | UtrLmForPreTrainingOutput:
+    ) -> tuple[Tensor, ...] | UtrLmForPreTrainingOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -645,7 +645,7 @@ class UtrLmForSecondaryStructurePrediction(UtrLmPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -725,10 +725,11 @@ class UtrLmEmbeddings(nn.Module):
                 embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all UTR-LM model training runs
             src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
+            dtype = embeddings.dtype
             if isinstance(mask, NestedTensor):
-                mask_ratio_observed = mask.tensor.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.tensor.sum(-1).to(dtype=dtype) / src_lengths
             else:
-                mask_ratio_observed = mask.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
             embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
 
         if self.position_embedding_type == "absolute":
@@ -739,7 +740,7 @@ class UtrLmEmbeddings(nn.Module):
                     )
                 else:
                     position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
-                # This is a bug in the original implementation
+                # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
                 position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
             if isinstance(embeddings, NestedTensor):
@@ -772,7 +773,7 @@ class UtrLmEncoder(nn.Module):
         use_cache: bool | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         for layer_module in self.layer:
             hidden_states = layer_module(
                 hidden_states,
@@ -784,8 +785,7 @@ class UtrLmEncoder(nn.Module):
                 **kwargs,
             )
 
-        if self.emb_layer_norm_after:
-            hidden_states = self.emb_layer_norm_after(hidden_states)
+        hidden_states = self.emb_layer_norm_after(hidden_states)
 
         return BaseModelOutputWithPastAndCrossAttentions(
             last_hidden_state=hidden_states,
@@ -893,7 +893,7 @@ class UtrLmAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         hidden_states_ln = self.layer_norm(hidden_states)
         if self.is_cross_attention:
             attention_mask = encoder_attention_mask
@@ -966,7 +966,7 @@ class UtrLmSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -1086,7 +1086,7 @@ class UtrLmCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -1199,7 +1199,6 @@ class UtrLmOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class UtrLmPooler(nn.Module):
     def __init__(self, config: UtrLmConfig):
         super().__init__()
@@ -1226,8 +1225,8 @@ class UtrLmForPreTrainingOutput(ModelOutput):
     loss_structure: torch.FloatTensor | None = None
     logits_mfe: torch.FloatTensor = None
     loss_mfe: torch.FloatTensor | None = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 def create_position_ids_from_inputs_embeds(inputs_embeds: torch.FloatTensor, padding_idx: int = 0) -> torch.LongTensor:

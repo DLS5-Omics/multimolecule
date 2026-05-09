@@ -27,6 +27,7 @@ from transformers import (
     AutoModelForCausalLM,
     AutoModelForPreTraining,
     AutoModelForSequenceClassification,
+    AutoModelForTokenClassification,
     AutoTokenizer,
 )
 
@@ -61,5 +62,6 @@ AutoModelForCausalLM.register(HyenaDnaConfig, HyenaDnaForCausalLM)
 AutoModelForSequencePrediction.register(HyenaDnaConfig, HyenaDnaForSequencePrediction)
 AutoModelForSequenceClassification.register(HyenaDnaConfig, HyenaDnaForSequencePrediction)
 AutoModelForTokenPrediction.register(HyenaDnaConfig, HyenaDnaForTokenPrediction)
+AutoModelForTokenClassification.register(HyenaDnaConfig, HyenaDnaForTokenPrediction)
 AutoModelForPreTraining.register(HyenaDnaConfig, HyenaDnaForPreTraining)
 AutoTokenizer.register(HyenaDnaConfig, DnaTokenizer)

@@ -232,10 +232,11 @@ def update_readme(readme_path: str, model: str) -> None:
         widget_entry = {
             "example_title": name,
             "text": prepared_sequence,
-            "output": output,
             "pipeline_tag": pipeline_tag,
             "task": ppl.task,
         }
+        if output is not None:
+            widget_entry["output"] = output
         widget_entry.update(ref_meta.get(name, {}))
         widget_entry.update(mask_meta)
         post["widget"].append(widget_entry)
@@ -289,7 +290,7 @@ def build_mask_meta(sequence: str, pos: int | None) -> Dict[str, object]:
     }
 
 
-def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
+def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict | None:
     tokenizer_kwargs = {"truncation": True}
     if ppl.task == "fill-mask":
         return [
@@ -301,6 +302,10 @@ def run_pipeline(ppl: Pipeline, sequence: str) -> List[Dict] | Dict:
         return {"text": result[0]["generated_text"]}
     if ppl.task == "rna-secondary-structure":
         return {"text": ppl(sequence, tokenizer_kwargs=tokenizer_kwargs)["secondary_structure"]}
+    if ppl.task == "feature-extraction":
+        # Embedding tensors are too large for a README and the Hub runs feature-extraction
+        # widgets live; emit no pre-rendered output so the widget always reflects the model.
+        return None
     raise RuntimeError(f"Pipeline {ppl.task} is not supported")
 
 

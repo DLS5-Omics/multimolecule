@@ -528,7 +528,7 @@ class Dataset(datasets.Dataset):
             k
             for k, v in unique_chars.items()
             if k.lower() in defaults.SECONDARY_STRUCTURE_COL_NAMES
-            or (v.issubset(DB_COMPLETE_ALPHABET) and v.issuperset(DB_MINIMAL_ALPHABET))
+            or (v.issubset(DB_COMPLETE_ALPHABET) and v.issuperset(DB_MINIMAL_ALPHABET))  # noqa: W503
         ]
 
         data_cols = [i for i in all_cols if i not in self.id_cols]

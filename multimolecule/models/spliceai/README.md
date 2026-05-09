@@ -4,7 +4,7 @@ tags:
   - Biology
   - RNA
   - ncRNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/gencode
 library_name: multimolecule
@@ -169,10 +169,12 @@ Please contact the authors of the [SpliceAI paper](https://doi.org/10.1016/j.cel
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md) and the [CC-BY-NC-4.0 License](https://creativecommons.org/licenses/by-nc/4.0/).
+This implementation is licensed under the [GNU Affero General Public License](license.md).
+
+The original SpliceAI weights distributed by Illumina are released under the [CC-BY-NC-4.0 License](https://creativecommons.org/licenses/by-nc/4.0/); converted weights remain subject to those upstream terms.
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 
 ```spdx
-SPDX-License-Identifier: AGPL-3.0-or-later AND CC-BY-NC-4.0
+SPDX-License-Identifier: AGPL-3.0-or-later
 ```

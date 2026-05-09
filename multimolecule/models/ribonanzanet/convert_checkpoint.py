@@ -49,7 +49,6 @@ def convert_checkpoint(convert_config):
     config.use_triangular_attention = any("triangle_attention" in key for key in ckpt.keys())
     vocab_list = get_alphabet().vocabulary
     config.vocab_size = len(vocab_list)
-    config.architectures = ["RibonanzaNetModel"]
 
     if "ct_predictor.weight" in ckpt:
         Model = RibonanzaNetForSecondaryStructurePrediction
@@ -88,8 +87,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
             key = key.replace("outer_product_mean", "model.encoder.pairwise_embeddings.triangle_proj")
         else:
             key = key.replace("outer_product_mean", "pairwise.triangle_proj")
-        key = key.replace("pairwise_norm", "pairwise_to_bias.0")
-        key = key.replace("pairwise2heads", "pairwise_to_bias.1")
+        key = key.replace("pairwise_norm", "pairwise_bias_norm")
+        key = key.replace("pairwise2heads", "pairwise_bias_proj")
         key = key.replace("norm3", "conv_norm")
         key = key.replace("norm2", "output.layer_norm")
         key = key.replace("norm1", "attention.output.layer_norm2")
@@ -107,7 +106,6 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("proj_down1", "in_proj")
         key = key.replace("proj_down2", "out_proj")
         key = key.replace("linear_for_pair", "pairwise_bias")
-        key = key.replace("pairwise_to_bias", "pairwise_bias")
         if "pair_transition" in key:
             key = key.replace("pair_transition", "pairwise")
             key = key.replace("pairwise.0", "pairwise.intermediate.layer_norm")
@@ -129,6 +127,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
                 key.replace("to_qkv", "value"),
             )
             state_dict[q], state_dict[k], state_dict[v] = value.chunk(3, dim=0)
+            continue
         if "decoder" in key:
             if value.shape[0] == 2:
                 a3c, dms = key.replace("decoder", "a3c_head.decoder"), key.replace("decoder", "dms_head.decoder")

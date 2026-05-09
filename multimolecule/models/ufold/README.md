@@ -3,7 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 library_name: multimolecule
 pipeline_tag: other
 pipeline: rna-secondary-structure

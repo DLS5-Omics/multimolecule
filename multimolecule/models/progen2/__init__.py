@@ -27,6 +27,7 @@ from transformers import (
     AutoModelForCausalLM,
     AutoModelForPreTraining,
     AutoModelForSequenceClassification,
+    AutoModelForTokenClassification,
     AutoTokenizer,
 )
 
@@ -61,5 +62,6 @@ AutoModelForCausalLM.register(ProGen2Config, ProGen2ForCausalLM)
 AutoModelForSequencePrediction.register(ProGen2Config, ProGen2ForSequencePrediction)
 AutoModelForSequenceClassification.register(ProGen2Config, ProGen2ForSequencePrediction)
 AutoModelForTokenPrediction.register(ProGen2Config, ProGen2ForTokenPrediction)
+AutoModelForTokenClassification.register(ProGen2Config, ProGen2ForTokenPrediction)
 AutoModelForPreTraining.register(ProGen2Config, ProGen2ForPreTraining)
 AutoTokenizer.register(ProGen2Config, ProteinTokenizer)

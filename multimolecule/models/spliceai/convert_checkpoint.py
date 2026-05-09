@@ -46,30 +46,60 @@ keras_version = parse_version(keras.__version__)
 torch.manual_seed(1016)
 
 
+# Upstream Illumina SpliceAI uses a one-hot encoding ordered as ["A", "C", "G", "T"].
+ORIGINAL_VOCAB_LIST = ["A", "C", "G", "U"]
+
+
 def convert_checkpoint(convert_config):
     print(f"Converting SpliceAi checkpoint at {convert_config.checkpoint_path}")
     config = Config()
-    config.architectures = ["SpliceAiModel"]
 
     model = Model(config)
 
     root = convert_config.checkpoint_path
 
+    alphabet = get_alphabet("streamline", prepend_tokens=[])
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
-    tokenizer_config["alphabet"] = get_alphabet("streamline", prepend_tokens=[])
+    tokenizer_config["alphabet"] = alphabet
     tokenizer_config["unk_token"] = tokenizer_config["pad_token"] = "N"
 
-    ckpts = sorted([os.path.join(root, f) for f in os.listdir(root) if f.endswith(".h5")])
-    for i, ckpt in enumerate(ckpts):
-        state_dict = _convert_checkpoint(ckpt)
-        model_state = model.networks[i].state_dict()
-        for key, value in model_state.items():
-            if key.endswith("num_batches_tracked") and key not in state_dict:
-                state_dict[key] = value
-        load_checkpoint(model.networks[i], state_dict)
+    new_vocab_list = list(alphabet.vocabulary)
+    # Build a permutation that places each upstream channel into the slot of its corresponding
+    # MultiMolecule token. Slots whose token is not present upstream (e.g. "N") stay zero.
+    channel_permutation: list[int | None] = [
+        ORIGINAL_VOCAB_LIST.index(token) if token in ORIGINAL_VOCAB_LIST else None for token in new_vocab_list
+    ]
 
+    ckpts = sorted([os.path.join(root, f) for f in os.listdir(root) if f.endswith(".h5")])
+    state_dict: OrderedDict[str, torch.Tensor] = OrderedDict()
+    for member_index, ckpt in enumerate(ckpts):
+        member_state = _convert_checkpoint(ckpt)
+        member_state = _permute_projection_channels(member_state, channel_permutation, len(new_vocab_list))
+        member_module_state = model.members[member_index].state_dict()
+        for key, value in member_module_state.items():
+            if key.endswith("num_batches_tracked") and key not in member_state:
+                member_state[key] = value
+        for key, value in member_state.items():
+            state_dict[f"members.{member_index}.{key}"] = value
+
+    load_checkpoint(model, state_dict)
     save_checkpoint(convert_config, model, tokenizer_config=tokenizer_config)
     print(f"Checkpoint saved to {convert_config.output_path}")
+
+
+def _permute_projection_channels(
+    state_dict: OrderedDict, channel_permutation: list[int | None], new_vocab_size: int
+) -> OrderedDict:
+    weight = state_dict.get("projection.weight")
+    if weight is None:
+        return state_dict
+    out_channels, _, kernel_size = weight.shape
+    new_weight = torch.zeros(out_channels, new_vocab_size, kernel_size, dtype=weight.dtype, device=weight.device)
+    for new_index, original_index in enumerate(channel_permutation):
+        if original_index is not None:
+            new_weight[:, new_index, :] = weight[:, original_index, :]
+    state_dict["projection.weight"] = new_weight
+    return state_dict
 
 
 def _convert_checkpoint(file):

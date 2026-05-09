@@ -45,6 +45,8 @@ class SequenceBackbone(nn.Module):
     def _resolve_dense_input(self, dense_input: bool | None) -> bool:
         if dense_input is not None:
             return dense_input
+        if getattr(self.sequence, "supports_nested_tensor", False):
+            return False
         attention_backend = getattr(self.sequence.config, "_attn_implementation", None)
         return attention_backend != "sdpa"
 

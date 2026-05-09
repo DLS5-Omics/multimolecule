@@ -23,13 +23,14 @@
 from __future__ import annotations
 
 import math
-from typing import Any, Tuple
+from typing import Any
 
 import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers import GenerationMixin
+from transformers import initialization as init
 from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import BaseModelOutputWithPoolingAndCrossAttentions, CausalLMOutput
 from transformers.modeling_utils import PreTrainedModel
@@ -48,22 +49,26 @@ class HyenaDnaPreTrainedModel(PreTrainedModel):
     config_class = HyenaDnaConfig
     base_model_prefix = "model"
     supports_gradient_checkpointing = True
-    _supports_attention_backend = True
+    # HyenaDNA has no attention layers (Hyena long convs are FFT-based), so transformers'
+    # ALL_ATTENTION_FUNCTIONS dispatch (sdpa / flash_attn / flex_attn) does not apply and
+    # the _supports_* attention-backend flags are intentionally not declared.
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["HyenaDnaBlock"]
 
+    @torch.no_grad()
     def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
         if isinstance(module, nn.Linear):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+            init.normal_(module.weight, mean=0.0, std=self.config.initializer_range)
             if module.bias is not None:
-                module.bias.data.zero_()
+                init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
-            if module.padding_idx is not None:
+            init.normal_(module.weight, mean=0.0, std=self.config.initializer_range)
+            if module.padding_idx is not None and not getattr(module.weight, "_is_hf_initialized", False):
                 module.weight.data[module.padding_idx].zero_()
         elif isinstance(module, nn.LayerNorm):
-            module.bias.data.zero_()
-            module.weight.data.fill_(1.0)
+            init.ones_(module.weight)
+            init.zeros_(module.bias)
 
 
 class HyenaDnaModel(HyenaDnaPreTrainedModel):
@@ -82,6 +87,7 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
         self.layers = nn.ModuleList([HyenaDnaBlock(config) for _ in range(config.num_hidden_layers)])
         self.final_layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.pooler = HyenaDnaPooler(config) if add_pooling_layer else None
+        self.gradient_checkpointing = False
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -101,7 +107,9 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         output_hidden_states: bool | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+        # Hyena's FFT-based long convolutions require a fixed sequence length; materialise
+        # NestedTensor to dense + mask before entering the block stack.
         if isinstance(input_ids, NestedTensor):
             if attention_mask is None:
                 attention_mask = input_ids.mask
@@ -130,7 +138,10 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
         for layer in self.layers:
             if output_hidden_states:
                 all_hidden_states = all_hidden_states + (hidden_states,)
-            hidden_states = layer(hidden_states)
+            if self.gradient_checkpointing and self.training:
+                hidden_states = self._gradient_checkpointing_func(layer.__call__, hidden_states)
+            else:
+                hidden_states = layer(hidden_states)
             if hidden_mask is not None:
                 hidden_states = hidden_states * hidden_mask.to(hidden_states.dtype)
 
@@ -158,6 +169,8 @@ class HyenaDnaForCausalLM(HyenaDnaPreTrainedModel, GenerationMixin):
         >>> config = HyenaDnaConfig()
         >>> model = HyenaDnaForCausalLM(config)
     """
+
+    _tied_weights_keys = {"lm_head.weight": "model.embeddings.word_embeddings.weight"}
 
     def __init__(self, config: HyenaDnaConfig):
         super().__init__(config)
@@ -205,9 +218,12 @@ class HyenaDnaForCausalLM(HyenaDnaPreTrainedModel, GenerationMixin):
 
         loss = None
         if labels is not None:
-            shift_logits = logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
-            loss = F.cross_entropy(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+            loss = self.loss_function(
+                logits=logits,
+                labels=labels,
+                vocab_size=self.config.vocab_size,
+                **kwargs,
+            )
 
         return CausalLMOutput(
             loss=loss,
@@ -429,7 +445,8 @@ class HyenaDnaFilter(nn.Module):
         self.modulation = HyenaDnaExponentialModulation(config.hidden_size)
 
     def filter(self, L: int) -> Tensor:
-        z, t = self.pos_emb(L)
+        device = self.implicit_filter[0].weight.device
+        z, t = self.pos_emb(L, device=device)
         h = self.implicit_filter(z.to(dtype=self.implicit_filter[0].weight.dtype))
         h = self.modulation(t, h)
         return h
@@ -452,23 +469,29 @@ class HyenaDnaPositionalEmbedding(nn.Module):
     def __init__(self, config: HyenaDnaConfig):
         super().__init__()
         self.seq_len = config.max_position_embeddings
-        # Normalized time in [0, 1]
-        t = torch.linspace(0, 1, self.seq_len)[None, :, None]  # (1, L, 1)
-
-        if config.filter_emb_dim > 1:
-            bands = (config.filter_emb_dim - 1) // 2
-        # Integer positions for frequency computation
-        t_rescaled = torch.linspace(0, self.seq_len - 1, self.seq_len)[None, :, None]
-        w = 2 * math.pi * t_rescaled / self.seq_len  # (1, L, 1)
-
-        f = torch.linspace(1e-4, bands - 1, bands)[None, None]  # (1, 1, bands)
-
-        z = torch.cat([t, torch.cos(-f * w), torch.sin(-f * w)], dim=-1)  # (1, L, emb_dim)
-
+        self.bands = (config.filter_emb_dim - 1) // 2 if config.filter_emb_dim > 1 else 0
+        z, t = self._build(device=None)
         self.register_buffer("z", z, persistent=False)
         self.register_buffer("t", t, persistent=False)
+        self._initialized = False
 
-    def forward(self, L: int) -> tuple[Tensor, Tensor]:
+    def _build(self, device: torch.device | None) -> tuple[Tensor, Tensor]:
+        t = torch.linspace(0, 1, self.seq_len, device=device)[None, :, None]  # (1, L, 1)
+        t_rescaled = torch.linspace(0, self.seq_len - 1, self.seq_len, device=device)[None, :, None]
+        w = 2 * math.pi * t_rescaled / self.seq_len  # (1, L, 1)
+        f = torch.linspace(1e-4, self.bands - 1, self.bands, device=device)[None, None]
+        z = torch.cat([t, torch.cos(-f * w), torch.sin(-f * w)], dim=-1)  # (1, L, emb_dim)
+        return z, t
+
+    def forward(self, L: int, device: torch.device | None = None) -> tuple[Tensor, Tensor]:
+        if not self._initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the real device on
+            # first use.
+            z, t = self._build(device=device)
+            self.register_buffer("z", z, persistent=False)
+            self.register_buffer("t", t, persistent=False)
+            self._initialized = True
         return self.z[:, :L], self.t[:, :L]
 
 
@@ -477,12 +500,26 @@ class HyenaDnaSinActivation(nn.Module):
 
     def __init__(self, config: HyenaDnaConfig):
         super().__init__()
+        self.activation_freq = config.activation_freq
+        self.filter_order = config.filter_order
         if config.train_freq:
             self.freq = nn.Parameter(config.activation_freq * torch.ones(1, config.filter_order))
+            self._initialized = True
         else:
             self.register_buffer("freq", config.activation_freq * torch.ones(1, config.filter_order), persistent=False)
+            self._initialized = False
 
     def forward(self, x: Tensor) -> Tensor:
+        if not self._initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device on
+            # first forward.
+            self.register_buffer(
+                "freq",
+                self.activation_freq * torch.ones(1, self.filter_order, device=x.device),
+                persistent=False,
+            )
+            self._initialized = True
         return torch.sin(self.freq * x)
 
 
@@ -499,12 +536,22 @@ class HyenaDnaExponentialModulation(nn.Module):
     ):
         super().__init__()
         self.shift = shift
-        max_decay = math.log(target) / fast_decay_pct
-        min_decay = math.log(target) / slow_decay_pct
-        deltas = torch.linspace(min_decay, max_decay, d_model)[None, None]
-        self.register_buffer("deltas", deltas, persistent=False)
+        self.d_model = d_model
+        self.max_decay = math.log(target) / fast_decay_pct
+        self.min_decay = math.log(target) / slow_decay_pct
+        self.register_buffer("deltas", self._build(device=None), persistent=False)
+        self._initialized = False
+
+    def _build(self, device: torch.device | None) -> Tensor:
+        return torch.linspace(self.min_decay, self.max_decay, self.d_model, device=device)[None, None]
 
     def forward(self, t: Tensor, x: Tensor) -> Tensor:
+        if not self._initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device on
+            # first forward.
+            self.register_buffer("deltas", self._build(device=x.device), persistent=False)
+            self._initialized = True
         decay = torch.exp(-t * self.deltas.abs())
         return x * (decay + self.shift)
 

@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -81,6 +81,8 @@ class RnaBertPreTrainedModel(PreTrainedModel):
     def _init_weights(self, module: nn.Module):
         super()._init_weights(module)
         if isinstance(module, RnaBertEmbeddings):
+            # `position_ids` is a non-persistent buffer; under transformers v5 meta-init it
+            # stays on the meta device after `from_pretrained`, so populate it here.
             init.copy_(module.position_ids, torch.arange(module.position_ids.shape[-1]).expand((1, -1)))
 
 
@@ -131,7 +133,7 @@ class RnaBertModel(RnaBertPreTrainedModel):
         use_cache: bool | None = None,
         cache_position: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -237,20 +239,20 @@ class RnaBertModel(RnaBertPreTrainedModel):
         if self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
                 cache_position=cache_position,
                 past_key_values=past_key_values,
             )
         else:
             attention_mask = create_bidirectional_mask(
-                config=self.config, input_embeds=embedding_output, attention_mask=attention_mask
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
             )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=encoder_attention_mask,
                 encoder_hidden_states=encoder_hidden_states,
             )
@@ -292,7 +294,7 @@ class RnaBertForSequencePrediction(RnaBertPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | SequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -347,7 +349,7 @@ class RnaBertForTokenPrediction(RnaBertPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | TokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -403,7 +405,7 @@ class RnaBertForContactPrediction(RnaBertPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -478,7 +480,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> tuple[Tensor, ...] | MaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -549,7 +551,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         labels_lm_ss: Tensor | None = None,
         labels_sa: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaBertForPreTrainingOutput:
+    ) -> tuple[Tensor, ...] | RnaBertForPreTrainingOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -580,6 +582,35 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+
+class RnaBertLayerNorm(nn.Module):
+    """LayerNorm with explicit NestedTensor support.
+
+    `nn.LayerNorm` does not iterate per-batch tensors of a `NestedTensor`, so this
+    re-implementation normalises each storage tensor individually and rebuilds the
+    NestedTensor. Behaviour matches `nn.LayerNorm` exactly for dense inputs.
+    """
+
+    def __init__(self, hidden_size: int, eps: float = 1e-12):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(hidden_size))
+        self.bias = nn.Parameter(torch.zeros(hidden_size))
+        self.variance_epsilon = eps
+
+    def forward(self, x: Tensor) -> Tensor:
+        if isinstance(x, NestedTensor):
+            storage = []
+            for t in x._storage:
+                u = t.mean(-1, keepdim=True)
+                s = (t - u).pow(2).mean(-1, keepdim=True)
+                t = (t - u) / torch.sqrt(s + self.variance_epsilon)
+                storage.append(self.weight * t + self.bias)
+            return NestedTensor(storage, **x._meta())
+        u = x.mean(-1, keepdim=True)
+        s = (x - u).pow(2).mean(-1, keepdim=True)
+        x = (x - u) / torch.sqrt(s + self.variance_epsilon)
+        return self.weight * x + self.bias
 
 
 class RnaBertEmbeddings(nn.Module):
@@ -664,7 +695,7 @@ class RnaBertEncoder(nn.Module):
         use_cache: bool | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         for layer_module in self.layer:
             hidden_states = layer_module(
                 hidden_states,
@@ -779,7 +810,7 @@ class RnaBertAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if self.is_cross_attention:
             attention_mask = encoder_attention_mask
             attention_output, attn_weights = self.self(
@@ -848,7 +879,7 @@ class RnaBertSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -959,7 +990,7 @@ class RnaBertCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -1071,7 +1102,6 @@ class RnaBertOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaBertPooler(nn.Module):
     def __init__(self, config: RnaBertConfig):
         super().__init__()
@@ -1087,6 +1117,13 @@ class RnaBertPooler(nn.Module):
         return pooled_output
 
 
+RnaBertPreTrainedModel._can_record_outputs = {
+    "hidden_states": RnaBertLayer,
+    "attentions": OutputRecorder(RnaBertAttention, index=1, layer_name="attention"),
+    "cross_attentions": OutputRecorder(RnaBertAttention, index=1, layer_name="crossattention"),
+}
+
+
 @dataclass
 class RnaBertForPreTrainingOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
@@ -1096,34 +1133,5 @@ class RnaBertForPreTrainingOutput(ModelOutput):
     loss_ss: torch.FloatTensor | None = None
     logits_sa: torch.FloatTensor = None  # type: ignore[assignment]
     loss_sa: torch.FloatTensor | None = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-class RnaBertLayerNorm(nn.Module):
-    def __init__(self, hidden_size: int, eps: float = 1e-12):
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(hidden_size))
-        self.bias = nn.Parameter(torch.zeros(hidden_size))
-        self.variance_epsilon = eps
-
-    def forward(self, x: Tensor) -> Tensor:
-        if isinstance(x, NestedTensor):
-            storage = []
-            for t in x._storage:
-                u = t.mean(-1, keepdim=True)
-                s = (t - u).pow(2).mean(-1, keepdim=True)
-                t = (t - u) / torch.sqrt(s + self.variance_epsilon)
-                storage.append(self.weight * t + self.bias)
-            return NestedTensor(storage, **x._meta())
-        u = x.mean(-1, keepdim=True)
-        s = (x - u).pow(2).mean(-1, keepdim=True)
-        x = (x - u) / torch.sqrt(s + self.variance_epsilon)
-        return self.weight * x + self.bias
-
-
-RnaBertPreTrainedModel._can_record_outputs = {
-    "hidden_states": RnaBertLayer,
-    "attentions": OutputRecorder(RnaBertAttention, index=1, layer_name="attention"),
-    "cross_attentions": OutputRecorder(RnaBertAttention, index=1, layer_name="crossattention"),
-}
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None

@@ -44,7 +44,6 @@ def convert_checkpoint(convert_config):
     vocab_list = get_alphabet().vocabulary
     config = Config.from_dict(config)
     del config._name_or_path
-    config.architectures = ["SpliceBertModel"]
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
@@ -92,7 +91,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     del state_dict["model.embeddings.position_ids"]
     return state_dict

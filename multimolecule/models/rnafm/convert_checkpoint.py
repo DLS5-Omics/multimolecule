@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import os
+import re
 
 import chanfig
 import torch
@@ -61,7 +62,6 @@ def convert_checkpoint(convert_config):
     else:
         Model = RnaFmForPreTraining
     config.vocab_size = len(vocab_list)
-    config.architectures = ["RnaFmModel"]
     tokenizer_config["model_max_length"] = config.max_position_embeddings - 2
 
     model = Model(config)
@@ -108,6 +108,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("proj.first.0", "projection")
         key = key.replace("proj.resnet", "convnet")
         key = key.replace("proj.final", "prediction")
+        key = re.sub(r"^(.*\bconvnet)\.(\d+)\.", r"\1.layers.\2.", key)
         state_dict[key] = value
 
     if "ss_head.prediction.weight" in state_dict:
@@ -123,7 +124,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 

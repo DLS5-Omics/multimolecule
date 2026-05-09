@@ -81,7 +81,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("lm_mask_head.linear2", "lm_head.decoder")
         if task == "ss":
             key = key.replace("pred_head.linear_in", "ss_head.projection")
-            key = key.replace("pred_head.resnet.encoder.layer", "ss_head.convnet")
+            key = key.replace("pred_head.resnet.encoder.layer", "ss_head.convnet.layers")
             key = key.replace("conv_net.0", "conv1")
             key = key.replace("conv_net.3", "conv2")
             key = key.replace("conv_net.6", "conv3")
@@ -105,7 +105,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 
@@ -159,7 +159,6 @@ def get_config(convert_config: ConvertConfig) -> Config:
         )
     else:
         raise ValueError(f"Unknown size: {convert_config.size}")
-    config.architectures = ["RiNALMoModel"]
     return config
 
 

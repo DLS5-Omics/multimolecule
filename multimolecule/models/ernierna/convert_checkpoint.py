@@ -39,7 +39,6 @@ def convert_checkpoint(convert_config):
     print(f"Converting ErnieRna checkpoint at {convert_config.checkpoint_path}")
     vocab_list = get_alphabet().vocabulary
     config = Config()
-    config.architectures = ["ErnieRnaModel"]
     config.vocab_size = len(vocab_list)
 
     Model = ErnieRnaForPreTraining
@@ -79,8 +78,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("final_layer_norm", "output.layer_norm")
         key = key.replace("fc1", "intermediate.dense")
         key = key.replace("fc2", "output.dense")
-        key = key.replace("encoder.twod_proj.linear1", "model.pairwise_bias_proj.0")
-        key = key.replace("encoder.twod_proj.linear2", "model.pairwise_bias_proj.2")
+        key = key.replace("encoder.twod_proj.linear1", "model.pairwise_bias_proj.dense1")
+        key = key.replace("encoder.twod_proj.linear2", "model.pairwise_bias_proj.dense2")
         key = key.replace("encoder.embed_tokens", "embeddings.word_embeddings")
         key = key.replace("encoder.segment_embeddings", "embeddings.token_type_embeddings")
         key = key.replace("encoder.emb_layer_norm", "embeddings.layer_norm")
@@ -89,8 +88,8 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         key = key.replace("encoder.masked_lm_pooler", "model.pooler.dense")
         key = key.replace("encoder.lm_output_learned_bias", "lm_head.decoder.bias")
         key = key.replace("module", "ss_head")
-        key = key.replace("proj.resnet", "convnet")
-        key = key.replace("proj.final", "convnet.8")
+        key = key.replace("proj.resnet", "convnet.blocks")
+        key = key.replace("proj.final", "convnet.projection")
         key = key.replace("bn1", "norm")
         state_dict[key] = value
 

@@ -26,17 +26,23 @@ from multimolecule.tokenisers import RnaTokenizer
 
 from ..modeling_auto import AutoModelForRnaSecondaryStructurePrediction
 from .configuration_bpfold import BpfoldConfig
-from .modeling_bpfold import BpfoldModel, BpfoldModelOutput, BpfoldPreTrainedModel
+from .modeling_bpfold import (
+    BpfoldForRnaSecondaryStructurePrediction,
+    BpfoldModel,
+    BpfoldModelOutput,
+    BpfoldPreTrainedModel,
+)
 
 __all__ = [
     "RnaTokenizer",
     "BpfoldConfig",
     "BpfoldModel",
+    "BpfoldForRnaSecondaryStructurePrediction",
     "BpfoldModelOutput",
     "BpfoldPreTrainedModel",
 ]
 
 AutoConfig.register("bpfold", BpfoldConfig)
 AutoModel.register(BpfoldConfig, BpfoldModel)
-AutoModelForRnaSecondaryStructurePrediction.register(BpfoldConfig, BpfoldModel)
+AutoModelForRnaSecondaryStructurePrediction.register(BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction)
 AutoTokenizer.register(BpfoldConfig, RnaTokenizer)

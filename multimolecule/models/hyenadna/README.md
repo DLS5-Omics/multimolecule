@@ -3,7 +3,7 @@ language: dna
 tags:
   - Biology
   - DNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/gencode-human
 library_name: multimolecule

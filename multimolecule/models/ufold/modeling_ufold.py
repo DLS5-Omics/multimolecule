@@ -30,11 +30,12 @@ import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
+from transformers import initialization as init
 from transformers.modeling_outputs import ModelOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
-from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
+from transformers.utils.generic import merge_with_config_defaults
 from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import preserve_batch_norm_stats
@@ -50,14 +51,18 @@ class UfoldPreTrainedModel(PreTrainedModel):
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["UfoldConvBlock"]
 
+    @torch.no_grad()
     def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
+        # Use transformers.initialization wrappers (imported as `init`); they check the
+        # `_is_hf_initialized` flag so they don't clobber tensors loaded from a checkpoint.
         if isinstance(module, nn.Conv2d):
-            nn.init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="relu")
+            init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="relu")
             if module.bias is not None:
-                nn.init.zeros_(module.bias)
+                init.zeros_(module.bias)
         elif isinstance(module, nn.BatchNorm2d):
-            nn.init.ones_(module.weight)
-            nn.init.zeros_(module.bias)
+            init.ones_(module.weight)
+            init.zeros_(module.bias)
 
 
 class UfoldModel(UfoldPreTrainedModel):
@@ -103,7 +108,7 @@ class UfoldModel(UfoldPreTrainedModel):
             torch.exp(-0.5 * torch.arange(30, dtype=torch.float32).pow(2)),
             persistent=False,
         )
-        self.criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([config.pos_weight]))
+        self.register_buffer("pos_weight", torch.tensor([config.pos_weight]), persistent=False)
         self.post_init()
 
     def postprocess(self, outputs, input_ids=None, **kwargs):
@@ -114,7 +119,6 @@ class UfoldModel(UfoldPreTrainedModel):
 
     @merge_with_config_defaults
     @capture_outputs
-    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
@@ -158,7 +162,9 @@ class UfoldModel(UfoldPreTrainedModel):
             labels = labels.to(device=logits.device, dtype=logits.dtype)
             labels = labels[:, :max_length, :max_length]
             valid_mask = _pair_mask(lengths, max_length, logits.device)
-            loss = self.criterion(logits[valid_mask], labels[valid_mask])
+            loss = F.binary_cross_entropy_with_logits(
+                logits[valid_mask], labels[valid_mask], pos_weight=self.pos_weight
+            )
 
         return UfoldModelOutput(
             loss=loss,
@@ -176,11 +182,11 @@ class UfoldModel(UfoldPreTrainedModel):
         if inputs_embeds is not None:
             if inputs_embeds.size(-1) < 4:
                 raise ValueError(f"inputs_embeds last dimension ({inputs_embeds.size(-1)}) must be at least 4.")
-            one_hot = inputs_embeds[..., :4].float()
+            one_hot = inputs_embeds[..., :4].to(dtype=self.pair_score.dtype)
         else:
             if input_ids is None:
                 raise ValueError("You have to specify either input_ids or inputs_embeds")
-            one_hot = F.one_hot(input_ids, num_classes=self.config.vocab_size)[..., :4].float()
+            one_hot = F.one_hot(input_ids, num_classes=self.config.vocab_size)[..., :4].to(dtype=self.pair_score.dtype)
 
         if attention_mask is not None:
             one_hot = one_hot * attention_mask.unsqueeze(-1).to(one_hot.dtype)
@@ -198,14 +204,8 @@ class UfoldModel(UfoldPreTrainedModel):
         )
         return _fit_length(inputs_embeds, padded_length)
 
-    def _build_pairwise_features(self, one_hot: Tensor) -> Tensor:
-        return ufold_features(one_hot, self.pair_score, self.gaussian_weights)
-
-    def _pairing_prior(self, one_hot: Tensor) -> Tensor:
-        return ufold_pairing_prior(one_hot, self.pair_score, self.gaussian_weights)
-
     def _postprocess(self, logits: Tensor, one_hot: Tensor) -> Tensor:
-        mask = _constraint_matrix(one_hot, allow_noncanonical=self.config.allow_noncanonical).float()
+        mask = _constraint_matrix(one_hot, allow_noncanonical=self.config.allow_noncanonical).to(dtype=logits.dtype)
         u = torch.sigmoid(2 * (logits - self.config.postprocess_s)) * logits
         a_hat = torch.sigmoid(u) * torch.sigmoid(2 * (u - self.config.postprocess_s)).detach()
         lmbd = F.relu(_contact_a(a_hat, mask).sum(dim=-1) - 1).detach()
@@ -227,6 +227,10 @@ class UfoldModel(UfoldPreTrainedModel):
             lr_max *= 0.99
 
         return _contact_a(a_hat, mask)
+
+
+class UfoldForRnaSecondaryStructurePrediction(UfoldModel):
+    pass
 
 
 class UfoldEncoder(nn.Module):

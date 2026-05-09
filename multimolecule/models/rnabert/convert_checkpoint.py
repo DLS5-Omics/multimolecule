@@ -39,7 +39,6 @@ def convert_checkpoint(convert_config):
     print(f"Converting RnaBert checkpoint at {convert_config.checkpoint_path}")
     vocab_list = get_alphabet().vocabulary
     config = Config()
-    config.architectures = ["RnaBertModel"]
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
@@ -78,7 +77,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     state_dict["ss_head.decoder.bias"] = state_dict["ss_head.bias"]
     return state_dict

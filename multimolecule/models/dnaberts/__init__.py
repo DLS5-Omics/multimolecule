@@ -24,8 +24,6 @@ from transformers import (
     AutoBackbone,
     AutoConfig,
     AutoModel,
-    AutoModelForMaskedLM,
-    AutoModelForPreTraining,
     AutoModelForSequenceClassification,
     AutoModelForTokenClassification,
     AutoTokenizer,
@@ -36,8 +34,6 @@ from ..modeling_auto import AutoModelForContactPrediction, AutoModelForSequenceP
 from .configuration_dnaberts import DnaBertSConfig
 from .modeling_dnaberts import (
     DnaBertSForContactPrediction,
-    DnaBertSForMaskedLM,
-    DnaBertSForPreTraining,
     DnaBertSForSequencePrediction,
     DnaBertSForTokenPrediction,
     DnaBertSModel,
@@ -51,8 +47,6 @@ __all__ = [
     "DnaBertSForContactPrediction",
     "DnaBertSForSequencePrediction",
     "DnaBertSForTokenPrediction",
-    "DnaBertSForMaskedLM",
-    "DnaBertSForPreTraining",
 ]
 
 AutoConfig.register("dnaberts", DnaBertSConfig)
@@ -63,6 +57,4 @@ AutoModelForSequencePrediction.register(DnaBertSConfig, DnaBertSForSequencePredi
 AutoModelForSequenceClassification.register(DnaBertSConfig, DnaBertSForSequencePrediction)
 AutoModelForTokenPrediction.register(DnaBertSConfig, DnaBertSForTokenPrediction)
 AutoModelForTokenClassification.register(DnaBertSConfig, DnaBertSForTokenPrediction)
-AutoModelForMaskedLM.register(DnaBertSConfig, DnaBertSForMaskedLM)
-AutoModelForPreTraining.register(DnaBertSConfig, DnaBertSForPreTraining)
 AutoTokenizer.register(DnaBertSConfig, slow_tokenizer_class=None, fast_tokenizer_class=PreTrainedTokenizerFast)

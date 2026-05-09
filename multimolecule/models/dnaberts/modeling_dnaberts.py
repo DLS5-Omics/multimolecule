@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -37,7 +37,6 @@ from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
     BaseModelOutputWithPoolingAndCrossAttentions,
-    MaskedLMOutput,
 )
 from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
@@ -48,7 +47,6 @@ from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import (
     ContactPredictionHead,
-    MaskedLMHead,
     SequencePredictionHead,
     TokenPredictionHead,
     eager_attention_forward,
@@ -73,6 +71,10 @@ class DnaBertSPreTrainedModel(PreTrainedModel):
     _supports_attention_backend = True
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["DnaBertSLayer", "DnaBertSEmbeddings"]
+
+    @torch.no_grad()
+    def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
 
 
 class DnaBertSModel(DnaBertSPreTrainedModel):
@@ -120,7 +122,7 @@ class DnaBertSModel(DnaBertSPreTrainedModel):
         use_cache: bool | None = None,
         cache_position: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -276,7 +278,7 @@ class DnaBertSForSequencePrediction(DnaBertSPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | SequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -328,7 +330,7 @@ class DnaBertSForTokenPrediction(DnaBertSPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | TokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -381,7 +383,7 @@ class DnaBertSForContactPrediction(DnaBertSPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -404,83 +406,6 @@ class DnaBertSForContactPrediction(DnaBertSPreTrainedModel):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
-
-
-class DnaBertSForMaskedLM(DnaBertSPreTrainedModel):
-    """
-    Examples:
-        >>> import torch
-        >>> from multimolecule import DnaBertSConfig, DnaBertSForMaskedLM
-        >>> config = DnaBertSConfig()
-        >>> model = DnaBertSForMaskedLM(config)
-        >>> input_ids = torch.randint(0, config.vocab_size, (1, 16))
-        >>> output = model(input_ids, labels=input_ids)
-        >>> output["logits"].shape
-        torch.Size([1, 16, 4096])
-        >>> output["loss"]  # doctest:+ELLIPSIS
-        tensor(..., grad_fn=<NllLossBackward0>)
-    """
-
-    _tied_weights_keys = {
-        "lm_head.decoder.weight": "model.embeddings.word_embeddings.weight",
-        "lm_head.decoder.bias": "lm_head.bias",
-    }
-
-    def __init__(self, config: DnaBertSConfig):
-        super().__init__(config)
-        if config.is_decoder:
-            warn(
-                "If you want to use `DnaBertSForMaskedLM` make sure `config.is_decoder=False` for "
-                "bi-directional self-attention."
-            )
-        self.model = DnaBertSModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config)
-
-        # Initialize weights and apply final processing
-        self.post_init()
-
-    def get_output_embeddings(self):
-        return self.lm_head.decoder
-
-    def set_output_embeddings(self, embeddings):
-        self.lm_head.decoder = embeddings
-        if hasattr(self.lm_head, "bias"):
-            self.lm_head.bias = embeddings.bias
-
-    @can_return_tuple
-    def forward(
-        self,
-        input_ids: Tensor | NestedTensor | None = None,
-        attention_mask: Tensor | None = None,
-        inputs_embeds: Tensor | NestedTensor | None = None,
-        encoder_hidden_states: Tensor | None = None,
-        encoder_attention_mask: Tensor | None = None,
-        labels: Tensor | None = None,
-        **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
-        outputs = self.model(
-            input_ids,
-            attention_mask=attention_mask,
-            inputs_embeds=inputs_embeds,
-            encoder_hidden_states=encoder_hidden_states,
-            encoder_attention_mask=encoder_attention_mask,
-            return_dict=True,
-            **kwargs,
-        )
-
-        output = self.lm_head(outputs, labels)
-        logits, loss = output.logits, output.loss
-
-        return MaskedLMOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
-
-
-class DnaBertSForPreTraining(DnaBertSForMaskedLM):
-    pass
 
 
 class DnaBertSEmbeddings(nn.Module):
@@ -528,7 +453,12 @@ class DnaBertSEncoder(nn.Module):
         self.layer = nn.ModuleList([DnaBertSLayer(config, layer_idx=i) for i in range(config.num_hidden_layers)])
         # Pre-build ALiBi tensor at starting size
         self._current_alibi_size = config.alibi_starting_size
-        self.alibi = self._build_alibi_tensor(config.alibi_starting_size, torch.device("cpu"), torch.float32)
+        self.register_buffer(
+            "alibi",
+            self._build_alibi_tensor(config.alibi_starting_size, torch.device("cpu"), torch.float32),
+            persistent=False,
+        )
+        self._initialized = False
 
     def _build_alibi_tensor(self, size: int, device: torch.device, dtype: torch.dtype) -> Tensor:
         n_heads = self.num_attention_heads
@@ -566,12 +496,27 @@ class DnaBertSEncoder(nn.Module):
         use_cache: bool | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         seq_len = hidden_states.shape[1]
+
+        if not self._initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device once
+            # the real device is known.
+            self.register_buffer(
+                "alibi",
+                self._build_alibi_tensor(self._current_alibi_size, hidden_states.device, hidden_states.dtype),
+                persistent=False,
+            )
+            self._initialized = True
 
         # Compute ALiBi bias for the current sequence length
         if seq_len > self._current_alibi_size:
-            self.alibi = self._build_alibi_tensor(seq_len, hidden_states.device, hidden_states.dtype)
+            self.register_buffer(
+                "alibi",
+                self._build_alibi_tensor(seq_len, hidden_states.device, hidden_states.dtype),
+                persistent=False,
+            )
             self._current_alibi_size = seq_len
         alibi = self.alibi[:, :, :seq_len, :seq_len].to(device=hidden_states.device, dtype=hidden_states.dtype)
 
@@ -608,7 +553,7 @@ class DnaBertSLayer(GradientCheckpointingLayer):
         self.add_cross_attention = config.add_cross_attention
         if self.add_cross_attention:
             if not self.is_decoder:
-                raise RuntimeError(f"{self} should be used as a decoder model if cross attention is added")
+                raise ValueError(f"{self} should be used as a decoder model if cross attention is added")
             self.crossattention = DnaBertSAttention(
                 config,
                 layer_idx=layer_idx,
@@ -662,30 +607,6 @@ class DnaBertSLayer(GradientCheckpointingLayer):
         return self.mlp(attention_output)
 
 
-class DnaBertSGatedMlp(nn.Module):
-    def __init__(self, config: DnaBertSConfig):
-        super().__init__()
-        self.up_proj = nn.Linear(config.hidden_size, config.intermediate_size * 2, bias=False)
-        if isinstance(config.hidden_act, str):
-            self.activation = ACT2FN[config.hidden_act]
-        else:
-            self.activation = config.hidden_act
-        self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size)
-        self.dropout = nn.Dropout(config.hidden_dropout)
-        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-
-    def forward(self, hidden_states: Tensor) -> Tensor:
-        residual = hidden_states
-        hidden_states = self.up_proj(hidden_states)
-        gated = hidden_states[..., : self.up_proj.out_features // 2]
-        non_gated = hidden_states[..., self.up_proj.out_features // 2 :]
-        hidden_states = self.activation(gated) * non_gated
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = self.down_proj(hidden_states)
-        hidden_states = self.layer_norm(hidden_states + residual)
-        return hidden_states
-
-
 class DnaBertSAttention(nn.Module):
     def __init__(
         self,
@@ -713,7 +634,7 @@ class DnaBertSAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if self.is_cross_attention:
             attention_mask = encoder_attention_mask
             attention_output, attn_weights = self.self(
@@ -733,6 +654,30 @@ class DnaBertSAttention(nn.Module):
             )
         attention_output = self.output(attention_output, hidden_states)
         return attention_output, attn_weights
+
+
+class DnaBertSGatedMlp(nn.Module):
+    def __init__(self, config: DnaBertSConfig):
+        super().__init__()
+        self.up_proj = nn.Linear(config.hidden_size, config.intermediate_size * 2, bias=False)
+        if isinstance(config.hidden_act, str):
+            self.activation = ACT2FN[config.hidden_act]
+        else:
+            self.activation = config.hidden_act
+        self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size)
+        self.dropout = nn.Dropout(config.hidden_dropout)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+
+    def forward(self, hidden_states: Tensor) -> Tensor:
+        residual = hidden_states
+        hidden_states = self.up_proj(hidden_states)
+        gated = hidden_states[..., : self.up_proj.out_features // 2]
+        non_gated = hidden_states[..., self.up_proj.out_features // 2 :]
+        hidden_states = self.activation(gated) * non_gated
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = self.down_proj(hidden_states)
+        hidden_states = self.layer_norm(hidden_states + residual)
+        return hidden_states
 
 
 class DnaBertSSelfAttention(nn.Module):
@@ -777,7 +722,7 @@ class DnaBertSSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -860,7 +805,7 @@ class DnaBertSCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -923,7 +868,6 @@ class DnaBertSSelfOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class DnaBertSPooler(nn.Module):
     def __init__(self, config: DnaBertSConfig):
         super().__init__()
@@ -942,4 +886,5 @@ class DnaBertSPooler(nn.Module):
 DnaBertSPreTrainedModel._can_record_outputs = {
     "hidden_states": DnaBertSLayer,
     "attentions": OutputRecorder(DnaBertSAttention, index=1, layer_name="attention"),
+    "cross_attentions": OutputRecorder(DnaBertSAttention, index=1, layer_name="crossattention"),
 }

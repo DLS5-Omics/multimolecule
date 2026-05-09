@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -79,6 +79,8 @@ class CaLmPreTrainedModel(PreTrainedModel):
     def _init_weights(self, module: nn.Module):
         super()._init_weights(module)
         if isinstance(module, CaLmEmbeddings):
+            # `position_ids` is a non-persistent buffer; under transformers v5 meta-init it
+            # stays on the meta device after `from_pretrained`, so populate it here.
             init.copy_(module.position_ids, torch.arange(module.position_ids.shape[-1]).expand((1, -1)))
 
 
@@ -129,7 +131,7 @@ class CaLmModel(CaLmPreTrainedModel):
         use_cache: bool | None = None,
         cache_position: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -236,20 +238,20 @@ class CaLmModel(CaLmPreTrainedModel):
         if self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
                 cache_position=cache_position,
                 past_key_values=past_key_values,
             )
         else:
             attention_mask = create_bidirectional_mask(
-                config=self.config, input_embeds=embedding_output, attention_mask=attention_mask
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
             )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=encoder_attention_mask,
                 encoder_hidden_states=encoder_hidden_states,
             )
@@ -291,7 +293,7 @@ class CaLmForSequencePrediction(CaLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | SequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -346,7 +348,7 @@ class CaLmForTokenPrediction(CaLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | TokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -402,7 +404,7 @@ class CaLmForContactPrediction(CaLmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -457,7 +459,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
                 "bi-directional self-attention."
             )
         self.model = CaLmModel(config, add_pooling_layer=False)
-        self.lm_head = MaskedLMHead(config, self.model.embeddings.word_embeddings.weight)
+        self.lm_head = MaskedLMHead(config, weight=self.model.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -481,7 +483,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> tuple[Tensor, ...] | MaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -560,10 +562,11 @@ class CaLmEmbeddings(nn.Module):
                 embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all CaLM model training runs
             src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
+            dtype = embeddings.dtype
             if isinstance(mask, NestedTensor):
-                mask_ratio_observed = mask.tensor.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.tensor.sum(-1).to(dtype=dtype) / src_lengths
             else:
-                mask_ratio_observed = mask.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
             embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
 
         if self.position_embedding_type == "absolute":
@@ -574,7 +577,7 @@ class CaLmEmbeddings(nn.Module):
                     )
                 else:
                     position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
-                # This is a bug in the original implementation
+                # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
                 position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
             if isinstance(embeddings, NestedTensor):
@@ -607,7 +610,7 @@ class CaLmEncoder(nn.Module):
         use_cache: bool | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         for layer_module in self.layer:
             hidden_states = layer_module(
                 hidden_states,
@@ -619,8 +622,7 @@ class CaLmEncoder(nn.Module):
                 **kwargs,
             )
 
-        if self.emb_layer_norm_after:
-            hidden_states = self.emb_layer_norm_after(hidden_states)
+        hidden_states = self.emb_layer_norm_after(hidden_states)
 
         return BaseModelOutputWithPastAndCrossAttentions(
             last_hidden_state=hidden_states,
@@ -728,7 +730,7 @@ class CaLmAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         hidden_states_ln = self.layer_norm(hidden_states)
         if self.is_cross_attention:
             attention_mask = encoder_attention_mask
@@ -801,7 +803,7 @@ class CaLmSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -918,7 +920,7 @@ class CaLmCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -1031,7 +1033,6 @@ class CaLmOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class CaLmPooler(nn.Module):
     def __init__(self, config: CaLmConfig):
         super().__init__()

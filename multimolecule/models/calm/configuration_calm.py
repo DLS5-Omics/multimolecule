@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class CaLmConfig(PreTrainedConfig):
@@ -125,8 +125,12 @@ class CaLmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        expected_vocab_size = 131 if codon else 26
         if vocab_size is None:
-            vocab_size = 131 if codon else 26
+            vocab_size = expected_vocab_size
+        elif vocab_size != expected_vocab_size:
+            raise ValueError(f"vocab_size ({vocab_size}) must be {expected_vocab_size} when codon={codon}.")
+        validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
         self.codon = codon
         self.hidden_size = hidden_size

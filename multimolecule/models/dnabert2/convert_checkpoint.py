@@ -49,7 +49,6 @@ def convert_checkpoint(convert_config):
         config.pop(field, None)
     config = Config.from_dict(config)
     del config._name_or_path
-    config.architectures = ["DnaBert2ForMaskedLM"]
 
     model = Model(config)
 
@@ -113,6 +112,10 @@ def _convert_checkpoint(config, original_state_dict):
             continue
 
         state_dict[new_key] = value
+
+    if config.tie_word_embeddings and "lm_head.decoder.weight" in state_dict:
+        # Unify the tied tensors so the saved file dedupes cleanly and load-time tying succeeds.
+        state_dict["lm_head.decoder.weight"] = state_dict["model.embeddings.word_embeddings.weight"]
 
     return state_dict
 

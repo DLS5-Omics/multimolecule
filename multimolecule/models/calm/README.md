@@ -4,7 +4,7 @@ tags:
   - Biology
   - DNA
   - cDNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/ena
 library_name: multimolecule
@@ -181,10 +181,10 @@ The CaLM model was pre-trained coding sequences of all organisms available on th
 
 CaLM collected coding sequences of all organisms from ENA on April 2022, including 114,214,475 sequences. Only high level assembly information (dataclass CON) were used. Sequences matching the following criteria were filtered out:
 
-- with unknown nucleotides (`N`, `Y`, `R`)
-- start codon is not `ATG`
-- contains interstitial stop codons
-- number of nucleotides is not a multiple of three
+- Unknown nucleotides: remove sequences with `N`, `Y`, or `R`
+- Start codon: require `ATG`
+- Stop codons: remove sequences with interstitial stop codons
+- Sequence length: require a multiple of three nucleotides
 
 To reduce redundancy, CaLM grouped the entries by organism, and apply CD-HIT (CD-HIT-EST) with a cut-off at 40% sequence identity to the translated protein sequences.
 
@@ -198,10 +198,10 @@ The original checkpoint uses RNA codon spelling internally, but MultiMolecule co
 
 CaLM used masked language modeling (MLM) as the pre-training objective. The masking procedure is similar to the one used in BERT:
 
-- 25% of the tokens are masked.
-- In 80% of the cases, the masked tokens are replaced by `<mask>`.
-- In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
-- In the 10% remaining cases, the masked tokens are left as is.
+- Mask rate: 25%
+- Replacement: `<mask>` for 80% of masked tokens
+- Replacement: random token for 10% of masked tokens
+- Replacement: unchanged token for 10% of masked tokens
 
 #### Pre-training
 

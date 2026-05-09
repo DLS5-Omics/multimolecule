@@ -39,16 +39,18 @@ torch.manual_seed(1016)
 
 def convert_checkpoint(convert_config):
     print(f"Converting CaLm checkpoint at {convert_config.checkpoint_path}")
+    # `codon=True` in DnaTokenizer is implemented as `nmers=3`; `get_alphabet(nmers=3)` produces the codon vocabulary.
     vocab_list = get_alphabet(nmers=3).vocabulary
     config = Config()
     del config._name_or_path
-    config.architectures = ["CaLmModel"]
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
 
     ckpt = dl.load(convert_config.checkpoint_path)
-    state_dict = _convert_checkpoint(config, ckpt, vocab_list, [token.replace("U", "T") for token in original_vocab_list])
+    state_dict = _convert_checkpoint(
+        config, ckpt, vocab_list, [token.replace("U", "T") for token in original_vocab_list]
+    )
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["codon"] = True
@@ -94,7 +96,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 
@@ -170,6 +172,7 @@ original_vocab_list = [
     "GGG",
     "<mask>",
 ]
+
 
 class ConvertConfig(ConvertConfig_):
     root: str = os.path.dirname(__file__)

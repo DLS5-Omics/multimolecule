@@ -4,7 +4,7 @@ tags:
   - Biology
   - RNA
   - ncRNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule
@@ -51,7 +51,7 @@ RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 - **Weights**: [multimolecule/rnabert](https://huggingface.co/multimolecule/rnabert)
 - **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: [Informative RNA-base embedding for functional RNA clustering and structural alignment](https://doi.org/10.1093/nargab/lqac012)
-- **Developed by**: JManato Akiyama and Yasubumi Sakakibara
+- **Developed by**: Manato Akiyama and Yasubumi Sakakibara
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased)
 - **Original Repository**: [mana438/RNABERT](https://github.com/mana438/RNABERT)
 
@@ -185,10 +185,10 @@ Note that during model conversions, "T" is replaced with "U". [`RnaTokenizer`][m
 
 RNABERT preprocess the dataset by applying 10 different mask patterns to the 72, 237 human ncRNA sequences. The final dataset contains 722, 370 sequences. The masking procedure is similar to the one used in BERT:
 
-- 15% of the tokens are masked.
-- In 80% of the cases, the masked tokens are replaced by `<mask>`.
-- In 10% of the cases, the masked tokens are replaced by a random token (different) from the one they replace.
-- In the 10% remaining cases, the masked tokens are left as is.
+- Mask rate: 15%
+- Replacement: `<mask>` for 80% of masked tokens
+- Replacement: random token for 10% of masked tokens
+- Replacement: unchanged token for 10% of masked tokens
 
 #### Pre-training
 

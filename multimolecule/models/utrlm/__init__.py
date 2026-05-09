@@ -44,6 +44,7 @@ from .modeling_utrlm import (
     UtrLmForContactPrediction,
     UtrLmForMaskedLM,
     UtrLmForPreTraining,
+    UtrLmForPreTrainingOutput,
     UtrLmForSecondaryStructurePrediction,
     UtrLmForSequencePrediction,
     UtrLmForTokenPrediction,
@@ -61,6 +62,7 @@ __all__ = [
     "UtrLmForTokenPrediction",
     "UtrLmForMaskedLM",
     "UtrLmForPreTraining",
+    "UtrLmForPreTrainingOutput",
     "UtrLmForSecondaryStructurePrediction",
 ]
 

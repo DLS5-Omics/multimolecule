@@ -31,11 +31,12 @@ import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
+from transformers import initialization as init
 from transformers.modeling_outputs import ModelOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
-from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
+from transformers.utils.generic import merge_with_config_defaults
 from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import preserve_batch_norm_stats
@@ -51,22 +52,24 @@ class BpfoldPreTrainedModel(PreTrainedModel):
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["BpfoldLayer"]
 
+    @torch.no_grad()
     def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
         if isinstance(module, nn.Linear):
-            nn.init.kaiming_uniform_(module.weight, a=math.sqrt(5))
+            init.kaiming_uniform_(module.weight, a=math.sqrt(5))
             if module.bias is not None:
                 fan_in, _ = nn.init._calculate_fan_in_and_fan_out(module.weight)
                 bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
-                nn.init.uniform_(module.bias, -bound, bound)
+                init.uniform_(module.bias, -bound, bound)
         elif isinstance(module, nn.Conv2d):
-            nn.init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="linear")
+            init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="linear")
             if module.bias is not None:
-                nn.init.zeros_(module.bias)
+                init.zeros_(module.bias)
         elif isinstance(module, (nn.LayerNorm, nn.BatchNorm2d)):
-            nn.init.ones_(module.weight)
-            nn.init.zeros_(module.bias)
+            init.ones_(module.weight)
+            init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
-            nn.init.normal_(module.weight)
+            init.normal_(module.weight)
 
 
 class BpfoldModel(BpfoldPreTrainedModel):
@@ -117,7 +120,6 @@ class BpfoldModel(BpfoldPreTrainedModel):
 
     @merge_with_config_defaults
     @capture_outputs
-    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
@@ -263,7 +265,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
         base_mask = base_mask.bool()
         base_lengths = base_mask.sum(dim=-1).long()
         base_indices = self._base_indices(base_token_ids)
-        base_one_hot = F.one_hot(base_indices, num_classes=4).float()
+        base_one_hot = F.one_hot(base_indices, num_classes=4).to(dtype=self.outer_energy.dtype)
         base_one_hot = base_one_hot * base_mask.unsqueeze(-1).to(base_one_hot.dtype)
         return token_ids, attention_mask, base_indices, base_lengths, base_one_hot
 
@@ -347,7 +349,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
     ) -> Tensor:
         batch_size = base_indices.size(0)
         num_channels = 2 if self.config.separate_outer_inner_energy else 1
-        energy = base_indices.new_zeros((batch_size, num_channels, target_length, target_length), dtype=torch.float32)
+        energy = self.outer_energy.new_zeros((batch_size, num_channels, target_length, target_length))
 
         for batch_index in range(batch_size):
             length = int(base_lengths[batch_index].item())
@@ -376,7 +378,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
             rho = self.config.postprocess_rho
             threshold_logit = self.config.postprocess_s
 
-        mask = _constraint_matrix(base_one_hot, is_noncanonical=is_noncanonical).float()
+        mask = _constraint_matrix(base_one_hot, is_noncanonical=is_noncanonical).to(dtype=logits.dtype)
         u = torch.sigmoid(2 * (logits - threshold_logit)) * logits
         a_hat = torch.sigmoid(u) * torch.sigmoid(2 * (u - threshold_logit)).detach()
         lmbd = F.relu(_contact_a(a_hat, mask).sum(dim=-1) - 1).detach()
@@ -398,10 +400,14 @@ class BpfoldModel(BpfoldPreTrainedModel):
             lr_max *= 0.99
 
         contact_map = _contact_a(a_hat, mask)
-        contact_map = (contact_map > self.config.threshold).float()
+        contact_map = (contact_map > self.config.threshold).to(dtype=logits.dtype)
         if is_noncanonical:
-            contact_map = contact_map * _noncanonical_matrix(base_one_hot).float()
+            contact_map = contact_map * _noncanonical_matrix(base_one_hot).to(dtype=logits.dtype)
         return contact_map
+
+
+class BpfoldForRnaSecondaryStructurePrediction(BpfoldModel):
+    pass
 
 
 class BpfoldModule(nn.Module):
@@ -631,10 +637,10 @@ class BpfoldSelfAttention(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        nn.init.xavier_normal_(self.query_key_value_weight)
-        nn.init.xavier_normal_(self.output_weight)
-        nn.init.zeros_(self.output_bias)
-        nn.init.zeros_(self.query_key_value_bias)
+        init.xavier_normal_(self.query_key_value_weight)
+        init.xavier_normal_(self.output_weight)
+        init.zeros_(self.output_bias)
+        init.zeros_(self.query_key_value_bias)
 
     def forward(
         self,
@@ -741,6 +747,17 @@ class BpfoldSqueezeExcitation(nn.Module):
         return hidden_states * scale.expand_as(hidden_states)
 
 
+class BpfoldDynamicPositionBiasBlock(nn.Module):
+    def __init__(self, in_size: int, hidden_size: int, norm: bool):
+        super().__init__()
+        self.linear = nn.Linear(in_size, hidden_size)
+        self.norm = nn.LayerNorm(hidden_size) if norm else nn.Identity()
+        self.activation = nn.SiLU()
+
+    def forward(self, hidden_states: Tensor) -> Tensor:
+        return self.activation(self.norm(self.linear(hidden_states)))
+
+
 class BpfoldDynamicPositionBias(nn.Module):
     def __init__(
         self,
@@ -752,24 +769,10 @@ class BpfoldDynamicPositionBias(nn.Module):
     ):
         super().__init__()
         self.log_distance = log_distance
-        self.mlp = nn.ModuleList(
-            [
-                nn.Sequential(
-                    nn.Linear(1, hidden_size),
-                    nn.LayerNorm(hidden_size) if norm else nn.Identity(),
-                    nn.SiLU(),
-                )
-            ]
-        )
-        for _ in range(depth - 1):
-            self.mlp.append(
-                nn.Sequential(
-                    nn.Linear(hidden_size, hidden_size),
-                    nn.LayerNorm(hidden_size) if norm else nn.Identity(),
-                    nn.SiLU(),
-                )
-            )
-        self.mlp.append(nn.Linear(hidden_size, num_heads))
+        blocks = [BpfoldDynamicPositionBiasBlock(1, hidden_size, norm)]
+        blocks.extend(BpfoldDynamicPositionBiasBlock(hidden_size, hidden_size, norm) for _ in range(depth - 1))
+        self.blocks = nn.ModuleList(blocks)
+        self.head = nn.Linear(hidden_size, num_heads)
 
     @property
     def device(self) -> torch.device:
@@ -784,8 +787,9 @@ class BpfoldDynamicPositionBias(nn.Module):
         relative_positions = relative_positions[:, None]
         if self.log_distance:
             relative_positions = torch.sign(relative_positions) * torch.log(relative_positions.abs() + 1)
-        for layer in self.mlp:
-            relative_positions = layer(relative_positions)
+        for block in self.blocks:
+            relative_positions = block(relative_positions)
+        relative_positions = self.head(relative_positions)
         bias = relative_positions[relative_indices]
         return bias.permute(2, 0, 1)
 

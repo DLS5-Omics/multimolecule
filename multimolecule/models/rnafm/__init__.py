@@ -39,11 +39,12 @@ from ..modeling_auto import (
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
-from .configuration_rnafm import RnaFmConfig
+from .configuration_rnafm import RnaFmConfig, RnaFmSecondaryStructureHeadConfig
 from .modeling_rnafm import (
     RnaFmForContactPrediction,
     RnaFmForMaskedLM,
     RnaFmForPreTraining,
+    RnaFmForPreTrainingOutput,
     RnaFmForSecondaryStructurePrediction,
     RnaFmForSequencePrediction,
     RnaFmForTokenPrediction,
@@ -54,6 +55,7 @@ from .modeling_rnafm import (
 __all__ = [
     "RnaTokenizer",
     "RnaFmConfig",
+    "RnaFmSecondaryStructureHeadConfig",
     "RnaFmModel",
     "RnaFmPreTrainedModel",
     "RnaFmForContactPrediction",
@@ -61,6 +63,7 @@ __all__ = [
     "RnaFmForTokenPrediction",
     "RnaFmForMaskedLM",
     "RnaFmForPreTraining",
+    "RnaFmForPreTrainingOutput",
     "RnaFmForSecondaryStructurePrediction",
 ]
 

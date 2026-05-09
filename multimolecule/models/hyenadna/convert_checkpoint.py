@@ -74,7 +74,6 @@ def convert_checkpoint(convert_config):
 
     mm_config = Config.from_dict(mm_config)
     del mm_config._name_or_path
-    mm_config.architectures = ["HyenaDnaForCausalLM"]
 
     model = Model(mm_config)
 
@@ -159,7 +158,7 @@ def _convert_checkpoint(config, original_state_dict, original_vocab, new_vocab):
                 std=config.initializer_range,
             )
             state_dict[embed_key] = embed_weight
-            state_dict[lm_head_key] = lm_head_weight
+            state_dict[lm_head_key] = embed_weight if config.tie_word_embeddings else lm_head_weight
         else:
             (embed_weight,) = convert_word_embeddings(
                 state_dict[embed_key],

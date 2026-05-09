@@ -20,18 +20,33 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
-from transformers import AutoConfig, AutoModel
+from transformers import AutoConfig, AutoModel, AutoModelForTokenClassification, AutoTokenizer
 
 from multimolecule.tokenisers import RnaTokenizer
 
-from .configuration_spliceai import SpliceAiConfig
-from .modeling_spliceai import SpliceAiModel
+from ..modeling_auto import AutoModelForTokenPrediction
+from .configuration_spliceai import SpliceAiConfig, SpliceAiStageConfig
+from .modeling_spliceai import (
+    SpliceAiForTokenPrediction,
+    SpliceAiModel,
+    SpliceAiModelOutput,
+    SpliceAiModuleOutput,
+    SpliceAiPreTrainedModel,
+)
 
 __all__ = [
     "RnaTokenizer",
     "SpliceAiConfig",
+    "SpliceAiStageConfig",
     "SpliceAiModel",
+    "SpliceAiForTokenPrediction",
+    "SpliceAiModelOutput",
+    "SpliceAiModuleOutput",
+    "SpliceAiPreTrainedModel",
 ]
 
 AutoConfig.register("spliceai", SpliceAiConfig)
 AutoModel.register(SpliceAiConfig, SpliceAiModel)
+AutoModelForTokenPrediction.register(SpliceAiConfig, SpliceAiForTokenPrediction)
+AutoModelForTokenClassification.register(SpliceAiConfig, SpliceAiForTokenPrediction)
+AutoTokenizer.register(SpliceAiConfig, RnaTokenizer)

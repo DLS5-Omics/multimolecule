@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class UtrBertConfig(PreTrainedConfig):
@@ -85,7 +85,7 @@ class UtrBertConfig(PreTrainedConfig):
     Examples:
         >>> from multimolecule import UtrBertConfig, UtrBertModel
         >>> # Initializing a 3UTRBERT multimolecule/utrbert style configuration
-        >>> configuration = UtrBertConfig(vocab_size=26, nmers=1)
+        >>> configuration = UtrBertConfig(vocab_size=11, nmers=1)
         >>> # Initializing a model (with random weights) from the multimolecule/utrbert style configuration
         >>> model = UtrBertModel(configuration)
         >>> # Accessing the model configuration
@@ -121,6 +121,9 @@ class UtrBertConfig(PreTrainedConfig):
             if nmers is None:
                 nmers = 3
             vocab_size = 5**nmers + 6
+        elif nmers is not None and vocab_size != 5**nmers + 6:
+            raise ValueError(f"vocab_size ({vocab_size}) must be {5**nmers + 6} when nmers={nmers}.")
+        validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
         self.nmers = nmers
         self.type_vocab_size = 2

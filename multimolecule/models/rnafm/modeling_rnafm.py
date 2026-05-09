@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -85,6 +85,8 @@ class RnaFmPreTrainedModel(PreTrainedModel):
     def _init_weights(self, module: nn.Module):
         super()._init_weights(module)
         if isinstance(module, RnaFmEmbeddings):
+            # `position_ids` is a non-persistent buffer; under transformers v5 meta-init it
+            # stays on the meta device after `from_pretrained`, so populate it here.
             init.copy_(module.position_ids, torch.arange(module.position_ids.shape[-1]).expand((1, -1)))
 
 
@@ -135,7 +137,7 @@ class RnaFmModel(RnaFmPreTrainedModel):
         use_cache: bool | None = None,
         cache_position: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -242,20 +244,20 @@ class RnaFmModel(RnaFmPreTrainedModel):
         if self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
                 cache_position=cache_position,
                 past_key_values=past_key_values,
             )
         else:
             attention_mask = create_bidirectional_mask(
-                config=self.config, input_embeds=embedding_output, attention_mask=attention_mask
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
             )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=encoder_attention_mask,
                 encoder_hidden_states=encoder_hidden_states,
             )
@@ -297,7 +299,7 @@ class RnaFmForSequencePrediction(RnaFmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | SequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -352,7 +354,7 @@ class RnaFmForTokenPrediction(RnaFmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | TokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -408,7 +410,7 @@ class RnaFmForContactPrediction(RnaFmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -487,7 +489,7 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> tuple[Tensor, ...] | MaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -548,7 +550,7 @@ class RnaFmForPreTraining(RnaFmForMaskedLM):
         labels_lm: Tensor | None = None,
         labels_ss: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
+    ) -> tuple[Tensor, ...] | RnaFmForPreTrainingOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -618,7 +620,7 @@ class RnaFmForSecondaryStructurePrediction(RnaFmForPreTraining):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -698,10 +700,11 @@ class RnaFmEmbeddings(nn.Module):
                 embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RNA-FM model training runs
             src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
+            dtype = embeddings.dtype
             if isinstance(mask, NestedTensor):
-                mask_ratio_observed = mask.tensor.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.tensor.sum(-1).to(dtype=dtype) / src_lengths
             else:
-                mask_ratio_observed = mask.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
             embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
 
         if self.position_embedding_type == "absolute":
@@ -712,7 +715,7 @@ class RnaFmEmbeddings(nn.Module):
                     )
                 else:
                     position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
-                # This is a bug in the original implementation
+                # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
                 position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
             if isinstance(embeddings, NestedTensor):
@@ -745,7 +748,7 @@ class RnaFmEncoder(nn.Module):
         use_cache: bool | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         for layer_module in self.layer:
             hidden_states = layer_module(
                 hidden_states,
@@ -864,7 +867,7 @@ class RnaFmAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         hidden_states_ln = self.layer_norm(hidden_states)
         if self.is_cross_attention:
             attention_mask = encoder_attention_mask
@@ -937,7 +940,7 @@ class RnaFmSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -1054,7 +1057,7 @@ class RnaFmCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -1167,7 +1170,6 @@ class RnaFmOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RnaFmPooler(nn.Module):
     def __init__(self, config: RnaFmConfig):
         super().__init__()
@@ -1183,69 +1185,11 @@ class RnaFmPooler(nn.Module):
         return pooled_output
 
 
-class RnaFmSecondaryStructurePredictionHead(BasePredictionHead):
-
-    config: RnaFmSecondaryStructureHeadConfig
-    require_attentions: bool = False
-    output_name: str = "last_hidden_state"
-
-    def __init__(self, config: RnaFmConfig, head_config: RnaFmSecondaryStructureHeadConfig | None = None):
-        if head_config is None:
-            head_config = (
-                RnaFmSecondaryStructureHeadConfig(config.head, num_labels=1)
-                if config.head is not None
-                else RnaFmSecondaryStructureHeadConfig()
-            )
-        super().__init__(config, head_config)
-        if self.config.hidden_size is not None:
-            self.reduction = nn.Linear(config.hidden_size, self.config.hidden_size)
-            self.hidden_size = self.config.hidden_size
-        else:
-            self.reduction = nn.Identity()
-            self.hidden_size = config.hidden_size
-        self.projection = nn.Conv2d(self.hidden_size * 2, self.config.num_channels, kernel_size=1)
-        self.convnet = RnaFmConvNet(self.config)
-        self.prediction = nn.Conv2d(self.config.num_channels, self.config.num_labels, kernel_size=3, padding=1)
-        self.criterion = Criterion(self.config)
-
-    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
-        self,
-        outputs: ModelOutput | Mapping[str, Tensor] | Tuple[Tensor, ...],
-        attention_mask: Tensor | None = None,
-        input_ids: NestedTensor | Tensor | None = None,
-        labels: Tensor | None = None,
-    ) -> HeadOutput:
-        if isinstance(outputs, (Mapping, ModelOutput)):
-            output = outputs[self.output_name]
-        elif isinstance(outputs, tuple):
-            output = outputs[-1]
-        else:
-            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
-
-        if attention_mask is None:
-            attention_mask = self.get_attention_mask(input_ids)
-        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
-        seq_length = output.size(1)
-
-        output = self.reduction(output)
-        contact_map = output.unsqueeze(2).expand(-1, -1, seq_length, -1)
-        contact_map = torch.cat([contact_map, contact_map.transpose(1, 2)], dim=-1)
-        contact_map = self.projection(contact_map.permute(0, 3, 1, 2))
-        contact_map = self.convnet(contact_map)
-        contact_map = self.prediction(contact_map)
-        contact_map = contact_map.triu() + contact_map.triu(diagonal=1).transpose(-1, -2)
-        contact_map = contact_map.permute(0, 2, 3, 1)
-
-        if labels is not None:
-            return HeadOutput(contact_map, self.criterion(contact_map, labels))
-        return HeadOutput(contact_map)
-
-
-class RnaFmConvNet(nn.Sequential):
+class RnaFmConvNet(nn.Module):
     def __init__(self, config: RnaFmSecondaryStructureHeadConfig) -> None:
-        layers = []
-        for i in range(config.num_layers):
-            layers.append(
+        super().__init__()
+        self.layers = nn.ModuleList(
+            [
                 RnaFmConvBlock(
                     config.num_channels,
                     dilation=pow(2, (i % 3)),
@@ -1253,8 +1197,14 @@ class RnaFmConvNet(nn.Sequential):
                     activation=config.activation,
                     bias=config.bias,
                 )
-            )
-        super().__init__(*layers)
+                for i in range(config.num_layers)
+            ]
+        )
+
+    def forward(self, hidden_state: Tensor) -> Tensor:
+        for layer in self.layers:
+            hidden_state = layer(hidden_state)
+        return hidden_state
 
 
 class RnaFmConvBlock(nn.Module):
@@ -1286,27 +1236,62 @@ class RnaFmConvBlock(nn.Module):
         return hidden_state + residual
 
 
-@dataclass
-class RnaFmForPreTrainingOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits_lm: torch.FloatTensor = None
-    loss_lm: torch.FloatTensor | None = None
-    logits_ss: torch.FloatTensor = None
-    loss_ss: torch.FloatTensor | None = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
+class RnaFmSecondaryStructurePredictionHead(BasePredictionHead):
 
+    config: RnaFmSecondaryStructureHeadConfig
+    require_attentions: bool = False
+    output_name: str = "last_hidden_state"
 
-@dataclass
-class RnaFmForSecondaryStructurePredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits_lm: torch.FloatTensor = None
-    loss_lm: torch.FloatTensor = None
-    logits_ss: torch.FloatTensor = None
-    loss_ss: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
-    attention_biases: Tuple[torch.FloatTensor, ...] | None = None
+    def __init__(self, config: RnaFmConfig, head_config: RnaFmSecondaryStructureHeadConfig | None = None):
+        if head_config is None:
+            head_config = (
+                RnaFmSecondaryStructureHeadConfig(config.head, num_labels=1)
+                if config.head is not None
+                else RnaFmSecondaryStructureHeadConfig()
+            )
+        super().__init__(config, head_config)
+        if self.config.hidden_size is not None:
+            self.reduction = nn.Linear(config.hidden_size, self.config.hidden_size)
+            self.hidden_size = self.config.hidden_size
+        else:
+            self.reduction = nn.Identity()
+            self.hidden_size = config.hidden_size
+        self.projection = nn.Conv2d(self.hidden_size * 2, self.config.num_channels, kernel_size=1)
+        self.convnet = RnaFmConvNet(self.config)
+        self.prediction = nn.Conv2d(self.config.num_channels, self.config.num_labels, kernel_size=3, padding=1)
+        self.criterion = Criterion(self.config)
+
+    def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
+        self,
+        outputs: ModelOutput | Mapping[str, Tensor] | tuple[Tensor, ...],
+        attention_mask: Tensor | None = None,
+        input_ids: NestedTensor | Tensor | None = None,
+        labels: Tensor | None = None,
+    ) -> HeadOutput:
+        if isinstance(outputs, (Mapping, ModelOutput)):
+            output = outputs[self.output_name]
+        elif isinstance(outputs, tuple):
+            output = outputs[-1]
+        else:
+            raise ValueError(f"Unsupported type for outputs: {type(outputs)}")
+
+        if attention_mask is None:
+            attention_mask = self.get_attention_mask(input_ids)
+        output, _, _ = self.remove_special_tokens(output, attention_mask, input_ids)
+        seq_length = output.size(1)
+
+        output = self.reduction(output)
+        contact_map = output.unsqueeze(2).expand(-1, -1, seq_length, -1)
+        contact_map = torch.cat([contact_map, contact_map.transpose(1, 2)], dim=-1)
+        contact_map = self.projection(contact_map.permute(0, 3, 1, 2))
+        contact_map = self.convnet(contact_map)
+        contact_map = self.prediction(contact_map)
+        contact_map = contact_map.triu() + contact_map.triu(diagonal=1).transpose(-1, -2)
+        contact_map = contact_map.permute(0, 2, 3, 1)
+
+        if labels is not None:
+            return HeadOutput(contact_map, self.criterion(contact_map, labels))
+        return HeadOutput(contact_map)
 
 
 def create_position_ids_from_inputs_embeds(inputs_embeds: torch.FloatTensor, padding_idx: int = 0) -> torch.LongTensor:
@@ -1335,3 +1320,14 @@ RnaFmPreTrainedModel._can_record_outputs = {
     "attentions": OutputRecorder(RnaFmAttention, index=1, layer_name="attention"),
     "cross_attentions": OutputRecorder(RnaFmAttention, index=1, layer_name="crossattention"),
 }
+
+
+@dataclass
+class RnaFmForPreTrainingOutput(ModelOutput):
+    loss: torch.FloatTensor | None = None
+    logits_lm: torch.FloatTensor = None
+    loss_lm: torch.FloatTensor | None = None
+    logits_ss: torch.FloatTensor = None
+    loss_ss: torch.FloatTensor | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None

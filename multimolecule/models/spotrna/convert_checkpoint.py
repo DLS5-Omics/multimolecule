@@ -40,7 +40,6 @@ def convert_checkpoint(convert_config) -> None:
     print(f"Converting SPOT-RNA checkpoint at {convert_config.checkpoint_path}")
 
     config = Config()
-    config.architectures = ["SpotRnaModel"]
     model = SpotRnaModel(config)
 
     vocab_list = get_alphabet("nucleobase", prepend_tokens=[]).vocabulary
@@ -48,8 +47,8 @@ def convert_checkpoint(convert_config) -> None:
     channel_permutation += [len(original_vocab_list) + original_vocab_list.index(token) for token in vocab_list]
 
     state_dict = {}
-    state_dict["input_mean"] = base_mean = model.input_mean[:, :, :, channel_permutation]
-    state_dict["input_std"] = base_std = model.input_std[:, :, :, channel_permutation]
+    base_mean = model.input_mean
+    base_std = model.input_std
 
     for member_index, module_config in enumerate(config.module_configs):
         checkpoint_path = os.path.join(convert_config.checkpoint_path, f"model{member_index}")
@@ -64,6 +63,8 @@ def convert_checkpoint(convert_config) -> None:
         for key, value in member_state.items():
             state_dict[f"members.{member_index}.{key}"] = value
 
+    # Normalise tensor dtype to fp32: upstream NumPy weights load as fp64, while the
+    # MultiMolecule checkpoint is published as fp32 to match the rest of the model zoo.
     state_dict = {k: v.float() for k, v in state_dict.items()}
 
     tokenizer_config = get_tokenizer_config().copy()

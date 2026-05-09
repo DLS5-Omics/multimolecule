@@ -23,7 +23,7 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
-from .bpfold import BpfoldConfig, BpfoldModel
+from .bpfold import BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction, BpfoldModel
 from .calm import (
     CaLmConfig,
     CaLmForContactPrediction,
@@ -33,7 +33,7 @@ from .calm import (
     CaLmForTokenPrediction,
     CaLmModel,
 )
-from .configuration_utils import PreTrainedConfig
+from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
 from .dnabert import (
     DnaBertConfig,
     DnaBertForContactPrediction,
@@ -55,8 +55,6 @@ from .dnabert2 import (
 from .dnaberts import (
     DnaBertSConfig,
     DnaBertSForContactPrediction,
-    DnaBertSForMaskedLM,
-    DnaBertSForPreTraining,
     DnaBertSForSequencePrediction,
     DnaBertSForTokenPrediction,
     DnaBertSModel,
@@ -152,7 +150,7 @@ from .rnamsm import (
     RnaMsmForTokenPrediction,
     RnaMsmModel,
 )
-from .spliceai import SpliceAiConfig, SpliceAiModel
+from .spliceai import SpliceAiConfig, SpliceAiForTokenPrediction, SpliceAiModel
 from .splicebert import (
     SpliceBertConfig,
     SpliceBertForContactPrediction,
@@ -162,8 +160,8 @@ from .splicebert import (
     SpliceBertForTokenPrediction,
     SpliceBertModel,
 )
-from .spotrna import SpotRnaConfig, SpotRnaModel
-from .ufold import UfoldConfig, UfoldModel
+from .spotrna import SpotRnaConfig, SpotRnaForRnaSecondaryStructurePrediction, SpotRnaModel
+from .ufold import UfoldConfig, UfoldForRnaSecondaryStructurePrediction, UfoldModel
 from .utrbert import (
     UtrBertConfig,
     UtrBertForContactPrediction,
@@ -194,8 +192,10 @@ __all__ = [
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
+    "validate_attention_dimensions",
     "BpfoldConfig",
     "BpfoldModel",
+    "BpfoldForRnaSecondaryStructurePrediction",
     "CaLmConfig",
     "CaLmModel",
     "CaLmForContactPrediction",
@@ -222,8 +222,6 @@ __all__ = [
     "DnaBertSForContactPrediction",
     "DnaBertSForSequencePrediction",
     "DnaBertSForTokenPrediction",
-    "DnaBertSForMaskedLM",
-    "DnaBertSForPreTraining",
     "ErnieRnaConfig",
     "ErnieRnaModel",
     "ErnieRnaForContactPrediction",
@@ -293,10 +291,13 @@ __all__ = [
     "RnaMsmForSecondaryStructurePrediction",
     "SpliceAiConfig",
     "SpliceAiModel",
+    "SpliceAiForTokenPrediction",
     "SpotRnaConfig",
     "SpotRnaModel",
+    "SpotRnaForRnaSecondaryStructurePrediction",
     "UfoldConfig",
     "UfoldModel",
+    "UfoldForRnaSecondaryStructurePrediction",
     "SpliceBertConfig",
     "SpliceBertModel",
     "SpliceBertForContactPrediction",

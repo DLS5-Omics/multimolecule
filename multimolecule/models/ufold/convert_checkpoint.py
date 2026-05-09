@@ -37,7 +37,6 @@ from multimolecule.tokenisers.rna.utils import get_alphabet, get_tokenizer_confi
 def convert_checkpoint(convert_config) -> None:
     print(f"Converting UFold checkpoint at {convert_config.checkpoint_path}")
     config = Config()
-    config.architectures = ["UfoldModel"]
     model = Model(config)
 
     checkpoint = torch.load(convert_config.checkpoint_path, map_location="cpu")
@@ -61,7 +60,6 @@ def convert_checkpoint(convert_config) -> None:
             channels = torch.tensor([*pairwise_channels, len(pairwise_channels)], device=value.device)
             value = value.index_select(1, channels)
         state_dict[key] = value
-    state_dict["criterion.pos_weight"] = model.criterion.pos_weight
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     tokenizer_config["alphabet"] = get_alphabet("streamline", prepend_tokens=[])

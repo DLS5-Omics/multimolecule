@@ -3,16 +3,12 @@ language: rna
 tags:
   - Biology
   - RNA
-  - ncRNA
 license: agpl-3.0-or-later
 datasets:
-  - multimolecule/rnacentral
-  - multimolecule/rfam
-  - multimolecule/ensembl-genome-browser
-  - multimolecule/nucleotide
+  - multimolecule/bprna-spot
 library_name: multimolecule
-pipeline_tag: fill-mask
-mask_token: <mask>
+base_model: multimolecule/rinalmo-giga
+pipeline_tag: rna-secondary-structure
 ---
 
 # RiNALMo
@@ -33,6 +29,8 @@ The OFFICIAL repository of RiNALMo is at [lbcb-sci/RiNALMo](https://github.com/l
 ## Model Details
 
 RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style model pre-trained on a large corpus of non-coding RNA sequences in a self-supervised fashion. This means that the model was trained on the raw nucleotides of RNA sequences only, with an automatic process to generate inputs and labels from those texts. Please refer to the [Training Details](#training-details) section for more information on the training process.
+
+This checkpoint is the RiNALMo-Giga model fine-tuned on bpRNA-1m for RNA secondary structure prediction.
 
 ### Variants
 
@@ -92,7 +90,7 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 ### Links
 
 - **Code**: [multimolecule.rinalmo](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rinalmo)
-- **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
+- **Data**: [multimolecule/bprna-spot](https://huggingface.co/datasets/multimolecule/bprna-spot)
 - **Paper**: [RiNALMo: General-Purpose RNA Language Models Can Generalize Well on Structure Prediction Tasks](https://doi.org/10.48550/arXiv.2403.00043)
 - **Developed by**: Rafael Josip Penić, Tin Vlašić, Roland G. Huber, Yue Wan, Mile Šikić
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased)
@@ -108,16 +106,16 @@ pip install multimolecule
 
 ### Direct Use
 
-#### Masked Language Modeling
+#### RNA Secondary Structure Prediction
 
-You can use this model directly with a pipeline for masked language modeling:
+You can use this model directly with a pipeline for secondary structure prediction:
 
 ```python
 import multimolecule  # you must import multimolecule to register models
 from transformers import pipeline
 
-predictor = pipeline("fill-mask", model="multimolecule/rinalmo-giga")
-output = predictor("gguc<mask>cucugguuagaccagaucugagccu")
+predictor = pipeline("rna-secondary-structure", model="multimolecule/rinalmo-giga-ss")
+output = predictor("GGUCUCUCUGGUUAGACCAGAUCUGAGCCU")
 ```
 
 ### Downstream Use
@@ -130,8 +128,8 @@ Here is how to use this model to get the features of a given sequence in PyTorch
 from multimolecule import RnaTokenizer, RiNALMoModel
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoModel.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga-ss")
+model = RiNALMoModel.from_pretrained("multimolecule/rinalmo-giga-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -151,8 +149,8 @@ import torch
 from multimolecule import RnaTokenizer, RiNALMoForSequencePrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoForSequencePrediction.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga-ss")
+model = RiNALMoForSequencePrediction.from_pretrained("multimolecule/rinalmo-giga-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -173,8 +171,8 @@ import torch
 from multimolecule import RnaTokenizer, RiNALMoForTokenPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoForTokenPrediction.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga-ss")
+model = RiNALMoForTokenPrediction.from_pretrained("multimolecule/rinalmo-giga-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -195,8 +193,8 @@ import torch
 from multimolecule import RnaTokenizer, RiNALMoForContactPrediction
 
 
-tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga")
-model = RiNALMoForContactPrediction.from_pretrained("multimolecule/rinalmo-giga")
+tokenizer = RnaTokenizer.from_pretrained("multimolecule/rinalmo-giga-ss")
+model = RiNALMoForContactPrediction.from_pretrained("multimolecule/rinalmo-giga-ss")
 
 text = "UAGCUUAUCAGACUGAUGUUG"
 input = tokenizer(text, return_tensors="pt")
@@ -242,6 +240,10 @@ The model was trained on 7 NVIDIA A100 GPUs with 80GiB memories.
 - Learning rate warm-up: 2,000 steps
 - Learning rate minimum: 1e-5
 - Dropout: 0.1
+
+#### Fine-tuning
+
+This checkpoint was fine-tuned for RNA secondary structure prediction on the bpRNA-1m dataset.
 
 ## Citation
 

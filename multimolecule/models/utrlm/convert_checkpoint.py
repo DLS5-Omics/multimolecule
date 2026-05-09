@@ -36,11 +36,18 @@ from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alph
 torch.manual_seed(1016)
 
 
+original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
+
+
 def convert_checkpoint(convert_config):
     print(f"Converting UtrLM checkpoint at {convert_config.checkpoint_path}")
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+
     config = chanfig.FlatDict(num_labels=1)
     config.mfe_head = {"num_labels": 1}
-    if "4.1" in convert_config.checkpoint_path:
+    # Detect the SS-supervised variant (ESM2SISS) by the presence of structure prediction weights;
+    # filename heuristics break when users rename checkpoints.
+    if any("structure_linear" in k for k in ckpt):
         config.structure_head = {"num_labels": 3}
     vocab_list = get_alphabet().vocabulary
     config = Config.from_dict(config)
@@ -48,7 +55,6 @@ def convert_checkpoint(convert_config):
 
     model = Model(config)
 
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     load_checkpoint(model, state_dict)
@@ -100,12 +106,9 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
-
-
-original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
 
 
 class ConvertConfig(ConvertConfig_):
@@ -114,7 +117,11 @@ class ConvertConfig(ConvertConfig_):
 
     def post(self):
         if self.output_path is None:
-            variant = "mrl" if "4.1" in self.checkpoint_path else "te_el"
+            # Recognise either the original upstream filename ("...FS4.1...") or a friendly rename
+            # like "UTR-LM_MRL.pkl". The structure-supervised checkpoint (ESM2SISS_FS4.1) is the
+            # MRL variant; ESM2SI_3.1 (no structure supervision) is the TE/EL variant.
+            path_lower = self.checkpoint_path.lower()
+            variant = "mrl" if "4.1" in path_lower or "mrl" in path_lower else "te_el"
             self.output_path = f"{os.path.basename(self.root)}-{variant}"
         if self.repo_id is None:
             self.repo_id = f"multimolecule/{self.output_path}"

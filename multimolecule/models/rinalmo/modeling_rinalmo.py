@@ -24,8 +24,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from contextlib import suppress
-from dataclasses import dataclass
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -60,10 +59,14 @@ from multimolecule.modules import (
     TokenPredictionHead,
     eager_attention_forward,
 )
+from multimolecule.tokenisers.rna.utils import get_alphabet
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
 from .configuration_rinalmo import RiNALMoConfig, RiNALMoSecondaryStructureHeadConfig
 
+# RiNALMo's secondary-structure head can use ELU; transformers' ACT2FN registry does not
+# include "elu" in some versions, so register it here. `suppress(AttributeError)` covers
+# transformers releases where ACT2FN is not subscriptable as a plain dict.
 with suppress(AttributeError):
     ACT2FN["elu"] = nn.ELU
 
@@ -88,6 +91,8 @@ class RiNALMoPreTrainedModel(PreTrainedModel):
     def _init_weights(self, module: nn.Module):
         super()._init_weights(module)
         if isinstance(module, RiNALMoEmbeddings):
+            # `position_ids` is a non-persistent buffer; under transformers v5 meta-init it
+            # stays on the meta device after `from_pretrained`, so populate it here.
             init.copy_(module.position_ids, torch.arange(module.position_ids.shape[-1]).expand((1, -1)))
 
 
@@ -138,7 +143,7 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
         use_cache: bool | None = None,
         cache_position: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
         r"""
         Args:
             encoder_hidden_states:
@@ -247,20 +252,20 @@ class RiNALMoModel(RiNALMoPreTrainedModel):
         if self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=attention_mask,
                 cache_position=cache_position,
                 past_key_values=past_key_values,
             )
         else:
             attention_mask = create_bidirectional_mask(
-                config=self.config, input_embeds=embedding_output, attention_mask=attention_mask
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
             )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
                 config=self.config,
-                input_embeds=embedding_output,
+                inputs_embeds=embedding_output,
                 attention_mask=encoder_attention_mask,
                 encoder_hidden_states=encoder_hidden_states,
             )
@@ -302,7 +307,7 @@ class RiNALMoForSequencePrediction(RiNALMoPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | SequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | SequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -357,7 +362,7 @@ class RiNALMoForTokenPrediction(RiNALMoPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | TokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | TokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -413,7 +418,7 @@ class RiNALMoForContactPrediction(RiNALMoPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -492,7 +497,7 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | MaskedLMOutput:
+    ) -> tuple[Tensor, ...] | MaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -553,7 +558,7 @@ class RiNALMoForSecondaryStructurePrediction(RiNALMoForMaskedLM):
         encoder_attention_mask: Tensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | ContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | ContactPredictorOutput:
         if self.require_attentions:
             output_attentions = kwargs.get("output_attentions", self.config.output_attentions)
             if output_attentions is False:
@@ -642,10 +647,11 @@ class RiNALMoEmbeddings(nn.Module):
                 embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RiNALMo model training runs
             src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
+            dtype = embeddings.dtype
             if isinstance(mask, NestedTensor):
-                mask_ratio_observed = mask.tensor.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.tensor.sum(-1).to(dtype=dtype) / src_lengths
             else:
-                mask_ratio_observed = mask.sum(-1).float() / src_lengths
+                mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
             if isinstance(embeddings, NestedTensor):
                 scale = (1 - mask_ratio_train) / (1 - mask_ratio_observed)
                 storage = []
@@ -654,7 +660,6 @@ class RiNALMoEmbeddings(nn.Module):
                 embeddings = NestedTensor(storage, **embeddings._meta())
             else:
                 embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
-                embeddings = embeddings.to(embeddings)
 
         if self.position_embedding_type == "absolute":
             if position_ids is None:
@@ -664,7 +669,7 @@ class RiNALMoEmbeddings(nn.Module):
                     )
                 else:
                     position_ids = create_position_ids_from_inputs_embeds(inputs_embeds, self.padding_idx)
-                # This is a bug in the original implementation
+                # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
                 position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
             if isinstance(embeddings, NestedTensor):
@@ -695,7 +700,7 @@ class RiNALMoEncoder(nn.Module):
         use_cache: bool | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
         for layer_module in self.layer:
             hidden_states = layer_module(
                 hidden_states,
@@ -814,7 +819,7 @@ class RiNALMoAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         hidden_states_ln = self.layer_norm(hidden_states)
         if self.is_cross_attention:
             attention_mask = encoder_attention_mask
@@ -887,7 +892,7 @@ class RiNALMoSelfAttention(nn.Module):
         past_key_values: Cache | None = None,
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
@@ -910,6 +915,8 @@ class RiNALMoSelfAttention(nn.Module):
             query_layer, key_layer = self.rotary_embeddings(query_layer, key_layer)  # type: ignore[misc]
 
         attention_bias = attention_mask
+        # NestedTensor inputs use NT.mask for attention masking inside the kernel; the
+        # dense `attention_mask` is not shape-compatible here, so drop it as a bias term.
         if isinstance(hidden_states, NestedTensor):
             attention_bias = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
@@ -1006,7 +1013,7 @@ class RiNALMoCrossAttention(nn.Module):
         attention_mask: torch.FloatTensor | None = None,
         past_key_values: Cache | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
         mixed_query_layer = self.query(hidden_states)
@@ -1037,6 +1044,8 @@ class RiNALMoCrossAttention(nn.Module):
             query_layer, key_layer = self.rotary_embeddings(query_layer, key_layer)  # type: ignore[misc]
 
         attention_bias = attention_mask
+        # NestedTensor inputs use NT.mask for attention masking inside the kernel; the
+        # dense `attention_mask` is not shape-compatible here, so drop it as a bias term.
         if isinstance(hidden_states, NestedTensor):
             attention_bias = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
@@ -1119,7 +1128,6 @@ class RiNALMoOutput(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
 class RiNALMoPooler(nn.Module):
     def __init__(self, config: RiNALMoConfig):
         super().__init__()
@@ -1152,10 +1160,22 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
         self.convnet = RiNALMoConvNet2d(self.config)
         self.prediction = nn.Conv2d(self.config.num_channels, 1, kernel_size=self.config.kernel_size, padding="same")
         self.criterion = Criterion(self.config)
+        # Canonical-base token ids derived from the MultiMolecule RNA alphabet (A, C, G, U).
+        # Registered here as a non-persistent buffer so the attribute exists and `state_dict()`
+        # / `named_buffers()` are consistent; the tensor is re-registered on the input device on
+        # the first forward (see `_get_canonical_pair_constraint_matrix`) because non-persistent
+        # buffers stay on the meta device after transformers v5 `from_pretrained` meta-init.
+        vocabulary = get_alphabet().vocabulary
+        canonical_token_ids = torch.tensor(
+            [vocabulary.index("A"), vocabulary.index("C"), vocabulary.index("G"), vocabulary.index("U")],
+            dtype=torch.long,
+        )
+        self.register_buffer("canonical_token_ids", canonical_token_ids, persistent=False)
+        self._canonical_token_ids_initialized = False
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
-        outputs: BaseModelOutputWithPastAndCrossAttentions | Mapping[str, Tensor] | Tuple[Tensor, ...],
+        outputs: BaseModelOutputWithPastAndCrossAttentions | Mapping[str, Tensor] | tuple[Tensor, ...],
         attention_mask: Tensor | None = None,
         input_ids: NestedTensor | Tensor | None = None,
         labels: Tensor | None = None,
@@ -1204,8 +1224,7 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
 
         return torch.concat((left, right), dim=-1)
 
-    @staticmethod
-    def _get_canonical_pair_constraint_matrix(input_ids: Tensor) -> Tensor:
+    def _get_canonical_pair_constraint_matrix(self, input_ids: Tensor) -> Tensor:
         """
         Computes a constraint matrix for RNA base pairing.
 
@@ -1213,16 +1232,30 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
         Watson-Crick and wobble base pairing rules (A-U, C-G, G-U).
 
         Args:
-            input_ids: Token IDs where 6=A, 7=C, 8=G, 9=U
+            input_ids: Token IDs whose A/C/G/U positions are derived from
+                the MultiMolecule RNA alphabet via ``self.canonical_token_ids``.
 
         Returns:
             A binary matrix where 1 indicates positions that can form valid base pairs
         """
+        if not self._canonical_token_ids_initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device once
+            # the real device is known.
+            vocabulary = get_alphabet().vocabulary
+            canonical_token_ids = torch.tensor(
+                [vocabulary.index("A"), vocabulary.index("C"), vocabulary.index("G"), vocabulary.index("U")],
+                dtype=torch.long,
+                device=input_ids.device,
+            )
+            self.register_buffer("canonical_token_ids", canonical_token_ids, persistent=False)
+            self._canonical_token_ids_initialized = True
+        a_id, c_id, g_id, u_id = self.canonical_token_ids.unbind(0)
         dtype = torch.get_default_dtype()
-        base_a = (input_ids == 6).to(dtype)
-        base_c = (input_ids == 7).to(dtype)
-        base_g = (input_ids == 8).to(dtype)
-        base_u = (input_ids == 9).to(dtype)
+        base_a = (input_ids == a_id).to(dtype)
+        base_c = (input_ids == c_id).to(dtype)
+        base_g = (input_ids == g_id).to(dtype)
+        base_u = (input_ids == u_id).to(dtype)
         batch_size, seq_length = input_ids.shape
 
         au = torch.matmul(base_a.view(batch_size, seq_length, 1), base_u.view(batch_size, 1, seq_length))
@@ -1257,16 +1290,22 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
         return mask
 
 
-class RiNALMoConvNet2d(nn.Sequential):
+class RiNALMoConvNet2d(nn.Module):
     def __init__(self, config: RiNALMoSecondaryStructureHeadConfig):
-        super().__init__(
-            *[
+        super().__init__()
+        self.layers = nn.ModuleList(
+            [
                 RiNALMoConvLayer2d(
                     config.num_channels, config.kernel_size, activation=config.activation, bias=config.bias
                 )
                 for _ in range(config.num_layers)
             ]
         )
+
+    def forward(self, hidden_state: Tensor) -> Tensor:
+        for layer in self.layers:
+            hidden_state = layer(hidden_state)
+        return hidden_state
 
 
 class RiNALMoConvLayer2d(nn.Module):
@@ -1310,61 +1349,6 @@ class RiNALMoConvLayer2d(nn.Module):
         hidden_state = self.norm3(hidden_state)
         hidden_state = self.activation3(hidden_state)
         return hidden_state + residual
-
-
-class RiNALMoConvNet1d(nn.Sequential):
-    def __init__(self, config: RiNALMoSecondaryStructureHeadConfig):
-        super().__init__(
-            *[
-                RiNALMoConvLayer1d(
-                    config.num_channels, config.kernel_size, activation=config.activation, bias=config.bias
-                )
-                for _ in range(config.num_layers)
-            ]
-        )
-
-
-class RiNALMoConvLayer1d(nn.Module):
-    def __init__(self, num_channels: int, kernel_size: int = 3, activation: str = "relu", bias: bool = False):
-        super().__init__()
-        self.conv1 = nn.Conv1d(
-            in_channels=num_channels,
-            out_channels=num_channels,
-            kernel_size=1,
-            bias=bias,
-        )
-        self.norm1 = nn.InstanceNorm1d(num_channels)
-        self.activation1 = ACT2FN[activation]
-        self.conv2 = nn.Conv1d(
-            in_channels=num_channels,
-            out_channels=num_channels,
-            kernel_size=kernel_size,
-            bias=bias,
-            padding="same",
-        )
-        self.norm2 = nn.InstanceNorm1d(num_channels)
-        self.activation2 = ACT2FN[activation]
-
-    def forward(self, hidden_state: Tensor) -> Tensor:
-        residual = hidden_state
-        hidden_state = self.conv1(hidden_state)
-        hidden_state = self.norm1(hidden_state)
-        hidden_state = self.activation1(hidden_state)
-        hidden_state = self.conv2(hidden_state)
-        hidden_state = self.norm2(hidden_state)
-        hidden_state = self.activation2(hidden_state)
-        return hidden_state + residual
-
-
-@dataclass
-class RiNALMoForSecondaryStructurePredictorOutput(ModelOutput):
-    loss: torch.FloatTensor | None = None
-    logits_lm: torch.FloatTensor = None
-    loss_lm: torch.FloatTensor = None
-    logits_ss: torch.FloatTensor = None
-    loss_ss: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    attentions: Tuple[torch.FloatTensor, ...] | None = None
 
 
 def create_position_ids_from_inputs_embeds(inputs_embeds: torch.FloatTensor, padding_idx: int = 0) -> torch.LongTensor:

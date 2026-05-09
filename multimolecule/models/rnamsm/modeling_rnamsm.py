@@ -25,7 +25,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from functools import partial
-from typing import Any, Tuple
+from typing import Any
 from warnings import warn
 
 import torch
@@ -41,7 +41,6 @@ from transformers.modeling_outputs import ModelOutput
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
 from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
-from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import (
     ContactAttentionHead,
@@ -64,10 +63,9 @@ class RnaMsmPreTrainedModel(PreTrainedModel):
     config_class = RnaMsmConfig
     base_model_prefix = "model"
     supports_gradient_checkpointing = True
-    _supports_flash_attn = True
-    _supports_sdpa = True
-    _supports_flex_attn = True
-    _supports_attention_backend = True
+    # Axial MSA attention uses non-standard (R, C, B, H, D) tensor shapes and cross-alignment
+    # aggregation that ALL_ATTENTION_FUNCTIONS (sdpa / flash_attn / flex_attn) cannot express,
+    # so the _supports_* attention-backend flags are intentionally not declared.
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["RnaMsmLayer", "RnaMsmAxialLayer", "RnaMsmPkmLayer", "RnaMsmEmbeddings"]
 
@@ -75,6 +73,8 @@ class RnaMsmPreTrainedModel(PreTrainedModel):
     def _init_weights(self, module: nn.Module):
         super()._init_weights(module)
         if isinstance(module, RnaMsmEmbeddings):
+            # `position_ids` is a non-persistent buffer; under transformers v5 meta-init it
+            # stays on the meta device after `from_pretrained`, so populate it here.
             init.copy_(module.position_ids, torch.arange(1, module.position_ids.shape[-1] + 1).expand((1, -1)))
 
 
@@ -111,20 +111,29 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embeddings.word_embeddings = value
 
+    # `@capture_outputs` is intentionally not used: RnaMsmEncoder accumulates hidden_states /
+    # col_attentions / row_attentions tuples directly into RnaMsmModelOutput, so transformers'
+    # OutputRecorder machinery (and the _can_record_outputs registry) is not needed.
     @merge_with_config_defaults
-    @capture_outputs
+    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
         position_ids: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
+        output_hidden_states: bool | None = None,
+        output_attentions: bool | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmModelOutputWithPooling:
+    ) -> tuple[Tensor, ...] | RnaMsmModelOutputWithPooling:
+        # MSA-style row/column attention path requires dense (batch, seq, feature) tensors;
+        # materialise NestedTensor to dense + mask up front rather than threading it through.
         if isinstance(input_ids, NestedTensor):
             input_ids, attention_mask = input_ids.tensor, input_ids.mask
         if input_ids is not None and inputs_embeds is not None:
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
+        if inputs_embeds is not None and isinstance(inputs_embeds, NestedTensor):
+            raise TypeError("RnaMsmModel does not support NestedTensor inputs_embeds")
         if input_ids is not None:
             self.warn_if_padding_and_no_attention_mask(input_ids, attention_mask)
             input_shape = input_ids.size()
@@ -145,11 +154,13 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
             if input_ids is not None and self.pad_token_id is not None:
                 attention_mask = input_ids.ne(self.pad_token_id)
             else:
-                attention_mask = torch.ones(input_shape, device=device)
+                attention_mask = torch.ones(input_shape, device=device, dtype=torch.bool)
                 warn(
                     "attention_mask is not specified, and cannot be inferred from input_ids."
                     "Assuming all tokens are not masked."
                 )
+        else:
+            attention_mask = attention_mask.to(device=device, dtype=torch.bool)
 
         # Automatically unsqueeze input for single sequence inputs
         # RNA-MSM expects inputs with MSA
@@ -163,6 +174,11 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
             if attention_mask.ndim == 2:
                 attention_mask = attention_mask.unsqueeze(1)
 
+        output_hidden_states = (
+            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        )
+        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
+
         embedding_output = self.embeddings(
             input_ids=input_ids,
             position_ids=position_ids,
@@ -172,9 +188,11 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         encoder_outputs = self.encoder(
             embedding_output,
             attention_mask=attention_mask,
+            output_hidden_states=output_hidden_states,
+            output_attentions=output_attentions,
             **kwargs,
         )
-        sequence_output = encoder_outputs[0]
+        sequence_output = encoder_outputs.last_hidden_state
         if unsqueeze_input:
             sequence_output = sequence_output.squeeze(1)
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
@@ -182,6 +200,9 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
         return RnaMsmModelOutputWithPooling(
             last_hidden_state=sequence_output,
             pooler_output=pooled_output,
+            hidden_states=encoder_outputs.hidden_states,
+            col_attentions=encoder_outputs.col_attentions,
+            row_attentions=encoder_outputs.row_attentions,
         )
 
 
@@ -219,7 +240,7 @@ class RnaMsmForSequencePrediction(RnaMsmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmSequencePredictorOutput:
+    ) -> tuple[Tensor, ...] | RnaMsmSequencePredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -275,7 +296,7 @@ class RnaMsmForTokenPrediction(RnaMsmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmTokenPredictorOutput:
+    ) -> tuple[Tensor, ...] | RnaMsmTokenPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -332,9 +353,9 @@ class RnaMsmForContactPrediction(RnaMsmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
         if self.require_attentions:
-            kwargs["output_row_attentions"] = True
+            kwargs["output_attentions"] = True
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -407,7 +428,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
+    ) -> tuple[Tensor, ...] | RnaMsmForMaskedLMOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -465,9 +486,9 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
         labels_lm: Tensor | None = None,
         labels_contact: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
+    ) -> tuple[Tensor, ...] | RnaMsmForPreTrainingOutput:
         if self.require_attentions:
-            kwargs["output_row_attentions"] = True
+            kwargs["output_attentions"] = True
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -530,9 +551,9 @@ class RnaMsmForSecondaryStructurePrediction(RnaMsmPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
+    ) -> tuple[Tensor, ...] | RnaMsmContactPredictorOutput:
         if self.require_attentions:
-            kwargs["output_row_attentions"] = True
+            kwargs["output_attentions"] = True
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -632,7 +653,7 @@ class RnaMsmLearnedPositionalEmbedding(nn.Embedding):
     def forward(self, position_ids: torch.LongTensor) -> Tensor:
         """Input is expected to be of size [bsz x seq_length]."""
 
-        # This is a bug in the original implementation
+        # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
         positions = position_ids + 1
         return F.embedding(
             positions,
@@ -645,197 +666,332 @@ class RnaMsmLearnedPositionalEmbedding(nn.Embedding):
         )
 
 
-class RnaMsmHiddenStateRecorder(nn.Module):
-    def forward(self, hidden_states: Tensor, next_hidden_states: Tensor) -> Tensor:
-        return next_hidden_states
-
-
-class RnaMsmColAttentionRecorder(nn.Module):
-    def forward(self, attentions: Tensor) -> Tensor:
-        return attentions
-
-
-class RnaMsmRowAttentionRecorder(nn.Module):
-    def forward(self, attentions: Tensor) -> Tensor:
-        return attentions
-
-
 class RnaMsmEncoder(nn.Module):
+    """RNA-MSM encoder.
+
+    The default ``layer_type="axial"`` builds ``RnaMsmAxialLayer`` and runs row + column MSA
+    attention over a 4D ``(R, C, B, D)`` tensor. ``layer_type="standard"`` and ``"pkm"``
+    build single-sequence transformer layers (``RnaMsmLayer`` / ``RnaMsmPkmLayer``) that
+    operate on a 3D fairseq-style ``(C, B, D)`` tensor; those paths require the
+    num-alignments dimension ``R`` to be 1, since they ignore the alignment axis entirely.
+    """
+
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.config = config
-        self.layer = nn.ModuleList([RnaMsmAxialLayer(config) for _ in range(config.num_hidden_layers)])
+        self.gradient_checkpointing = False
+        self.layer = nn.ModuleList([layers.build(config) for _ in range(config.num_hidden_layers)])
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        self.hidden_state_recorder = RnaMsmHiddenStateRecorder()
-        self.col_attention_recorder = RnaMsmColAttentionRecorder()
-        self.row_attention_recorder = RnaMsmRowAttentionRecorder()
 
     def forward(
         self,
         hidden_states: Tensor,
         attention_mask: torch.FloatTensor,
+        output_hidden_states: bool = False,
+        output_attentions: bool = False,
         **kwargs: Unpack[TransformersKwargs],
     ) -> RnaMsmModelOutput:
-        key_padding_mask = (attention_mask ^ 1).bool()
+        key_padding_mask = ~attention_mask.bool()
 
         # B x R x C x D -> R x C x B x D
         hidden_states = hidden_states.permute(1, 2, 0, 3)
 
+        if self.config.layer_type == "axial":
+            return self._forward_axial(
+                hidden_states, key_padding_mask, output_hidden_states, output_attentions, **kwargs
+            )
+        return self._forward_single_sequence(
+            hidden_states, key_padding_mask, output_hidden_states, output_attentions, **kwargs
+        )
+
+    def _forward_axial(
+        self,
+        hidden_states: Tensor,
+        key_padding_mask: Tensor,
+        output_hidden_states: bool,
+        output_attentions: bool,
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> RnaMsmModelOutput:
+        all_hidden_states: list[Tensor] = []
+        all_col_attentions: list[Tensor] = []
+        all_row_attentions: list[Tensor] = []
+
         for layer_module in self.layer:
-            pre_hidden_states = hidden_states.permute(2, 0, 1, 3)
+            if output_hidden_states:
+                # R x C x B x D -> B x R x C x D
+                all_hidden_states.append(hidden_states.permute(2, 0, 1, 3))
             layer_outputs = layer_module(hidden_states, None, key_padding_mask, **kwargs)
             hidden_states = layer_outputs[0]
-            post_hidden_states = hidden_states.permute(2, 0, 1, 3)
-            self.hidden_state_recorder(pre_hidden_states, post_hidden_states)
 
-            # H x C x B x R x R -> B x H x C x R x R
-            self.col_attention_recorder(layer_outputs[1].permute(2, 0, 1, 3, 4))
-            # H x B x C x C -> B x H x C x C
-            self.row_attention_recorder(layer_outputs[2].permute(1, 0, 2, 3))
+            if output_attentions:
+                # H x C x B x R x R -> B x H x C x R x R
+                all_col_attentions.append(layer_outputs[1].permute(2, 0, 1, 3, 4))
+                # H x B x C x C -> B x H x C x C
+                all_row_attentions.append(layer_outputs[2].permute(1, 0, 2, 3))
 
-        # last hidden representation should have layer norm applied
         hidden_states = self.layer_norm(hidden_states)
         hidden_states = hidden_states.permute(2, 0, 1, 3)  # R x C x B x D -> B x R x C x D
+        if output_hidden_states:
+            all_hidden_states.append(hidden_states)
         return RnaMsmModelOutput(
             last_hidden_state=hidden_states,
+            hidden_states=tuple(all_hidden_states) if output_hidden_states else None,
+            col_attentions=tuple(all_col_attentions) if output_attentions else None,
+            row_attentions=tuple(all_row_attentions) if output_attentions else None,
+        )
+
+    def _forward_single_sequence(
+        self,
+        hidden_states: Tensor,
+        key_padding_mask: Tensor,
+        output_hidden_states: bool,
+        output_attentions: bool,
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> RnaMsmModelOutput:
+        # Standard / PKM layers ignore the alignment axis; they only support num_alignments == 1.
+        num_rows = hidden_states.size(0)
+        if num_rows != 1:
+            raise ValueError(
+                f"layer_type={self.config.layer_type!r} only supports single-sequence inputs "
+                f"(num_alignments == 1), but got num_alignments={num_rows}."
+            )
+        # R x C x B x D -> C x B x D (fairseq layout expected by RnaMsmLayer/RnaMsmPkmLayer).
+        hidden_states = hidden_states.squeeze(0)
+        single_seq_padding_mask = key_padding_mask.squeeze(1)  # B x R x C -> B x C
+
+        all_hidden_states: list[Tensor] = []
+        all_attentions: list[Tensor] = []
+
+        for layer_module in self.layer:
+            if output_hidden_states:
+                # C x B x D -> B x 1 x C x D
+                all_hidden_states.append(hidden_states.transpose(0, 1).unsqueeze(1))
+            layer_outputs = layer_module(hidden_states, None, single_seq_padding_mask, **kwargs)
+            hidden_states = layer_outputs[0]
+
+            if output_attentions:
+                all_attentions.append(layer_outputs[1])
+
+        hidden_states = self.layer_norm(hidden_states)
+        hidden_states = hidden_states.transpose(0, 1).unsqueeze(1)  # C x B x D -> B x 1 x C x D
+        if output_hidden_states:
+            all_hidden_states.append(hidden_states)
+        return RnaMsmModelOutput(
+            last_hidden_state=hidden_states,
+            hidden_states=tuple(all_hidden_states) if output_hidden_states else None,
+            col_attentions=None,
+            row_attentions=tuple(all_attentions) if output_attentions else None,
         )
 
 
-layers = ConfigRegistry("layer_type")
+attentions = ConfigRegistry(key="attention_type")
 
 
-@layers.register("axial", default=True)
-class RnaMsmAxialLayer(GradientCheckpointingLayer):
-    """Implements an Axial MSA Transformer block."""
-
-    def __init__(self, config: RnaMsmConfig) -> None:
+@attentions.register("standard")
+class RnaMsmMultiheadAttention(nn.Module):
+    def __init__(self, config: RnaMsmConfig):
         super().__init__()
+        self.hidden_size = config.hidden_size
         self.num_attention_heads = config.num_attention_heads
         self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
-        row_self_attention = RowSelfAttention(config)
-        column_self_attention = ColumnSelfAttention(config)
-        feed_forward_layer = FeedForwardNetwork(config)
+        self.scaling = self.attention_head_size**-0.5
+        self.dropout_prob = config.attention_dropout
+        # `onnx_trace` was inherited from fairseq; only the (legacy) slow attention path checks
+        # it. Default to False so the fallback never tries to repeat the attention mask along
+        # the head dimension (which is already handled by the modern torch path).
+        self.onnx_trace = False
 
-        self.row_self_attention = NormalizedResidualBlock(config, row_self_attention)
-        self.column_self_attention = NormalizedResidualBlock(config, column_self_attention)
-        self.feed_forward_layer = NormalizedResidualBlock(config, feed_forward_layer)
+        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
+        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
+        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
+
+        self.out_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
+
+        self.reset_parameters()
+        self.enable_torch_version = hasattr(F, "multi_head_attention_forward")
+        if self.enable_torch_version:
+            self._attention_fn = partial(
+                F.multi_head_attention_forward,  # type: ignore
+                embed_dim_to_check=self.hidden_size,
+                num_heads=self.num_attention_heads,
+                in_proj_weight=torch.empty([0]),
+                bias_k=None,
+                bias_v=None,
+                add_zero_attention=False,
+                dropout_p=self.dropout_prob,
+                use_separate_proj_weight=True,
+            )
+
+    def attention_fn(
+        self,
+        query,
+        key,
+        value,
+        key_padding_mask: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+    ):
+        return self._attention_fn(
+            query,
+            key,
+            value,
+            in_proj_bias=torch.cat((self.q_proj.bias, self.k_proj.bias, self.v_proj.bias)),
+            attention_mask=attention_mask,
+            key_padding_mask=key_padding_mask,
+            training=self.training,
+            need_weights=True,
+            out_proj_weight=self.out_proj.weight,
+            out_proj_bias=self.out_proj.bias,
+            q_proj_weight=self.q_proj.weight,
+            k_proj_weight=self.k_proj.weight,
+            v_proj_weight=self.v_proj.weight,
+        )
+
+    def reset_parameters(self):
+        # Empirically observed the convergence to be much better with
+        # the scaled initialization
+        init.xavier_uniform_(self.k_proj.weight, gain=1 / math.sqrt(2))
+        init.xavier_uniform_(self.v_proj.weight, gain=1 / math.sqrt(2))
+        init.xavier_uniform_(self.q_proj.weight, gain=1 / math.sqrt(2))
+
+        init.xavier_uniform_(self.out_proj.weight)
+        if self.out_proj.bias is not None:
+            init.zeros_(self.out_proj.bias)
 
     def forward(
         self,
         hidden_states: Tensor,
-        attention_mask: Tensor | None = None,
         key_padding_mask: Tensor | None = None,
-        **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
+        attention_mask: Tensor | None = None,
+    ) -> tuple[Tensor, ...]:
+        """Input shape: Time x Batch x Channel
+
+        Args:
+            key_padding_mask (ByteTensor, optional): mask to exclude
+                keys that are pads, of shape `(batch, src_len)`, where
+                padding elements are indicated by 1s.
+            attention_mask (ByteTensor, optional): typically used to
+                implement causal attention, where the mask prevents the
+                attention from looking forward in time (default: None).
+            before_softmax (bool, optional): return the raw attention
+                pretrained and values before the attention softmax.
         """
-        LayerNorm is applied either before or after the self-attention/ffn
-        modules similar to the original Transformer implementation.
-        """
-        row_attention_outputs = self.row_self_attention(
-            hidden_states,
-            attention_mask=attention_mask,
-            key_padding_mask=key_padding_mask,
+
+        tgt_len, bsz, hidden_size = hidden_states.size()
+        if hidden_size != self.hidden_size:
+            raise ValueError(f"hidden_size mismatch: input has {hidden_size}, expected {self.hidden_size}.")
+
+        # A workaround for quantization to work. Otherwise JIT compilation
+        # treats bias in linear module as method.
+        # and not output_attentions
+        if self.enable_torch_version and not torch.jit.is_scripting():
+            return self.attention_fn(
+                query=hidden_states,
+                key=hidden_states,
+                value=hidden_states,
+                key_padding_mask=key_padding_mask,
+                attention_mask=attention_mask,
+            )
+
+        q = self.q_proj(hidden_states)
+        k = self.k_proj(hidden_states)
+        v = self.v_proj(hidden_states)
+        q *= self.scaling
+
+        q = q.reshape(tgt_len, bsz * self.num_attention_heads, self.attention_head_size).transpose(0, 1)
+        k = k.reshape(-1, bsz * self.num_attention_heads, self.attention_head_size).transpose(0, 1)
+        v = v.reshape(-1, bsz * self.num_attention_heads, self.attention_head_size).transpose(0, 1)
+
+        src_len = k.size(1)
+
+        # This is part of a workaround to get around fork/join parallelism
+        # not supporting Optional types.
+        if key_padding_mask is not None and key_padding_mask.dim() == 0:
+            key_padding_mask = None
+
+        if key_padding_mask is not None and key_padding_mask.size(0) != bsz or key_padding_mask.size(1) != src_len:  # type: ignore[union-attr] # noqa: E501
+            raise ValueError(
+                f"key_padding_mask shape {tuple(key_padding_mask.size())} does not match "  # type: ignore[union-attr]
+                f"expected (batch={bsz}, src_len={src_len})."
+            )
+
+        attention_scores = torch.bmm(q, k.transpose(1, 2))
+
+        if attention_mask is not None:
+            attention_mask = attention_mask.unsqueeze(0)
+            if self.onnx_trace:
+                attention_mask = attention_mask.repeat(attention_scores.size(0), 1, 1)
+            attention_scores += attention_mask
+
+        if key_padding_mask is not None:
+            # don't attend to padding symbols
+            attention_scores = attention_scores.view(bsz, self.num_attention_heads, tgt_len, src_len)
+            attention_scores = attention_scores.masked_fill(
+                key_padding_mask.unsqueeze(1).unsqueeze(2).to(torch.bool), float("-inf")
+            )
+            attention_scores = attention_scores.view(bsz * self.num_attention_heads, tgt_len, src_len)
+
+        # attention_probs = F.softmax(attention_scores, dim=-1, dtype=torch.float32)
+        # attention_probs = attention_probs.type_as(attention_scores)
+        attention_probs = attention_scores.softmax(-1)
+        attention_probs = F.dropout(
+            attention_probs,
+            p=self.dropout_prob,
+            training=self.training,
         )
-        row_attention_output, row_outputs = row_attention_outputs[0], row_attention_outputs[1:]
-        col_attention_outputs = self.column_self_attention(
-            row_attention_output,
-            attention_mask=attention_mask,
-            key_padding_mask=key_padding_mask,
-        )
-        col_attention_output, col_outputs = col_attention_outputs[0], col_attention_outputs[1:]
-        context_layer = self.feed_forward_layer(col_attention_output)
 
-        outputs = (context_layer,) + col_outputs + row_outputs
-        return outputs
+        context_layer = torch.bmm(attention_probs, v)
+        context_layer = context_layer.transpose(0, 1).reshape(tgt_len, bsz, hidden_size)
+        context_layer = self.out_proj(context_layer)
+
+        return context_layer, attention_probs
 
 
-@layers.register("standard")
-class RnaMsmLayer(GradientCheckpointingLayer):
-    """Transformer layer block."""
-
+@attentions.register("performer")
+class RnaMsmPerformerAttention(RnaMsmMultiheadAttention):
     def __init__(self, config: RnaMsmConfig):
-        super().__init__()
-        self.dropout = nn.Dropout(config.dropout)
-        self.self = attentions.build(config)
-        self.layer_norm = nn.LayerNorm(config.hidden_size)
-        self.ffn = FeedForwardNetwork(config)
-        self.final_layer_norm = nn.LayerNorm(config.hidden_size)
+        try:
+            from performer_pytorch import FastAttention
+        except ImportError as error:
+            raise ImportError(
+                'RnaMsmPerformerAttention requires the optional "performer_pytorch" package. '
+                'Install it or set attention_type="standard".'
+            ) from error
+
+        super().__init__(config)
+        self._attention_fn = FastAttention(dim_heads=self.attention_head_size, nb_features=config.num_features)
+
+    def attention_fn(self, query, key, value):
+        return self._attention_fn(query, key, value)
 
     def forward(
         self,
-        hidden_states,
-        attention_mask=None,
-        key_padding_mask=None,
-        **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
-        residual = hidden_states
-        hidden_states = self.layer_norm(hidden_states)
-        hidden_states, attention_probs = self.self(
-            hidden_states,
-            key_padding_mask=key_padding_mask,
-            attention_mask=attention_mask,
-        )
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = residual + hidden_states
+        hidden_states: Tensor,
+        key_padding_mask: Tensor | None = None,
+        attention_mask: Tensor | None = None,
+    ) -> tuple[Tensor, ...]:
+        from einops import rearrange
 
-        residual = hidden_states
-        hidden_states = self.final_layer_norm(hidden_states)
-        hidden_states = self.ffn(hidden_states)
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = residual + hidden_states
+        q = self.q_proj(hidden_states)  # [T x B x D]
+        k = self.k_proj(hidden_states)  # [...]
+        v = self.v_proj(hidden_states)  # [...]
 
-        return hidden_states, attention_probs
+        q, k, v = (rearrange(t, "t b (h d) -> b h t d", h=self.num_attention_heads) for t in (q, k, v))
 
+        if key_padding_mask is not None:
+            mask = key_padding_mask[:, None, :, None]
+            v.masked_fill_(mask, 0)
+        if attention_mask is not None:
+            raise NotImplementedError
 
-@layers.register("pkm")
-class RnaMsmPkmLayer(GradientCheckpointingLayer):
-    """Transformer layer block."""
+        attention_probs = self.attention_fn(q, k, v)
+        context_layer = rearrange(attention_probs, "b h t d -> t b (h d)")
+        context_layer = self.out_proj(context_layer)
 
-    def __init__(self, config: RnaMsmConfig):
-        from product_key_memory import PKM
-
-        super().__init__()
-        self.self = attentions.build(config)
-        self.layer_norm = nn.LayerNorm(config.hidden_size)
-
-        self.pkm = PKM(
-            config.hidden_size,
-            config.pkm_attention_heads,
-            config.num_product_keys,
-            config.pkm_topk,
-            config.pkm_head_size,
-        )
-
-        self.final_layer_norm = nn.LayerNorm(self.hidden_size)
-
-    def forward(
-        self,
-        hidden_states,
-        attention_mask=None,
-        key_padding_mask=None,
-        **kwargs: Unpack[TransformersKwargs],
-    ) -> Tuple[Tensor, ...]:
-        residual = hidden_states
-        hidden_states = self.layer_norm(hidden_states)
-        hidden_states, attention_probs = self.self(
-            query=hidden_states,
-            key=hidden_states,
-            value=hidden_states,
-            key_padding_mask=key_padding_mask,
-            attention_mask=attention_mask,
-        )
-        hidden_states = residual + hidden_states
-
-        residual = hidden_states
-        hidden_states = self.final_layer_norm(hidden_states)
-        hidden_states = self.pkm(hidden_states)
-        hidden_states = residual + hidden_states
-
-        return hidden_states, attention_probs
+        return context_layer, attention_probs
 
 
-class RowSelfAttention(nn.Module):
+class RnaMsmRowSelfAttention(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.num_attention_heads = config.num_attention_heads
@@ -907,7 +1063,7 @@ class RowSelfAttention(nn.Module):
         hidden_states,
         attention_mask=None,
         key_padding_mask=None,
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         num_rows, num_cols, _, _ = hidden_states.size()
         if (num_rows * num_cols > self.max_tokens_per_msa) and not torch.is_grad_enabled():
             return self._batched_forward(hidden_states, attention_mask, key_padding_mask)
@@ -949,7 +1105,7 @@ class RowSelfAttention(nn.Module):
         return context_layer, attention_probs
 
 
-class ColumnSelfAttention(nn.Module):
+class RnaMsmColumnSelfAttention(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.num_attention_heads = config.num_attention_heads
@@ -1019,7 +1175,7 @@ class ColumnSelfAttention(nn.Module):
         hidden_states,
         attention_mask=None,
         key_padding_mask=None,
-    ) -> Tuple[Tensor, ...]:
+    ) -> tuple[Tensor, ...]:
         num_rows, num_cols, _, _ = hidden_states.size()
         # if False and num_rows * num_cols > 2 ** 14 and not torch.is_grad_enabled():
         if (num_rows * num_cols) > self.max_tokens_per_msa and not torch.is_grad_enabled():
@@ -1051,204 +1207,7 @@ class ColumnSelfAttention(nn.Module):
         return context_layer, attention_probs
 
 
-attentions = ConfigRegistry(key="attention_type")
-
-
-@attentions.register("standard")
-class MultiheadAttention(nn.Module):
-    def __init__(self, config: RnaMsmConfig):
-        super().__init__()
-        self.hidden_size = config.hidden_size
-        self.num_attention_heads = config.num_attention_heads
-        self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
-        self.all_head_size = self.num_attention_heads * self.attention_head_size
-        self.scaling = self.attention_head_size**-0.5
-        self.dropout_prob = config.attention_dropout
-
-        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
-        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
-        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
-
-        self.out_proj = nn.Linear(config.hidden_size, config.hidden_size, config.attention_bias)
-
-        self.reset_parameters()
-        self.enable_torch_version = hasattr(F, "multi_head_attention_forward")
-        if self.enable_torch_version:
-            self._attention_fn = partial(
-                F.multi_head_attention_forward,  # type: ignore
-                embed_dim_to_check=self.hidden_size,
-                num_heads=self.num_attention_heads,
-                in_proj_weight=torch.empty([0]),
-                bias_k=None,
-                bias_v=None,
-                add_zero_attention=False,
-                dropout_p=self.dropout_prob,
-                use_separate_proj_weight=True,
-            )
-
-    def attention_fn(
-        self,
-        query,
-        key,
-        value,
-        key_padding_mask: Tensor | None = None,
-        attention_mask: Tensor | None = None,
-    ):
-        return self._attention_fn(
-            query,
-            key,
-            value,
-            in_proj_bias=torch.cat((self.q_proj.bias, self.k_proj.bias, self.v_proj.bias)),
-            attention_mask=attention_mask,
-            key_padding_mask=key_padding_mask,
-            training=self.training,
-            need_weights=True,
-            out_proj_weight=self.out_proj.weight,
-            out_proj_bias=self.out_proj.bias,
-            q_proj_weight=self.q_proj.weight,
-            k_proj_weight=self.k_proj.weight,
-            v_proj_weight=self.v_proj.weight,
-        )
-
-    def reset_parameters(self):
-        # Empirically observed the convergence to be much better with
-        # the scaled initialization
-        nn.init.xavier_uniform_(self.k_proj.weight, gain=1 / math.sqrt(2))
-        nn.init.xavier_uniform_(self.v_proj.weight, gain=1 / math.sqrt(2))
-        nn.init.xavier_uniform_(self.q_proj.weight, gain=1 / math.sqrt(2))
-
-        nn.init.xavier_uniform_(self.out_proj.weight)
-        if self.out_proj.bias is not None:
-            nn.init.constant_(self.out_proj.bias, 0.0)
-
-    def forward(
-        self,
-        hidden_states: Tensor,
-        key_padding_mask: Tensor | None = None,
-        attention_mask: Tensor | None = None,
-    ) -> Tuple[Tensor, ...]:
-        """Input shape: Time x Batch x Channel
-
-        Args:
-            key_padding_mask (ByteTensor, optional): mask to exclude
-                keys that are pads, of shape `(batch, src_len)`, where
-                padding elements are indicated by 1s.
-            attention_mask (ByteTensor, optional): typically used to
-                implement causal attention, where the mask prevents the
-                attention from looking forward in time (default: None).
-            before_softmax (bool, optional): return the raw attention
-                pretrained and values before the attention softmax.
-        """
-
-        tgt_len, bsz, hidden_size = hidden_states.size()
-        assert hidden_size == self.hidden_size
-
-        # A workaround for quantization to work. Otherwise JIT compilation
-        # treats bias in linear module as method.
-        # and not output_attentions
-        if self.enable_torch_version and not torch.jit.is_scripting():
-            return self.attention_fn(
-                query=hidden_states,
-                key=hidden_states,
-                value=hidden_states,
-                key_padding_mask=key_padding_mask,
-                attention_mask=attention_mask,
-            )
-
-        q = self.q_proj(hidden_states)
-        k = self.k_proj(hidden_states)
-        v = self.v_proj(hidden_states)
-        q *= self.scaling
-
-        q = q.reshape(tgt_len, bsz * self.num_attention_heads, self.attention_head_size).transpose(0, 1)
-        k = k.reshape(-1, bsz * self.num_attention_heads, self.attention_head_size).transpose(0, 1)
-        v = v.reshape(-1, bsz * self.num_attention_heads, self.attention_head_size).transpose(0, 1)
-
-        src_len = k.size(1)
-
-        # This is part of a workaround to get around fork/join parallelism
-        # not supporting Optional types.
-        if key_padding_mask is not None and key_padding_mask.dim() == 0:
-            key_padding_mask = None
-
-        if key_padding_mask is not None:
-            assert key_padding_mask.size(0) == bsz
-            assert key_padding_mask.size(1) == src_len
-
-        attention_scores = torch.bmm(q, k.transpose(1, 2))
-
-        assert list(attention_scores.size()) == [bsz * self.num_attention_heads, tgt_len, src_len]
-
-        if attention_mask is not None:
-            attention_mask = attention_mask.unsqueeze(0)
-            if self.onnx_trace:
-                attention_mask = attention_mask.repeat(attention_scores.size(0), 1, 1)
-            attention_scores += attention_mask
-
-        if key_padding_mask is not None:
-            # don't attend to padding symbols
-            attention_scores = attention_scores.view(bsz, self.num_attention_heads, tgt_len, src_len)
-            attention_scores = attention_scores.masked_fill(
-                key_padding_mask.unsqueeze(1).unsqueeze(2).to(torch.bool), float("-inf")
-            )
-            attention_scores = attention_scores.view(bsz * self.num_attention_heads, tgt_len, src_len)
-
-        # attention_probs = F.softmax(attention_scores, dim=-1, dtype=torch.float32)
-        # attention_probs = attention_probs.type_as(attention_scores)
-        attention_probs = attention_scores.softmax(-1)
-        attention_probs = F.dropout(
-            attention_probs,
-            p=self.dropout_prob,
-            training=self.training,
-        )
-
-        context_layer = torch.bmm(attention_probs, v)
-        assert list(context_layer.size()) == [bsz * self.num_attention_heads, tgt_len, self.attention_head_size]
-        context_layer = context_layer.transpose(0, 1).reshape(tgt_len, bsz, hidden_size)
-        context_layer = self.out_proj(context_layer)
-
-        return context_layer, attention_probs
-
-
-@attentions.register("performer")
-class PerformerAttention(MultiheadAttention):
-    def __init__(self, config: RnaMsmConfig):
-        from performer_pytorch import FastAttention
-
-        super().__init__(config)
-        self._attention_fn = FastAttention(dim_heads=self.attention_head_size, nb_features=config.num_features)
-
-    def attention_fn(self, query, key, value):
-        return self._attention_fn(query, key, value)
-
-    def forward(
-        self,
-        hidden_states: Tensor,
-        key_padding_mask: Tensor | None = None,
-        attention_mask: Tensor | None = None,
-    ) -> Tuple[Tensor, ...]:
-        from einops import rearrange
-
-        q = self.q_proj(hidden_states)  # [T x B x D]
-        k = self.k_proj(hidden_states)  # [...]
-        v = self.v_proj(hidden_states)  # [...]
-
-        q, k, v = (rearrange(t, "t b (h d) -> b h t d", h=self.num_attention_heads) for t in (q, k, v))
-
-        if key_padding_mask is not None:
-            mask = key_padding_mask[:, None, :, None]
-            v.masked_fill_(mask, 0)
-        if attention_mask is not None:
-            raise NotImplementedError
-
-        attention_probs = self.attention_fn(q, k, v)
-        context_layer = rearrange(attention_probs, "b h t d -> t b (h d)")
-        context_layer = self.out_proj(context_layer)
-
-        return context_layer, attention_probs
-
-
-class NormalizedResidualBlock(nn.Module):
+class RnaMsmNormalizedResidualBlock(nn.Module):
     def __init__(
         self,
         config: RnaMsmConfig,
@@ -1278,7 +1237,7 @@ class NormalizedResidualBlock(nn.Module):
             return hidden_states
 
 
-class FeedForwardNetwork(nn.Module):
+class RnaMsmFeedForward(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
         self.activation = ACT2FN[config.hidden_act] if isinstance(config.hidden_act, str) else config.hidden_act
@@ -1293,7 +1252,144 @@ class FeedForwardNetwork(nn.Module):
         return hidden_states
 
 
-# Copied from transformers.models.bert.modeling_bert.BertPooler
+layers = ConfigRegistry("layer_type")
+
+
+@layers.register("axial", default=True)
+class RnaMsmAxialLayer(GradientCheckpointingLayer):
+    """Implements an Axial MSA Transformer block."""
+
+    def __init__(self, config: RnaMsmConfig) -> None:
+        super().__init__()
+        self.num_attention_heads = config.num_attention_heads
+        self.attention_head_size = int(config.hidden_size / config.num_attention_heads)
+        self.all_head_size = self.num_attention_heads * self.attention_head_size
+        row_self_attention = RnaMsmRowSelfAttention(config)
+        column_self_attention = RnaMsmColumnSelfAttention(config)
+        feed_forward_layer = RnaMsmFeedForward(config)
+
+        self.row_self_attention = RnaMsmNormalizedResidualBlock(config, row_self_attention)
+        self.column_self_attention = RnaMsmNormalizedResidualBlock(config, column_self_attention)
+        self.feed_forward_layer = RnaMsmNormalizedResidualBlock(config, feed_forward_layer)
+
+    def forward(
+        self,
+        hidden_states: Tensor,
+        attention_mask: Tensor | None = None,
+        key_padding_mask: Tensor | None = None,
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> tuple[Tensor, ...]:
+        """
+        LayerNorm is applied either before or after the self-attention/ffn
+        modules similar to the original Transformer implementation.
+        """
+        row_attention_outputs = self.row_self_attention(
+            hidden_states,
+            attention_mask=attention_mask,
+            key_padding_mask=key_padding_mask,
+        )
+        row_attention_output, row_outputs = row_attention_outputs[0], row_attention_outputs[1:]
+        col_attention_outputs = self.column_self_attention(
+            row_attention_output,
+            attention_mask=attention_mask,
+            key_padding_mask=key_padding_mask,
+        )
+        col_attention_output, col_outputs = col_attention_outputs[0], col_attention_outputs[1:]
+        context_layer = self.feed_forward_layer(col_attention_output)
+
+        outputs = (context_layer,) + col_outputs + row_outputs
+        return outputs
+
+
+@layers.register("standard")
+class RnaMsmLayer(GradientCheckpointingLayer):
+    """Transformer layer block."""
+
+    def __init__(self, config: RnaMsmConfig):
+        super().__init__()
+        self.dropout = nn.Dropout(config.hidden_dropout)
+        self.self = attentions.build(config)
+        self.layer_norm = nn.LayerNorm(config.hidden_size)
+        self.ffn = RnaMsmFeedForward(config)
+        self.final_layer_norm = nn.LayerNorm(config.hidden_size)
+
+    def forward(
+        self,
+        hidden_states,
+        attention_mask=None,
+        key_padding_mask=None,
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> tuple[Tensor, ...]:
+        residual = hidden_states
+        hidden_states = self.layer_norm(hidden_states)
+        hidden_states, attention_probs = self.self(
+            hidden_states,
+            key_padding_mask=key_padding_mask,
+            attention_mask=attention_mask,
+        )
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = residual + hidden_states
+
+        residual = hidden_states
+        hidden_states = self.final_layer_norm(hidden_states)
+        hidden_states = self.ffn(hidden_states)
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = residual + hidden_states
+
+        return hidden_states, attention_probs
+
+
+@layers.register("pkm")
+class RnaMsmPkmLayer(GradientCheckpointingLayer):
+    """Transformer layer block."""
+
+    def __init__(self, config: RnaMsmConfig):
+        try:
+            from product_key_memory import PKM
+        except ImportError as error:
+            raise ImportError(
+                'RnaMsmPkmLayer requires the optional "product_key_memory" package. '
+                'Install it or set layer_type="axial" or layer_type="standard".'
+            ) from error
+
+        super().__init__()
+        self.self = attentions.build(config)
+        self.layer_norm = nn.LayerNorm(config.hidden_size)
+
+        self.pkm = PKM(
+            config.hidden_size,
+            config.pkm_attention_heads,
+            config.num_product_keys,
+            config.pkm_topk,
+            config.pkm_head_size,
+        )
+
+        self.final_layer_norm = nn.LayerNorm(config.hidden_size)
+
+    def forward(
+        self,
+        hidden_states,
+        attention_mask=None,
+        key_padding_mask=None,
+        **kwargs: Unpack[TransformersKwargs],
+    ) -> tuple[Tensor, ...]:
+        residual = hidden_states
+        hidden_states = self.layer_norm(hidden_states)
+        hidden_states, attention_probs = self.self(
+            hidden_states,
+            key_padding_mask=key_padding_mask,
+            attention_mask=attention_mask,
+        )
+        hidden_states = residual + hidden_states
+
+        residual = hidden_states
+        hidden_states = self.final_layer_norm(hidden_states)
+        hidden_states = self.pkm(hidden_states)
+        hidden_states = residual + hidden_states
+
+        return hidden_states, attention_probs
+
+
 class RnaMsmPooler(nn.Module):
     def __init__(self, config: RnaMsmConfig):
         super().__init__()
@@ -1313,36 +1409,36 @@ class RnaMsmPooler(nn.Module):
 class RnaMsmSequencePredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmTokenPredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmContactPredictorOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmForMaskedLMOutput(ModelOutput):
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
@@ -1352,30 +1448,23 @@ class RnaMsmForPreTrainingOutput(ModelOutput):
     logits_ss: torch.FloatTensor = None
     loss_lm: torch.FloatTensor | None = None
     loss_ss: torch.FloatTensor | None = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmModelOutputWithPooling(ModelOutput):
     last_hidden_state: torch.FloatTensor = None
     pooler_output: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
 class RnaMsmModelOutput(ModelOutput):
     last_hidden_state: torch.FloatTensor = None
-    hidden_states: Tuple[torch.FloatTensor, ...] | None = None
-    col_attentions: Tuple[torch.FloatTensor, ...] | None = None
-    row_attentions: Tuple[torch.FloatTensor, ...] | None = None
-
-
-RnaMsmPreTrainedModel._can_record_outputs = {
-    "hidden_states": RnaMsmHiddenStateRecorder,
-    "col_attentions": RnaMsmColAttentionRecorder,
-    "row_attentions": RnaMsmRowAttentionRecorder,
-}
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    col_attentions: tuple[torch.FloatTensor, ...] | None = None
+    row_attentions: tuple[torch.FloatTensor, ...] | None = None

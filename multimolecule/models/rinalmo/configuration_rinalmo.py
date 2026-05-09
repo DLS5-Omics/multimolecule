@@ -24,7 +24,13 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ..configuration_utils import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import (
+    BaseHeadConfig,
+    HeadConfig,
+    MaskedLMHeadConfig,
+    PreTrainedConfig,
+    validate_attention_dimensions,
+)
 
 
 class RiNALMoConfig(PreTrainedConfig):
@@ -126,6 +132,7 @@ class RiNALMoConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
@@ -194,31 +201,3 @@ class RiNALMoSecondaryStructureHeadConfig(BaseHeadConfig):
     num_channels: int = 64
     bias: bool = False
     activation: str = "relu"
-
-
-class RiNALMoMeanRibosomeLoadingHeadConfig(BaseHeadConfig):
-    r"""
-    Configuration class for a prediction head.
-
-    Args:
-        num_labels:
-            Number of labels to use in the last layer added to the model, typically for a classification task.
-
-            Head should look for [`Config.num_labels`][multimolecule.PreTrainedConfig] if is `None`.
-        problem_type:
-            Problem type for `XxxForYyyPrediction` models. Can be one of `"binary"`, `"regression"`,
-            `"multiclass"` or `"multilabel"`.
-
-            Head should look for [`Config.problem_type`][multimolecule.PreTrainedConfig] if is `None`.
-        dropout:
-            The dropout ratio for the hidden states.
-    """
-
-    num_labels: int = 1
-    problem_type: Optional[str] = None
-    dropout: float = 0.0
-    kernel_size: int = 3
-    num_layers: int = 2
-    num_channels: int = 64
-    bias: bool = False
-    activation: str = "elu"

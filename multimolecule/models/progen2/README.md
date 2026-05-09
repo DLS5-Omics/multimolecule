@@ -3,7 +3,7 @@ language: protein
 tags:
   - Biology
   - Protein
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/uniref
   - multimolecule/bfd
@@ -54,7 +54,7 @@ ProGen2 is a [GPT-J](https://huggingface.co/EleutherAI/gpt-j-6b)-style model pre
     <th>Num Parameters (M)</th>
     <th>FLOPs (G)</th>
     <th>MACs (G)</th>
-    <th>Context Length</th>
+    <th>Max Num Tokens</th>
   </tr>
 </thead>
 <tbody>

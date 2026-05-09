@@ -39,7 +39,6 @@ def convert_checkpoint(convert_config):
     print(f"Converting RnaErnie checkpoint at {convert_config.checkpoint_path}")
     vocab_list = get_alphabet().vocabulary
     config = Config()
-    config.architectures = ["RnaErnieModel"]
     config.vocab_size = len(vocab_list)
 
     model = RnaErnieForPreTraining(config)

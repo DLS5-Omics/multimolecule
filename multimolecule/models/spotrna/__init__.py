@@ -26,18 +26,24 @@ from multimolecule.tokenisers import RnaTokenizer
 
 from ..modeling_auto import AutoModelForRnaSecondaryStructurePrediction
 from .configuration_spotrna import SpotRnaConfig, SpotRnaModuleConfig
-from .modeling_spotrna import SpotRnaModel, SpotRnaModelOutput, SpotRnaPreTrainedModel
+from .modeling_spotrna import (
+    SpotRnaForRnaSecondaryStructurePrediction,
+    SpotRnaModel,
+    SpotRnaModelOutput,
+    SpotRnaPreTrainedModel,
+)
 
 __all__ = [
     "RnaTokenizer",
     "SpotRnaConfig",
     "SpotRnaModuleConfig",
     "SpotRnaModel",
+    "SpotRnaForRnaSecondaryStructurePrediction",
     "SpotRnaModelOutput",
     "SpotRnaPreTrainedModel",
 ]
 
 AutoConfig.register("spotrna", SpotRnaConfig)
 AutoModel.register(SpotRnaConfig, SpotRnaModel)
-AutoModelForRnaSecondaryStructurePrediction.register(SpotRnaConfig, SpotRnaModel)
+AutoModelForRnaSecondaryStructurePrediction.register(SpotRnaConfig, SpotRnaForRnaSecondaryStructurePrediction)
 AutoTokenizer.register(SpotRnaConfig, RnaTokenizer)

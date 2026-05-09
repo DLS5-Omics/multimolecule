@@ -39,29 +39,46 @@ from ..modeling_auto import (
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
 )
-from .configuration_ernierna import ErnieRnaConfig
+from .configuration_ernierna import ErnieRnaConfig, ErnieRnaSecondaryStructureHeadConfig
 from .modeling_ernierna import (
+    ErnieRnaContactPredictorOutput,
     ErnieRnaForContactPrediction,
     ErnieRnaForMaskedLM,
+    ErnieRnaForMaskedLMOutput,
     ErnieRnaForPreTraining,
     ErnieRnaForSecondaryStructurePrediction,
+    ErnieRnaForSecondaryStructurePredictorOutput,
     ErnieRnaForSequencePrediction,
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
+    ErnieRnaModelOutput,
+    ErnieRnaModelOutputWithPastAndCrossAttentions,
+    ErnieRnaModelOutputWithPoolingAndCrossAttentions,
     ErnieRnaPreTrainedModel,
+    ErnieRnaSequencePredictorOutput,
+    ErnieRnaTokenPredictorOutput,
 )
 
 __all__ = [
     "RnaTokenizer",
     "ErnieRnaConfig",
+    "ErnieRnaSecondaryStructureHeadConfig",
     "ErnieRnaModel",
+    "ErnieRnaModelOutput",
+    "ErnieRnaModelOutputWithPoolingAndCrossAttentions",
+    "ErnieRnaModelOutputWithPastAndCrossAttentions",
     "ErnieRnaPreTrainedModel",
     "ErnieRnaForContactPrediction",
+    "ErnieRnaContactPredictorOutput",
     "ErnieRnaForSequencePrediction",
+    "ErnieRnaSequencePredictorOutput",
     "ErnieRnaForTokenPrediction",
+    "ErnieRnaTokenPredictorOutput",
     "ErnieRnaForMaskedLM",
+    "ErnieRnaForMaskedLMOutput",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "ErnieRnaForSecondaryStructurePredictorOutput",
 ]
 
 AutoConfig.register("ernierna", ErnieRnaConfig)

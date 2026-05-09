@@ -41,14 +41,16 @@ def convert_checkpoint(convert_config):
     config = chanfig.load(os.path.join(convert_config.checkpoint_path, "config.json"))
     config.hidden_dropout = config.pop("hidden_dropout_prob", 0.1)
     config.attention_dropout = config.pop("attention_probs_dropout_prob", 0.1)
+    # Upstream 3UTRBERT uses a 4-letter alphabet (vocab_size=4**k+5); MultiMolecule uses a 5-letter
+    # alphabet (vocab_size=5**k+6). Drop the upstream value so UtrBertConfig derives ours from nmers.
+    config.pop("vocab_size", None)
     config.nmers = int(convert_config.checkpoint_path.split("/")[-1][0])
     convert_config.output_path = f"utrbert-{config.nmers}mer"
     convert_config.repo_id = f"multimolecule/utrbert-{config.nmers}mer"
     vocab_list = get_alphabet(nmers=config.nmers).vocabulary
     config = Config.from_dict(config)
     del config._name_or_path
-    config.architectures = ["UtrBertModel"]
-    config.vocab_size = len(vocab_list)
+    assert config.vocab_size == len(vocab_list)
 
     model = Model(config)
 
@@ -99,7 +101,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 

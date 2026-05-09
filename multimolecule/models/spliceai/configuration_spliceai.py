@@ -97,7 +97,7 @@ class SpliceAiConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size: int = 4,
+        vocab_size: int = 5,
         context: int = 10000,
         hidden_size: int = 32,
         stages: list[SpliceAiStageConfig] | None = None,

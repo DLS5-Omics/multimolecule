@@ -3,11 +3,12 @@ language: rna
 tags:
   - Biology
   - RNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - multimolecule/ribonanza
 library_name: multimolecule
 base_model: multimolecule/ribonanzanet
+pipeline_tag: rna-secondary-structure
 ---
 
 # RibonanzaNet

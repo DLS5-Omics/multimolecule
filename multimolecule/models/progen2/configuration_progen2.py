@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import PreTrainedConfig
+from ..configuration_utils import PreTrainedConfig, validate_attention_dimensions
 
 
 class ProGen2Config(PreTrainedConfig):
@@ -110,6 +110,12 @@ class ProGen2Config(PreTrainedConfig):
         kwargs.setdefault("tie_word_embeddings", False)
         kwargs.setdefault("null_token_id", None)
         super().__init__(**kwargs)
+        validate_attention_dimensions(hidden_size, num_attention_heads)
+        head_dim = hidden_size // num_attention_heads
+        if rotary_dim is not None and rotary_dim > head_dim:
+            raise ValueError(
+                f"rotary_dim ({rotary_dim}) must be <= head_dim " f"({head_dim} = hidden_size // num_attention_heads)."
+            )
         if intermediate_size is None:
             intermediate_size = 4 * hidden_size
         self.vocab_size = vocab_size

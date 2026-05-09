@@ -39,6 +39,7 @@ from .modeling_rnabert import (
     RnaBertForContactPrediction,
     RnaBertForMaskedLM,
     RnaBertForPreTraining,
+    RnaBertForPreTrainingOutput,
     RnaBertForSequencePrediction,
     RnaBertForTokenPrediction,
     RnaBertModel,
@@ -55,6 +56,7 @@ __all__ = [
     "RnaBertForTokenPrediction",
     "RnaBertForMaskedLM",
     "RnaBertForPreTraining",
+    "RnaBertForPreTrainingOutput",
 ]
 
 AutoConfig.register("rnabert", RnaBertConfig)

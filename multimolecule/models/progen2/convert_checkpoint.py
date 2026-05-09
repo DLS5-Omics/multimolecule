@@ -60,7 +60,6 @@ def convert_checkpoint(convert_config: ConvertConfig):
     config.layer_norm_eps = config.pop("layer_norm_epsilon", 1e-5)
     config = Config.from_dict(config)
     del config._name_or_path
-    config.architectures = ["ProGen2ForPreTraining"]
     config.tie_word_embeddings = False
 
     ckpt = torch.load(

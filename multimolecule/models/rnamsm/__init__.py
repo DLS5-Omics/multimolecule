@@ -41,26 +41,40 @@ from ..modeling_auto import (
 )
 from .configuration_rnamsm import RnaMsmConfig
 from .modeling_rnamsm import (
+    RnaMsmContactPredictorOutput,
     RnaMsmForContactPrediction,
     RnaMsmForMaskedLM,
+    RnaMsmForMaskedLMOutput,
     RnaMsmForPreTraining,
+    RnaMsmForPreTrainingOutput,
     RnaMsmForSecondaryStructurePrediction,
     RnaMsmForSequencePrediction,
     RnaMsmForTokenPrediction,
     RnaMsmModel,
+    RnaMsmModelOutput,
+    RnaMsmModelOutputWithPooling,
     RnaMsmPreTrainedModel,
+    RnaMsmSequencePredictorOutput,
+    RnaMsmTokenPredictorOutput,
 )
 
 __all__ = [
     "RnaTokenizer",
     "RnaMsmConfig",
     "RnaMsmModel",
+    "RnaMsmModelOutput",
+    "RnaMsmModelOutputWithPooling",
     "RnaMsmPreTrainedModel",
     "RnaMsmForContactPrediction",
+    "RnaMsmContactPredictorOutput",
     "RnaMsmForSequencePrediction",
+    "RnaMsmSequencePredictorOutput",
     "RnaMsmForTokenPrediction",
+    "RnaMsmTokenPredictorOutput",
     "RnaMsmForMaskedLM",
+    "RnaMsmForMaskedLMOutput",
     "RnaMsmForPreTraining",
+    "RnaMsmForPreTrainingOutput",
     "RnaMsmForSecondaryStructurePrediction",
 ]
 

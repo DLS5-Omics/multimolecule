@@ -30,12 +30,13 @@ import torch
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
+from transformers import initialization as init
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import ModelOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
-from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
+from transformers.utils.generic import merge_with_config_defaults
 from transformers.utils.output_capturing import capture_outputs
 
 from .configuration_spotrna import SpotRnaConfig, SpotRnaModuleConfig
@@ -49,26 +50,30 @@ class SpotRnaPreTrainedModel(PreTrainedModel):
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["SpotRnaConvBlock"]
 
+    @torch.no_grad()
     def _init_weights(self, module: nn.Module):
+        super()._init_weights(module)
+        # Use transformers.initialization wrappers (imported as `init`); they check the
+        # `_is_hf_initialized` flag so they don't clobber tensors loaded from a checkpoint.
         if isinstance(module, nn.Conv2d):
-            nn.init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="linear")
+            init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="linear")
             if module.bias is not None:
-                nn.init.zeros_(module.bias)
+                init.zeros_(module.bias)
         elif isinstance(module, nn.Linear):
-            nn.init.kaiming_uniform_(module.weight, a=math.sqrt(5))
+            init.kaiming_uniform_(module.weight, a=math.sqrt(5))
             if module.bias is not None:
                 fan_in, _ = nn.init._calculate_fan_in_and_fan_out(module.weight)
                 bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
-                nn.init.uniform_(module.bias, -bound, bound)
+                init.uniform_(module.bias, -bound, bound)
         elif isinstance(module, (nn.LayerNorm, SpotRnaLayerNorm)):
-            nn.init.ones_(module.weight)
-            nn.init.zeros_(module.bias)
+            init.ones_(module.weight)
+            init.zeros_(module.bias)
         elif isinstance(module, nn.LSTM):
             for name, param in module.named_parameters():
                 if "weight" in name:
-                    nn.init.xavier_uniform_(param)
+                    init.xavier_uniform_(param)
                 elif "bias" in name:
-                    nn.init.zeros_(param)
+                    init.zeros_(param)
 
 
 class SpotRnaModel(SpotRnaPreTrainedModel):
@@ -90,18 +95,10 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
         super().__init__(config)
         self.gradient_checkpointing = False
 
-        self.register_buffer(
-            "input_mean",
-            torch.tensor(
-                [0.223542, 0.18919209, 0.26099518, 0.31503478, 0.223542, 0.18919209, 0.26099518, 0.31503478]
-            ).reshape(1, 1, 1, 8),
-        )
-        self.register_buffer(
-            "input_std",
-            torch.tensor(
-                [0.4219779, 0.39735729, 0.44426465, 0.46934235, 0.4219779, 0.39735729, 0.44426465, 0.46934235]
-            ).reshape(1, 1, 1, 8),
-        )
+        mean, std = self._build_input_stats(device=None)
+        self.register_buffer("input_mean", mean, persistent=False)
+        self.register_buffer("input_std", std, persistent=False)
+        self._initialized = False
 
         self.members = nn.ModuleList(
             [
@@ -115,6 +112,18 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
         self.criterion = nn.BCEWithLogitsLoss()
 
         self.post_init()
+
+    @staticmethod
+    def _build_input_stats(device: torch.device | None) -> tuple[Tensor, Tensor]:
+        mean = torch.tensor(
+            [0.223542, 0.26099518, 0.31503478, 0.18919209, 0.223542, 0.26099518, 0.31503478, 0.18919209],
+            device=device,
+        ).reshape(1, 1, 1, 8)
+        std = torch.tensor(
+            [0.4219779, 0.44426465, 0.46934235, 0.39735729, 0.4219779, 0.44426465, 0.46934235, 0.39735729],
+            device=device,
+        ).reshape(1, 1, 1, 8)
+        return mean, std
 
     def postprocess(self, outputs, input_ids=None, **kwargs):
         return outputs["contact_map"]
@@ -130,7 +139,7 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
             if input_ids is None:
                 raise ValueError("You have to specify either input_ids or inputs_embeds")
             canonical_ids = input_ids.clamp(min=0, max=num_bases - 1)
-            inputs_embeds = F.one_hot(canonical_ids, num_classes=num_bases).float()
+            inputs_embeds = F.one_hot(canonical_ids, num_classes=num_bases).to(dtype=self.input_mean.dtype)
             valid_tokens = (input_ids >= 0) & (input_ids < num_bases)
             inputs_embeds = inputs_embeds * valid_tokens.unsqueeze(-1)
         else:
@@ -138,7 +147,7 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
                 raise ValueError(
                     f"inputs_embeds last dimension ({inputs_embeds.size(-1)}) must be at least {num_bases}."
                 )
-            inputs_embeds = inputs_embeds[..., :num_bases]
+            inputs_embeds = inputs_embeds[..., :num_bases].to(dtype=self.input_mean.dtype)
 
         if attention_mask is not None:
             inputs_embeds = inputs_embeds * attention_mask.unsqueeze(-1).to(inputs_embeds.dtype)
@@ -146,7 +155,6 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
 
     @merge_with_config_defaults
     @capture_outputs
-    @can_return_tuple
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
@@ -168,7 +176,15 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
         inputs_embeds = self._prepare_inputs_embeds(input_ids, attention_mask, inputs_embeds)
 
         hidden_state = _outer_concatenate(inputs_embeds)
-        hidden_state = (hidden_state - self.input_mean.to(hidden_state.device)) / self.input_std.to(hidden_state.device)
+        if not self._initialized:
+            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
+            # meta device after `from_pretrained`, so re-register on the input device once
+            # the real device is known.
+            mean, std = self._build_input_stats(device=hidden_state.device)
+            self.register_buffer("input_mean", mean, persistent=False)
+            self.register_buffer("input_std", std, persistent=False)
+            self._initialized = True
+        hidden_state = (hidden_state - self.input_mean.to(hidden_state.dtype)) / self.input_std.to(hidden_state.dtype)
 
         member_logits = [member(hidden_state) for member in self.members]
         contact_map = torch.stack([torch.sigmoid(logits) for logits in member_logits]).mean(dim=0)
@@ -180,13 +196,17 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
             upper_triangle_mask = torch.triu(
                 torch.ones(sequence_length, sequence_length, device=logits.device, dtype=torch.bool), diagonal=2
             )
-            loss = self.criterion(logits[:, upper_triangle_mask], labels[:, upper_triangle_mask].float())
+            loss = self.criterion(logits[:, upper_triangle_mask], labels[:, upper_triangle_mask].to(dtype=logits.dtype))
 
         return SpotRnaModelOutput(
             loss=loss,
             logits=logits,
             contact_map=contact_map,
         )
+
+
+class SpotRnaForRnaSecondaryStructurePrediction(SpotRnaModel):
+    pass
 
 
 class SpotRnaModule(nn.Module):

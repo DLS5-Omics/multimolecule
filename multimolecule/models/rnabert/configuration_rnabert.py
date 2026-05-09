@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig
+from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class RnaBertConfig(PreTrainedConfig):
@@ -122,6 +122,7 @@ class RnaBertConfig(PreTrainedConfig):
         super().__init__(**kwargs)
         if hidden_size is None:
             hidden_size = num_attention_heads * multiple if multiple is not None else 120
+        validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
         self.ss_vocab_size = ss_vocab_size
         self.type_vocab_size = 2

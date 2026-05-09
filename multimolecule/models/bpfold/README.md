@@ -3,7 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
-license: agpl-3.0
+license: agpl-3.0-or-later
 datasets:
   - RNAStrAlign
   - bpRNA
@@ -41,9 +41,9 @@ The model uses:
 
 ### Model Specification
 
-| Num Layers | Hidden Size | Num Parameters (M) | FLOPs (G) | MACs (G) |
-| ---------- | ----------- | ------------------ | --------- | -------- |
-| 12         | 256         | 47.77              | 87.78     | 42.74    |
+| Num Layers | Hidden Size | Num Heads | Max Num Tokens | Num Parameters (M) | FLOPs (G) | MACs (G) |
+| ---------- | ----------- | --------- | -------------- | ------------------ | --------- | -------- |
+| 12         | 256         | 8         | 600            | 47.77              | 87.78     | 42.74    |
 
 FLOPs and MACs are computed with `multimolecule.utils` for one 600 nt sequence.
 

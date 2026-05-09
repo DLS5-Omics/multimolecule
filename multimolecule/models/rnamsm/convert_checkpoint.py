@@ -47,7 +47,6 @@ __main__.LoggingConfig = chanfig.FlatDict()
 def convert_checkpoint(convert_config):
     vocab_list = get_alphabet().vocabulary
     config = Config(num_labels=1)
-    config.architectures = ["RnaMsmModel"]
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
@@ -86,7 +85,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         std=config.initializer_range,
     )
     state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.decoder.weight"] = decoder_weight
+    state_dict["lm_head.decoder.weight"] = word_embed_weight if config.tie_word_embeddings else decoder_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
 
