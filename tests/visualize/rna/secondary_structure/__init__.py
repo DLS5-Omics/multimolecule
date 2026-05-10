@@ -18,12 +18,3 @@
 
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
-
-import matplotlib  # noqa: E402
-
-# Doctests in `multimolecule.visualization.*` build matplotlib figures. Force the headless
-# Agg backend before pyplot can pick a GUI backend (which would crash on CI / SSH).
-matplotlib.use("Agg")
-
-collect_ignore = ["multimolecule/datasets"]
-collect_ignore_glob = ["*/convert_checkpoint.py", "*ignore.py", "*debug*"]
