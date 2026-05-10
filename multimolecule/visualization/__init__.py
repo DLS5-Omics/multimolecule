@@ -19,11 +19,26 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-import matplotlib  # noqa: E402
+"""
+Visualization utilities for MultiMolecule.
 
-# Doctests in `multimolecule.visualization.*` build matplotlib figures. Force the headless
-# Agg backend before pyplot can pick a GUI backend (which would crash on CI / SSH).
-matplotlib.use("Agg")
+The core plotting backend is Matplotlib because it produces publication-oriented static figures and supports
+SVG/PDF export. Interactive backends such as Plotly should live behind optional adapters instead of becoming a
+required dependency of the core visualization namespace.
+"""
 
-collect_ignore = ["multimolecule/datasets"]
-collect_ignore_glob = ["*/convert_checkpoint.py", "*ignore.py", "*debug*"]
+from .palettes import (
+    DEFAULT_PALETTE,
+    DEFAULT_PALETTE_VARIANT,
+    PALETTES,
+    map_color_slots,
+    resolve_palette,
+)
+
+__all__ = [
+    "DEFAULT_PALETTE",
+    "DEFAULT_PALETTE_VARIANT",
+    "PALETTES",
+    "map_color_slots",
+    "resolve_palette",
+]

@@ -46,6 +46,7 @@ dependencies = [
   "chanfig>=0.0.105",
   "danling[torch]>=0.4",
   "datasets",
+  "matplotlib",
   "pandas",
   "scipy",
   "strenum; python_version<'3.11'",
@@ -61,8 +62,8 @@ scripts.mmevaluate = "multimolecule.api.run:evaluate"
 scripts.mminfer = "multimolecule.api.run:infer"
 scripts.mmtrain = "multimolecule.api.run:train"
 
-[tool.setuptools]
-packages = [ "multimolecule" ]
+[tool.setuptools.packages.find]
+include = [ "multimolecule*" ]
 
 [tool.setuptools_scm]
 write_to = "multimolecule/_version.py"
