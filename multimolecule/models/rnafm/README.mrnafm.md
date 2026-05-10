@@ -4,7 +4,7 @@ tags:
   - Biology
   - RNA
   - mRNA
-license: agpl-3.0-or-later
+license: agpl-3.0
 datasets:
   - multimolecule/rnacentral
 library_name: multimolecule

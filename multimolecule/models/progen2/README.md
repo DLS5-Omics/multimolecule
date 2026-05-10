@@ -3,7 +3,7 @@ language: protein
 tags:
   - Biology
   - Protein
-license: agpl-3.0-or-later
+license: agpl-3.0
 datasets:
   - multimolecule/uniref
   - multimolecule/bfd

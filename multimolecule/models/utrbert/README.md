@@ -4,7 +4,7 @@ tags:
   - Biology
   - RNA
   - 3' UTR
-license: agpl-3.0-or-later
+license: agpl-3.0
 datasets:
   - multimolecule/gencode
 library_name: multimolecule

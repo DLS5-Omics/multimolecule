@@ -3,7 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
-license: agpl-3.0-or-later
+license: agpl-3.0
 datasets:
   - multimolecule/bprna-spot
 library_name: multimolecule

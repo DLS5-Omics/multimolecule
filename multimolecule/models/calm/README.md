@@ -4,7 +4,7 @@ tags:
   - Biology
   - DNA
   - cDNA
-license: agpl-3.0-or-later
+license: agpl-3.0
 datasets:
   - multimolecule/ena
 library_name: multimolecule

@@ -4,7 +4,7 @@ tags:
   - Biology
   - RNA
   - 5' UTR
-license: agpl-3.0-or-later
+license: agpl-3.0
 datasets:
   - multimolecule/ensembl-genome-browser
 library_name: multimolecule
