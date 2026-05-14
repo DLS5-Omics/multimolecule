@@ -71,6 +71,15 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
+from .generanno import (
+    GenerannoConfig,
+    GenerannoForContactPrediction,
+    GenerannoForMaskedLM,
+    GenerannoForPreTraining,
+    GenerannoForSequencePrediction,
+    GenerannoForTokenPrediction,
+    GenerannoModel,
+)
 from .hyenadna import (
     HyenaDnaConfig,
     HyenaDnaForCausalLM,
@@ -232,6 +241,13 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "GenerannoConfig",
+    "GenerannoModel",
+    "GenerannoForContactPrediction",
+    "GenerannoForSequencePrediction",
+    "GenerannoForTokenPrediction",
+    "GenerannoForMaskedLM",
+    "GenerannoForPreTraining",
     "HyenaDnaConfig",
     "HyenaDnaModel",
     "HyenaDnaForCausalLM",
