@@ -19,7 +19,7 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-from multimolecule.apis import infer
+from multimolecule.api import infer
 
 if __name__ == "__main__":
     infer()

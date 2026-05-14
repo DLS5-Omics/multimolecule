@@ -57,9 +57,9 @@ urls.documentation = "https://multimolecule.danling.org"
 urls.homepage = "https://multimolecule.danling.org"
 urls.repository = "https://github.com/DLS5-Omics/multimolecule"
 
-scripts.mmevaluate = "multimolecule.apis.run:evaluate"
-scripts.mminfer = "multimolecule.apis.run:infer"
-scripts.mmtrain = "multimolecule.apis.run:train"
+scripts.mmevaluate = "multimolecule.api.run:evaluate"
+scripts.mminfer = "multimolecule.api.run:infer"
+scripts.mmtrain = "multimolecule.api.run:train"
 
 [tool.setuptools]
 packages = [ "multimolecule" ]
