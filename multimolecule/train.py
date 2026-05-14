@@ -19,7 +19,7 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-from multimolecule.apis import train
+from multimolecule.api import train
 
 if __name__ == "__main__":
     train()
