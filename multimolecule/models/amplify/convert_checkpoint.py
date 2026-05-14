@@ -38,16 +38,13 @@ from multimolecule.tokenisers.protein.utils import convert_word_embeddings, get_
 torch.manual_seed(1016)
 
 # AMPLIFY upstream vocabulary order from chandar-lab/AMPLIFY tokenizer.json.
-# ``|`` is a chain separator that has no analogue in the MultiMolecule protein
-# alphabet; it is mapped to ``None`` so ``convert_word_embeddings`` will drop
-# the corresponding row instead of trying to align it with an existing token.
-ORIGINAL_VOCAB_LIST: List[str | None] = [
+ORIGINAL_VOCAB_LIST: List[str] = [
     "<pad>",
     "<unk>",
     "<mask>",
     "<cls>",  # AMPLIFY's ``<bos>`` plays the same role as MultiMolecule's ``<cls>``.
     "<eos>",
-    None,  # ``|`` chain separator (not present in MultiMolecule protein vocab)
+    "|",  # chain separator used in AMPLIFY's multi-chain inputs (e.g. antibody H | L).
     "L",
     "A",
     "G",
@@ -126,7 +123,7 @@ def _convert_checkpoint(
     config: Config,
     original_state_dict: Dict[str, torch.Tensor],
     vocab_list: List[str],
-    original_vocab_list: List[str | None],
+    original_vocab_list: List[str],
 ) -> Dict[str, torch.Tensor]:
     state_dict: Dict[str, torch.Tensor] = {}
     intermediate_size = _swiglu_intermediate_size(config.intermediate_size)
