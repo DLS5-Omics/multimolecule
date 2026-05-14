@@ -23,6 +23,15 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
+from .amplify import (
+    AMPLIFYConfig,
+    AMPLIFYForContactPrediction,
+    AMPLIFYForMaskedLM,
+    AMPLIFYForPreTraining,
+    AMPLIFYForSequencePrediction,
+    AMPLIFYForTokenPrediction,
+    AMPLIFYModel,
+)
 from .bpfold import BpfoldConfig, BpfoldModel
 from .calm import (
     CaLmConfig,
@@ -194,6 +203,13 @@ __all__ = [
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
+    "AMPLIFYConfig",
+    "AMPLIFYModel",
+    "AMPLIFYForContactPrediction",
+    "AMPLIFYForSequencePrediction",
+    "AMPLIFYForTokenPrediction",
+    "AMPLIFYForMaskedLM",
+    "AMPLIFYForPreTraining",
     "BpfoldConfig",
     "BpfoldModel",
     "CaLmConfig",

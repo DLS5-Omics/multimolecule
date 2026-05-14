@@ -23,6 +23,13 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from .data import Dataset
 from .models import (
+    AMPLIFYConfig,
+    AMPLIFYForContactPrediction,
+    AMPLIFYForMaskedLM,
+    AMPLIFYForPreTraining,
+    AMPLIFYForSequencePrediction,
+    AMPLIFYForTokenPrediction,
+    AMPLIFYModel,
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSequencePrediction,
@@ -291,6 +298,13 @@ __all__ = [
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
+    "AMPLIFYConfig",
+    "AMPLIFYModel",
+    "AMPLIFYForContactPrediction",
+    "AMPLIFYForSequencePrediction",
+    "AMPLIFYForTokenPrediction",
+    "AMPLIFYForMaskedLM",
+    "AMPLIFYForPreTraining",
     "BpfoldConfig",
     "BpfoldModel",
     "CaLmConfig",
