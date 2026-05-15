@@ -3,6 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
+  - rna-secondary-structure
 license: agpl-3.0
 datasets:
   - multimolecule/bprna-spot
@@ -198,7 +199,7 @@ Please contact the authors of the [SPOT-RNA paper](https://doi.org/10.1038/s4146
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

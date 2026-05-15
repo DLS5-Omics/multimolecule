@@ -25,7 +25,7 @@ from __future__ import annotations
 import os
 import re
 import shutil
-from typing import Dict, List
+from typing import Callable, Dict, List, Sequence
 from warnings import warn
 
 import frontmatter as fm
@@ -132,6 +132,28 @@ def load_checkpoint(model: nn.Module, state_dict: Dict[str, torch.Tensor]) -> No
             raise ValueError("State dicts do not match after conversion.")
 
 
+def convert_one_hot_embeddings(
+    embeddings: torch.Tensor,
+    *,
+    old_vocab: List[str],
+    new_vocab: List[str],
+    convert_word_embeddings: Callable[..., Sequence[torch.Tensor]],
+    channel_dim: int = 1,
+) -> torch.Tensor:
+    """Convert one-hot input-channel weights using the tokenizer word-embedding conversion rules."""
+    channel_first = embeddings.movedim(channel_dim, 0).contiguous()
+    (converted,) = convert_word_embeddings(
+        channel_first,
+        old_vocab=old_vocab,
+        new_vocab=new_vocab,
+        mean=0.0,
+        std=0.0,
+        seed=None,
+    )
+    converted = converted.to(device=embeddings.device, dtype=embeddings.dtype)
+    return converted.movedim(0, channel_dim).contiguous()
+
+
 def _normalize_variant_name(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
@@ -162,6 +184,23 @@ def _bold_variant_in_table(content: str, output_path: str) -> str:
     return pattern.sub(suffix_replacer, content)
 
 
+def _replace_default_variant_references(content: str, output_path: str, default_variant: str) -> str:
+    target = f"multimolecule/{default_variant}"
+    replacement = f"multimolecule/{output_path}"
+    lines = []
+    in_variant_section = False
+    heading = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+    for line in content.splitlines(keepends=True):
+        match = heading.match(line)
+        if match:
+            level = len(match.group(1))
+            title = match.group(2).strip().lower()
+            if level <= 3:
+                in_variant_section = level == 3 and title in {"variants", "variations"}
+        lines.append(line if in_variant_section else line.replace(target, replacement))
+    return "".join(lines)
+
+
 def customize_readme_for_variant(readme_path: str, output_path: str, default_variant: str | None = None) -> None:
     with open(readme_path) as f:
         content = f.read()
@@ -169,7 +208,7 @@ def customize_readme_for_variant(readme_path: str, output_path: str, default_var
     content = _bold_variant_in_table(content, output_path)
 
     if default_variant and default_variant != output_path:
-        content = content.replace(f"multimolecule/{default_variant}", f"multimolecule/{output_path}")
+        content = _replace_default_variant_references(content, output_path, default_variant)
 
     with open(readme_path, "w") as f:
         f.write(content)
@@ -183,7 +222,9 @@ def write_model(
     default_variant: str | None = None,
 ):
     model.save_pretrained(output_path, safe_serialization=True)
-    model.save_pretrained(output_path, safe_serialization=False)
+    # Transformers 5 saves safetensors unconditionally; keep an explicit PyTorch
+    # checkpoint for consumers and Hub tooling that still expect this filename.
+    torch.save(model.state_dict(), os.path.join(output_path, "pytorch_model.bin"))
     if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
         position_embedding_type = getattr(model.config, "position_embedding_type", None)
         if position_embedding_type == "absolute":

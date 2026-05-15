@@ -3,6 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
+  - rna-secondary-structure
 license: agpl-3.0
 datasets:
   - RNAStrAlign
@@ -29,7 +30,7 @@ The OFFICIAL repository of BPfold is at [heqin-zhu/BPfold](https://github.com/he
 
 ## Model Details
 
-BPfold predicts RNA base-pair contact maps from a single RNA sequence. It augments a transformer encoder with two `L x L` base-pair motif energy maps computed from three-neighbor base-pair motifs. MultiMolecule exposes BPfold as a single checkpoint and stores the motif-energy lookup tables inside it.
+BPfold predicts RNA base-pair contact maps from a single RNA sequence. It augments a transformer encoder with two `L x L` base-pair motif energy maps computed from three-neighbor base-pair motifs. The motif-energy lookup tables are part of the model state.
 
 The model uses:
 
@@ -126,11 +127,30 @@ BPfold was trained for RNA secondary structure prediction with base-pair motif e
 
 > [!NOTE]
 > The artifacts distributed in this repository are part of the MultiMolecule project.
-> If you use MultiMolecule in your research, you must cite the MultiMolecule project.
+> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+
+```bibtex
+@software{chen_2024_12638419,
+  author    = {Chen, Zhiyuan and Zhu, Sophia Y.},
+  title     = {MultiMolecule},
+  doi       = {10.5281/zenodo.12638419},
+  publisher = {Zenodo},
+  url       = {https://doi.org/10.5281/zenodo.12638419},
+  year      = 2024,
+  month     = may,
+  day       = 4
+}
+```
+
+## Contact
+
+Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+
+Please contact the authors of the [BPfold paper](https://doi.org/10.1038/s41467-025-60048-1) for questions or comments on the paper/model.
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

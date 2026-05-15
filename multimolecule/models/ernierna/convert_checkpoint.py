@@ -44,6 +44,7 @@ def convert_checkpoint(convert_config):
     Model = ErnieRnaForPreTraining
     if "ss" in convert_config.checkpoint_path:
         Model = ErnieRnaForSecondaryStructurePrediction
+        config.output_attention_biases = True
         convert_config.output_path += "-ss"
         convert_config.repo_id += "-ss"
 

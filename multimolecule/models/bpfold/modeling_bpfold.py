@@ -350,6 +350,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
         batch_size = base_indices.size(0)
         num_channels = 2 if self.config.separate_outer_inner_energy else 1
         energy = self.outer_energy.new_zeros((batch_size, num_channels, target_length, target_length))
+        pair_index = _pair_index_matrix().to(device=base_indices.device)
 
         for batch_index in range(batch_size):
             length = int(base_lengths[batch_index].item())
@@ -358,7 +359,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
             seq = base_indices[batch_index, :length]
             seq_energy = _build_energy_map_from_tokens(
                 seq,
-                self._pair_index,
+                pair_index,
                 self.outer_energy,
                 self.inner_chain_energy,
                 self.inner_hairpin_energy,
