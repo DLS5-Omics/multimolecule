@@ -32,7 +32,7 @@ Please consider signing the [Statement on Nature Machine Intelligence](https://o
 
 ## Disclaimer
 
-This is an UNOFFICIAL implementation of the [Codon language embeddings provide strong signals for use in protein engineering](https://doi.org/10.1101/2022.12.15.519894) by Carlos Outeiral and Charlotte M. Deane.
+This is an UNOFFICIAL implementation of the [Codon language embeddings provide strong signals for use in protein engineering](https://doi.org/10.1101/2022.12.15.519894) by Carlos Outeiral, et al.
 
 The OFFICIAL repository of CaLM is at [oxpig/CaLM](https://github.com/oxpig/CaLM).
 
@@ -256,7 +256,7 @@ Please contact the authors of the [CaLM paper](https://doi.org/10.1101/2022.12.1
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

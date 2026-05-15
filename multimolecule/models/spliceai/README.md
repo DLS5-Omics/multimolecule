@@ -169,9 +169,7 @@ Please contact the authors of the [SpliceAI paper](https://doi.org/10.1016/j.cel
 
 ## License
 
-This implementation is licensed under the [GNU Affero General Public License](license.md).
-
-The original SpliceAI weights distributed by Illumina are released under the [CC-BY-NC-4.0 License](https://creativecommons.org/licenses/by-nc/4.0/); converted weights remain subject to those upstream terms.
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

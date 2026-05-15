@@ -63,6 +63,7 @@ class Runner(dl.Runner):
     def __init__(self, config: Config | Mapping[str, Any]) -> None:
         if not isinstance(config, Config):
             config = Config(config)
+        config.boot()
         super().__init__(config)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.pretrained_name)

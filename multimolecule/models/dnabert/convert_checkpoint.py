@@ -118,7 +118,9 @@ def convert_checkpoint(convert_config):
     model = Model(config)
 
     ckpt = torch.load(
-        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"), map_location=torch.device("cpu")
+        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"),
+        map_location=torch.device("cpu"),
+        weights_only=True,
     )
 
     original_vocab = _read_original_vocab(convert_config.checkpoint_path)

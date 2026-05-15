@@ -114,6 +114,20 @@ class TestBasePredictionHead:
         assert torch.equal(new_attention_mask, attention_mask)
         assert torch.equal(new_input_ids, input_ids)
 
+    def test_remove_special_tokens_skips_absent_specials(self):
+        head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None))
+
+        batch_size, seq_length, hidden_size = 2, 5, 4
+        input_ids = torch.tensor([[3, 4, 5, 6, 0], [3, 4, 5, 0, 0]])
+        attention_mask = head.get_attention_mask(input_ids)
+        output = torch.randn(batch_size, seq_length, hidden_size)
+
+        new_output, new_attention_mask, new_input_ids = head.remove_special_tokens(output, attention_mask, input_ids)
+
+        assert torch.equal(new_output, output * attention_mask.unsqueeze(-1))
+        assert torch.equal(new_attention_mask, attention_mask)
+        assert torch.equal(new_input_ids, input_ids)
+
     def test_remove_special_tokens_2d_both_bos_eos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None))
 
@@ -181,6 +195,21 @@ class TestBasePredictionHead:
         true_output = output * true_attention_mask.unsqueeze(-1)
 
         assert torch.equal(new_output, true_output)
+        assert torch.equal(new_attention_mask, true_attention_mask)
+        assert torch.equal(new_input_ids, input_ids)
+
+    def test_remove_special_tokens_2d_skips_absent_specials(self):
+        head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None))
+
+        batch_size, seq_length, hidden_size = 2, 5, 4
+        input_ids = torch.tensor([[3, 4, 5, 6, 0], [3, 4, 5, 0, 0]])
+        attention_mask = head.get_attention_mask(input_ids)
+        output = torch.randn(batch_size, seq_length, seq_length, hidden_size)
+
+        new_output, new_attention_mask, new_input_ids = head.remove_special_tokens_2d(output, attention_mask, input_ids)
+
+        true_attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
+        assert torch.equal(new_output, output * true_attention_mask.unsqueeze(-1))
         assert torch.equal(new_attention_mask, true_attention_mask)
         assert torch.equal(new_input_ids, input_ids)
 

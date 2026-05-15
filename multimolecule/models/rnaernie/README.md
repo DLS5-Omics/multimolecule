@@ -32,8 +32,7 @@ Please consider signing the [Statement on Nature Machine Intelligence](https://o
 
 ## Disclaimer
 
-This is an UNOFFICIAL implementation of the RNAErnie: An RNA Language Model with Structure-enhanced Representations by Ning Wang, Jiang Bian,
-Haoyi Xiong, et al.
+This is an UNOFFICIAL implementation of the RNAErnie: An RNA Language Model with Structure-enhanced Representations by Ning Wang, Jiang Bian, Haoyi Xiong, et al.
 
 The OFFICIAL repository of RNAErnie is at [CatIIIIIIII/RNAErnie](https://github.com/CatIIIIIIII/RNAErnie).
 
@@ -247,7 +246,7 @@ Please contact the authors of the RNAErnie paper for questions or comments on th
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from ..configuration_utils import HeadConfig, MaskedLMHeadConfig, PreTrainedConfig, validate_attention_dimensions
+from ..configuration_utils import HeadConfig, PreTrainedConfig, validate_attention_dimensions
 
 
 class DnaBertSConfig(PreTrainedConfig):
@@ -74,8 +74,6 @@ class DnaBertSConfig(PreTrainedConfig):
             relevant if `config.is_decoder=True`.
         head:
             The configuration of the head.
-        lm_head:
-            The configuration of the masked language model head.
         add_cross_attention:
             Whether to add cross-attention layers when the model is used as a decoder.
 
@@ -109,7 +107,6 @@ class DnaBertSConfig(PreTrainedConfig):
         is_decoder: bool = False,
         use_cache: bool = True,
         head: HeadConfig | None = None,
-        lm_head: MaskedLMHeadConfig | None = None,
         add_cross_attention: bool = False,
         **kwargs,
     ):
@@ -132,5 +129,4 @@ class DnaBertSConfig(PreTrainedConfig):
         self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
         self.add_cross_attention = add_cross_attention

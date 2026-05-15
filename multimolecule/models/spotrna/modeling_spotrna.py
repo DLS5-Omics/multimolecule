@@ -93,8 +93,6 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
 
     def __init__(self, config: SpotRnaConfig):
         super().__init__(config)
-        self.gradient_checkpointing = False
-
         mean, std = self._build_input_stats(device=None)
         self.register_buffer("input_mean", mean, persistent=False)
         self.register_buffer("input_std", std, persistent=False)
@@ -440,9 +438,13 @@ class SpotRnaModelOutput(ModelOutput):
         loss (`torch.FloatTensor` of shape `(1,)`, *optional*, returned when `labels` is provided):
             Binary cross-entropy loss for base-pair prediction.
         logits (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`):
-            Prediction logits before sigmoid.
+            Raw pre-sigmoid prediction scores averaged over ensemble members:
+            `logits = mean(logit_i for i in members)`. These are NOT probabilities; apply `torch.sigmoid`
+            to obtain per-pair scores.
         contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
-            Base-pair probability matrix (after sigmoid).
+            Base-pair probability matrix computed as the mean of per-member sigmoid outputs:
+            `contact_map = mean(sigmoid(logit_i) for i in members)`. Note that this is NOT equal to
+            `sigmoid(logits)` due to the non-linearity of sigmoid.
     """
 
     loss: torch.FloatTensor | None = None

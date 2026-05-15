@@ -41,6 +41,7 @@ from .modeling_hyenadna import (
     HyenaDnaForSequencePrediction,
     HyenaDnaForTokenPrediction,
     HyenaDnaModel,
+    HyenaDnaModelOutput,
     HyenaDnaPreTrainedModel,
 )
 
@@ -49,6 +50,7 @@ __all__ = [
     "HyenaDnaConfig",
     "HyenaDnaModel",
     "HyenaDnaPreTrainedModel",
+    "HyenaDnaModelOutput",
     "HyenaDnaForCausalLM",
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",

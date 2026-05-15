@@ -637,7 +637,7 @@ class RibonanzaNetForSequenceDropoutPrediction(RibonanzaNetPreTrainedModel):
         labels_2a3: Tensor | None = None,
         labels_dms: Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> tuple[Tensor, ...] | RibonanzaNetForDegradationPredictorOutput:
+    ) -> tuple[Tensor, ...] | RibonanzaNetSequenceDropoutPredictorOutput:
         outputs = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -706,10 +706,10 @@ class RibonanzaNetPairwiseEmbeddings(nn.Module):
         outer_product = self.triangle_proj(inputs_embeds)
 
         position_ids = torch.arange(seq_length, device=inputs_embeds.device).unsqueeze(0)
-        bin_values = torch.arange(-8, 9, device=inputs_embeds.device)
         d = position_ids[:, :, None] - position_ids[:, None, :]
         bdy = torch.tensor(8, device=inputs_embeds.device)
         d = torch.minimum(torch.maximum(-bdy, d), bdy)
+        bin_values = torch.arange(-8, 9, device=inputs_embeds.device)
         d_onehot = (d[..., None] == bin_values).to(dtype=inputs_embeds.dtype)
         position_embeddings = self.position_embeddings(d_onehot)
 
@@ -741,7 +741,6 @@ class RibonanzaNetEncoder(nn.Module):
     def __init__(self, config: RibonanzaNetConfig):
         super().__init__()
         self.config = config
-        self.gradient_checkpointing = False
         self.pairwise_embeddings = RibonanzaNetPairwiseEmbeddings(config)
         layers = [RibonanzaNetLayer(config) for _ in range(config.num_hidden_layers - 1)]
         layers.append(RibonanzaNetLayer(config, kernel_size=1))
@@ -1074,7 +1073,7 @@ class RibonanzaNetPairwiseMixer(nn.Module):
         if self.direction == "outgoing":
             pairwise_states = torch.matmul(left.permute(0, 3, 1, 2), right.permute(0, 3, 2, 1)).permute(0, 2, 3, 1)
         elif self.direction == "ingoing":
-            pairwise_states = torch.matmul(left.permute(0, 3, 2, 1), right.permute(0, 3, 1, 2)).permute(0, 3, 2, 1)
+            pairwise_states = torch.matmul(right.permute(0, 3, 2, 1), left.permute(0, 3, 1, 2)).permute(0, 2, 3, 1)
         pairwise_states = self.out_norm(pairwise_states)
         pairwise_states = pairwise_states * out_gate
         pairwise_states = self.out_proj(pairwise_states)

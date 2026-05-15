@@ -430,12 +430,16 @@ class Dataset(datasets.Dataset):
                 data = map_value(data, self.discrete_map[col])
             if col in self.tasks:
                 data = truncate_batch(data, self.max_seq_length - self.seq_length_offset, self.tasks[col].level)
-        if col in self.tasks:
-            ignore_value = float("nan") if self.tasks[col].type == TaskType.Regression else -100
-            if isinstance(data[0], list):
-                data = [[i if i is not None else ignore_value for i in d] for d in data]
-            else:
-                data = [i if i is not None else ignore_value for i in data]
+        if col in self.tasks or col in self.discrete_map:
+            ignore_value = float("nan") if col in self.tasks and self.tasks[col].type == TaskType.Regression else -100
+            data = [
+                (
+                    [i if i is not None else ignore_value for i in d]
+                    if isinstance(d, list)
+                    else d if d is not None else ignore_value
+                )
+                for d in data
+            ]
         if isinstance(data[0], str):
             return data
         try:
@@ -509,7 +513,8 @@ class Dataset(datasets.Dataset):
             and (pa.types.is_string(v.pa_type) or pa.types.is_large_string(v.pa_type))  # noqa: W503
         ]
         unique_chars = {
-            k: {ch for s in flatten_column(self._data.column(k))[0] for ch in s.as_py()} for k in string_cols
+            k: {ch for s in flatten_column(self._data.column(k))[0] if s.is_valid for ch in s.as_py()}
+            for k in string_cols
         }
         unique_chars_upper = {k: {ch.upper() for ch in v} for k, v in unique_chars.items()}
 

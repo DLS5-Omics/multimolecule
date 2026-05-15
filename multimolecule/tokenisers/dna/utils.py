@@ -96,6 +96,7 @@ ALPHABETS = {
 }
 
 VOCAB_MAPPING = {
+    "N": "ACGT",
     "R": "AG",
     "Y": "CT",
     "S": "CG",

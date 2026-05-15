@@ -505,7 +505,7 @@ class DnaBertForMaskedLM(DnaBertPreTrainedModel):
 
 
 class DnaBertForPreTraining(DnaBertForMaskedLM):
-    pass
+    """Alias for [`DnaBertForMaskedLM`] used as the canonical pre-training entry point."""
 
 
 class DnaBertEmbeddings(nn.Module):

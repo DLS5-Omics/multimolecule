@@ -111,9 +111,11 @@ def infer_discrete_map(column: Array | ChunkedArray | ListArray) -> dict[str, in
     if isinstance(flattened, (ChunkedArray, ListArray, StringArray)):
         unique = set()
         for i in flattened:
+            if not i.is_valid:
+                continue
             unique.update(i.as_py())
     else:
-        unique = flattened.unique().to_pylist()
+        unique = {i for i in flattened.unique().to_pylist() if i is not None}
     ret = {j: i for i, j in enumerate(sorted(unique))}
     if list(ret.keys()) == list(ret.values()):
         return None
@@ -123,10 +125,12 @@ def infer_discrete_map(column: Array | ChunkedArray | ListArray) -> dict[str, in
 def map_value(value: Any, mapping: dict[str, int] | None) -> Any:
     if mapping is None:
         return value
-    if isinstance(value, list) and isinstance(value[0], Iterable):
-        return [[mapping[i] for i in j] for j in value]
+    if value is None:
+        return None
+    if isinstance(value, list):
+        return [map_value(i, mapping) for i in value]
     if isinstance(value, Iterable):
-        return [mapping[i] for i in value]
+        return [None if i is None else mapping[i] for i in value]
     return mapping[value]
 
 

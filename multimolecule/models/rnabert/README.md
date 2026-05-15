@@ -18,7 +18,7 @@ Pre-trained model on non-coding RNA (ncRNA) using masked language modeling (MLM)
 
 ## Disclaimer
 
-This is an UNOFFICIAL implementation of the [Informative RNA-base embedding for functional RNA clustering and structural alignment](https://doi.org/10.1093/nargab/lqac012) by Manato Akiyama and Yasubumi Sakakibara.
+This is an UNOFFICIAL implementation of the [Informative RNA-base embedding for functional RNA clustering and structural alignment](https://doi.org/10.1093/nargab/lqac012) by Manato Akiyama, et al.
 
 The OFFICIAL repository of RNABERT is at [mana438/RNABERT](https://github.com/mana438/RNABERT).
 
@@ -239,7 +239,7 @@ Please contact the authors of the [RNABERT paper](https://doi.org/10.1093/nargab
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

@@ -76,6 +76,7 @@ from .hyenadna import (
     HyenaDnaForSequencePrediction,
     HyenaDnaForTokenPrediction,
     HyenaDnaModel,
+    HyenaDnaModelOutput,
 )
 from .modeling_auto import (
     AutoModelForContactPrediction,
@@ -232,6 +233,7 @@ __all__ = [
     "ErnieRnaForSecondaryStructurePrediction",
     "HyenaDnaConfig",
     "HyenaDnaModel",
+    "HyenaDnaModelOutput",
     "HyenaDnaForCausalLM",
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",

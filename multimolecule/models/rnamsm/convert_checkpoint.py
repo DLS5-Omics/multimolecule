@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import os
 
-import __main__
 import chanfig
 import torch
 
@@ -36,21 +35,27 @@ from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alph
 
 torch.manual_seed(1016)
 
-# evil hack
-__main__.OptimizerConfig = chanfig.FlatDict()
-__main__.MSATransformerModelConfig = chanfig.FlatDict()
-__main__.DataConfig = chanfig.FlatDict()
-__main__.TrainConfig = chanfig.FlatDict()
-__main__.LoggingConfig = chanfig.FlatDict()
-
 
 def convert_checkpoint(convert_config):
+    # The RNA-MSM checkpoint was saved with custom config classes as top-level __main__ names.
+    # Inject stubs into __main__ so the checkpoint can be deserialized without importing the
+    # original training codebase.
+    import __main__
+
+    __main__.OptimizerConfig = chanfig.FlatDict()
+    __main__.MSATransformerModelConfig = chanfig.FlatDict()
+    __main__.DataConfig = chanfig.FlatDict()
+    __main__.TrainConfig = chanfig.FlatDict()
+    __main__.LoggingConfig = chanfig.FlatDict()
     vocab_list = get_alphabet().vocabulary
     config = Config(num_labels=1)
     config.vocab_size = len(vocab_list)
 
     model = Model(config)
 
+    # weights_only=False: the checkpoint contains non-tensor objects (optimizer state, config
+    # dataclasses) that require full deserialization; safe because the source is the published
+    # RNA-MSM checkpoint, not untrusted user input.
     ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
     ckpt = ckpt.get("state_dict", ckpt)
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)

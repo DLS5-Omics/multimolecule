@@ -83,7 +83,9 @@ def convert_checkpoint(convert_config):
         ckpt = load_file(safetensors_path)
     else:
         ckpt = torch.load(
-            os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"), map_location=torch.device("cpu")
+            os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"),
+            map_location=torch.device("cpu"),
+            weights_only=True,
         )
 
     state_dict = _convert_checkpoint(mm_config, ckpt, original_vocab_list, new_vocab)

@@ -30,8 +30,8 @@ import torch
 from multimolecule.models import SpotRnaConfig as Config
 from multimolecule.models import SpotRnaModel
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
-from multimolecule.tokenisers.rna.utils import get_alphabet, get_tokenizer_config
+from multimolecule.models.conversion_utils import convert_one_hot_embeddings, load_checkpoint, save_checkpoint
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 
 def convert_checkpoint(convert_config) -> None:
@@ -42,9 +42,7 @@ def convert_checkpoint(convert_config) -> None:
     config = Config()
     model = SpotRnaModel(config)
 
-    vocab_list = get_alphabet("nucleobase", prepend_tokens=[]).vocabulary
-    channel_permutation = [original_vocab_list.index(token) for token in vocab_list]
-    channel_permutation += [len(original_vocab_list) + original_vocab_list.index(token) for token in vocab_list]
+    vocab_list = list(get_alphabet("nucleobase", prepend_tokens=[]).vocabulary)
 
     state_dict = {}
     base_mean = model.input_mean
@@ -53,10 +51,10 @@ def convert_checkpoint(convert_config) -> None:
     for member_index, module_config in enumerate(config.module_configs):
         checkpoint_path = os.path.join(convert_config.checkpoint_path, f"model{member_index}")
         reader = tf.train.load_checkpoint(checkpoint_path)
-        member_state = _convert_module_state_dict(module_config, reader, channel_permutation)
+        member_state = _convert_module_state_dict(module_config, reader, vocab_list)
         member_mean, member_std = _load_input_stats(tf, checkpoint_path)
-        member_mean = member_mean[:, :, :, channel_permutation]
-        member_std = member_std[:, :, :, channel_permutation]
+        member_mean = _convert_concatenated_one_hot_channels(member_mean, vocab_list, channel_dim=3)
+        member_std = _convert_concatenated_one_hot_channels(member_std, vocab_list, channel_dim=3)
         # Keep the shared preprocessing and fold checkpoint-specific input stats into an affine correction.
         member_state["input_scale"] = base_std / member_std
         member_state["input_bias"] = (base_mean - member_mean) / member_std
@@ -76,11 +74,11 @@ def convert_checkpoint(convert_config) -> None:
     print(f"Checkpoint saved to {convert_config.output_path}")
 
 
-def _convert_module_state_dict(module_config, reader, channel_permutation):
+def _convert_module_state_dict(module_config, reader, vocab_list):
     state_dict = {}
 
     projection_weight = _convert_conv2d_kernel(reader.get_tensor("initconv/conv2d/kernel"))
-    state_dict["projection.weight"] = projection_weight[:, channel_permutation, :, :]
+    state_dict["projection.weight"] = _convert_concatenated_one_hot_channels(projection_weight, vocab_list)
     state_dict["projection.bias"] = torch.from_numpy(reader.get_tensor("initconv/conv2d/bias"))
 
     for block_index in range(module_config.num_conv_blocks):
@@ -157,6 +155,27 @@ def _load_input_stats(tf, checkpoint_path: str) -> tuple[torch.Tensor, torch.Ten
 
 def _convert_conv2d_kernel(tf_kernel: np.ndarray) -> torch.Tensor:
     return torch.from_numpy(tf_kernel.transpose(3, 2, 0, 1).copy())
+
+
+def _convert_concatenated_one_hot_channels(
+    tensor: torch.Tensor, vocab_list: list[str], channel_dim: int = 1
+) -> torch.Tensor:
+    first, second = tensor.chunk(2, dim=channel_dim)
+    converted_first = convert_one_hot_embeddings(
+        first,
+        old_vocab=original_vocab_list,
+        new_vocab=vocab_list,
+        convert_word_embeddings=convert_word_embeddings,
+        channel_dim=channel_dim,
+    )
+    converted_second = convert_one_hot_embeddings(
+        second,
+        old_vocab=original_vocab_list,
+        new_vocab=vocab_list,
+        convert_word_embeddings=convert_word_embeddings,
+        channel_dim=channel_dim,
+    )
+    return torch.cat((converted_first, converted_second), dim=channel_dim)
 
 
 def _convert_fc_weights(tf_weights: np.ndarray) -> torch.Tensor:

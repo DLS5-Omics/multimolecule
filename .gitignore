@@ -433,6 +433,7 @@ FodyWeavers.xsd
 **/*.msgpack
 **/*.h5
 **/*.ot
+**/*.cpu
 
 # Data
 **/*.np

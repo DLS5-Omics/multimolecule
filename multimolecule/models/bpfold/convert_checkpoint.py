@@ -65,7 +65,6 @@ def convert_checkpoint(convert_config) -> None:
                     new_vocab=vocab_list,
                     seed=1016,
                 )
-                value[vocab_list.index("N")] = value[vocab_list.index("U")]
             state_dict[f"members.{member_index}.{key}"] = value
 
     energy_path = Path(convert_config.energy_path)
@@ -153,9 +152,6 @@ def _bpfold_energy_tables_from_file(path: str) -> dict[str, torch.Tensor]:
             code = _encode_sequence(sequence[1:-1], vocab_list)
             if distance < inner_hairpin.size(1):
                 inner_hairpin[pair_index, distance, code] = normalized
-        elif suffix == "_0_7-3":
-            code = _encode_sequence(sequence[1:-1], vocab_list)
-            inner_chain[pair_index, code] = normalized
         else:
             distance_string, chain_break_string = suffix.rsplit("-", 1)
             distance = int(distance_string.rsplit("_", 1)[1])
@@ -165,6 +161,9 @@ def _bpfold_energy_tables_from_file(path: str) -> dict[str, torch.Tensor]:
             left_code = _encode_sequence(middle[:left_length], vocab_list)
             right_code = _encode_sequence(middle[left_length:], vocab_list)
             outer[pair_index, left_length, right_length, left_code, right_code] = normalized
+            if suffix == "_0_7-3":
+                code = _encode_sequence(middle, vocab_list)
+                inner_chain[pair_index, code] = normalized
 
     return {
         "outer_energy": outer,

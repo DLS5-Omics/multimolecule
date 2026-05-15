@@ -30,8 +30,8 @@ import torch
 from multimolecule.models import UfoldConfig as Config
 from multimolecule.models import UfoldModel as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
-from multimolecule.tokenisers.rna.utils import get_alphabet, get_tokenizer_config
+from multimolecule.models.conversion_utils import convert_one_hot_embeddings, load_checkpoint, save_checkpoint
+from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 
 def convert_checkpoint(convert_config) -> None:
@@ -39,26 +39,20 @@ def convert_checkpoint(convert_config) -> None:
     config = Config()
     model = Model(config)
 
-    checkpoint = torch.load(convert_config.checkpoint_path, map_location="cpu")
+    checkpoint = torch.load(convert_config.checkpoint_path, map_location="cpu", weights_only=True)
     if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
         checkpoint = checkpoint["state_dict"]
     if not isinstance(checkpoint, dict):
         raise TypeError(f"Expected a state dict checkpoint, but got {type(checkpoint)}.")
 
-    vocab_list = get_alphabet("nucleobase", prepend_tokens=[]).vocabulary
+    vocab_list = list(get_alphabet("nucleobase", prepend_tokens=[]).vocabulary)
     state_dict = {}
     for key, value in checkpoint.items():
         if key.startswith("module."):
             key = key[len("module.") :]
         key = f"encoder.{convert_original_state_dict_key(key)}"
         if key == "encoder.down_blocks.0.conv1.weight":
-            pairwise_channels = [
-                original_vocab_list.index(i) * len(original_vocab_list) + original_vocab_list.index(j)
-                for i in vocab_list
-                for j in vocab_list
-            ]
-            channels = torch.tensor([*pairwise_channels, len(pairwise_channels)], device=value.device)
-            value = value.index_select(1, channels)
+            value = _convert_ufold_input_channels(value, vocab_list)
         state_dict[key] = value
 
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
@@ -112,6 +106,16 @@ def convert_original_up_block_key(key: str) -> str:
         if key.startswith(source):
             return f"{target}{key.removeprefix(source)}"
     return key
+
+
+def _convert_ufold_input_channels(weight: torch.Tensor, vocab_list: list[str]) -> torch.Tensor:
+    pairwise_weight = convert_one_hot_embeddings(
+        weight[:, :16, :, :],
+        old_vocab=[first + second for first in original_vocab_list for second in original_vocab_list],
+        new_vocab=[first + second for first in vocab_list for second in vocab_list],
+        convert_word_embeddings=convert_word_embeddings,
+    )
+    return torch.cat((pairwise_weight, weight[:, 16:, :, :]), dim=1)
 
 
 original_vocab_list = ["A", "U", "C", "G"]

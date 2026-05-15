@@ -19,9 +19,10 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+import pyarrow as pa
 import torch
 
-from multimolecule.data.utils import truncate_batch, truncate_value
+from multimolecule.data.utils import infer_discrete_map, map_value, truncate_batch, truncate_value
 from multimolecule.tasks import TaskLevel
 
 
@@ -48,3 +49,17 @@ class TestTruncateBatch:
         output = truncate_batch(batch, 3, TaskLevel.Contact)
 
         assert [tuple(item.shape) for item in output] == [(3, 3), (3, 3)]
+
+
+class TestInferDiscreteMap:
+    def test_string_column_skips_nulls(self):
+        column = pa.array(["abc", None, "ba"])
+
+        assert infer_discrete_map(column) == {"a": 0, "b": 1, "c": 2}
+
+
+class TestMapValue:
+    def test_nested_strings_preserve_nulls(self):
+        mapping = {"a": 0, "b": 1, "c": 2}
+
+        assert map_value(["abc", None, "ba"], mapping) == [[0, 1, 2], None, [1, 0]]

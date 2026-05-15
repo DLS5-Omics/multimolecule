@@ -136,8 +136,30 @@ class BasePredictionHead(nn.Module):
             )
         return input_ids.ne(self.pad_token_id).int()
 
+    @staticmethod
+    def _token_ids_tensor(input_ids: NestedTensor | Tensor | None) -> Tensor | None:
+        if isinstance(input_ids, NestedTensor):
+            return input_ids.tensor
+        return input_ids
+
+    def _has_leading_special_token(self, input_ids: NestedTensor | Tensor | None) -> bool:
+        if self.bos_token_id is None:
+            return False
+        ids = self._token_ids_tensor(input_ids)
+        if ids is None:
+            return True
+        return bool(ids[..., 0].eq(self.bos_token_id).all().item())
+
+    def _has_eos_token(self, input_ids: NestedTensor | Tensor | None) -> bool:
+        if self.eos_token_id is None:
+            return False
+        ids = self._token_ids_tensor(input_ids)
+        if ids is None:
+            return True
+        return bool(ids.eq(self.eos_token_id).any(dim=-1).all().item())
+
     def remove_special_tokens(
-        self, output: Tensor, attention_mask: Tensor | None = None, input_ids: Tensor | None = None
+        self, output: Tensor, attention_mask: Tensor | None = None, input_ids: NestedTensor | Tensor | None = None
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""
         Remove special tokens and clean up model outputs using attention masks.
@@ -179,13 +201,13 @@ class BasePredictionHead(nn.Module):
             >>> new_mask
             tensor([[1, 1, 0, 0]])
         """
-        if self.bos_token_id is not None:
+        if self._has_leading_special_token(input_ids):
             output = output[..., 1:, :]
             if attention_mask is not None:
                 attention_mask = attention_mask[..., 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
-        if self.eos_token_id is not None:
+        if self._has_eos_token(input_ids):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
                 if isinstance(input_ids, Tensor):
@@ -207,7 +229,7 @@ class BasePredictionHead(nn.Module):
         return output, attention_mask, input_ids
 
     def remove_special_tokens_2d(
-        self, output: Tensor, attention_mask: Tensor | None = None, input_ids: Tensor | None = None
+        self, output: Tensor, attention_mask: Tensor | None = None, input_ids: NestedTensor | Tensor | None = None
     ) -> Tuple[Tensor, Tensor, Tensor]:
         r"""
         Remove special tokens from 2D outputs like contact maps or pairwise interaction matrices.
@@ -246,13 +268,13 @@ class BasePredictionHead(nn.Module):
             >>> new_mask.shape
             torch.Size([1, 3, 3])
         """
-        if self.bos_token_id is not None:
+        if self._has_leading_special_token(input_ids):
             output = output[..., 1:, 1:, :]
             if attention_mask is not None:
                 attention_mask = attention_mask[..., 1:]
             if input_ids is not None:
                 input_ids = input_ids[..., 1:]
-        if self.eos_token_id is not None:
+        if self._has_eos_token(input_ids):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
                 if isinstance(input_ids, Tensor):

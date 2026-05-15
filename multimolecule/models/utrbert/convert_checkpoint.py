@@ -55,7 +55,9 @@ def convert_checkpoint(convert_config):
     model = Model(config)
 
     ckpt = torch.load(
-        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"), map_location=torch.device("cpu")
+        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"),
+        map_location=torch.device("cpu"),
+        weights_only=True,
     )
     original_vocab_list = []
     for char in open(os.path.join(convert_config.checkpoint_path, "vocab.txt")).read().splitlines():  # noqa: SIM115

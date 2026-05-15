@@ -70,6 +70,7 @@ from .models import (
     HyenaDnaForSequencePrediction,
     HyenaDnaForTokenPrediction,
     HyenaDnaModel,
+    HyenaDnaModelOutput,
     PreTrainedConfig,
     ProGen2Config,
     ProGen2ForCausalLM,
@@ -201,6 +202,7 @@ from .modules import (
     UNet,
 )
 from .pipelines import RnaSecondaryStructurePipeline
+from .runner import Config, Runner
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import (
@@ -223,6 +225,8 @@ from .utils import (
 )
 
 __all__ = [
+    "Config",
+    "Runner",
     "modeling_auto",
     "modeling_outputs",
     "Dataset",
@@ -334,6 +338,7 @@ __all__ = [
     "ErnieRnaForSecondaryStructurePrediction",
     "HyenaDnaConfig",
     "HyenaDnaModel",
+    "HyenaDnaModelOutput",
     "HyenaDnaForCausalLM",
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",

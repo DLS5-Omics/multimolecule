@@ -73,11 +73,6 @@ class BpfoldPreTrainedModel(PreTrainedModel):
 
 
 class BpfoldModel(BpfoldPreTrainedModel):
-    outer_energy: Tensor
-    inner_chain_energy: Tensor
-    inner_hairpin_energy: Tensor
-    _pair_index: Tensor
-
     """
     Examples:
         >>> import torch
@@ -93,6 +88,11 @@ class BpfoldModel(BpfoldPreTrainedModel):
         >>> output["contact_map"].shape
         torch.Size([1, 4, 4])
     """
+
+    outer_energy: Tensor
+    inner_chain_energy: Tensor
+    inner_hairpin_energy: Tensor
+    _pair_index: Tensor
 
     def __init__(self, config: BpfoldConfig):
         super().__init__(config)
@@ -350,6 +350,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
         batch_size = base_indices.size(0)
         num_channels = 2 if self.config.separate_outer_inner_energy else 1
         energy = self.outer_energy.new_zeros((batch_size, num_channels, target_length, target_length))
+        pair_index = _pair_index_matrix().to(device=base_indices.device)
 
         for batch_index in range(batch_size):
             length = int(base_lengths[batch_index].item())
@@ -358,7 +359,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
             seq = base_indices[batch_index, :length]
             seq_energy = _build_energy_map_from_tokens(
                 seq,
-                self._pair_index,
+                pair_index,
                 self.outer_energy,
                 self.inner_chain_energy,
                 self.inner_hairpin_energy,
@@ -629,6 +630,9 @@ class BpfoldSelfAttention(nn.Module):
 
         self.dropout = nn.Dropout(dropout)
         self.query_key_value_weight = nn.Parameter(torch.empty(hidden_size, 3 * hidden_size))
+        # output_weight is retained for checkpoint compatibility with the published BPfold weights but is
+        # intentionally NOT applied in forward — the upstream MHSA does not use it, and applying it would
+        # break golden parity.
         self.output_weight = nn.Parameter(torch.empty(hidden_size, hidden_size))
         self.output_bias = nn.Parameter(torch.empty(1, 1, hidden_size))
         self.query_key_value_bias = nn.Parameter(torch.empty(1, 1, 3 * hidden_size))
@@ -1015,6 +1019,28 @@ def _contact_a(a_hat: Tensor, mask: Tensor) -> Tensor:
 
 @dataclass
 class BpfoldModelOutput(ModelOutput):
+    """
+    Output type for BPfold model.
+
+    Args:
+        loss (`torch.FloatTensor` of shape `(1,)`, *optional*, returned when `labels` is provided):
+            Binary cross-entropy loss (with positive-class weighting) for base-pair prediction.
+        logits (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`):
+            Raw pre-sigmoid prediction scores averaged over ensemble members:
+            `logits = mean(logit_i for i in members)`. These are NOT probabilities; apply `torch.sigmoid`
+            to obtain per-pair scores.
+        contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
+            Post-sigmoid base-pair probability matrix. When `use_postprocessing=True` this is the result of
+            the constrained BPfold post-processing loop (a binary 0/1 map); otherwise it equals
+            `torch.sigmoid(logits)`.
+        postprocessed_contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
+            Binary contact map produced by the constrained BPfold post-processing loop. Only present when
+            `use_postprocessing=True`; identical to `contact_map` in that case.
+        noncanonical_contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
+            Binary contact map for non-canonical base pairs produced by the post-processing loop. Only present
+            when `use_postprocessing=True` and `return_noncanonical=True`.
+    """
+
     loss: Tensor | None = None
     logits: Tensor | None = None
     contact_map: Tensor | None = None

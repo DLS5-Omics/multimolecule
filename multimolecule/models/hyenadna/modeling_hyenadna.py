@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from typing import Any
 
 import torch
@@ -32,10 +33,10 @@ from torch.nn import functional as F
 from transformers import GenerationMixin
 from transformers import initialization as init
 from transformers.modeling_layers import GradientCheckpointingLayer
-from transformers.modeling_outputs import BaseModelOutputWithPoolingAndCrossAttentions, CausalLMOutput
+from transformers.modeling_outputs import CausalLMOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.processing_utils import Unpack
-from transformers.utils import TransformersKwargs
+from transformers.utils import ModelOutput, TransformersKwargs
 from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
 from transformers.utils.output_capturing import capture_outputs
 
@@ -107,7 +108,7 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         output_hidden_states: bool | None = None,
         **kwargs: Unpack[TransformersKwargs],
-    ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
+    ) -> tuple[Tensor, ...] | HyenaDnaModelOutput:
         # Hyena's FFT-based long convolutions require a fixed sequence length; materialise
         # NestedTensor to dense + mask before entering the block stack.
         if isinstance(input_ids, NestedTensor):
@@ -154,7 +155,7 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
 
         pooled_output = self.pooler(hidden_states) if self.pooler is not None else None
 
-        return BaseModelOutputWithPoolingAndCrossAttentions(
+        return HyenaDnaModelOutput(
             last_hidden_state=hidden_states,
             pooler_output=pooled_output,
             hidden_states=all_hidden_states if output_hidden_states else None,
@@ -611,6 +612,25 @@ def fftconv(u: Tensor, k: Tensor, D: Tensor) -> Tensor:
     return out.to(dtype=u.dtype)
 
 
-HyenaDnaPreTrainedModel._can_record_outputs = {
-    "hidden_states": HyenaDnaBlock,
-}
+@dataclass
+class HyenaDnaModelOutput(ModelOutput):
+    """
+    Base class for outputs of the HyenaDNA backbone.
+
+    Args:
+        last_hidden_state (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`):
+            Sequence of hidden states at the output of the last Hyena block.
+        pooler_output (`torch.FloatTensor` of shape `(batch_size, hidden_size)`, *optional*):
+            First-token pooled representation.
+        hidden_states (`tuple(torch.FloatTensor)`, *optional*, returned when `output_hidden_states=True` is passed or
+            when `config.output_hidden_states=True`):
+            Tuple of hidden states from the embedding output, each Hyena block, and the final layer norm.
+        attentions:
+            Always `None`; HyenaDNA uses implicit long convolutions rather than attention layers. Provided for
+            compatibility with the Transformers output convention.
+    """
+
+    last_hidden_state: torch.FloatTensor | None = None
+    pooler_output: torch.FloatTensor | None = None
+    hidden_states: tuple[torch.FloatTensor, ...] | None = None
+    attentions: tuple[torch.FloatTensor, ...] | None = None
