@@ -50,14 +50,16 @@ from .heads import (
     TokenPredictionHead,
 )
 from .layers import LayerNorm2d, SymmetricConv2d, SymmetricConvTranspose2d
-from .model import MultiMoleculeModel
+from .model import ModelBase, MonoModel, PolyModel
 from .necks import NECKS, CatNeck
 from .networks import NETWORKS, ResNet, UNet
 from .registry import MODELS
 
 __all__ = [
     "MODELS",
-    "MultiMoleculeModel",
+    "ModelBase",
+    "PolyModel",
+    "MonoModel",
     "POSITION_EMBEDDINGS",
     "POSITION_EMBEDDINGS_HF",
     "RotaryEmbedding",
