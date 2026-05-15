@@ -38,6 +38,7 @@ nav:
       - modules/index.md
       - embeddings: modules/embeddings.md
       - heads: modules/heads.md
+      - model: modules/model.md
   - models:
       - models/index.md
       - DNA:
@@ -75,6 +76,13 @@ nav:
   - pipelines:
       - pipelines/index.md
       - RNA Secondary Structure: pipelines/rna_secondary_structure.md
+  - runner:
+      - runner/index.md
+      - Configuration: runner/config.md
+      - Runner: runner/runner.md
+  - api:
+      - api/index.md
+      - Entry Points: api/run.md
   - utils:
       - RNA:
           - Secondary Structure: utils/rna/secondary_structure.md

@@ -56,6 +56,18 @@ with try_import() as ema_import:
 
 @RUNNERS.register("multimolecule", default=True)
 class Runner(dl.Runner):
+    r"""
+    Train, evaluate, and run inference with supervised MultiMolecule models.
+
+    Extends [`dl.Runner`][danling.Runner] with molecular-sequence defaults. It loads a tokenizer from the configured
+    pre-trained backbone, builds datasets, infers task metadata from labels, constructs one prediction head per
+    task, and wires DanLing stream/global metrics into the train and evaluation loops.
+
+    Args:
+        config: Runner configuration. Either a [`Config`][multimolecule.runner.Config] instance or any mapping that
+            it can be built from.
+    """
+
     config: Config
     model: ModelBase
     optimizer: Any
@@ -162,10 +174,6 @@ class Runner(dl.Runner):
         if checkpoint_source:
             return ("checkpoint", checkpoint_source)
 
-        legacy_checkpoint = self.config.get("checkpoint")
-        if legacy_checkpoint and not isinstance(legacy_checkpoint, Mapping):
-            return ("checkpoint", legacy_checkpoint)
-
         if self.config.get("auto_resume", False):
             return ("checkpoint", self._auto_resume_source())
 
@@ -195,6 +203,26 @@ class Runner(dl.Runner):
 
     @torch.inference_mode()
     def infer(self, split: str = "infer") -> NestedDict | FlatDict | list:
+        r"""
+        Run inference on `split` and return the predictions, optionally paired with labels.
+
+        Args:
+            split: Dataloader split to iterate. Defaults to `"infer"` to match the runner's inference
+                dataset convention.
+
+        Returns:
+            One of four shapes depending on the number of tasks and whether the batch carries labels:
+
+            | tasks | labels | return type                        | shape                                        |
+            | ----- | ------ | ---------------------------------- | -------------------------------------------- |
+            | 1     | yes    | [`FlatDict`][chanfig.FlatDict]     | `{"predict": [...], "label": [...]}`         |
+            | N     | yes    | [`NestedDict`][chanfig.NestedDict] | `{task: {"predict": [...], "label": [...]}}` |
+            | 1     | no     | `list`                             | bare predictions for the single task         |
+            | N     | no     | [`FlatDict`][chanfig.FlatDict]     | `{task: [...]}`                              |
+
+            "Labels in batch" is true when the dataloader yields the task name as a key. For pure
+            inference splits without ground-truth columns, branches 3 and 4 apply.
+        """
         self.mode = RunnerMode.infer
         self.split = split
         loader = self.dataloaders[split]
