@@ -23,3 +23,14 @@ The `modules` package is intended for simple, reusable modules that are consiste
 
 - [heads](heads): Contains various prediction heads, such as [`SequencePredictionHead`][multimolecule.SequencePredictionHead], [`TokenPredictionHead`][multimolecule.TokenPredictionHead], and [`ContactPredictionHead`][multimolecule.ContactPredictionHead].
 - [embeddings](embeddings): Contains various positional embeddings, such as [`SinusoidalEmbedding`][multimolecule.SinusoidalEmbedding] and [`RotaryEmbedding`][multimolecule.RotaryEmbedding].
+- [model](model): The model layer that the [`Runner`][multimolecule.runner.Runner] consumes — abstract [`ModelBase`][multimolecule.ModelBase] plus two concrete subclasses, [`MonoModel`][multimolecule.MonoModel] (single-task wrapper around a Hugging Face `AutoModelFor*`) and [`PolyModel`][multimolecule.PolyModel] (composition of backbone, optional neck, and one head per task).
+
+## Models
+
+`modules` exposes a small model layer used by the [`runner`](../runner) package:
+
+- [`ModelBase`][multimolecule.ModelBase]: Abstract base. Defines the `forward` and `trainable_parameters` contract every multimolecule model implements; the runner discriminates models with `isinstance(model, ModelBase)` rather than against any concrete subclass.
+- [`MonoModel`][multimolecule.MonoModel]: Single-task wrapper around a multimolecule (or HuggingFace) `AutoModelFor*` prediction model. Hides the wrapper at the `state_dict` layer, so checkpoints round-trip with the bare HF model.
+- [`PolyModel`][multimolecule.PolyModel]: Composes a backbone, optional neck, and one head per task into a single trainable module. Use when the task graph involves multiple labels, extra non-sequence features, or a neck transform.
+
+Both classes are registered with [`MODELS`][multimolecule.MODELS] under the keys `"mono"` and `"poly"`. The default `network.type: auto` dispatches between them based on the resolved network shape; users may set `network.type: mono` or `network.type: poly` explicitly to bypass the dispatcher.

@@ -32,6 +32,54 @@ DEFAULT_TRAIN_EPOCHS: int = 20
 
 
 class DataConfig(chanfig.Config):
+    r"""
+    Dataset configuration for the runner.
+
+    `data` accepts either a string (treated as `root`) or a mapping (parsed into this class). The runner resolves
+    `root` to either a local directory or a Hugging Face dataset ID and uses the split keys below to locate files;
+    when none are given for a local dataset, splits are discovered with Hugging Face's standard data-file patterns.
+
+    Args:
+        root:
+            Dataset root. Either a local directory containing split files or a Hugging Face Hub dataset ID such as
+            `multimolecule/rnacentral`.
+        train:
+            Training split file (local) or split name (Hugging Face).
+        validation:
+            Validation split file (local) or split name (Hugging Face).
+
+            `valid` and `val` are accepted as aliases for compatibility with third-party configs.
+        valid:
+            Alias for `validation`.
+        val:
+            Alias for `validation`.
+        test:
+            Test split file (local) or split name (Hugging Face).
+        infer:
+            Inference split file (local) or split name (Hugging Face).
+        inference:
+            Alias for `infer`.
+        sequence_cols:
+            Columns to treat as biological sequences. Forwarded to [`Dataset`][multimolecule.data.Dataset] for
+            tokenization.
+        feature_cols:
+            Non-sequence input columns retained alongside `label_cols`.
+        label_cols:
+            Label columns. Task metadata (level / type / num_labels) is inferred per column and one head is built
+            per label.
+        label_col:
+            Single-label shortcut; promoted to `[label_col]` when `label_cols` is unset.
+        ignored_cols:
+            Columns to drop before training.
+        truncation:
+            Whether to truncate sequences longer than `max_seq_length`.
+        max_seq_length:
+            Maximum sequence length in tokens.
+        ratio:
+            Optional sub-sampling fraction (float in `(0, 1]`) or row count (int) applied to training splits only.
+            Useful for smoke tests.
+    """
+
     root: str = "."
     train: str | None = None
     validation: str | None = None
@@ -51,11 +99,43 @@ class DataConfig(chanfig.Config):
 
 
 class DataloaderConfig(chanfig.Config):
+    r"""
+    DataLoader configuration.
+
+    Additional keys are forwarded to [`torch.utils.data.DataLoader`][torch.utils.data.DataLoader] through the
+    underlying DanLing dataloader builder.
+
+    Args:
+        batch_size:
+            Per-process batch size.
+        num_workers:
+            Number of worker processes used to load batches.
+    """
+
     batch_size: int = 32
     num_workers: int = 4
 
 
 class NetworkConfig(chanfig.Config):
+    r"""
+    Model configuration consumed by [`MODELS.build`][multimolecule.modules.MODELS].
+
+    `network.backbone.sequence` is the only required sub-tree; the runner populates `backbone.sequence.name` and
+    `backbone.sequence.use_pretrained` from top-level `pretrained` / `use_pretrained` when those keys are not already
+    set. One head is added to `network.heads` for each task inferred from the dataset labels, with user-provided
+    head settings (e.g. `dropout`, `hidden_size`) preserved through merge-without-overwrite.
+
+    Args:
+        backbone:
+            Backbone configuration. Must contain a `sequence` sub-dict whose `name` resolves to a Hugging Face
+            model identifier or a local path loadable as a [`MultiMoleculeModel`][multimolecule.MultiMoleculeModel].
+        heads:
+            Per-task head configuration. Each entry is merged with the task metadata
+            (`num_labels` / `problem_type` / `type`) inferred from `data.label_cols`.
+        neck:
+            Optional neck applied between backbone and heads.
+    """
+
     backbone: chanfig.NestedDict
     heads: chanfig.NestedDict
     neck: chanfig.NestedDict | None = None
@@ -69,6 +149,24 @@ class NetworkConfig(chanfig.Config):
 
 
 class OptimConfig(chanfig.Config):
+    r"""
+    Optimizer configuration.
+
+    Forwarded to [`dl.OPTIMIZERS.build`][danling.OPTIMIZERS] after popping `pretrained_ratio`.
+
+    Args:
+        type:
+            Optimizer name registered in [`dl.OPTIMIZERS`][danling.OPTIMIZERS].
+        lr:
+            Base learning rate applied to newly initialised parameters (heads, necks, ...).
+        weight_decay:
+            Base weight decay applied to newly initialised parameters.
+        pretrained_ratio:
+            Multiplier applied to `lr` and `weight_decay` for parameters belonging to the pretrained backbone.
+            Useful for fine-tuning a backbone alongside freshly initialised task heads. Both `lr` and `weight_decay`
+            must be set for this to take effect.
+    """
+
     type: str = "adamw"
     lr: float = 1e-3
     weight_decay: float = 1e-2
@@ -76,11 +174,47 @@ class OptimConfig(chanfig.Config):
 
 
 class SchedulerConfig(chanfig.Config):
+    r"""
+    Learning rate scheduler configuration.
+
+    Forwarded to DanLing's scheduler builder. Common warmup keys (`warmup_ratio`, `warmup_steps`, ...) are accepted
+    and passed through unchanged.
+
+    Args:
+        type:
+            Scheduler name.
+        final_lr:
+            Target learning rate at the end of training.
+    """
+
     type: str = "cosine"
     final_lr: float = 0.0
 
 
 class EmaConfig(chanfig.Config):
+    r"""
+    Exponential moving average configuration.
+
+    When `enabled`, the runner instantiates an `ema_pytorch.EMA` wrapper around the trained model and uses it for
+    evaluation and inference. Remaining fields are forwarded to `EMA` unchanged.
+
+    Args:
+        enabled:
+            Whether EMA is active.
+        coerce_dtype:
+            Coerce EMA weights to the online model's dtype.
+        beta:
+            EMA decay.
+        update_after_step:
+            Skip EMA updates until this many optimizer steps have elapsed.
+        update_every:
+            Run an EMA update once every N optimizer steps.
+        update_model_with_ema_every:
+            If set, periodically copy EMA weights back onto the online model.
+        update_model_with_ema_beta:
+            Mixing factor for the periodic EMA-to-online copy.
+    """
+
     enabled: bool = False
     coerce_dtype: bool = True
     beta: float = 0.9999
@@ -91,6 +225,55 @@ class EmaConfig(chanfig.Config):
 
 
 class Config(dl.RunnerConfig):
+    r"""
+    Top-level runner configuration.
+
+    Extends [`dl.RunnerConfig`][danling.runners.RunnerConfig] with MultiMolecule defaults and validation. The runner
+    accepts either a fully-constructed `Config` instance or any mapping that this class can be built from.
+
+    The `name` attribute is auto-derived in [`post`][multimolecule.runner.Config.post] from the pretrained
+    identifier, optimizer settings, and seed when the user does not set it explicitly.
+
+    Args:
+        seed:
+            Base random seed.
+        training:
+            When `False`, training splits are ignored and the runner is usable for evaluation/inference. Set
+            automatically by the `mmtrain` / `mmevaluate` / `mminfer` entry points in `multimolecule.apis.run`.
+        runner:
+            Registry key resolved through [`RUNNERS`][multimolecule.runner.registry.RUNNERS].
+        platform:
+            Alias for `stack`. When set, the value is copied into `self.stack` during `__post_init__`. Accepts the
+            same values as DanLing's stack selector (`ddp`, `torch`, `parallel`, `deepspeed`, ...).
+        pretrained:
+            Pretrained backbone identifier (Hugging Face Hub repo or local path). Copied into
+            `network.backbone.sequence.name` when that key is not already set.
+        use_pretrained:
+            When `False`, build the architecture from the pretrained config but reinitialise weights from scratch.
+        steps:
+            Training step budget. Mutually exclusive with `epochs`.
+        epochs:
+            Training epoch budget. Defaults to
+            [`DEFAULT_TRAIN_EPOCHS`][multimolecule.runner.config.DEFAULT_TRAIN_EPOCHS] when both `steps` and
+            `epochs` are unset.
+        data:
+            Dataset configuration. A bare string is promoted to `DataConfig(root=<string>)`.
+        dataloader:
+            DataLoader configuration.
+        network:
+            Model configuration.
+        optim:
+            Optimizer configuration.
+        sched:
+            Learning rate scheduler configuration.
+        ema:
+            Optional EMA configuration.
+        allow_tf32:
+            Whether to allow TF32 matmul / cuDNN kernels on Ampere+ GPUs.
+        reduced_precision_reduction:
+            Whether to allow reduced-precision reductions for fp16 / bf16 matmul accumulators.
+    """
+
     seed: int | None = 1016
     training: bool = True
 

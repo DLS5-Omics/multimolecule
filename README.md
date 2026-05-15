@@ -30,7 +30,7 @@ Its modular design allows you to utilize only the components you need, integrati
 - [`modules`](modules): Modular neural network building blocks, including [embeddings](modules/embeddings), [heads](modules/heads), and criterions for constructing custom models.
 - [`models`](models): Implementation of state-of-the-art pre-trained models in molecular biology.
 - [`tokenisers`](tokenisers): Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.
-<!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->
+- [`runner`](runner): DanLing-based training, evaluation, and inference runner for fine-tuning MultiMolecule models on local or Hugging Face datasets.
 
 ## Installation
 

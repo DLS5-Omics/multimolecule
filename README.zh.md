@@ -30,7 +30,7 @@ MultiMolecule 以灵活性和易用性为设计核心。
 - [`modules`](modules)：模块化神经网络构建块，包括[嵌入层](modules/embeddings)、[预测头](modules/heads)和损失函数，用于构建自定义模型。
 - [`models`](models)：分子生物学领域的最先进预训练模型实现。
 - [`tokenisers`](tokenisers)：用于将 DNA、RNA、蛋白质及其他序列转换为独热编码的分词器。
-<!-- - [`runner`](runner)：功能强大且可扩展的运行器，允许用户轻松进行模型微调、评估和预测。 -->
+- [`runner`](runner)：基于 DanLing 的训练、评估和推理运行器，用于在本地或 Hugging Face 数据集上微调 MultiMolecule 模型。
 
 ## 安装
 
