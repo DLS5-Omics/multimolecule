@@ -498,7 +498,7 @@ class Dataset(datasets.Dataset):
     ) -> Sequence:
         all_cols = self.data.column_names
         self._id_cols = id_cols or [i for i in all_cols if i.lower() in defaults.ID_COL_NAMES]
-        self._sequence_cols = sequence_cols or []
+        self._sequence_cols = list(sequence_cols) if sequence_cols else []
         self._sequence_type = sequence_type  # type: ignore[assignment]
 
         string_cols = [
@@ -513,13 +513,26 @@ class Dataset(datasets.Dataset):
         }
         unique_chars_upper = {k: {ch.upper() for ch in v} for k, v in unique_chars.items()}
 
-        for col, chars in unique_chars_upper.items():
-            for alphabet_type, alphabet in alphabets.items():
-                complete, minimal = alphabet["complete"], alphabet["minimal"]
-                if chars.issubset(complete) and chars.issuperset(minimal):
-                    self._sequence_cols.append(col)
-                    if self._sequence_type is None and alphabet_type != "na":
-                        self._sequence_type = alphabet_type
+        # Auto-detect sequence columns only when the caller did not provide any. When `sequence_cols` is
+        # explicit, trust it; otherwise sniff each string column's character set against known alphabets,
+        # skipping anything declared as a label or that looks like a secondary structure.
+        if not sequence_cols:
+            explicit_label_cols = set(label_cols) if label_cols else set()
+            for col, chars in unique_chars_upper.items():
+                if col in explicit_label_cols:
+                    continue
+                if col.lower() in defaults.SECONDARY_STRUCTURE_COL_NAMES:
+                    continue
+                col_chars = unique_chars[col]
+                if col_chars.issubset(DB_COMPLETE_ALPHABET) and col_chars.issuperset(DB_MINIMAL_ALPHABET):
+                    continue
+                for alphabet_type, alphabet in alphabets.items():
+                    complete, minimal = alphabet["complete"], alphabet["minimal"]
+                    if chars.issubset(complete) and chars.issuperset(minimal):
+                        self._sequence_cols.append(col)
+                        if self._sequence_type is None and alphabet_type != "na":
+                            self._sequence_type = alphabet_type
+                        break
 
         if not self._sequence_cols:
             raise ValueError("No sequence column found in the dataset.")
