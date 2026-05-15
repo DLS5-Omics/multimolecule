@@ -3,6 +3,7 @@ language: rna
 tags:
   - Biology
   - RNA
+  - Structures
 license:
   - agpl-3.0
 size_categories:

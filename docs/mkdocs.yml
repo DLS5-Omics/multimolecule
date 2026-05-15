@@ -7,77 +7,21 @@ copyright: All rights reserved &copy; 2024-Present, MultiMolecule Contributors
 repo_name: MultiMolecule
 repo_url: https://github.com/DLS5-Omics/multimolecule
 
+hooks:
+  - gen_pages.py
+
 nav:
   - index.md
-  - data:
-      - data/index.md
-      - Dataset: data/dataset.md
-  - datasets:
-      - datasets/index.md
-      - DNA:
-          - Sequences:
-              - GENCODE: datasets/gencode.md
-      - RNA:
-          - Sequences:
-              - RNAcentral: datasets/rnacentral.md
-              - Rfam: datasets/rfam.md
-          - Secondary Structures:
-              - RIVAS: datasets/rivas.md
-              - CASP-RNA: datasets/casp_rna.md
-              - bpRNA-1m: datasets/bprna_1m.md
-              - bpRNA-spot: datasets/bprna_spot.md
-              - bpRNA-new: datasets/bprna_new.md
-              - RNAStrAlign: datasets/rnastralign.md
-              - ArchiveII: datasets/archiveii.md
-          - Structures:
-              - RYOS: datasets/ryos.md
-              - EternaBench-CM: datasets/eternabench_cm.md
-              - EternaBench-Switch: datasets/eternabench_switch.md
-              - EternaBench-External: datasets/eternabench_external.md
-  - modules:
-      - modules/index.md
-      - embeddings: modules/embeddings.md
-      - heads: modules/heads.md
-  - models:
-      - models/index.md
-      - DNA:
-          - DNABERT: models/dnabert.md
-          - DNABERT-2: models/dnabert2.md
-          - DNABERT-S: models/dnaberts.md
-          - HyenaDNA: models/hyenadna.md
-      - RNA:
-          - BPfold: models/bpfold.md
-          - CaLM: models/calm.md
-          - ERNIE-RNA: models/ernierna.md
-          - RibonanzaNet: models/ribonanzanet.md
-          - RiNALMo: models/rinalmo.md
-          - RNABERT: models/rnabert.md
-          - RNAErnie: models/rnaernie.md
-          - RNA-FM: models/rnafm.md
-          - RNA-MSM: models/rnamsm.md
-          - SPOT-RNA: models/spotrna.md
-          - SpliceAI: models/spliceai.md
-          - SpliceBERT: models/splicebert.md
-          - UFold: models/ufold.md
-          - 3UTRBERT: models/utrbert.md
-          - UTR-LM: models/utrlm.md
-      - Protein:
-          - ProGen2: models/progen2.md
-      - utils:
-          - configuration_utils: models/configuration_utils.md
-          - modeling_outputs: models/modeling_outputs.md
-  - tokenisers:
-      - tokenisers/index.md
-      - DNA: tokenisers/dna.md
-      - RNA: tokenisers/rna.md
-      - Protein: tokenisers/protein.md
-      - DotBracket: tokenisers/dot_bracket.md
-  - pipelines:
-      - pipelines/index.md
-      - RNA Secondary Structure: pipelines/rna_secondary_structure.md
-  - utils:
-      - RNA:
-          - Secondary Structure: utils/rna/secondary_structure.md
+  - data: []
+  - datasets: []
+  - io: []
+  - modules: []
+  - models: []
+  - tokenisers: []
+  - pipelines: []
+  - runner: []
+  - api: []
+  - utils: []
   - about:
       - about/index.md
       - License: about/license.md
@@ -148,6 +92,16 @@ extra:
       <a href="https://multimolecule.danling.org/about/privacy">Privacy Notice</a> for more information.
   generator: false
   manifest: "manifest.webmanifest"
+  social:
+    - icon: fontawesome/brands/discourse
+      link: https://multimolecule.discourse.group
+      name: MultiMolecule Discourse
+    - icon: fontawesome/brands/github
+      link: https://github.com/DLS5-Omics/multimolecule
+      name: MultiMolecule on GitHub
+    - icon: fontawesome/solid/face-smile
+      link: https://huggingface.co/multimolecule
+      name: MultiMolecule on Hugging Face
 
 extra_css:
   - assets/css/fonts.css
@@ -225,7 +179,7 @@ plugins:
             separate_signature: true
             show_signature_annotations: true
             signature_crossrefs: true
-          import:
+          inventories:
             - https://docs.python.org/3/objects.inv
             - https://pytorch.org/docs/stable/objects.inv
             - https://numpy.org/doc/stable/objects.inv

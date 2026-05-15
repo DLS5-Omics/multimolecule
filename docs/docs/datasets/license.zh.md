@@ -1,5 +1,5 @@
 ---
-summary: MultiMolecule 许可证。
+summary: MultiMolecule 数据集许可证。
 date: 2024-05-04
 ---
 

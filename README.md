@@ -24,13 +24,15 @@ MultiMolecule provides a comprehensive yet flexible set of tools for researchers
 
 MultiMolecule is built with flexibility and ease of use in mind.
 Its modular design allows you to utilize only the components you need, integrating seamlessly into your existing workflows without adding unnecessary complexity.
+The model and pipeline catalog covers RNA, DNA, and protein sequence modeling, including secondary structure prediction, splicing, regulatory activity and profile prediction, DNA methylation, polyadenylation, and mean ribosome load tasks.
 
 - [`data`](data): Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.
 - [`datasets`](datasets): A collection of widely-used biomolecular datasets.
 - [`modules`](modules): Modular neural network building blocks, including [embeddings](modules/embeddings), [heads](modules/heads), and criterions for constructing custom models.
 - [`models`](models): Implementation of state-of-the-art pre-trained models in molecular biology.
 - [`tokenisers`](tokenisers): Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.
-<!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->
+- [`pipelines`](pipelines): Task-focused inference pipelines for structure prediction, splicing, regulatory genomics, methylation, polyadenylation, and mean ribosome load.
+- [`runner`](runner): DanLing-based training, evaluation, and inference runner for fine-tuning MultiMolecule models on local or Hugging Face datasets.
 
 ## Installation
 
@@ -45,6 +47,11 @@ Install the latest version from the source:
 ```shell
 pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ```
+
+## Community
+
+- [Discourse](https://multimolecule.discourse.group): release announcements, usage questions, model requests, RFCs, and community discussion.
+- [GitHub Issues](https://github.com/DLS5-Omics/multimolecule/issues): reproducible bugs, API issues, and implementation-tracked feature requests.
 
 ## Citation
 

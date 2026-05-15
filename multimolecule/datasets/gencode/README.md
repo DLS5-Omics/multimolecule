@@ -3,6 +3,7 @@ language: dna
 tags:
   - Biology
   - DNA
+  - Sequences
 license:
   - agpl-3.0
 size_categories:

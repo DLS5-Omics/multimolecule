@@ -1,5 +1,5 @@
 ---
-summary: MultiMolecule license.
+summary: MultiMolecule model license.
 date: 2024-05-04
 ---
 

@@ -24,13 +24,15 @@ MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松
 
 MultiMolecule 以灵活性和易用性为设计核心。
 其模块化设计允许您根据需要仅使用所需的组件，并能无缝集成到现有的工作流程中，而不会增加不必要的复杂性。
+模型与 Pipeline 目录覆盖 RNA、DNA 和蛋白质序列建模，包括二级结构预测、剪接、调控活性与谱图预测、DNA 甲基化、多聚腺苷酸化和平均核糖体负载等任务。
 
 - [`data`](data)：智能的 [`Dataset`][multimolecule.data.Dataset]，能够自动推断任务，包括任务的层级（序列、令牌、接触）和类型（分类、回归）。还提供多任务数据集和采样器，简化多任务学习，无需额外配置。
 - [`datasets`](datasets)：广泛使用的生物分子数据集集合。
 - [`modules`](modules)：模块化神经网络构建块，包括[嵌入层](modules/embeddings)、[预测头](modules/heads)和损失函数，用于构建自定义模型。
 - [`models`](models)：分子生物学领域的最先进预训练模型实现。
 - [`tokenisers`](tokenisers)：用于将 DNA、RNA、蛋白质及其他序列转换为独热编码的分词器。
-<!-- - [`runner`](runner)：功能强大且可扩展的运行器，允许用户轻松进行模型微调、评估和预测。 -->
+- [`pipelines`](pipelines)：面向具体任务的推理管道，覆盖结构预测、剪接、调控基因组学、甲基化、多聚腺苷酸化和平均核糖体负载。
+- [`runner`](runner)：基于 DanLing 的训练、评估和推理运行器，用于在本地或 Hugging Face 数据集上微调 MultiMolecule 模型。
 
 ## 安装
 
@@ -45,6 +47,11 @@ pip install multimolecule
 ```shell
 pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ```
+
+## 社区
+
+- [Discourse](https://multimolecule.discourse.group)：发布公告、使用问题、模型请求、RFC 和社区讨论。
+- [GitHub Issues](https://github.com/DLS5-Omics/multimolecule/issues)：可复现的错误、API 问题和需要工程跟踪的功能请求。
 
 ## 引用
 

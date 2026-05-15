@@ -1,5 +1,5 @@
 ---
-summary: MultiMolecule license FAQ.
+summary: MultiMolecule model license FAQ.
 date: 2024-05-04
 ---
 

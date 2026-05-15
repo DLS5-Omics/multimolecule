@@ -41,6 +41,17 @@ with try_import() as nni_import:
 
 
 def dynamic_import(pretrained: str | None = None) -> None:
+    r"""
+    Import the working-directory package (and an optional `pretrained` sub-directory) so user-defined datasets,
+    models, and runners register themselves before the runner is built.
+
+    Appends the parent of `cwd` to `sys.path` and imports `os.path.basename(cwd)` as a Python module. If
+    `pretrained` matches a sub-directory of `cwd`, that sub-directory is also appended and imported.
+
+    Args:
+        pretrained: Optional secondary module to import — typically the experiment's `pretrained` identifier
+            when it lives under `cwd`.
+    """
     cwd = os.getcwd()
     parent = os.path.dirname(cwd)
     if parent not in sys.path:
@@ -60,6 +71,23 @@ def print_banner() -> None:
 
 
 def prepare_config(config: Config | None = None, *, training: bool | None = None) -> Config:
+    r"""
+    Parse, finalize, and apply runtime side-effects to a runner [`Config`][multimolecule.runner.Config].
+
+    Reads `config.yaml` from the current working directory (warning if missing) and applies CLI overrides via
+    [`Config.parse`][danling.RunnerConfig], then forces `config.training` if requested, runs the
+    [`dynamic_import`][multimolecule.api.run.dynamic_import] hook, applies CUDA precision flags
+    (`allow_tf32`, `reduced_precision_reduction`), and merges NNI hyperparameters when `config.nni` is truthy.
+
+    Args:
+        config: Optional pre-built configuration. When `None`, a fresh `Config()` is created and populated
+            entirely from `config.yaml` plus CLI arguments.
+        training: When set, overrides `config.training` after parsing — used by the `mmtrain` / `mmevaluate` /
+            `mminfer` entry points to flip training mode without requiring a YAML edit.
+
+    Returns:
+        The parsed and finalized configuration.
+    """
     if config is None:
         config = Config()
     parsed_config = config.parse(default_config="config", no_default_config_action="warn")
@@ -84,6 +112,19 @@ def prepare_config(config: Config | None = None, *, training: bool | None = None
 
 
 def train(config: Config | None = None) -> Any:
+    r"""
+    Train a model with `config.training = True`.
+
+    Wraps the run in a [`dl.debug`][danling.debug] context when `config.debug` is truthy, then invokes
+    `runner.train()`. Console-script entry point for `mmtrain`.
+
+    Args:
+        config: Optional pre-built configuration; CLI overrides are still applied via
+            [`prepare_config`][multimolecule.api.run.prepare_config].
+
+    Returns:
+        Whatever the underlying [`Runner.train`][multimolecule.runner.Runner] returns.
+    """
     print_banner()
     config = prepare_config(config, training=True)
     with dl.debug(config.get("debug", False)):
@@ -93,6 +134,17 @@ def train(config: Config | None = None) -> Any:
 
 
 def evaluate(config: Config | None = None) -> Any:
+    r"""
+    Evaluate a model on the configured splits with `config.training = False`.
+
+    Console-script entry point for `mmevaluate`.
+
+    Args:
+        config: Optional pre-built configuration; CLI overrides are still applied.
+
+    Returns:
+        Whatever the underlying [`Runner.evaluate`][multimolecule.runner.Runner] returns.
+    """
     print_banner()
     config = prepare_config(config, training=False)
     runner = RUNNERS.build(config)
@@ -103,6 +155,17 @@ def evaluate(config: Config | None = None) -> Any:
 
 
 def infer(config: Config | None = None) -> Any:
+    r"""
+    Run inference and save predictions to `config.result_path` (defaults to `./result.json` with a warning).
+
+    Console-script entry point for `mminfer`.
+
+    Args:
+        config: Optional pre-built configuration; CLI overrides are still applied.
+
+    Returns:
+        Whatever the underlying [`Runner.infer`][multimolecule.runner.Runner] returns.
+    """
     print_banner()
     config = prepare_config(config, training=False)
     if "result_path" not in config:
