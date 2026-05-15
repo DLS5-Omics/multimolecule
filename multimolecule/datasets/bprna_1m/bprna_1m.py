@@ -23,29 +23,26 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
+from pathlib import Path
 
 import torch
 from tqdm import tqdm
 
+from multimolecule import io
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import get_files, save_dataset
 
 torch.manual_seed(1016)
 
 
-def convert_sta(file: str) -> Mapping:
-    with open(file) as f:
-        lines = f.read().splitlines()
-    idx = 0
-    while lines[idx].startswith("#"):
-        idx += 1
+def convert_sta(file: str | Path) -> dict:
+    record = io.read_st(file)
     return {
-        "id": lines[0][7:],
-        "sequence": lines[idx],
-        "secondary_structure": lines[idx + 1],
-        "structural_annotation": lines[idx + 2],
-        "functional_annotation": lines[idx + 3],
+        "id": record.id or Path(file).stem,
+        "sequence": record.sequence,
+        "secondary_structure": record.dot_bracket,
+        "structural_annotation": record.structure_array,
+        "functional_annotation": record.knot_array,
     }
 
 
