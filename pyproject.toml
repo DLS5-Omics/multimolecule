@@ -43,9 +43,8 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "accelerate",
   "chanfig>=0.0.105",
-  "danling[torch]>=0.3.11",
+  "danling[torch]>=0.4",
   "datasets",
   "pandas",
   "scipy",
