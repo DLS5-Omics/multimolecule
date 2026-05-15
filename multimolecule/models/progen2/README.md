@@ -244,8 +244,6 @@ The model was trained on Google TPU-v3 pods using JAX.
 
 ## Citation
 
-**BibTeX**:
-
 ```bibtex
 @ARTICLE{Nijkamp2023-jz,
   title     = "{ProGen2}: Exploring the boundaries of protein language models",
@@ -309,7 +307,7 @@ Please contact the authors of the [ProGen2 paper](https://doi.org/10.1016/j.cels
 
 ## License
 
-This model is licensed under the [GNU Affero General Public License](license.md).
+This model implementation is licensed under the [GNU Affero General Public License](license.md).
 
 For additional terms and clarifications, please refer to our [License FAQ](license-faq.md).
 

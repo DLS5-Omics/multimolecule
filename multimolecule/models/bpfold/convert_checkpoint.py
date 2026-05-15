@@ -65,7 +65,6 @@ def convert_checkpoint(convert_config) -> None:
                     new_vocab=vocab_list,
                     seed=1016,
                 )
-                value[vocab_list.index("N")] = value[vocab_list.index("U")]
             state_dict[f"members.{member_index}.{key}"] = value
 
     energy_path = Path(convert_config.energy_path)
