@@ -107,15 +107,9 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
         self.gradient_checkpointing = False
-        alphabet_size = len(get_alphabet().vocabulary)
-        if alphabet_size != config.vocab_size:
-            raise ValueError(
-                f"Vocab size in MultiMolecule RNA alphabet ({alphabet_size}) "
-                f"does not match the one in config ({config.vocab_size})"
-            )
         self.register_buffer(
             "pairwise_bias_map",
-            _build_pairwise_bias_map(config.pairwise_alpha),
+            _build_pairwise_bias_map(config.pairwise_alpha, config.vocab_size),
             persistent=False,
         )
         self.pairwise_bias_proj = ErnieRnaPairwiseBiasProjection(config)
@@ -151,7 +145,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
             # the real device is known.
             self.register_buffer(
                 "pairwise_bias_map",
-                _build_pairwise_bias_map(self.config.pairwise_alpha, device=input_ids.device),
+                _build_pairwise_bias_map(self.config.pairwise_alpha, self.config.vocab_size, device=input_ids.device),
                 persistent=False,
             )
             self._inited = True
@@ -1422,11 +1416,21 @@ def get_pairwise_bias_dict(alpha):
     )
 
 
-def _build_pairwise_bias_map(alpha: float, device: torch.device | None = None) -> Tensor:
+def _build_pairwise_bias_map(alpha: float, vocab_size: int, device: torch.device | None = None) -> Tensor:
     """Build the pairwise base-pairing bias matrix in MultiMolecule alphabet order."""
     tokens = get_alphabet().vocabulary
-    pairwise_bias_dict = get_pairwise_bias_dict(alpha)
-    return torch.tensor([[pairwise_bias_dict.get(f"{i}{j}", 0) for i in tokens] for j in tokens], device=device)
+    a_id, c_id, g_id, u_id = (tokens.index(token) for token in ("A", "C", "G", "U"))
+    if max(a_id, c_id, g_id, u_id) >= vocab_size:
+        raise ValueError(f"vocab_size={vocab_size} is too small for the canonical RNA token ids")
+    pairwise_bias = get_pairwise_bias_dict(alpha)
+    bias = torch.zeros((vocab_size, vocab_size), device=device)
+    bias[a_id, u_id] = pairwise_bias["AU"]
+    bias[u_id, a_id] = pairwise_bias["UA"]
+    bias[c_id, g_id] = pairwise_bias["CG"]
+    bias[g_id, c_id] = pairwise_bias["GC"]
+    bias[g_id, u_id] = pairwise_bias["GU"]
+    bias[u_id, g_id] = pairwise_bias["UG"]
+    return bias
 
 
 class ErnieRnaSoftsign(nn.Module):
