@@ -91,6 +91,15 @@ def test_st_roundtrip(tmp_path) -> None:
     assert out.structure_types["S"][0].strip() == "S1 1..2 3..4"
 
 
+def test_st_comma_wrapped_length_header(tmp_path) -> None:
+    path = tmp_path / "comma_length.st"
+    path.write_text("#Name: rna1\n#Length: ,4,\n#PageNumber: 1\nACGU\n(())\nSSSS\nNNNN\n")
+    out = io.read_st(path)
+    assert out.id == "rna1"
+    assert out.sequence == "ACGU"
+    assert out.dot_bracket == "(())"
+
+
 def test_sta_multiple_records(tmp_path) -> None:
     record = io.BpRnaRecord(
         sequence="ACGU",

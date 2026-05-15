@@ -24,12 +24,12 @@ from __future__ import annotations
 
 import os
 from collections import namedtuple
-from collections.abc import Mapping
 from pathlib import Path
 
 import torch
 from tqdm import tqdm
 
+from multimolecule import io
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import get_files, save_dataset
 
@@ -37,40 +37,15 @@ torch.manual_seed(1016)
 RNA_SS_data = namedtuple("RNA_SS_data", "seq ss_label length name pairs")
 
 
-def convert_bpseq(file) -> Mapping:
+def convert_bpseq(file: str | Path) -> dict:
     if not isinstance(file, Path):
         file = Path(file)
-    with open(file) as f:
-        lines = f.read().splitlines()
-
-    num_bases = len(lines)
-    sequence = []
-    dot_bracket = ["."] * num_bases
-    pairs = [-1] * num_bases
-
-    for line in lines:
-        parts = line.strip().split()
-        index = int(parts[0]) - 1
-        base = parts[1]
-        paired_index = int(parts[2]) - 1
-
-        sequence.append(base)
-
-        if paired_index >= 0:
-            if paired_index > index:
-                dot_bracket[index] = "("
-                dot_bracket[paired_index] = ")"
-            elif pairs[paired_index] != index:
-                raise ValueError(
-                    f"Inconsistent pairing: Base {index} is paired with {paired_index}, "
-                    f"but {paired_index} is not paired with {index}."
-                )
-            pairs[index] = paired_index
+    record = io.read_bpseq(file)
 
     return {
         "id": file.stem.split("-")[0],
-        "sequence": "".join(sequence).upper().replace("T", "U"),
-        "secondary_structure": "".join(dot_bracket),
+        "sequence": record.sequence.upper().replace("T", "U"),
+        "secondary_structure": record.dot_bracket,
     }
 
 
