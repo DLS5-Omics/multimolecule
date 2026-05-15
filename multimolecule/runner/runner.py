@@ -44,7 +44,7 @@ from transformers import AutoTokenizer
 
 from multimolecule import defaults
 from multimolecule.data import DATASETS, Dataset, no_collate
-from multimolecule.modules import MODELS, HeadConfig, MultiMoleculeModel
+from multimolecule.modules import MODELS, HeadConfig, ModelBase
 from multimolecule.tasks import Task
 
 from .config import Config
@@ -57,7 +57,7 @@ with try_import() as ema_import:
 @RUNNERS.register("multimolecule", default=True)
 class Runner(dl.Runner):
     config: Config
-    model: MultiMoleculeModel
+    model: ModelBase
     optimizer: Any
 
     def __init__(self, config: Config | Mapping[str, Any]) -> None:
@@ -67,7 +67,7 @@ class Runner(dl.Runner):
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.pretrained_name)
         self.datasets = self.build_datasets()
-        self.model = cast(MultiMoleculeModel, MODELS.build(**self.network))
+        self.model = cast(ModelBase, MODELS.build(**self.network))
         self._build_ema()
         self.train_metrics = self.build_metrics(mode="stream")
         self.evaluate_metrics = self.build_metrics(mode="global")
@@ -140,7 +140,7 @@ class Runner(dl.Runner):
         model = self.unwrap(self.model)
         if (
             pretrained_ratio is not None
-            and isinstance(model, MultiMoleculeModel)  # noqa: W503
+            and isinstance(model, ModelBase)  # noqa: W503
             and "lr" in optim_kwargs  # noqa: W503
             and "weight_decay" in optim_kwargs  # noqa: W503
         ):

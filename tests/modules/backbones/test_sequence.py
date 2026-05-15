@@ -10,14 +10,14 @@ from danling import NestedTensor
 from transformers import BertConfig
 
 from multimolecule.modules.heads import HeadConfig
-from multimolecule.modules.model import MultiMoleculeModel
+from multimolecule.modules.model import PolyModel
 
 
 class TestSequenceBackbone:
     def test_nested_tensor_sequence_to_contact_head(self):
         with tempfile.TemporaryDirectory() as tmp:
             BertConfig(vocab_size=16, hidden_size=8).save_pretrained(tmp)
-            model = MultiMoleculeModel(
+            model = PolyModel(
                 backbone={"type": "sequence", "sequence": {"type": "onehot", "pretrained": tmp}},
                 heads={"contact": HeadConfig(type="contact.logits.linear", num_labels=1, problem_type="binary")},
             ).eval()

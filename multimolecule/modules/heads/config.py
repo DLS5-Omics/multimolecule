@@ -68,7 +68,7 @@ class HeadConfig(BaseHeadConfig):
         type:
             The type of the head in the model.
 
-            This is used by [`MultiMoleculeModel`][multimolecule.MultiMoleculeModel] to construct heads.
+            This is used by [`PolyModel`][multimolecule.PolyModel] to construct heads.
         loss_weight:
             The weight to scale the loss.
 
