@@ -1,7 +1,7 @@
 # [MultiMolecule](https://multimolecule.danling.org)
 
 > [!TIP]
-> 机器学习加速分子生物学研究
+> 机器学习加速分子生物学研究。
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15119050.svg)](https://doi.org/10.5281/zenodo.15119050)
 
@@ -10,47 +10,71 @@
 [![CodeCov - 测试覆盖](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
 
 [![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule)
-[![PyPI - Python版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule)
+[![PyPI - Python 版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule)
 [![下载统计](https://static.pepy.tech/badge/multimolecule/month)](https://multimolecule.danling.org)
 
 [![授权：AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-## 介绍
+MultiMolecule 是面向分子机器学习的一站式生态。
+它把数据集、模型实现、可复用的数据集与神经网络模块、基于 DanLing 的训练评估 runner，以及面向任务的推理 pipeline 串联起来，服务 RNA、DNA 和蛋白质相关工作流。
 
-欢迎来到 MultiMolecule (浦原)，这是一款基础库，旨在通过机器学习加速分子生物学的科研进展。
-MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松利用 AI，主要聚焦于生物分子数据（RNA、DNA 和蛋白质）。
+## 快速开始
 
-## 概览
-
-MultiMolecule 以灵活性和易用性为设计核心。
-其模块化设计允许您根据需要仅使用所需的组件，并能无缝集成到现有的工作流程中，而不会增加不必要的复杂性。
-
-- [`data`](data)：智能的 [`Dataset`][multimolecule.data.Dataset]，能够自动推断任务，包括任务的层级（序列、令牌、接触）和类型（分类、回归）。还提供多任务数据集和采样器，简化多任务学习，无需额外配置。
-- [`datasets`](datasets)：广泛使用的生物分子数据集集合。
-- [`modules`](modules)：模块化神经网络构建块，包括[嵌入层](modules/embeddings)、[预测头](modules/heads)和损失函数，用于构建自定义模型。
-- [`models`](models)：分子生物学领域的最先进预训练模型实现。
-- [`tokenisers`](tokenisers)：用于将 DNA、RNA、蛋白质及其他序列转换为独热编码的分词器。
-<!-- - [`runner`](runner)：功能强大且可扩展的运行器，允许用户轻松进行模型微调、评估和预测。 -->
-
-## 安装
-
-从 PyPI 安装最新的稳定版本：
+从 PyPI 安装最新稳定版本：
 
 ```shell
 pip install multimolecule
 ```
 
-从源代码安装最新版本：
+通过 Hugging Face `transformers` 接口运行已注册的 pipeline：
+
+```python
+import multimolecule  # 注册 MultiMolecule 模型和 pipeline
+from transformers import pipeline
+
+predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
+result = predictor("AUCAGCCUUCGUUCUGUAAACGG")
+```
+
+需要更底层控制时，可以直接加载模型：
+
+```python
+import multimolecule
+
+model = multimolecule.AutoModelForSequencePrediction.from_pretrained("multimolecule/basset")
+tokenizer = multimolecule.AutoTokenizer.from_pretrained("multimolecule/basset")
+```
+
+如果需要未发布的最新修改，可以从源代码安装：
 
 ```shell
 pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ```
 
+## 浏览
+
+| 入口 | 用途 |
+| --- | --- |
+| [`data`](data) | 感知任务类型的数据集、数据加载和多任务采样。 |
+| [`datasets`](datasets) | 生物分子数据集与任务元数据。 |
+| [`io`](io) | FASTA、DBN、BPSEQ 和 bpRNA ST 读写。 |
+| [`models`](models) | 支持模型的模型卡与 API 参考。 |
+| [`tokenisers`](tokenisers) | DNA、RNA、蛋白质和 dot-bracket tokeniser。 |
+| [`pipelines`](pipelines) | 面向具体生物任务的推理流程。 |
+| [`runner`](runner) | 训练、评估和推理配置。 |
+| [`modules`](modules) | 可复用的神经网络构建模块。 |
+
+## 社区
+
+- [Discourse](https://multimolecule.discourse.group)：发布公告、使用问题、模型请求、RFC 和社区讨论。
+- [GitHub Issues](https://github.com/DLS5-Omics/multimolecule/issues)：可复现的错误、API 问题和需要工程跟踪的功能请求。
+- [Hugging Face](https://huggingface.co/multimolecule)：已发布的 checkpoint、数据集和演示 Space。
+
 ## 引用
 
 > [!NOTE]
 > 本仓库提供的内容是 MultiMolecule 项目的一部分。
-> 如果你在你的研究中使用 MultiMolecule，你必须以如下方式引用 MultiMolecule。
+> 如果 MultiMolecule 对你的研究有帮助，请按如下方式引用 MultiMolecule。
 
 ```bibtex
 @software{chen_2024_12638419,

@@ -1,7 +1,7 @@
 # [MultiMolecule](https://multimolecule.danling.org)
 
 > [!TIP]
-> Accelerate Molecular Biology Research with Machine Learning
+> Accelerate Molecular Biology Research with Machine Learning.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15119050.svg)](https://doi.org/10.5281/zenodo.15119050)
 
@@ -15,42 +15,66 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-## Introduction
+MultiMolecule is a one-stop ecosystem for molecular machine learning.
+It connects datasets, model implementations, reusable dataset and neural-network modules, the DanLing-based runner for training and evaluation, and task-oriented inference pipelines for RNA, DNA, and protein workflows.
 
-Welcome to MultiMolecule (浦原), a foundational library designed to accelerate scientific research in molecular biology through machine learning.
-MultiMolecule provides a comprehensive yet flexible set of tools for researchers aiming to leverage AI with ease, focusing on biomolecular data (RNA, DNA, and protein).
+## Get Started
 
-## Overview
-
-MultiMolecule is built with flexibility and ease of use in mind.
-Its modular design allows you to utilize only the components you need, integrating seamlessly into your existing workflows without adding unnecessary complexity.
-
-- [`data`](data): Smart [`Dataset`][multimolecule.data.Dataset] that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.
-- [`datasets`](datasets): A collection of widely-used biomolecular datasets.
-- [`modules`](modules): Modular neural network building blocks, including [embeddings](modules/embeddings), [heads](modules/heads), and criterions for constructing custom models.
-- [`models`](models): Implementation of state-of-the-art pre-trained models in molecular biology.
-- [`tokenisers`](tokenisers): Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.
-<!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->
-
-## Installation
-
-Install the most recent stable version on PyPI:
+Install the latest stable release from PyPI:
 
 ```shell
 pip install multimolecule
 ```
 
-Install the latest version from the source:
+Run a registered pipeline through the Hugging Face `transformers` interface:
+
+```python
+import multimolecule  # registers MultiMolecule models and pipelines
+from transformers import pipeline
+
+predictor = pipeline("rna-secondary-structure", model="multimolecule/ernierna-ss")
+result = predictor("AUCAGCCUUCGUUCUGUAAACGG")
+```
+
+Load models directly when you need lower-level control:
+
+```python
+import multimolecule
+
+model = multimolecule.AutoModelForSequencePrediction.from_pretrained("multimolecule/basset")
+tokenizer = multimolecule.AutoTokenizer.from_pretrained("multimolecule/basset")
+```
+
+Install the latest source version when you need unreleased changes:
 
 ```shell
 pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ```
 
+## Explore
+
+| Entry point | Use it for |
+| --- | --- |
+| [`data`](data) | Task-aware datasets, data loading, and multi-task sampling. |
+| [`datasets`](datasets) | Curated biomolecular datasets and task metadata. |
+| [`io`](io) | FASTA, DBN, BPSEQ, and bpRNA ST readers and writers. |
+| [`models`](models) | Model cards and API references for supported architectures. |
+| [`tokenisers`](tokenisers) | DNA, RNA, protein, and dot-bracket tokenisers. |
+| [`pipelines`](pipelines) | Task-focused inference workflows for supported biological tasks. |
+| [`runner`](runner) | Training, evaluation, and inference configuration. |
+| [`modules`](modules) | Reusable neural-network building blocks. |
+
+## Community
+
+- [Discourse](https://multimolecule.discourse.group): release announcements, usage questions, model requests, RFCs, and community discussion.
+- [GitHub Issues](https://github.com/DLS5-Omics/multimolecule/issues): reproducible bugs, API issues, and implementation-tracked feature requests.
+- [Hugging Face](https://huggingface.co/multimolecule): released checkpoints, datasets, and demo Spaces.
+
 ## Citation
 
 > [!NOTE]
 > The artifacts distributed in this repository are part of the MultiMolecule project.
-> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+> If MultiMolecule supports your research, please cite the MultiMolecule project as follows:
 
 ```bibtex
 @software{chen_2024_12638419,

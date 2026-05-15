@@ -1,0 +1,48 @@
+{% extends "main.html" %}
+
+{% block hero %}
+  {% set hero = page.meta.hero or {} %}
+  <script>document.documentElement.classList.add("mm-home-page")</script>
+  <section class="mm-hero">
+    <div class="md-grid mm-hero__inner">
+      <div class="mm-hero__content">
+        <p class="mm-hero__eyebrow">{{ hero.eyebrow }}</p>
+        <h1>{{ hero.title }}</h1>
+        <p class="mm-hero__description">{{ hero.description }}</p>
+        {% if page.meta.stats %}
+          <div class="mm-stats">
+            {% for stat in page.meta.stats %}
+              <div class="mm-stat">
+                <strong>{{ stat.value }}</strong>
+                <span>{{ stat.label }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="mm-hero__side">
+        <div class="mm-hero__visual" aria-hidden="true">
+          <img
+            class="mm-hero__fallback"
+            src="{{ 'assets/images/p53-dna-poster.webp' | url }}"
+            alt=""
+            loading="eager"
+          />
+          <div
+            class="mm-hero__viewer"
+            data-mm-p53-viewer
+            data-structure-url="{{ 'assets/structures/p53-dna-1tup.pdb' | url }}"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block container %}
+  <div class="md-content mm-home" data-md-component="content">
+    <article class="md-content__inner md-typeset">
+      {% include "partials/content.html" %}
+    </article>
+  </div>
+{% endblock %}

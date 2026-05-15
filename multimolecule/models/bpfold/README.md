@@ -127,7 +127,7 @@ BPfold was trained for RNA secondary structure prediction with base-pair motif e
 
 > [!NOTE]
 > The artifacts distributed in this repository are part of the MultiMolecule project.
-> If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:
+> If MultiMolecule supports your research, please cite the MultiMolecule project as follows:
 
 ```bibtex
 @software{chen_2024_12638419,
