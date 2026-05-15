@@ -294,7 +294,7 @@ class BpRnaRecord(RnaSecondaryStructureRecord):
         length_header = headers.get("length")
         if length_header:
             try:
-                expected = int(length_header)
+                expected = int("".join(ch for ch in length_header if ch.isdigit()))
             except ValueError as exc:
                 raise InvalidStructureFile(f"Invalid Length header in {path!s}") from exc
             if expected != len(sequence):
