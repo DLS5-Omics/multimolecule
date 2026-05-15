@@ -133,7 +133,7 @@ class RnaFmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        expected_vocab_size = 131 if codon else 26
+        expected_vocab_size = 131 if codon else 28
         if vocab_size is None:
             vocab_size = expected_vocab_size
         elif vocab_size != expected_vocab_size:

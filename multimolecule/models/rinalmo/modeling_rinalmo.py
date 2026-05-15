@@ -455,7 +455,7 @@ class RiNALMoForMaskedLM(RiNALMoPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -800,6 +800,7 @@ class RiNALMoAttention(nn.Module):
     ):
         super().__init__()
         self.is_cross_attention = is_cross_attention
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         attention_class = RiNALMoCrossAttention if is_cross_attention else RiNALMoSelfAttention
         self.self = attention_class(
             config,
@@ -808,7 +809,6 @@ class RiNALMoAttention(nn.Module):
             is_causal=is_causal,
         )
         self.output = RiNALMoSelfOutput(config)
-        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(
         self,

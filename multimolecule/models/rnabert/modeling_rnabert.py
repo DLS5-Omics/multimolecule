@@ -105,7 +105,6 @@ class RnaBertModel(RnaBertPreTrainedModel):
     def __init__(self, config: RnaBertConfig, add_pooling_layer: bool = True):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
-        self.gradient_checkpointing = False
         self.embeddings = RnaBertEmbeddings(config)
         self.encoder = RnaBertEncoder(config)
         self.pooler = RnaBertPooler(config) if add_pooling_layer else None
@@ -150,7 +149,7 @@ class RnaBertModel(RnaBertPreTrainedModel):
                 - 1 for tokens that are **not masked**,
                 - 0 for tokens that are **masked**.
             past_key_values:
-                Tuple of length `config.n_layers` with each tuple having 4 tensors of shape
+                tuple of length `config.num_hidden_layers` with each tuple having 4 tensors of shape
                 `(batch_size, num_heads, sequence_length - 1, embed_size_per_head)
 
                 Contains precomputed key and value hidden states of the attention blocks. Can be used to speed up
@@ -442,7 +441,7 @@ class RnaBertForMaskedLM(RnaBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -512,7 +511,7 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<MeanBackward0>)
         >>> output["logits_lm"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["logits_ss"].shape
         torch.Size([1, 7, 8])
         >>> output["logits_sa"].shape

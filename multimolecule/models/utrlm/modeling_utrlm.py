@@ -447,7 +447,7 @@ class UtrLmForMaskedLM(UtrLmPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -525,7 +525,7 @@ class UtrLmForPreTraining(UtrLmForMaskedLM):
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<MeanBackward0>)
         >>> output["logits_lm"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["logits_ss"].shape
         torch.Size([1, 5, 5, 1])
     """
@@ -582,7 +582,7 @@ class UtrLmForPreTraining(UtrLmForMaskedLM):
         logits_ss, loss_ss = output_ss.logits, output_ss.loss
 
         if self.structure_head is not None:
-            output_structure = self.structure_head(outputs, labels=labels_structure)
+            output_structure = self.structure_head(outputs, attention_mask, input_ids, labels=labels_structure)
             logits_structure, loss_structure = output_structure.logits, output_structure.loss
         else:
             logits_structure, loss_structure = None, None
@@ -874,6 +874,7 @@ class UtrLmAttention(nn.Module):
     ):
         super().__init__()
         self.is_cross_attention = is_cross_attention
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         attention_class = UtrLmCrossAttention if is_cross_attention else UtrLmSelfAttention
         self.self = attention_class(
             config,
@@ -882,7 +883,6 @@ class UtrLmAttention(nn.Module):
             is_causal=is_causal,
         )
         self.output = UtrLmSelfOutput(config)
-        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(
         self,

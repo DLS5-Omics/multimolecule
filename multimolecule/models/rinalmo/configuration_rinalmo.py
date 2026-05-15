@@ -109,7 +109,7 @@ class RiNALMoConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size: int = 26,
+        vocab_size: int = 28,
         hidden_size: int = 1280,
         num_hidden_layers: int = 33,
         num_attention_heads: int = 20,

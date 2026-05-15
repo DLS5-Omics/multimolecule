@@ -388,7 +388,7 @@ class RnaMsmForMaskedLM(RnaMsmPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -463,7 +463,7 @@ class RnaMsmForPreTraining(RnaMsmForMaskedLM):
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<MeanBackward0>)
         >>> output["logits_lm"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["logits_ss"].shape
         torch.Size([1, 5, 5, 1])
     """

@@ -40,7 +40,7 @@ class CaLmConfig(PreTrainedConfig):
         vocab_size:
             Vocabulary size of the CaLM model. Defines the number of different tokens that can be represented by the
             `input_ids` passed when calling [`CaLmModel`].
-            Defaults to 131 if `codon=True` else 26.
+            Defaults to 131 if `codon=True` else 28.
         codon:
             Whether to use codon tokenization.
         hidden_size:
@@ -125,7 +125,7 @@ class CaLmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        expected_vocab_size = 131 if codon else 26
+        expected_vocab_size = 131 if codon else 28
         if vocab_size is None:
             vocab_size = expected_vocab_size
         elif vocab_size != expected_vocab_size:

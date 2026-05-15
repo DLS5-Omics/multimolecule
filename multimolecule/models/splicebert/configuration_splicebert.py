@@ -95,7 +95,7 @@ class SpliceBertConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size: int = 26,
+        vocab_size: int = 28,
         hidden_size: int = 512,
         num_hidden_layers: int = 6,
         num_attention_heads: int = 16,

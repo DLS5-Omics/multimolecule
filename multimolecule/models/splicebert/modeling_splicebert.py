@@ -439,7 +439,7 @@ class SpliceBertForMaskedLM(SpliceBertPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -543,7 +543,7 @@ class SpliceBertEmbeddings(nn.Module):
             inputs_embeds = self.word_embeddings(input_ids)
 
         # RNA models do not use token_type_ids
-        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=self.position_ids.device)
+        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=inputs_embeds.device)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
 
         embeddings = inputs_embeds + token_type_embeddings

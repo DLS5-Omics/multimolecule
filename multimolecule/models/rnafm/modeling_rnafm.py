@@ -109,7 +109,6 @@ class RnaFmModel(RnaFmPreTrainedModel):
     def __init__(self, config: RnaFmConfig, add_pooling_layer: bool = True):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
-        self.gradient_checkpointing = False
         self.embeddings = RnaFmEmbeddings(config)
         self.encoder = RnaFmEncoder(config)
         self.pooler = RnaFmPooler(config) if add_pooling_layer else None
@@ -154,7 +153,7 @@ class RnaFmModel(RnaFmPreTrainedModel):
                 - 1 for tokens that are **not masked**,
                 - 0 for tokens that are **masked**.
             past_key_values:
-                Tuple of length `config.n_layers` with each tuple having 4 tensors of shape
+                tuple of length `config.num_hidden_layers` with each tuple having 4 tensors of shape
                 `(batch_size, num_heads, sequence_length - 1, embed_size_per_head)
 
                 Contains precomputed key and value hidden states of the attention blocks. Can be used to speed up
@@ -447,7 +446,7 @@ class RnaFmForMaskedLM(RnaFmPreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -525,7 +524,7 @@ class RnaFmForPreTraining(RnaFmForMaskedLM):
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<MeanBackward0>)
         >>> output["logits_lm"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["logits_ss"].shape
         torch.Size([1, 5, 5, 1])
     """
@@ -600,6 +599,10 @@ class RnaFmForSecondaryStructurePrediction(RnaFmForPreTraining):
         >>> output["logits"].shape
         torch.Size([1, 5, 5, 1])
     """
+
+    # Note: inherits from RnaFmForPreTraining (rather than RnaFmPreTrainedModel directly) to retain
+    # `lm_head` in the state dict. The published rnafm-ss checkpoint was saved with lm_head weights
+    # present; changing the inheritance would break checkpoint loading.
 
     def __init__(self, config: RnaFmConfig):
         super().__init__(config)

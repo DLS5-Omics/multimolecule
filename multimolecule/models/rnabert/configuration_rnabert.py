@@ -98,7 +98,7 @@ class RnaBertConfig(PreTrainedConfig):
 
     def __init__(
         self,
-        vocab_size: int = 26,
+        vocab_size: int = 28,
         ss_vocab_size: int = 8,
         hidden_size: int | None = None,
         multiple: int | None = None,

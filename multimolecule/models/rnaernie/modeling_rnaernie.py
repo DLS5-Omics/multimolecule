@@ -102,7 +102,6 @@ class RnaErnieModel(RnaErniePreTrainedModel):
     def __init__(self, config: RnaErnieConfig, add_pooling_layer: bool = True):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
-        self.gradient_checkpointing = False
 
         self.embeddings = RnaErnieEmbeddings(config)
         self.encoder = RnaErnieEncoder(config)
@@ -441,7 +440,7 @@ class RnaErnieForMaskedLM(RnaErniePreTrainedModel):
         >>> input = tokenizer("ACGUN", return_tensors="pt")
         >>> output = model(**input, labels=input["input_ids"])
         >>> output["logits"].shape
-        torch.Size([1, 7, 26])
+        torch.Size([1, 7, 28])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<NllLossBackward0>)
     """
@@ -519,7 +518,11 @@ class RnaErnieForPreTraining(RnaErnieForMaskedLM):
 
 
 class RnaErnieEmbeddings(nn.Module):
-    """Construct the embeddings from word, position and token_type embeddings."""
+    """Construct the embeddings from word, position and token_type embeddings.
+
+    Note: ``token_type_ids`` is always hard-coded to all-zeros because RNA sequences
+    have no token types (segment A/B distinction does not apply).
+    """
 
     def __init__(self, config: RnaErnieConfig):
         super().__init__()
