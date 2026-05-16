@@ -21,13 +21,15 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Any, Dict, Literal, cast
 from warnings import warn
 
 import torch
 from transformers.pipelines.base import GenericTensor, Pipeline, PipelineException
 
 from multimolecule.utils import contact_map_to_dot_bracket
+
+Matching = Literal["greedy", "blossom"]
 
 
 class RnaSecondaryStructurePipeline(Pipeline):
@@ -59,6 +61,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
 
     threshold: float = 0.5
     output_contact_map: bool = False
+    matching: Matching = "greedy"
 
     def preprocess(
         self, inputs, return_tensors=None, tokenizer_kwargs=None, **preprocess_parameters
@@ -96,11 +99,20 @@ class RnaSecondaryStructurePipeline(Pipeline):
         contact_map = contact_map.sigmoid()
         return contact_map
 
-    def postprocess(self, model_outputs, threshold: float | None = None, output_contact_map: bool | None = None):
+    def postprocess(
+        self,
+        model_outputs,
+        threshold: float | None = None,
+        output_contact_map: bool | None = None,
+        matching: str | None = None,
+    ):
         if threshold is None:
             threshold = self.threshold
         if output_contact_map is None:
             output_contact_map = self.output_contact_map
+        if matching is None:
+            matching = self.matching
+        matching = cast(Matching, matching)
 
         input_ids = model_outputs["input_ids"]
         if hasattr(self.model, "postprocess"):
@@ -123,7 +135,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
             contact_map = contact_map[: len(sequence), : len(sequence)]
             if not postprocessed:
                 contact_map = self._postprocess(contact_map)
-            dot_bracket = contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold)
+            dot_bracket = contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold, matching=matching)
             ret = {"sequence": sequence, "secondary_structure": dot_bracket}
             if output_contact_map:
                 ret["contact_map"] = contact_map.detach().cpu().numpy()
@@ -137,7 +149,9 @@ class RnaSecondaryStructurePipeline(Pipeline):
                 contact_map = self._postprocess(contact_map)
             result = {
                 "sequence": sequence,
-                "secondary_structure": contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold),
+                "secondary_structure": contact_map_to_dot_bracket(
+                    contact_map, unsafe=True, threshold=threshold, matching=matching
+                ),
             }
             if output_contact_map:
                 result["contact_map"] = contact_map.detach().cpu().numpy()
@@ -145,14 +159,18 @@ class RnaSecondaryStructurePipeline(Pipeline):
         return results
 
     def _sanitize_parameters(
-        self, threshold: float | None = None, output_contact_map: bool | None = None, tokenizer_kwargs=None
+        self,
+        threshold: float | None = None,
+        output_contact_map: bool | None = None,
+        matching: str | None = None,
+        tokenizer_kwargs=None,
     ):
         preprocess_params = {}
 
         if tokenizer_kwargs is not None:
             preprocess_params["tokenizer_kwargs"] = tokenizer_kwargs
 
-        postprocess_params = {}
+        postprocess_params: dict[str, Any] = {}
 
         if threshold is not None:
             postprocess_params["threshold"] = threshold
@@ -176,9 +194,24 @@ class RnaSecondaryStructurePipeline(Pipeline):
                     f"output_contact_map must be a boolean, but got {type(output_contact_map)}.",
                 )
             postprocess_params["output_contact_map"] = output_contact_map
+        if matching is not None:
+            if matching not in ("greedy", "blossom"):
+                raise PipelineException(
+                    "rna-secondary-structure",
+                    self.model.base_model_prefix,
+                    f"matching must be 'greedy' or 'blossom', but got {matching!r}.",
+                )
+            postprocess_params["matching"] = cast(Matching, matching)
         return preprocess_params, {}, postprocess_params
 
-    def __init__(self, *args, threshold: float | None = None, output_contact_map: bool | None = None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        threshold: float | None = None,
+        output_contact_map: bool | None = None,
+        matching: str | None = None,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         if not isinstance(self.model, torch.nn.Module):
             raise NotImplementedError("Only PyTorch is supported for RNA secondary structure prediction.")
@@ -206,6 +239,14 @@ class RnaSecondaryStructurePipeline(Pipeline):
                     f"output_contact_map must be a boolean, but got {type(output_contact_map)}.",
                 )
             self.output_contact_map = output_contact_map
+        if matching is not None:
+            if matching not in ("greedy", "blossom"):
+                raise PipelineException(
+                    "rna-secondary-structure",
+                    self.model.base_model_prefix,
+                    f"matching must be 'greedy' or 'blossom', but got {matching!r}.",
+                )
+            self.matching = cast(Matching, matching)
 
     def __call__(self, inputs, **kwargs):
         """
@@ -220,6 +261,8 @@ class RnaSecondaryStructurePipeline(Pipeline):
             output_contact_map (`bool`, *optional*):
                 Whether to output the contact map along with the secondary structure. If not provided, the default is
                 `False`.
+            matching (`str`, *optional*):
+                Conflict resolver for bases with multiple candidate partners: `"greedy"` (default) or `"blossom"`.
 
         Return:
             `dict` or `List[dict]`:

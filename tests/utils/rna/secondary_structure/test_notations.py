@@ -78,6 +78,8 @@ def test_notations_type_errors() -> None:
         notations.pairs_to_contact_map(object())
     with pytest.raises(TypeError):
         notations.contact_map_to_pairs(object())
+    with pytest.raises(ValueError, match="matching"):
+        notations.contact_map_to_pairs([[0, 1], [1, 0]], matching="exact")
     torch_map = torch.tensor([[0, 1, 0], [0, 0, 1], [1, 0, 0]], dtype=torch.int)
     np_map = np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]], dtype=int)
     assert notations.contact_map_to_pairs(torch_map, unsafe=True).shape[1] == 2
@@ -268,6 +270,24 @@ def test_contact_map_to_pairs_float_multiple_pairings_unsafe(backend: str) -> No
     with pytest.warns(UserWarning, match="Multiple pairings"):
         pairs = notations.contact_map_to_pairs(contact_map, unsafe=True)
     assert as_tuple_list(pairs) == [(0, 1)]
+
+
+def test_contact_map_to_pairs_float_blossom_matching(backend: str) -> None:
+    contact_map = make_contact_map(
+        [
+            [0.0, 0.9, 0.8, 0.0],
+            [0.9, 0.0, 0.0, 0.8],
+            [0.8, 0.0, 0.0, 0.0],
+            [0.0, 0.8, 0.0, 0.0],
+        ],
+        backend,
+        dtype=float,
+    )
+    with pytest.warns(UserWarning, match="Multiple pairings"):
+        greedy = notations.contact_map_to_pairs(contact_map, unsafe=True, matching="greedy")
+        blossom = notations.contact_map_to_pairs(contact_map, unsafe=True, matching="blossom")
+    assert as_tuple_list(greedy) == [(0, 1)]
+    assert as_tuple_list(blossom) == [(0, 2), (1, 3)]
 
 
 def test_contact_map_to_pairs_float_upper_only_unsafe(backend: str) -> None:

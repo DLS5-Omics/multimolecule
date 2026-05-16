@@ -22,9 +22,10 @@
 
 from enum import IntEnum
 
+import pytest
 import torch
 
-from multimolecule.utils.graph import DirectedGraph, UndirectedGraph
+from multimolecule.graph import DirectedGraph, EdgeTable, UndirectedGraph
 
 
 class EdgeType(IntEnum):
@@ -59,6 +60,14 @@ def test_directed_kind_filters_and_multi_edges():
     assert g.successors(0, edge_type=EdgeType.PK) == [2]
 
 
+def test_mixed_feature_edges_are_rejected():
+    g = UndirectedGraph()
+    g.add_edge(0, 1, {"type": torch.tensor(EdgeType.PAIR)})
+
+    with pytest.raises(ValueError, match="feature must be provided"):
+        g.add_edge(1, 2)
+
+
 def test_edge_attr_pruned_on_remove():
     g = UndirectedGraph()
     g.add_edge(0, 1, {"type": torch.tensor(EdgeType.PAIR)})
@@ -67,16 +76,46 @@ def test_edge_attr_pruned_on_remove():
     assert g.edge_features is None or all(tensor.numel() == 0 for tensor in g.edge_features.values())
 
 
+def test_edge_table_inplace_prune_is_explicit():
+    table = EdgeTable(
+        edge_index=torch.tensor([[0, 1], [1, 2]]),
+        features={"type": torch.tensor([EdgeType.PAIR, EdgeType.BACKBONE])},
+    )
+
+    table.prune_(torch.tensor([True, False]))
+
+    assert not hasattr(table, "prune")
+    assert table.edge_index.tolist() == [[0, 1]]
+    assert table.features is not None
+    assert table.features["type"].tolist() == [EdgeType.PAIR]
+
+
 def test_edge_ids_subgraph_and_coalesce():
     g = UndirectedGraph(allow_multi_edges=True)
     g.add_edge(0, 1, {"type": torch.tensor(EdgeType.PAIR)})
     g.add_edge(0, 1, {"type": torch.tensor(EdgeType.PAIR)})
     g.add_edge(1, 2, {"type": torch.tensor(EdgeType.BACKBONE)})
 
-    assert g.edge_ids(edge_type=EdgeType.PAIR) == [0, 1]
-    sub = g.subgraph_by_edge_mask(torch.tensor([True, False, True]))
+    assert g.edge_indices(edge_type=EdgeType.PAIR) == [0, 1]
+    sub = g.edge_subgraph(torch.tensor([True, False, True]))
     assert sub.edge_list() == [(0, 1), (1, 2)]
 
     g.coalesce()
     assert g.edge_list() == [(0, 1), (1, 2)]
-    assert g.edge_ids(edge_type=EdgeType.PAIR) == [0]
+    assert g.edge_indices(edge_type=EdgeType.PAIR) == [0]
+
+
+def test_path_component_methods_are_explicit_only():
+    undirected = UndirectedGraph()
+    undirected.add_edges([(0, 1), (1, 2)])
+    is_path, path = undirected.is_path_component([0, 1, 2])
+    assert is_path
+    assert path == [0, 1, 2]
+    assert not hasattr(undirected, "is_path")
+
+    directed = DirectedGraph()
+    directed.add_edges([(0, 1), (1, 2), (2, 0)])
+    assert directed.is_path_component([0, 1, 2])
+    assert not hasattr(directed, "is_path")
+    assert not hasattr(directed, "get_next_pair")
+    assert not hasattr(directed, "get_prev_pair")
