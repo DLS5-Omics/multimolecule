@@ -21,6 +21,7 @@
 
 
 import numpy as np
+import pytest
 import torch
 
 from multimolecule.pipelines.rna_secondary_structure import RnaSecondaryStructurePipeline
@@ -89,3 +90,13 @@ def test_postprocess_single_returns_dict():
     assert result["secondary_structure"] == "(.)"
     assert isinstance(result["contact_map"], np.ndarray)
     assert result["contact_map"].shape == (3, 3)
+
+
+def test_sanitize_matching_parameter():
+    pipeline = _make_pipeline()
+
+    _, _, postprocess_params = pipeline._sanitize_parameters(matching="blossom")
+
+    assert postprocess_params["matching"] == "blossom"
+    with pytest.raises(Exception, match="matching"):
+        pipeline._sanitize_parameters(matching="exact")

@@ -22,8 +22,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterable, List, Sequence, Set, Tuple
+from typing import Any
 
 import torch
 
@@ -32,48 +33,45 @@ import torch
 class EdgeTable:
     """Edge index plus aligned feature tensors."""
 
-    index: torch.Tensor
-    features: Dict[str, torch.Tensor] | None = None
+    edge_index: torch.Tensor
+    features: dict[str, torch.Tensor] | None = None
 
     def __post_init__(self) -> None:
-        if self.index.numel() == 0:
-            self.index = self.index.view(0, 2).long()
-        if self.index.dim() != 2 or self.index.shape[1] != 2:
-            raise ValueError(f"edge index must be (E,2); got shape {tuple(self.index.shape)}")
+        if self.edge_index.numel() == 0:
+            self.edge_index = self.edge_index.view(0, 2).long()
+        if self.edge_index.dim() != 2 or self.edge_index.shape[1] != 2:
+            raise ValueError(f"edge index must be (E,2); got shape {tuple(self.edge_index.shape)}")
         if self.features is not None:
-            edge_count = self.index.shape[0]
+            edge_count = self.edge_index.shape[0]
             for key, tensor in self.features.items():
                 if tensor.shape[0] != edge_count:
                     raise ValueError(f"edge feature {key} has length {tensor.shape[0]} != edge_count {edge_count}")
 
     @classmethod
     def empty(cls, device: torch.device | None = None) -> EdgeTable:
-        return cls(index=torch.empty((0, 2), dtype=torch.long, device=device), features=None)
+        return cls(edge_index=torch.empty((0, 2), dtype=torch.long, device=device), features=None)
 
     @property
     def num_edges(self) -> int:
         return len(self)
 
     def to(self, device: torch.device) -> None:
-        self.index = self.index.to(device)
+        self.edge_index = self.edge_index.to(device)
         if self.features is not None:
             for key, tensor in self.features.items():
                 self.features[key] = tensor.to(device)
 
-    def append(self, edge_index: torch.Tensor, feature: Dict[str, Any] | None) -> None:
+    def append(self, edge_index: torch.Tensor, feature: dict[str, Any] | None) -> None:
         """Append a single edge with optional features."""
-        edge_index = edge_index.view(1, 2).to(self.index.device, dtype=torch.long)
-        self.index = torch.cat([self.index, edge_index], dim=0)
+        edge_index = edge_index.view(1, 2).to(self.edge_index.device, dtype=torch.long)
+        self.edge_index = torch.cat([self.edge_index, edge_index], dim=0)
         if feature is None:
             if self.features is None:
                 return
-            for key, tensor in self.features.items():
-                filler = torch.zeros((1,) + tensor.shape[1:], dtype=tensor.dtype, device=tensor.device)
-                self.features[key] = torch.cat([tensor, filler], dim=0)
-            return
-        normalized: Dict[str, torch.Tensor] = {}
+            raise ValueError("feature must be provided when appending to an EdgeTable with existing features")
+        normalized: dict[str, torch.Tensor] = {}
         for k, v in feature.items():
-            t = torch.as_tensor(v, device=self.index.device)
+            t = torch.as_tensor(v, device=self.edge_index.device)
             if t.dim() == 0 or t.shape[0] != 1:
                 t = t.unsqueeze(0)
             normalized[k] = t
@@ -87,7 +85,7 @@ class EdgeTable:
         for key, tensor in normalized.items():
             self.features[key] = torch.cat([self.features[key], tensor.to(self.features[key].device)], dim=0)
 
-    def extend(self, edge_indices: Iterable[torch.Tensor], features: Iterable[Dict[str, Any] | None] | None) -> None:
+    def extend(self, edge_indices: Iterable[torch.Tensor], features: Iterable[dict[str, Any] | None] | None) -> None:
         if features is None:
             for edge_idx in edge_indices:
                 self.append(edge_idx, None)
@@ -99,21 +97,22 @@ class EdgeTable:
         for edge_idx, feat in zip(edge_list, feat_list):
             self.append(edge_idx, feat)
 
-    def prune(self, mask: torch.Tensor) -> None:
-        self.index = self.index[mask]
+    def prune_(self, mask: torch.Tensor) -> None:
+        """In-place keep only edges where mask is True."""
+        self.edge_index = self.edge_index[mask]
         if self.features is None:
             return
         for key, tensor in self.features.items():
             self.features[key] = tensor[mask]
 
-    def subset(self, mask: torch.Tensor) -> EdgeTable:
+    def masked_select(self, mask: torch.Tensor) -> EdgeTable:
         new_features = None
         if self.features is not None:
             new_features = {k: v[mask] for k, v in self.features.items()}
-        return EdgeTable(index=self.index[mask], features=new_features)
+        return EdgeTable(edge_index=self.edge_index[mask], features=new_features)
 
     def __len__(self) -> int:
-        return len(self.index)
+        return len(self.edge_index)
 
 
 class _BaseGraph:
@@ -125,13 +124,13 @@ class _BaseGraph:
     def __init__(
         self,
         edge_index: torch.Tensor | None = None,
-        nodes: Set[int] | None = None,
+        nodes: set[int] | None = None,
         device: torch.device | None = None,
-        edge_features: Dict[str, torch.Tensor] | None = None,
+        edge_features: dict[str, torch.Tensor] | None = None,
         allow_multi_edges: bool = False,
     ):
         self._edges = (
-            EdgeTable(index=edge_index, features=edge_features)
+            EdgeTable(edge_index=edge_index, features=edge_features)
             if edge_index is not None
             else EdgeTable.empty(device=device)
         )
@@ -140,10 +139,10 @@ class _BaseGraph:
 
     @property
     def edge_index(self) -> torch.Tensor:
-        return self._edges.index
+        return self._edges.edge_index
 
     @property
-    def edge_features(self) -> Dict[str, torch.Tensor] | None:
+    def edge_features(self) -> dict[str, torch.Tensor] | None:
         return self._edges.features
 
     @property
@@ -189,7 +188,7 @@ class _BaseGraph:
             mask = mask & type_mask
         return mask
 
-    def edge_ids(self, edge_type: int | None = None) -> List[int]:
+    def edge_indices(self, edge_type: int | None = None) -> list[int]:
         """Return edge indices (row ids) matching the requested type."""
         mask = self.edge_mask(edge_type)
         return torch.nonzero(mask, as_tuple=False).reshape(-1).tolist()
@@ -201,7 +200,7 @@ class _BaseGraph:
         mask_same = (self.edge_index[:, 0] == a) & (self.edge_index[:, 1] == b)
         return bool(torch.any(mask_same))
 
-    def add_edge(self, u: int, v: int, attr: Dict[str, Any] | None = None) -> None:
+    def add_edge(self, u: int, v: int, attr: dict[str, Any] | None = None) -> None:
         u, v = self._canonical_edge(u, v)
         self.add_nodes((u, v))
         if not self.allow_self_loops and u == v:
@@ -213,8 +212,8 @@ class _BaseGraph:
 
     def add_edges(
         self,
-        edges: Iterable[Tuple[int, int]],
-        attrs: Iterable[Dict[str, Any] | None] | None = None,
+        edges: Iterable[tuple[int, int]],
+        attrs: Iterable[dict[str, Any] | None] | None = None,
     ) -> None:
         """Add multiple edges, optionally with attributes; skips duplicates unless multi-edges are allowed."""
         if attrs is None:
@@ -228,18 +227,18 @@ class _BaseGraph:
         for (u, v), attr in zip(edge_list, attr_list):
             self.add_edge(u, v, attr=attr)
 
-    def _canonical_edge(self, u: int, v: int) -> Tuple[int, int]:
+    def _canonical_edge(self, u: int, v: int) -> tuple[int, int]:
         """Canonicalize edge representation; overridden by undirected graphs."""
         return int(u), int(v)
 
-    def reindex_nodes(self, mapping: Dict[int, int]) -> None:
+    def reindex_nodes(self, mapping: dict[int, int]) -> None:
         """Relabel nodes and update edges in-place according to a mapping."""
         if not mapping:
             return
         idx = self.edge_index.clone()
         for src, dst in mapping.items():
             idx[idx == int(src)] = int(dst)
-        self._edges.index = idx
+        self._edges.edge_index = idx
         self.nodes = {mapping.get(n, n) for n in self.nodes}
 
     def coalesce(self) -> None:
@@ -256,16 +255,16 @@ class _BaseGraph:
                 seen.add(key)
                 keep_mask.append(True)
         keep = torch.tensor(keep_mask, dtype=torch.bool, device=self.edge_index.device)
-        self._edges = self._edges.subset(keep)
+        self._edges = self._edges.masked_select(keep)
 
-    def subgraph_by_edge_mask(self, mask: torch.Tensor) -> _BaseGraph:
+    def edge_subgraph(self, mask: torch.Tensor) -> _BaseGraph:
         """Create a new graph containing only edges where mask is True."""
-        new_edges = self._edges.subset(mask)
+        new_edges = self._edges.masked_select(mask)
         new_nodes = set(self.nodes)
-        if new_edges.index.numel() > 0:
-            new_nodes.update(set(torch.unique(new_edges.index).tolist()))
+        if new_edges.edge_index.numel() > 0:
+            new_nodes.update(set(torch.unique(new_edges.edge_index).tolist()))
         return self.__class__(
-            edge_index=new_edges.index,
+            edge_index=new_edges.edge_index,
             nodes=new_nodes,
             edge_features=new_edges.features,
             allow_multi_edges=self.allow_multi_edges,
@@ -277,11 +276,12 @@ class UndirectedGraph(_BaseGraph):
 
     Nodes are identified by integer ids. Edges are stored as an (E, 2) torch.LongTensor
     with (u, v) where u <= v. A separate node set tracks isolated vertices.
+    Neighbor lookups scan the edge table and are O(E).
     """
 
     allow_self_loops = False
 
-    def _canonical_edge(self, u: int, v: int) -> Tuple[int, int]:
+    def _canonical_edge(self, u: int, v: int) -> tuple[int, int]:
         a, b = (int(u), int(v))
         return (a, b) if a <= b else (b, a)
 
@@ -289,10 +289,10 @@ class UndirectedGraph(_BaseGraph):
         node = int(node)
         if self.edge_index.numel() > 0:
             mask = (self.edge_index[:, 0] != node) & (self.edge_index[:, 1] != node)
-            self._edges.prune(mask)
+            self._edges.prune_(mask)
         self.nodes.discard(node)
 
-    def neighbors(self, node: int, edge_type: int | None = None) -> List[int]:
+    def neighbors(self, node: int, edge_type: int | None = None) -> list[int]:
         node = int(node)
         neigh = set()
         if self.edge_index.numel() > 0:
@@ -308,7 +308,7 @@ class UndirectedGraph(_BaseGraph):
                 neigh.update(self.edge_index[mask & mask1, 0].tolist())
         return sorted(neigh)
 
-    def edge_list(self, edge_type: int | None = None) -> List[Tuple[int, int]]:
+    def edge_list(self, edge_type: int | None = None) -> list[tuple[int, int]]:
         if self.edge_index.numel() == 0:
             return []
         mask = torch.ones(self.edge_index.shape[0], dtype=torch.bool, device=self.edge_index.device)
@@ -321,9 +321,9 @@ class UndirectedGraph(_BaseGraph):
     def degree(self, node: int) -> int:
         return len(self.neighbors(node))
 
-    def degree_by_type(self, node: int) -> Dict[int, int]:
+    def degree_by_type(self, node: int) -> dict[int, int]:
         """Return degree counts split by edge type (when type feature exists)."""
-        counts: Dict[int, int] = {}
+        counts: dict[int, int] = {}
         if self.edge_features is None or "type" not in self.edge_features:
             counts[0] = self.degree(node)
             return counts
@@ -332,7 +332,7 @@ class UndirectedGraph(_BaseGraph):
             counts[int(edge_type)] = len(self.neighbors(node, edge_type=edge_type))
         return counts
 
-    def _all_nodes(self) -> List[int]:
+    def _all_nodes(self) -> list[int]:
         if self.nodes:
             return sorted(self.nodes)
         if self.edge_index.numel() == 0:
@@ -340,16 +340,16 @@ class UndirectedGraph(_BaseGraph):
         vals = torch.unique(self.edge_index).tolist()
         return sorted(int(v) for v in vals)
 
-    def connected_components(self) -> List[List[int]]:
+    def connected_components(self) -> list[list[int]]:
         """Return connected components with deterministic (sorted) ordering."""
-        comps: List[List[int]] = []
+        comps: list[list[int]] = []
         all_nodes = sorted(self._all_nodes())
-        visited: Set[int] = set()
+        visited: set[int] = set()
         for start in all_nodes:
             if start in visited:
                 continue
             stack = [start]
-            comp: List[int] = []
+            comp: list[int] = []
             while stack:
                 v = stack.pop()
                 if v in visited:
@@ -369,15 +369,15 @@ class UndirectedGraph(_BaseGraph):
         mask = (torch.isin(self.edge_index[:, 0], torch.tensor(list(node_set), device=self.edge_index.device))) & (
             torch.isin(self.edge_index[:, 1], torch.tensor(list(node_set), device=self.edge_index.device))
         )
-        new_edges = self._edges.subset(mask)
+        new_edges = self._edges.masked_select(mask)
         return UndirectedGraph(
-            edge_index=new_edges.index,
+            edge_index=new_edges.edge_index,
             nodes=set(node_set),
             edge_features=new_edges.features,
             allow_multi_edges=self.allow_multi_edges,
         )
 
-    def is_path_component(self, component: Sequence[int]) -> Tuple[bool, List[int]]:
+    def is_path_component(self, component: Sequence[int]) -> tuple[bool, list[int]]:
         """Check whether the given component induces a simple path in this undirected graph."""
         if len(component) == 1:
             return False, []
@@ -402,15 +402,14 @@ class UndirectedGraph(_BaseGraph):
             return False, []
         return True, path
 
-    def is_path(self, component: Sequence[int]) -> Tuple[bool, List[int]]:
-        """Alias for is_path_component for backward compatibility."""
-        return self.is_path_component(component)
-
 
 class DirectedGraph(_BaseGraph):
-    """Minimal directed graph helper backed by torch edge indices."""
+    """Minimal directed graph helper backed by torch edge indices.
 
-    def successors(self, node: int, edge_type: int | None = None) -> List[int]:
+    Successor and predecessor lookups scan the edge table and are O(E).
+    """
+
+    def successors(self, node: int, edge_type: int | None = None) -> list[int]:
         node = int(node)
         if self.edge_index.numel() == 0:
             return []
@@ -420,7 +419,7 @@ class DirectedGraph(_BaseGraph):
             mask = mask & type_mask
         return sorted(set(self.edge_index[mask, 1].tolist())) if torch.any(mask) else []
 
-    def predecessors(self, node: int, edge_type: int | None = None) -> List[int]:
+    def predecessors(self, node: int, edge_type: int | None = None) -> list[int]:
         node = int(node)
         if self.edge_index.numel() == 0:
             return []
@@ -440,7 +439,7 @@ class DirectedGraph(_BaseGraph):
             g.add_edges(self.edge_index.tolist(), attrs=attrs)
         return g
 
-    def connected_components(self) -> List[List[int]]:
+    def connected_components(self) -> list[list[int]]:
         """Return weakly connected components (via an undirected view)."""
         return self.undirected().connected_components()
 
@@ -456,20 +455,16 @@ class DirectedGraph(_BaseGraph):
         # Last node must also have a successor (reject open-ended paths).
         return len(self.successors(path[-1])) > 0
 
-    def is_path(self, component: Sequence[int]) -> bool:
-        """Alias for is_path_component for backward compatibility."""
-        return self.is_path_component(component)
-
-    def walk_successor_path(self, start: int) -> List[int]:
+    def walk_successor_path(self, start: int) -> list[int]:
         """
         Walk a successor-only path starting at ``start`` until a branch, cycle, or dead end.
 
         Returns the visited node sequence (including ``start``). Stops when out-degree != 1
         or the next node was already visited.
         """
-        path: List[int] = []
+        path: list[int] = []
         current = int(start)
-        visited: Set[int] = set()
+        visited: set[int] = set()
         while True:
             path.append(current)
             visited.add(current)
@@ -481,31 +476,3 @@ class DirectedGraph(_BaseGraph):
                 break
             current = nxt
         return path
-
-    def get_next_pair(
-        self,
-        i: int,
-        bp: Dict[int, int],
-        last_pos: int,
-        skip_predicate: Callable[[int], bool] | None = None,
-    ) -> int:
-        """Return next paired index after i, or -1 if none; skip_predicate allows filtering (e.g., knots)."""
-        skip = skip_predicate or (lambda _pos: False)
-        for n in range(i + 1, last_pos + 1):
-            if not skip(n) and bp.get(n) is not None:
-                return n
-        return -1
-
-    def get_prev_pair(
-        self,
-        j: int,
-        bp: Dict[int, int],
-        first_pos: int,
-        skip_predicate: Callable[[int], bool] | None = None,
-    ) -> int:
-        """Return previous paired index before j, or -1 if none; skip_predicate allows filtering (e.g., knots)."""
-        skip = skip_predicate or (lambda _pos: False)
-        for p in range(j - 1, first_pos - 1, -1):
-            if not skip(p) and bp.get(p) is not None:
-                return p
-        return -1
