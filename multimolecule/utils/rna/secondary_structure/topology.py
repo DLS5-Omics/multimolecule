@@ -31,7 +31,8 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from ...graph import DirectedGraph, UndirectedGraph
+from multimolecule.graph import DirectedGraph, UndirectedGraph
+
 from .noncanonical import noncanonical_pairs as noncanonical_pairs
 from .notations import dot_bracket_to_pairs
 from .pairs import (

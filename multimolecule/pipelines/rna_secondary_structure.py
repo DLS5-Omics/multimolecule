@@ -21,13 +21,15 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Any, Dict, Literal, cast
 from warnings import warn
 
 import torch
 from transformers.pipelines.base import GenericTensor, Pipeline, PipelineException
 
 from multimolecule.utils import contact_map_to_dot_bracket
+
+Matching = Literal["greedy", "blossom"]
 
 
 class RnaSecondaryStructurePipeline(Pipeline):
@@ -59,6 +61,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
 
     threshold: float = 0.5
     output_contact_map: bool = False
+    matching: Matching = "greedy"
 
     def preprocess(
         self, inputs, return_tensors=None, tokenizer_kwargs=None, **preprocess_parameters
@@ -84,46 +87,69 @@ class RnaSecondaryStructurePipeline(Pipeline):
             )
         return model_outputs
 
-    def _postprocess(self, contact_map: GenericTensor) -> GenericTensor:
-        if contact_map.ndim == 3:
-            contact_map = contact_map.squeeze(-1)
-        if contact_map.ndim != 2:
+    def _postprocess(self, logits: GenericTensor) -> GenericTensor:
+        """Convert pre-activation pairing `logits` to a [0, 1] contact map: mask the diagonal, then sigmoid.
+
+        Applied only to `logits`/`logits_ss` outputs; `contact_map` outputs are already post-sigmoid.
+        """
+        if logits.ndim == 3:
+            logits = logits.squeeze(-1)
+        if logits.ndim != 2:
             raise ValueError(
                 "Expected a 2D contact map of shape (L, L) or a 3D tensor of shape (L, L, 1), "
-                f"but got shape {tuple(contact_map.shape)}."
+                f"but got shape {tuple(logits.shape)}."
             )
-        contact_map.fill_diagonal_(torch.finfo(contact_map.dtype).min)
-        contact_map = contact_map.sigmoid()
-        return contact_map
+        logits.fill_diagonal_(torch.finfo(logits.dtype).min)
+        return logits.sigmoid()
 
-    def postprocess(self, model_outputs, threshold: float | None = None, output_contact_map: bool | None = None):
+    def postprocess(
+        self,
+        model_outputs,
+        threshold: float | None = None,
+        output_contact_map: bool | None = None,
+        matching: str | None = None,
+    ):
         if threshold is None:
             threshold = self.threshold
         if output_contact_map is None:
             output_contact_map = self.output_contact_map
+        if matching is None:
+            matching = self.matching
+        matching = cast(Matching, matching)
 
         input_ids = model_outputs["input_ids"]
+        # Output contract for RNA secondary-structure models:
+        #   * `contact_map` (and whatever `model.postprocess` returns) is already in probability space [0, 1]
+        #     and is used as-is;
+        #   * `logits` / `logits_ss` are pre-activation pairing scores and must be passed through a sigmoid.
         if hasattr(self.model, "postprocess"):
-            outputs = self.model.postprocess(outputs=model_outputs, input_ids=input_ids).squeeze(-1)
-            postprocessed = True
+            outputs = self.model.postprocess(outputs=model_outputs, input_ids=input_ids)
+            is_logits = False
+        elif model_outputs.get("contact_map") is not None:
+            outputs = model_outputs["contact_map"]
+            is_logits = False
+        elif model_outputs.get("logits_ss") is not None:
+            outputs = model_outputs["logits_ss"]
+            is_logits = True
+        elif model_outputs.get("logits") is not None:
+            outputs = model_outputs["logits"]
+            is_logits = True
         else:
-            if "logits_ss" in model_outputs:
-                outputs = model_outputs["logits_ss"]
-            elif "logits" in model_outputs:
-                outputs = model_outputs["logits"]
-            else:
-                raise PipelineException(
-                    "rna-secondary-structure", self.model.base_model_prefix, "Unable to find logits in model outputs."
-                )
-            postprocessed = False
+            raise PipelineException(
+                "rna-secondary-structure",
+                self.model.base_model_prefix,
+                "Unable to find a contact map or logits in model outputs.",
+            )
+        if outputs.ndim == 4 and outputs.shape[-1] == 1:
+            outputs = outputs.squeeze(-1)
 
         if len(input_ids) == 1:
             sequence = self.tokenizer.decode(input_ids.squeeze(0), skip_special_tokens=True).replace(" ", "")
             contact_map = outputs.squeeze(0)
             contact_map = contact_map[: len(sequence), : len(sequence)]
-            if not postprocessed:
+            if is_logits:
                 contact_map = self._postprocess(contact_map)
-            dot_bracket = contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold)
+            dot_bracket = contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold, matching=matching)
             ret = {"sequence": sequence, "secondary_structure": dot_bracket}
             if output_contact_map:
                 ret["contact_map"] = contact_map.detach().cpu().numpy()
@@ -133,11 +159,13 @@ class RnaSecondaryStructurePipeline(Pipeline):
         results = []
         for sequence, contact_map in zip(sequences, outputs):
             contact_map = contact_map[: len(sequence), : len(sequence)]
-            if not postprocessed:
+            if is_logits:
                 contact_map = self._postprocess(contact_map)
             result = {
                 "sequence": sequence,
-                "secondary_structure": contact_map_to_dot_bracket(contact_map, unsafe=True, threshold=threshold),
+                "secondary_structure": contact_map_to_dot_bracket(
+                    contact_map, unsafe=True, threshold=threshold, matching=matching
+                ),
             }
             if output_contact_map:
                 result["contact_map"] = contact_map.detach().cpu().numpy()
@@ -145,14 +173,18 @@ class RnaSecondaryStructurePipeline(Pipeline):
         return results
 
     def _sanitize_parameters(
-        self, threshold: float | None = None, output_contact_map: bool | None = None, tokenizer_kwargs=None
+        self,
+        threshold: float | None = None,
+        output_contact_map: bool | None = None,
+        matching: str | None = None,
+        tokenizer_kwargs=None,
     ):
         preprocess_params = {}
 
         if tokenizer_kwargs is not None:
             preprocess_params["tokenizer_kwargs"] = tokenizer_kwargs
 
-        postprocess_params = {}
+        postprocess_params: dict[str, Any] = {}
 
         if threshold is not None:
             postprocess_params["threshold"] = threshold
@@ -176,9 +208,24 @@ class RnaSecondaryStructurePipeline(Pipeline):
                     f"output_contact_map must be a boolean, but got {type(output_contact_map)}.",
                 )
             postprocess_params["output_contact_map"] = output_contact_map
+        if matching is not None:
+            if matching not in ("greedy", "blossom"):
+                raise PipelineException(
+                    "rna-secondary-structure",
+                    self.model.base_model_prefix,
+                    f"matching must be 'greedy' or 'blossom', but got {matching!r}.",
+                )
+            postprocess_params["matching"] = cast(Matching, matching)
         return preprocess_params, {}, postprocess_params
 
-    def __init__(self, *args, threshold: float | None = None, output_contact_map: bool | None = None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        threshold: float | None = None,
+        output_contact_map: bool | None = None,
+        matching: str | None = None,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         if not isinstance(self.model, torch.nn.Module):
             raise NotImplementedError("Only PyTorch is supported for RNA secondary structure prediction.")
@@ -206,6 +253,14 @@ class RnaSecondaryStructurePipeline(Pipeline):
                     f"output_contact_map must be a boolean, but got {type(output_contact_map)}.",
                 )
             self.output_contact_map = output_contact_map
+        if matching is not None:
+            if matching not in ("greedy", "blossom"):
+                raise PipelineException(
+                    "rna-secondary-structure",
+                    self.model.base_model_prefix,
+                    f"matching must be 'greedy' or 'blossom', but got {matching!r}.",
+                )
+            self.matching = cast(Matching, matching)
 
     def __call__(self, inputs, **kwargs):
         """
@@ -220,6 +275,8 @@ class RnaSecondaryStructurePipeline(Pipeline):
             output_contact_map (`bool`, *optional*):
                 Whether to output the contact map along with the secondary structure. If not provided, the default is
                 `False`.
+            matching (`str`, *optional*):
+                Conflict resolver for bases with multiple candidate partners: `"greedy"` (default) or `"blossom"`.
 
         Return:
             `dict` or `List[dict]`:
