@@ -63,6 +63,7 @@ nav:
           - 3UTRBERT: models/utrbert.md
           - UTR-LM: models/utrlm.md
       - Protein:
+          - AMPLIFY: models/amplify.md
           - ProGen2: models/progen2.md
       - utils:
           - configuration_utils: models/configuration_utils.md
