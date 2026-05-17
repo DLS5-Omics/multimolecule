@@ -24,6 +24,13 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 from .data import Dataset
 from .graph import maximum_weight_matching
 from .models import (
+    AmplifyConfig,
+    AmplifyForContactPrediction,
+    AmplifyForMaskedLM,
+    AmplifyForPreTraining,
+    AmplifyForSequencePrediction,
+    AmplifyForTokenPrediction,
+    AmplifyModel,
     AutoModelForContactPrediction,
     AutoModelForProfilePrediction,
     AutoModelForRnaSecondaryStructurePrediction,
@@ -307,6 +314,13 @@ __all__ = [
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
     "validate_attention_dimensions",
+    "AmplifyConfig",
+    "AmplifyModel",
+    "AmplifyForContactPrediction",
+    "AmplifyForSequencePrediction",
+    "AmplifyForTokenPrediction",
+    "AmplifyForMaskedLM",
+    "AmplifyForPreTraining",
     "BpfoldConfig",
     "BpfoldModel",
     "BpfoldForRnaSecondaryStructurePrediction",
