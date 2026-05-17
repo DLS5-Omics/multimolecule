@@ -93,6 +93,33 @@ class TestRotaryEmbedding:
         expected = torch.tensor([[-3.0, -4.0, 1.0, 2.0]])
         assert torch.allclose(x_rotated, expected)
 
+    def test_interleaved_rotate_half_function(self):
+        x = torch.tensor([[1.0, 2.0, 3.0, 4.0]])
+        x_rotated = RotaryEmbedding.rotate_half(x, interleaved=True)
+        expected = torch.tensor([[-2.0, 1.0, -4.0, 3.0]])
+        assert torch.allclose(x_rotated, expected)
+
+    def test_interleaved_matches_complex_pair_rotation(self):
+        embedding_dim = 8
+        seq_length = 5
+        rotary_emb = RotaryEmbedding(embedding_dim, interleaved=True)
+
+        q = torch.randn(2, 3, seq_length, embedding_dim)
+        k = torch.randn(2, 3, seq_length, embedding_dim)
+        q_rot, k_rot = rotary_emb(q, k)
+
+        inv_freq = 1.0 / (10000.0 ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim))
+        freqs = torch.outer(torch.arange(seq_length).float(), inv_freq)
+        freqs_cis = torch.polar(torch.ones_like(freqs), freqs)
+        while freqs_cis.ndim < q.ndim:
+            freqs_cis = freqs_cis.unsqueeze(0)
+
+        q_expected = torch.view_as_real(torch.view_as_complex(q.float().reshape(*q.shape[:-1], -1, 2)) * freqs_cis)
+        k_expected = torch.view_as_real(torch.view_as_complex(k.float().reshape(*k.shape[:-1], -1, 2)) * freqs_cis)
+
+        assert torch.allclose(q_rot, q_expected.flatten(-2), atol=1e-6)
+        assert torch.allclose(k_rot, k_expected.flatten(-2), atol=1e-6)
+
     def test_position_relationships(self):
         seq_length = 8
         embedding_dim = 64
@@ -144,6 +171,26 @@ class TestRotaryEmbedding:
 
         assert torch.allclose(q_rot_fp16.float(), q_rot_fp32, atol=3e-3, rtol=1e-2)
         assert torch.allclose(k_rot_fp16.float(), k_rot_fp32, atol=3e-3, rtol=1e-2)
+
+    @pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
+    def test_preserves_input_dtype(self, dtype: torch.dtype):
+        """A default (fp32-table) module fed low-precision inputs must return that input dtype.
+
+        This is the production path: every consumer builds ``RotaryEmbedding(head_dim)``
+        with the default fp32 ``dtype`` for table stability, then runs the model in
+        bf16/fp16. Rotary must not leak fp32 into q/k, otherwise q/k mismatch v at the
+        attention kernel.
+        """
+        embedding_dim = 8
+        rotary_emb = RotaryEmbedding(embedding_dim, interleaved=True)
+        assert rotary_emb.inv_freq.dtype == torch.float32
+
+        q = torch.randn(1, 1, 5, embedding_dim, dtype=dtype)
+        k = torch.randn(1, 1, 5, embedding_dim, dtype=dtype)
+        q_rot, k_rot = rotary_emb(q, k)
+
+        assert q_rot.dtype == dtype
+        assert k_rot.dtype == dtype
 
     @pytest.mark.parametrize("scale", [1.0, 2.0, 4.0, 0.5])
     def test_scale(self, scale: float):
