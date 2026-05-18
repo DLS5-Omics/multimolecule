@@ -38,6 +38,10 @@ class AutoModelForContactPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
 
 
+class AutoModelForProfilePrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
 class AutoModelForRnaSecondaryStructurePrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
 
@@ -47,4 +51,20 @@ class AutoModelForSpliceSitePrediction(_BaseAutoModelClass):
 
 
 class AutoModelForSpliceVariantEffectPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForRegulatoryActivityPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForRegulatoryTrackPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForRegulatoryProfilePrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForRegulatoryVariantEffectPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
