@@ -44,3 +44,11 @@ class AutoModelForProfilePrediction(_BaseAutoModelClass):
 
 class AutoModelForRnaSecondaryStructurePrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForSpliceSitePrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForSpliceVariantEffectPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
