@@ -12,6 +12,7 @@ cyclin
 datas
 gir
 ine
+mane
 manuel
 marz
 ser

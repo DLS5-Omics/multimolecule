@@ -172,6 +172,7 @@ READMEs should follow existing MultiMolecule conventions:
 - The license section should state the MultiMolecule AGPL-3.0-or-later license for fully rewritten model implementations.
 - Describe training hardware and training details in the same style as existing READMEs.
 - Keep internal ensemble/checkpoint-member details out of downstream-facing documentation unless they affect user behavior.
+- Use a TIP admonition only when checkpoint parity has been confirmed; use WARNING when parity is not confirmed or reproducibility risk remains. Do not describe internal parity scripts or test mechanics in downstream-facing README text.
 - Add a model page under `docs/docs/models/` and register it in `docs/mkdocs.yml` when the model is part of the public docs.
 
 ## Review Checklist
