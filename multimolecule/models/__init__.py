@@ -94,6 +94,12 @@ from .modeling_auto import (
     AutoModelForSpliceVariantEffectPrediction,
     AutoModelForTokenPrediction,
 )
+from .openspliceai import (
+    OpenSpliceAiConfig,
+    OpenSpliceAiForTokenPrediction,
+    OpenSpliceAiModel,
+    OpenSpliceAiPreTrainedModel,
+)
 from .progen2 import (
     ProGen2Config,
     ProGen2ForCausalLM,
@@ -255,6 +261,10 @@ __all__ = [
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",
     "HyenaDnaForTokenPrediction",
+    "OpenSpliceAiConfig",
+    "OpenSpliceAiModel",
+    "OpenSpliceAiPreTrainedModel",
+    "OpenSpliceAiForTokenPrediction",
     "ProGen2Config",
     "ProGen2Model",
     "ProGen2ForSequencePrediction",
