@@ -109,6 +109,7 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
+from .hal import HalConfig, HalForSequencePrediction, HalModel, HalModelOutput, HalPreTrainedModel
 from .hyenadna import (
     HyenaDnaConfig,
     HyenaDnaForCausalLM,
@@ -334,6 +335,11 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "HalConfig",
+    "HalModel",
+    "HalModelOutput",
+    "HalPreTrainedModel",
+    "HalForSequencePrediction",
     "HyenaDnaConfig",
     "HyenaDnaModel",
     "HyenaDnaModelOutput",
