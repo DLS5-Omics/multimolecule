@@ -109,6 +109,13 @@ from .modeling_auto import (
     AutoModelForSpliceVariantEffectPrediction,
     AutoModelForTokenPrediction,
 )
+from .mtsplice import (
+    MtSpliceConfig,
+    MtSpliceForSequencePrediction,
+    MtSpliceModel,
+    MtSpliceModelOutput,
+    MtSplicePreTrainedModel,
+)
 from .openspliceai import (
     OpenSpliceAiConfig,
     OpenSpliceAiForTokenPrediction,
@@ -291,6 +298,11 @@ __all__ = [
     "MmSpliceModelOutput",
     "MmSplicePreTrainedModel",
     "MmSpliceForSequencePrediction",
+    "MtSpliceConfig",
+    "MtSpliceModel",
+    "MtSpliceModelOutput",
+    "MtSplicePreTrainedModel",
+    "MtSpliceForSequencePrediction",
     "OpenSpliceAiConfig",
     "OpenSpliceAiModel",
     "OpenSpliceAiPreTrainedModel",
