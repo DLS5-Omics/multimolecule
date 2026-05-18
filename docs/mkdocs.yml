@@ -53,6 +53,7 @@ nav:
           - BPfold: models/bpfold.md
           - CaLM: models/calm.md
           - ERNIE-RNA: models/ernierna.md
+          - MMSplice: models/mmsplice.md
           - RibonanzaNet: models/ribonanzanet.md
           - RiNALMo: models/rinalmo.md
           - RNABERT: models/rnabert.md
