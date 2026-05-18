@@ -158,6 +158,15 @@ from .openspliceai import (
     OpenSpliceAiStageConfig,
     OpenSpliceAiTokenPredictorOutput,
 )
+from .pangolin import (
+    PangolinConfig,
+    PangolinForTokenPrediction,
+    PangolinModel,
+    PangolinModelOutput,
+    PangolinPreTrainedModel,
+    PangolinStageConfig,
+    PangolinTokenPredictorOutput,
+)
 from .progen2 import (
     ProGen2Config,
     ProGen2ForCausalLM,
@@ -384,6 +393,13 @@ __all__ = [
     "OpenSpliceAiPreTrainedModel",
     "OpenSpliceAiForTokenPrediction",
     "OpenSpliceAiTokenPredictorOutput",
+    "PangolinConfig",
+    "PangolinStageConfig",
+    "PangolinModel",
+    "PangolinModelOutput",
+    "PangolinPreTrainedModel",
+    "PangolinForTokenPrediction",
+    "PangolinTokenPredictorOutput",
     "ProGen2Config",
     "ProGen2Model",
     "ProGen2ForSequencePrediction",
