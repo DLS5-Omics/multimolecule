@@ -93,6 +93,14 @@ from .maxentscan import (
     MaxEntScanModel,
     MaxEntScanPreTrainedModel,
 )
+from .mmsplice import (
+    MmSpliceConfig,
+    MmSpliceForSequencePrediction,
+    MmSpliceModel,
+    MmSpliceModelOutput,
+    MmSpliceModuleConfig,
+    MmSplicePreTrainedModel,
+)
 from .modeling_auto import (
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
@@ -277,6 +285,12 @@ __all__ = [
     "MaxEntScanModel",
     "MaxEntScanPreTrainedModel",
     "MaxEntScanForSequencePrediction",
+    "MmSpliceConfig",
+    "MmSpliceModuleConfig",
+    "MmSpliceModel",
+    "MmSpliceModelOutput",
+    "MmSplicePreTrainedModel",
+    "MmSpliceForSequencePrediction",
     "OpenSpliceAiConfig",
     "OpenSpliceAiModel",
     "OpenSpliceAiPreTrainedModel",
