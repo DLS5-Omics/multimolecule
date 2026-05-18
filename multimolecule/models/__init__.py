@@ -90,6 +90,8 @@ from .modeling_auto import (
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSequencePrediction,
+    AutoModelForSpliceSitePrediction,
+    AutoModelForSpliceVariantEffectPrediction,
     AutoModelForTokenPrediction,
 )
 from .progen2 import (
@@ -201,6 +203,8 @@ __all__ = [
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
+    "AutoModelForSpliceSitePrediction",
+    "AutoModelForSpliceVariantEffectPrediction",
     "validate_attention_dimensions",
     "AmplifyConfig",
     "AmplifyModel",
