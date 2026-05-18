@@ -46,6 +46,7 @@ nav:
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md
           - HyenaDNA: models/hyenadna.md
+          - OpenSpliceAI: models/openspliceai.md
       - RNA:
           - BPfold: models/bpfold.md
           - CaLM: models/calm.md

@@ -3,11 +3,13 @@ cyclin
 datas
 gir
 ine
+mane
 manuel
 marz
 ser
 transferrable
 wass
+MANE
 SorY
 SHS
 TE
