@@ -48,6 +48,7 @@ nav:
           - HAL: models/hal.md
           - HyenaDNA: models/hyenadna.md
           - MaxEntScan: models/maxentscan.md
+          - MTSplice: models/mtsplice.md
           - OpenSpliceAI: models/openspliceai.md
       - RNA:
           - BPfold: models/bpfold.md
