@@ -24,7 +24,11 @@ from transformers import AutoConfig, AutoModel, AutoModelForTokenClassification,
 
 from multimolecule.tokenisers import RnaTokenizer
 
-from ..modeling_auto import AutoModelForTokenPrediction
+from ..modeling_auto import (
+    AutoModelForSpliceSitePrediction,
+    AutoModelForSpliceVariantEffectPrediction,
+    AutoModelForTokenPrediction,
+)
 from .configuration_spliceai import SpliceAiConfig, SpliceAiStageConfig
 from .modeling_spliceai import (
     SpliceAiForTokenPrediction,
@@ -48,5 +52,7 @@ __all__ = [
 AutoConfig.register("spliceai", SpliceAiConfig)
 AutoModel.register(SpliceAiConfig, SpliceAiModel)
 AutoModelForTokenPrediction.register(SpliceAiConfig, SpliceAiForTokenPrediction)
+AutoModelForSpliceSitePrediction.register(SpliceAiConfig, SpliceAiForTokenPrediction)
+AutoModelForSpliceVariantEffectPrediction.register(SpliceAiConfig, SpliceAiForTokenPrediction)
 AutoModelForTokenClassification.register(SpliceAiConfig, SpliceAiForTokenPrediction)
 AutoTokenizer.register(SpliceAiConfig, RnaTokenizer)
