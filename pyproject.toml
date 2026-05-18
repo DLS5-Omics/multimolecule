@@ -65,6 +65,9 @@ scripts.mmtrain = "multimolecule.api.run:train"
 [tool.setuptools.packages.find]
 include = [ "multimolecule*" ]
 
+[tool.setuptools.package-data]
+"multimolecule.models.maxentscan" = [ "*.txt" ]
+
 [tool.setuptools_scm]
 write_to = "multimolecule/_version.py"
 
