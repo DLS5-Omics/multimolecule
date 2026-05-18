@@ -50,6 +50,7 @@ nav:
           - MaxEntScan: models/maxentscan.md
           - MTSplice: models/mtsplice.md
           - OpenSpliceAI: models/openspliceai.md
+          - Pangolin: models/pangolin.md
       - RNA:
           - BPfold: models/bpfold.md
           - CaLM: models/calm.md
