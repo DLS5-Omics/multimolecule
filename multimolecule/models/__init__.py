@@ -209,6 +209,16 @@ from .splicebert import (
     SpliceBertModel,
 )
 from .spotrna import SpotRnaConfig, SpotRnaForRnaSecondaryStructurePrediction, SpotRnaModel
+from .sptransformer import (
+    SpTransformerAttentionMap,
+    SpTransformerConfig,
+    SpTransformerFeatureEncoderConfig,
+    SpTransformerForTokenPrediction,
+    SpTransformerModel,
+    SpTransformerModelOutput,
+    SpTransformerPreTrainedModel,
+    SpTransformerTokenPredictorOutput,
+)
 from .ufold import UfoldConfig, UfoldForRnaSecondaryStructurePrediction, UfoldModel
 from .utrbert import (
     UtrBertConfig,
@@ -325,6 +335,14 @@ __all__ = [
     "PangolinPreTrainedModel",
     "PangolinForTokenPrediction",
     "PangolinTokenPredictorOutput",
+    "SpTransformerConfig",
+    "SpTransformerFeatureEncoderConfig",
+    "SpTransformerModel",
+    "SpTransformerModelOutput",
+    "SpTransformerAttentionMap",
+    "SpTransformerPreTrainedModel",
+    "SpTransformerForTokenPrediction",
+    "SpTransformerTokenPredictorOutput",
     "ProGen2Config",
     "ProGen2Model",
     "ProGen2ForSequencePrediction",

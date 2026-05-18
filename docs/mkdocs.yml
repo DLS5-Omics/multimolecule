@@ -51,6 +51,7 @@ nav:
           - MTSplice: models/mtsplice.md
           - OpenSpliceAI: models/openspliceai.md
           - Pangolin: models/pangolin.md
+          - SpTransformer: models/sptransformer.md
       - RNA:
           - BPfold: models/bpfold.md
           - CaLM: models/calm.md
