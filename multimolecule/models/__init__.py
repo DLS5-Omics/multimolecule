@@ -32,6 +32,7 @@ from .amplify import (
     AmplifyForTokenPrediction,
     AmplifyModel,
 )
+from .basset import BassetConfig, BassetForSequencePrediction, BassetModel, BassetPreTrainedModel
 from .bpfold import BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction, BpfoldModel
 from .calm import (
     CaLmConfig,
@@ -274,6 +275,10 @@ __all__ = [
     "AmplifyForTokenPrediction",
     "AmplifyForMaskedLM",
     "AmplifyForPreTraining",
+    "BassetConfig",
+    "BassetModel",
+    "BassetPreTrainedModel",
+    "BassetForSequencePrediction",
     "BpfoldConfig",
     "BpfoldModel",
     "BpfoldForRnaSecondaryStructurePrediction",
