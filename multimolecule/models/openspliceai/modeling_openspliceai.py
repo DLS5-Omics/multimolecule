@@ -163,6 +163,27 @@ class OpenSpliceAiForTokenPrediction(OpenSpliceAiPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_labels == 3:
+            return ["no_splice", "acceptor", "donor"]
+        return [f"label_{index}" for index in range(self.config.num_labels)]
+
+    def postprocess(self, outputs: OpenSpliceAiTokenPredictorOutput | ModelOutput | Tensor) -> tuple[Tensor, list[str]]:
+        r"""
+        Return OpenSpliceAI splice-site probabilities with semantic channel names.
+
+        Args:
+            outputs: The output of
+                [`OpenSpliceAiForTokenPrediction`][multimolecule.models.OpenSpliceAiForTokenPrediction], or its
+                `logits` tensor.
+
+        Returns:
+            A tuple of `(scores, channels)`, where `scores` is softmax-normalized over splice-site classes.
+        """
+        logits = outputs if isinstance(outputs, Tensor) else outputs["logits"]
+        return logits.softmax(dim=-1), self.output_channels
+
     @can_return_tuple
     def forward(
         self,
