@@ -27,6 +27,8 @@ from chanfig import FlatDict
 from ...modules import HeadConfig
 from ..configuration_utils import PreTrainedConfig
 
+DEFAULT_TISSUE_NAMES = ("heart", "liver", "brain", "testis")
+
 
 class PangolinStageConfig(FlatDict):
     r"""
@@ -86,6 +88,9 @@ class PangolinConfig(PreTrainedConfig):
             Number of tissue-specific model groups. The official release predicts four tissues (heart, liver, brain,
             testis), each with a splice-site score (2 channels) and a splice-site usage score (1 channel), for a total
             of `num_tissues * 3` upstream output channels.
+        tissue_names:
+            Names for the tissue-specific output groups. Defaults to the official Pangolin v2 tissue order: heart,
+            liver, brain, and testis.
         num_labels:
             Number of output labels for the [`TokenPredictionHead`]. Defaults to 4, one per-base splice-site usage
             value per tissue.
@@ -119,6 +124,7 @@ class PangolinConfig(PreTrainedConfig):
         batch_norm_momentum: float = 0.1,
         num_ensemble: int = 3,
         num_tissues: int = 4,
+        tissue_names: list[str] | None = None,
         num_labels: int = 4,
         head: HeadConfig | None = None,
         problem_type: str | None = "regression",
@@ -154,6 +160,7 @@ class PangolinConfig(PreTrainedConfig):
         self.batch_norm_momentum = batch_norm_momentum
         self.num_ensemble = num_ensemble
         self.num_tissues = num_tissues
+        self.tissue_names = _resolve_tissue_names(num_tissues, tissue_names)
         self.problem_type = problem_type
         if head is None:
             head = HeadConfig(num_labels=num_labels, hidden_size=hidden_size, problem_type=problem_type)
@@ -170,6 +177,16 @@ class PangolinConfig(PreTrainedConfig):
             raise ValueError(f"context must be a positive even integer, got {context}.")
         if min(num_ensemble, num_tissues, num_labels) <= 0:
             raise ValueError("num_ensemble, num_tissues, and num_labels must be positive.")
+        if len(self.tissue_names) != num_tissues:
+            raise ValueError(f"Expected {num_tissues} tissue names, got {len(self.tissue_names)}.")
         for index, stage in enumerate(self.stages):
             if min(stage.num_blocks, stage.kernel_size, stage.dilation) <= 0:
                 raise ValueError(f"Stage {index} has non-positive block, kernel, or dilation values: {stage}.")
+
+
+def _resolve_tissue_names(num_tissues: int, tissue_names: list[str] | None) -> list[str]:
+    if tissue_names is not None:
+        return [str(name) for name in tissue_names]
+    names = list(DEFAULT_TISSUE_NAMES[:num_tissues])
+    names.extend(f"tissue_{index}" for index in range(len(names), num_tissues))
+    return names

@@ -106,6 +106,15 @@ class MaxEntScanPreTrainedModel(PreTrainedModel):
                 return tensor.dtype
         return torch.float32
 
+    @property
+    def device(self) -> torch.device:
+        # MaxEntScan has no `nn.Parameter`; the base `PreTrainedModel.device` iterates
+        # `self.parameters()` and raises `StopIteration` for a parameter-free model. Fall back
+        # to the device of the first score-table buffer.
+        for tensor in self.buffers():
+            return tensor.device
+        return torch.device("cpu")
+
 
 class MaxEntScanModel(MaxEntScanPreTrainedModel):
     """
