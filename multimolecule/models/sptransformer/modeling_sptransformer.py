@@ -113,6 +113,31 @@ class SpTransformerModel(SpTransformerPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_splice_labels == 3:
+            splice_channels = ["no_splice", "acceptor", "donor"]
+        else:
+            splice_channels = [f"splice_label_{index}" for index in range(self.config.num_splice_labels)]
+        return splice_channels + list(self.config.tissue_names)
+
+    def postprocess(self, outputs: SpTransformerModelOutput | ModelOutput | Tensor) -> tuple[Tensor, list[str]]:
+        r"""
+        Return SpTransformer splice-site probabilities and tissue-usage scores with semantic channel names.
+
+        Args:
+            outputs: The output of [`SpTransformerModel`][multimolecule.models.SpTransformerModel], or its `logits`
+                tensor.
+
+        Returns:
+            A tuple of `(scores, channels)`. The splice-site channels are softmax-normalized; tissue-usage channels
+            are returned in the model's native scale.
+        """
+        logits = outputs if isinstance(outputs, Tensor) else outputs["logits"]
+        splice = logits[..., : self.config.num_splice_labels].softmax(dim=-1)
+        usage = logits[..., self.config.num_splice_labels : self.config.num_splice_labels + self.config.num_tissues]
+        return torch.cat([splice, usage], dim=-1), self.output_channels
+
     @merge_with_config_defaults
     @capture_outputs
     def forward(

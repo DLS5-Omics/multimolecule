@@ -174,6 +174,37 @@ class PangolinModel(PangolinPreTrainedModel):
             hidden_states=contexts if output_hidden_states else None,
         )
 
+    @property
+    def output_channels(self) -> list[str]:
+        channels = []
+        for tissue in self.config.tissue_names:
+            channels.extend(
+                [
+                    f"{tissue}_no_splice",
+                    f"{tissue}_splice_site",
+                    f"{tissue}_usage",
+                ]
+            )
+        return channels
+
+    def postprocess(self, outputs: PangolinModelOutput | ModelOutput | Tensor) -> tuple[Tensor, list[str]]:
+        r"""
+        Return Pangolin splice-site scores with semantic tissue channel names.
+
+        Pangolin logits already contain probability-like outputs from the original head: two softmax splice-site
+        channels and one sigmoid usage channel for each tissue. This method attaches the model-defined tissue channel
+        names so direct model users and pipelines share the same output semantics.
+
+        Args:
+            outputs: The output of [`PangolinModel`][multimolecule.models.PangolinModel], or its `logits` tensor.
+
+        Returns:
+            A tuple of `(scores, channels)`, where `scores` has shape `(batch_size, sequence_length, num_tissues * 3)`
+            and `channels` follows `config.tissue_names`.
+        """
+        logits = outputs if isinstance(outputs, Tensor) else outputs["logits"]
+        return logits, self.output_channels
+
 
 class PangolinForTokenPrediction(PangolinPreTrainedModel):
     """

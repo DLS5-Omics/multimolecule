@@ -26,6 +26,8 @@ from chanfig import FlatDict
 
 from ..configuration_utils import HeadConfig, PreTrainedConfig
 
+DEFAULT_TISSUE_NAMES = tuple(f"tissue_{index}" for index in range(15))
+
 
 class SpTransformerFeatureEncoderConfig(FlatDict):
     r"""
@@ -88,6 +90,8 @@ class SpTransformerConfig(PreTrainedConfig):
             donor).
         num_tissues:
             Number of tissues for which per-position splice-site usage is predicted by the original output head.
+        tissue_names:
+            Names for the per-tissue splice-site usage channels. Defaults to `tissue_0`, `tissue_1`, ...
         hidden_act:
             The non-linear activation function (function or string) in the SpliceAI-style feature encoders.
         intermediate_act:
@@ -142,6 +146,7 @@ class SpTransformerConfig(PreTrainedConfig):
         max_seq_len: int = 8192,
         num_splice_labels: int = 3,
         num_tissues: int = 15,
+        tissue_names: list[str] | None = None,
         hidden_act: str = "relu",
         intermediate_act: str = "gelu",
         batch_norm_eps: float = 1e-5,
@@ -193,6 +198,7 @@ class SpTransformerConfig(PreTrainedConfig):
         self.max_seq_len = max_seq_len
         self.num_splice_labels = num_splice_labels
         self.num_tissues = num_tissues
+        self.tissue_names = _resolve_tissue_names(num_tissues, tissue_names)
         self.hidden_act = hidden_act
         self.intermediate_act = intermediate_act
         self.batch_norm_eps = batch_norm_eps
@@ -226,6 +232,8 @@ class SpTransformerConfig(PreTrainedConfig):
                 "hidden_size, attention_hidden_size, num_hidden_layers, num_attention_heads, intermediate_size, "
                 "bucket_size, max_seq_len, num_splice_labels, num_tissues, and num_labels must be positive."
             )
+        if len(self.tissue_names) != num_tissues:
+            raise ValueError(f"Expected {num_tissues} tissue names, got {len(self.tissue_names)}.")
         if num_local_attention_heads < 0:
             raise ValueError(f"num_local_attention_heads must be non-negative, got {num_local_attention_heads}.")
         if attention_hidden_size % num_attention_heads != 0:
@@ -243,3 +251,11 @@ class SpTransformerConfig(PreTrainedConfig):
         for index, encoder in enumerate(self.encoders):
             if encoder.hidden_size <= 0:
                 raise ValueError(f"Encoder {index} has non-positive hidden_size: {encoder.hidden_size}.")
+
+
+def _resolve_tissue_names(num_tissues: int, tissue_names: list[str] | None) -> list[str]:
+    if tissue_names is not None:
+        return [str(name) for name in tissue_names]
+    names = list(DEFAULT_TISSUE_NAMES[:num_tissues])
+    names.extend(f"tissue_{index}" for index in range(len(names), num_tissues))
+    return names

@@ -22,12 +22,33 @@
 
 from transformers.pipelines import PIPELINE_REGISTRY
 
-from ..models.modeling_auto import AutoModelForRnaSecondaryStructurePrediction
+from ..models.modeling_auto import (
+    AutoModelForRnaSecondaryStructurePrediction,
+    AutoModelForSpliceSitePrediction,
+    AutoModelForSpliceVariantEffectPrediction,
+)
 from .rna_secondary_structure import RnaSecondaryStructurePipeline
+from .splicing import SpliceSitePredictionPipeline, SpliceVariantEffectPipeline
 
 PIPELINE_REGISTRY.register_pipeline(
     "rna-secondary-structure",
     RnaSecondaryStructurePipeline,
     pt_model=AutoModelForRnaSecondaryStructurePrediction,
-    default={"model": {"pt": ("multimolecule/ernierna-ss", "main")}},
+    default={"model": ("multimolecule/ernierna-ss", "main")},
 )
+
+PIPELINE_REGISTRY.register_pipeline(
+    "splice-site-prediction",
+    SpliceSitePredictionPipeline,
+    pt_model=AutoModelForSpliceSitePrediction,
+    default={"model": ("multimolecule/openspliceai-mane-400nt", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "splice-variant-effect",
+    SpliceVariantEffectPipeline,
+    pt_model=AutoModelForSpliceVariantEffectPrediction,
+    default={"model": ("multimolecule/mmsplice", "main")},
+)
+
+__all__ = ["RnaSecondaryStructurePipeline", "SpliceSitePredictionPipeline", "SpliceVariantEffectPipeline"]
