@@ -86,6 +86,12 @@ from .hyenadna import (
     HyenaDnaForTokenPrediction,
     HyenaDnaModel,
 )
+from .maxentscan import (
+    MaxEntScanConfig,
+    MaxEntScanForSequencePrediction,
+    MaxEntScanModel,
+    MaxEntScanPreTrainedModel,
+)
 from .modeling_auto import (
     AutoModelForContactPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
@@ -261,6 +267,10 @@ __all__ = [
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",
     "HyenaDnaForTokenPrediction",
+    "MaxEntScanConfig",
+    "MaxEntScanModel",
+    "MaxEntScanPreTrainedModel",
+    "MaxEntScanForSequencePrediction",
     "OpenSpliceAiConfig",
     "OpenSpliceAiModel",
     "OpenSpliceAiPreTrainedModel",
