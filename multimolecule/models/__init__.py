@@ -75,6 +75,13 @@ from .carp import (
     CarpPreTrainedModel,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepstarr import (
+    DeepStarrConfig,
+    DeepStarrForSequencePrediction,
+    DeepStarrModel,
+    DeepStarrModelOutput,
+    DeepStarrPreTrainedModel,
+)
 from .deltasplice import (
     DeltaSpliceConfig,
     DeltaSpliceForTokenPrediction,
@@ -383,6 +390,11 @@ __all__ = [
     "DeltaSplicePreTrainedModel",
     "DeltaSpliceForTokenPrediction",
     "DeltaSpliceTokenPredictorOutput",
+    "DeepStarrConfig",
+    "DeepStarrModel",
+    "DeepStarrModelOutput",
+    "DeepStarrPreTrainedModel",
+    "DeepStarrForSequencePrediction",
     "DnaBertConfig",
     "DnaBertModel",
     "DnaBertForContactPrediction",
