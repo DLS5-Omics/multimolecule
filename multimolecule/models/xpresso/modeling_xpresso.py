@@ -211,6 +211,12 @@ class XpressoForSequencePrediction(XpressoPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_labels == 1:
+            return ["expression"]
+        return [f"expression_{index}" for index in range(self.config.num_labels)]
+
     @can_return_tuple
     def forward(
         self,

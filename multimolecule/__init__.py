@@ -391,6 +391,10 @@ from .modules import (
 )
 from .pipelines import (
     PolyadenylationPipeline,
+    RegulatoryActivityPipeline,
+    RegulatoryProfilePipeline,
+    RegulatoryTrackPipeline,
+    RegulatoryVariantEffectPipeline,
     RnaSecondaryStructurePipeline,
     SpliceSitePipeline,
     SpliceVariantEffectPipeline,
@@ -812,6 +816,10 @@ __all__ = [
     "SpliceSitePipeline",
     "SpliceVariantEffectPipeline",
     "PolyadenylationPipeline",
+    "RegulatoryActivityPipeline",
+    "RegulatoryTrackPipeline",
+    "RegulatoryProfilePipeline",
+    "RegulatoryVariantEffectPipeline",
     "count_parameters",
     "Task",
     "TaskLevel",

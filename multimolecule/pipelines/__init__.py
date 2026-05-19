@@ -24,11 +24,21 @@ from transformers.pipelines import PIPELINE_REGISTRY
 
 from ..models.modeling_auto import (
     AutoModelForPolyadenylationPrediction,
+    AutoModelForRegulatoryActivityPrediction,
+    AutoModelForRegulatoryProfilePrediction,
+    AutoModelForRegulatoryTrackPrediction,
+    AutoModelForRegulatoryVariantEffectPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSpliceSitePrediction,
     AutoModelForSpliceVariantEffectPrediction,
 )
 from .polyadenylation import PolyadenylationPipeline
+from .regulatory import (
+    RegulatoryActivityPipeline,
+    RegulatoryProfilePipeline,
+    RegulatoryTrackPipeline,
+    RegulatoryVariantEffectPipeline,
+)
 from .rna_secondary_structure import RnaSecondaryStructurePipeline
 from .splicing import SpliceSitePipeline, SpliceVariantEffectPipeline
 
@@ -60,9 +70,41 @@ PIPELINE_REGISTRY.register_pipeline(
     default={"model": ("multimolecule/aparent2", "main")},
 )
 
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-activity",
+    RegulatoryActivityPipeline,
+    pt_model=AutoModelForRegulatoryActivityPrediction,
+    default={"model": ("multimolecule/basset", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-track",
+    RegulatoryTrackPipeline,
+    pt_model=AutoModelForRegulatoryTrackPrediction,
+    default={"model": ("multimolecule/enformer", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-profile",
+    RegulatoryProfilePipeline,
+    pt_model=AutoModelForRegulatoryProfilePrediction,
+    default={"model": ("multimolecule/bpnet", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-variant-effect",
+    RegulatoryVariantEffectPipeline,
+    pt_model=AutoModelForRegulatoryVariantEffectPrediction,
+    default={"model": ("multimolecule/deepsea", "main")},
+)
+
 __all__ = [
     "RnaSecondaryStructurePipeline",
     "SpliceSitePipeline",
     "SpliceVariantEffectPipeline",
     "PolyadenylationPipeline",
+    "RegulatoryActivityPipeline",
+    "RegulatoryTrackPipeline",
+    "RegulatoryProfilePipeline",
+    "RegulatoryVariantEffectPipeline",
 ]
