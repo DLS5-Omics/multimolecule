@@ -158,6 +158,15 @@ class ScBassetForSequencePrediction(ScBassetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        id2label = getattr(self.config, "id2label", None)
+        if id2label is not None:
+            labels = [str(id2label.get(index, f"cell_{index}")) for index in range(self.config.num_labels)]
+            if any(label != f"LABEL_{index}" for index, label in enumerate(labels)):
+                return labels
+        return [f"cell_{index}" for index in range(self.config.num_labels)]
+
     @can_return_tuple
     def forward(
         self,
@@ -184,6 +193,9 @@ class ScBassetForSequencePrediction(ScBassetPreTrainedModel):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+    def postprocess(self, outputs: Any) -> Tensor:
+        return torch.sigmoid(outputs["logits"])
 
 
 class ScBassetEmbedding(nn.Module):

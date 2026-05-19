@@ -185,6 +185,12 @@ class AparentForSequencePrediction(AparentPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_isoform_labels != 1:
+            return [f"isoform_proportion_{index}" for index in range(self.config.num_isoform_labels)]
+        return ["isoform_proportion"]
+
     @can_return_tuple
     def forward(
         self,
@@ -206,6 +212,9 @@ class AparentForSequencePrediction(AparentPreTrainedModel):
         loss = self.criterion(logits, labels) if labels is not None else None
 
         return SequencePredictorOutput(loss=loss, logits=logits)
+
+    def postprocess(self, outputs: SequencePredictorOutput | ModelOutput) -> Tensor:
+        return torch.sigmoid(outputs["logits"])
 
 
 class AparentEmbedding(nn.Module):

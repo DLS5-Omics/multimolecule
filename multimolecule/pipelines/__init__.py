@@ -23,9 +23,19 @@
 from transformers.pipelines import PIPELINE_REGISTRY
 
 from ..models.modeling_auto import (
+    AutoModelForRegulatoryProfilePrediction,
+    AutoModelForRegulatorySequencePrediction,
+    AutoModelForRegulatoryTrackPrediction,
+    AutoModelForRegulatoryVariantEffectPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSpliceSitePrediction,
     AutoModelForSpliceVariantEffectPrediction,
+)
+from .regulatory import (
+    RegulatoryProfilePredictionPipeline,
+    RegulatorySequencePredictionPipeline,
+    RegulatoryTrackPredictionPipeline,
+    RegulatoryVariantEffectPipeline,
 )
 from .rna_secondary_structure import RnaSecondaryStructurePipeline
 from .splicing import SpliceSitePredictionPipeline, SpliceVariantEffectPipeline
@@ -51,4 +61,40 @@ PIPELINE_REGISTRY.register_pipeline(
     default={"model": ("multimolecule/mmsplice", "main")},
 )
 
-__all__ = ["RnaSecondaryStructurePipeline", "SpliceSitePredictionPipeline", "SpliceVariantEffectPipeline"]
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-sequence-prediction",
+    RegulatorySequencePredictionPipeline,
+    pt_model=AutoModelForRegulatorySequencePrediction,
+    default={"model": ("multimolecule/basset", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-track-prediction",
+    RegulatoryTrackPredictionPipeline,
+    pt_model=AutoModelForRegulatoryTrackPrediction,
+    default={"model": ("multimolecule/enformer", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-profile-prediction",
+    RegulatoryProfilePredictionPipeline,
+    pt_model=AutoModelForRegulatoryProfilePrediction,
+    default={"model": ("multimolecule/bpnet", "main")},
+)
+
+PIPELINE_REGISTRY.register_pipeline(
+    "regulatory-variant-effect",
+    RegulatoryVariantEffectPipeline,
+    pt_model=AutoModelForRegulatoryVariantEffectPrediction,
+    default={"model": ("multimolecule/aparent2", "main")},
+)
+
+__all__ = [
+    "RnaSecondaryStructurePipeline",
+    "SpliceSitePredictionPipeline",
+    "SpliceVariantEffectPipeline",
+    "RegulatorySequencePredictionPipeline",
+    "RegulatoryTrackPredictionPipeline",
+    "RegulatoryProfilePredictionPipeline",
+    "RegulatoryVariantEffectPipeline",
+]

@@ -189,6 +189,10 @@ class Aparent2ForSequencePrediction(Aparent2PreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        return [f"cleavage_{index}" for index in range(self.config.sequence_length)] + ["no_cleavage"]
+
     @can_return_tuple
     def forward(
         self,
@@ -214,6 +218,9 @@ class Aparent2ForSequencePrediction(Aparent2PreTrainedModel):
             logits=logits,
             hidden_states=outputs.hidden_states,
         )
+
+    def postprocess(self, outputs: SequencePredictorOutput | ModelOutput) -> Tensor:
+        return F.softmax(outputs["logits"], dim=-1)
 
 
 class Aparent2Embedding(nn.Module):

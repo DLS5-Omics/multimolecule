@@ -174,6 +174,12 @@ class ProCapNetForProfilePrediction(ProCapNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_strands == 2:
+            return ["plus", "minus"]
+        return [f"strand_{index}" for index in range(self.config.num_strands)]
+
     @merge_with_config_defaults
     @can_return_tuple
     def forward(
