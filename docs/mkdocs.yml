@@ -43,6 +43,7 @@ nav:
       - models/index.md
       - DNA:
           - Basset: models/basset.md
+          - scBasset: models/scbasset.md
           - DNABERT: models/dnabert.md
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md

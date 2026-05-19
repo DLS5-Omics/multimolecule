@@ -205,6 +205,7 @@ from .rnamsm import (
     RnaMsmForTokenPrediction,
     RnaMsmModel,
 )
+from .scbasset import ScBassetConfig, ScBassetForSequencePrediction, ScBassetModel, ScBassetPreTrainedModel
 from .splicebert import (
     SpliceBertConfig,
     SpliceBertForContactPrediction,
@@ -411,6 +412,10 @@ __all__ = [
     "RnaMsmForMaskedLM",
     "RnaMsmForPreTraining",
     "RnaMsmForSecondaryStructurePrediction",
+    "ScBassetConfig",
+    "ScBassetModel",
+    "ScBassetPreTrainedModel",
+    "ScBassetForSequencePrediction",
     "SpotRnaConfig",
     "SpotRnaModel",
     "SpotRnaForRnaSecondaryStructurePrediction",
