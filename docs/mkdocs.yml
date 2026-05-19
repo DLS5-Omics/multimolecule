@@ -47,6 +47,7 @@ nav:
           - DeepSTARR: models/deepstarr.md
           - Malinois: models/malinois.md
           - Xpresso: models/xpresso.md
+          - APARENT: models/aparent.md
           - DNABERT: models/dnabert.md
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md
