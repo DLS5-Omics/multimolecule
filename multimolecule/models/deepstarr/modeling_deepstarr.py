@@ -161,6 +161,12 @@ class DeepStarrForSequencePrediction(DeepStarrPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_labels == 2:
+            return ["developmental", "housekeeping"]
+        return [f"enhancer_activity_{index}" for index in range(self.config.num_labels)]
+
     @can_return_tuple
     def forward(
         self,

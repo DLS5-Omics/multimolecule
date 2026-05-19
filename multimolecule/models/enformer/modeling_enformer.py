@@ -202,6 +202,18 @@ class EnformerForTokenPrediction(EnformerPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        id2label = getattr(self.config, "id2label", None)
+        if id2label is not None:
+            labels = [
+                str(id2label.get(index, f"{self.config.species}_track_{index}"))
+                for index in range(self.config.num_labels)
+            ]
+            if any(label != f"LABEL_{index}" for index, label in enumerate(labels)):
+                return labels
+        return [f"{self.config.species}_track_{index}" for index in range(self.config.num_labels)]
+
     @can_return_tuple
     def forward(
         self,

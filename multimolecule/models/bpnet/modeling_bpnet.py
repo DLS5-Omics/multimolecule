@@ -172,6 +172,18 @@ class BpNetForProfilePrediction(BpNetPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    @property
+    def output_channels(self) -> list[str]:
+        if self.config.num_tasks == 4:
+            tasks = ["Oct4", "Sox2", "Nanog", "Klf4"]
+        else:
+            tasks = [f"task_{index}" for index in range(self.config.num_tasks)]
+        if self.config.num_strands == 2:
+            strands = ["plus", "minus"]
+        else:
+            strands = [f"strand_{index}" for index in range(self.config.num_strands)]
+        return [f"{task}_{strand}" for task in tasks for strand in strands]
+
     @merge_with_config_defaults
     @can_return_tuple
     def forward(
