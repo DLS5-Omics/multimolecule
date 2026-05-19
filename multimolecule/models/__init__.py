@@ -113,6 +113,7 @@ from .dnaberts import (
     DnaBertSForTokenPrediction,
     DnaBertSModel,
 )
+from .enformer import EnformerConfig, EnformerForTokenPrediction, EnformerModel, EnformerPreTrainedModel
 from .ernierna import (
     ErnieRnaConfig,
     ErnieRnaForContactPrediction,
@@ -417,6 +418,10 @@ __all__ = [
     "DnaBertSForContactPrediction",
     "DnaBertSForSequencePrediction",
     "DnaBertSForTokenPrediction",
+    "EnformerConfig",
+    "EnformerModel",
+    "EnformerPreTrainedModel",
+    "EnformerForTokenPrediction",
     "ErnieRnaConfig",
     "ErnieRnaModel",
     "ErnieRnaForContactPrediction",
