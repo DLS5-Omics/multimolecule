@@ -230,6 +230,15 @@ from .pangolin import (
     PangolinStageConfig,
     PangolinTokenPredictorOutput,
 )
+from .procapnet import (
+    ProCapNetConfig,
+    ProCapNetForProfilePrediction,
+    ProCapNetForTokenPrediction,
+    ProCapNetModel,
+    ProCapNetModelOutput,
+    ProCapNetPreTrainedModel,
+    ProCapNetProfilePredictorOutput,
+)
 from .progen2 import (
     ProGen2Config,
     ProGen2ForCausalLM,
@@ -544,6 +553,13 @@ __all__ = [
     "PangolinPreTrainedModel",
     "PangolinForTokenPrediction",
     "PangolinTokenPredictorOutput",
+    "ProCapNetConfig",
+    "ProCapNetModel",
+    "ProCapNetModelOutput",
+    "ProCapNetProfilePredictorOutput",
+    "ProCapNetPreTrainedModel",
+    "ProCapNetForProfilePrediction",
+    "ProCapNetForTokenPrediction",
     "SpTransformerConfig",
     "SpTransformerFeatureEncoderConfig",
     "SpTransformerModel",
