@@ -52,6 +52,7 @@ nav:
           - Basenji: models/basenji.md
           - BPNet: models/bpnet.md
           - ChromBPNet: models/chrombpnet.md
+          - ProCapNet: models/procapnet.md
           - DNABERT: models/dnabert.md
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md
