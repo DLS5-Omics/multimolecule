@@ -136,6 +136,13 @@ from .hyenadna import (
     HyenaDnaModel,
     HyenaDnaModelOutput,
 )
+from .malinois import (
+    MalinoisConfig,
+    MalinoisForSequencePrediction,
+    MalinoisModel,
+    MalinoisModelOutput,
+    MalinoisPreTrainedModel,
+)
 from .maxentscan import (
     MaxEntScanConfig,
     MaxEntScanForSequencePrediction,
@@ -434,6 +441,11 @@ __all__ = [
     "HyenaDnaForPreTraining",
     "HyenaDnaForSequencePrediction",
     "HyenaDnaForTokenPrediction",
+    "MalinoisConfig",
+    "MalinoisModel",
+    "MalinoisModelOutput",
+    "MalinoisPreTrainedModel",
+    "MalinoisForSequencePrediction",
     "MaxEntScanConfig",
     "MaxEntScanModel",
     "MaxEntScanPreTrainedModel",
