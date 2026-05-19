@@ -39,6 +39,13 @@ from .aparent import (
     AparentModelOutput,
     AparentPreTrainedModel,
 )
+from .aparent2 import (
+    Aparent2Config,
+    Aparent2ForSequencePrediction,
+    Aparent2Model,
+    Aparent2ModelOutput,
+    Aparent2PreTrainedModel,
+)
 from .basset import BassetConfig, BassetForSequencePrediction, BassetModel, BassetPreTrainedModel
 from .bpfold import BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction, BpfoldModel
 from .calm import (
@@ -310,6 +317,11 @@ __all__ = [
     "AparentModelOutput",
     "AparentPreTrainedModel",
     "AparentForSequencePrediction",
+    "Aparent2Config",
+    "Aparent2Model",
+    "Aparent2ModelOutput",
+    "Aparent2PreTrainedModel",
+    "Aparent2ForSequencePrediction",
     "BassetConfig",
     "BassetModel",
     "BassetPreTrainedModel",
