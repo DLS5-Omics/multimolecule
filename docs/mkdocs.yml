@@ -45,6 +45,7 @@ nav:
           - Basset: models/basset.md
           - scBasset: models/scbasset.md
           - DeepSTARR: models/deepstarr.md
+          - Malinois: models/malinois.md
           - DNABERT: models/dnabert.md
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md
