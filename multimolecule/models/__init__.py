@@ -46,6 +46,7 @@ from .aparent2 import (
     Aparent2ModelOutput,
     Aparent2PreTrainedModel,
 )
+from .basenji import BasenjiBlockConfig, BasenjiConfig, BasenjiForTokenPrediction, BasenjiModel, BasenjiPreTrainedModel
 from .basset import BassetConfig, BassetForSequencePrediction, BassetModel, BassetPreTrainedModel
 from .bpfold import BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction, BpfoldModel
 from .calm import (
@@ -322,6 +323,11 @@ __all__ = [
     "Aparent2ModelOutput",
     "Aparent2PreTrainedModel",
     "Aparent2ForSequencePrediction",
+    "BasenjiConfig",
+    "BasenjiBlockConfig",
+    "BasenjiModel",
+    "BasenjiPreTrainedModel",
+    "BasenjiForTokenPrediction",
     "BassetConfig",
     "BassetModel",
     "BassetPreTrainedModel",
