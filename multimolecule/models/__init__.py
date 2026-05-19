@@ -69,6 +69,17 @@ from .calm import (
     CaLmForTokenPrediction,
     CaLmModel,
 )
+from .chrombpnet import (
+    ChromBPNetBranchOutput,
+    ChromBPNetConfig,
+    ChromBPNetForProfilePrediction,
+    ChromBPNetForTokenPrediction,
+    ChromBPNetHeadOutput,
+    ChromBPNetModel,
+    ChromBPNetModelOutput,
+    ChromBPNetPreTrainedModel,
+    ChromBPNetProfilePredictorOutput,
+)
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
 from .deepstarr import (
     DeepStarrConfig,
@@ -348,6 +359,15 @@ __all__ = [
     "BPNetPreTrainedModel",
     "BPNetForProfilePrediction",
     "BPNetForTokenPrediction",
+    "ChromBPNetConfig",
+    "ChromBPNetModel",
+    "ChromBPNetModelOutput",
+    "ChromBPNetBranchOutput",
+    "ChromBPNetHeadOutput",
+    "ChromBPNetProfilePredictorOutput",
+    "ChromBPNetPreTrainedModel",
+    "ChromBPNetForProfilePrediction",
+    "ChromBPNetForTokenPrediction",
     "BpfoldConfig",
     "BpfoldModel",
     "BpfoldForRnaSecondaryStructurePrediction",
