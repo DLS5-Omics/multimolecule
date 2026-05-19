@@ -44,6 +44,13 @@ from .calm import (
     CaLmModel,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepstarr import (
+    DeepStarrConfig,
+    DeepStarrForSequencePrediction,
+    DeepStarrModel,
+    DeepStarrModelOutput,
+    DeepStarrPreTrainedModel,
+)
 from .dnabert import (
     DnaBertConfig,
     DnaBertForContactPrediction,
@@ -286,6 +293,11 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "DeepStarrConfig",
+    "DeepStarrModel",
+    "DeepStarrModelOutput",
+    "DeepStarrPreTrainedModel",
+    "DeepStarrForSequencePrediction",
     "DnaBertConfig",
     "DnaBertModel",
     "DnaBertForContactPrediction",
