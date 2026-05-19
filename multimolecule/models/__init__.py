@@ -98,6 +98,15 @@ from .carp import (
     CarpModelOutput,
     CarpPreTrainedModel,
 )
+from .chrombpnet import (
+    ChromBpNetConfig,
+    ChromBpNetForProfilePrediction,
+    ChromBpNetForTokenPrediction,
+    ChromBpNetModel,
+    ChromBpNetModelOutput,
+    ChromBpNetPreTrainedModel,
+    ChromBpNetProfilePredictorOutput,
+)
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
 from .deepstarr import (
     DeepStarrConfig,
@@ -423,6 +432,13 @@ __all__ = [
     "BpNetPreTrainedModel",
     "BpNetForProfilePrediction",
     "BpNetForTokenPrediction",
+    "ChromBpNetConfig",
+    "ChromBpNetModel",
+    "ChromBpNetModelOutput",
+    "ChromBpNetProfilePredictorOutput",
+    "ChromBpNetPreTrainedModel",
+    "ChromBpNetForProfilePrediction",
+    "ChromBpNetForTokenPrediction",
     "BpfoldConfig",
     "BpfoldModel",
     "BpfoldForRnaSecondaryStructurePrediction",
