@@ -322,6 +322,13 @@ from .utrlm import (
     UtrLmForTokenPrediction,
     UtrLmModel,
 )
+from .xpresso import (
+    XpressoConfig,
+    XpressoForSequencePrediction,
+    XpressoModel,
+    XpressoModelOutput,
+    XpressoPreTrainedModel,
+)
 
 __all__ = [
     "PreTrainedConfig",
@@ -578,4 +585,9 @@ __all__ = [
     "UtrLmForMaskedLM",
     "UtrLmForPreTraining",
     "UtrLmForSecondaryStructurePrediction",
+    "XpressoConfig",
+    "XpressoModel",
+    "XpressoModelOutput",
+    "XpressoPreTrainedModel",
+    "XpressoForSequencePrediction",
 ]
