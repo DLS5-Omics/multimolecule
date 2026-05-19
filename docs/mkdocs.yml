@@ -49,6 +49,7 @@ nav:
           - Xpresso: models/xpresso.md
           - APARENT: models/aparent.md
           - APARENT2: models/aparent2.md
+          - Basenji: models/basenji.md
           - DNABERT: models/dnabert.md
           - DNABERT-2: models/dnabert2.md
           - DNABERT-S: models/dnaberts.md
