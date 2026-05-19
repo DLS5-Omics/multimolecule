@@ -49,6 +49,17 @@ from .aparent2 import (
 from .basenji import BasenjiBlockConfig, BasenjiConfig, BasenjiForTokenPrediction, BasenjiModel, BasenjiPreTrainedModel
 from .basset import BassetConfig, BassetForSequencePrediction, BassetModel, BassetPreTrainedModel
 from .bpfold import BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction, BpfoldModel
+from .bpnet import (
+    BpNetConfig,
+    BpNetEncoderOutput,
+    BpNetForProfilePrediction,
+    BpNetForTokenPrediction,
+    BpNetHeadOutput,
+    BpNetModel,
+    BpNetModelOutput,
+    BpNetPreTrainedModel,
+    BpNetProfilePredictorOutput,
+)
 from .calm import (
     CaLmConfig,
     CaLmForContactPrediction,
@@ -332,6 +343,15 @@ __all__ = [
     "BassetModel",
     "BassetPreTrainedModel",
     "BassetForSequencePrediction",
+    "BpNetConfig",
+    "BpNetModel",
+    "BpNetModelOutput",
+    "BpNetEncoderOutput",
+    "BpNetHeadOutput",
+    "BpNetProfilePredictorOutput",
+    "BpNetPreTrainedModel",
+    "BpNetForProfilePrediction",
+    "BpNetForTokenPrediction",
     "BpfoldConfig",
     "BpfoldModel",
     "BpfoldForRnaSecondaryStructurePrediction",
