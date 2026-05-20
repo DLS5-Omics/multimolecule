@@ -109,6 +109,13 @@ from .chrombpnet import (
     ChromBpNetProfilePredictorOutput,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepsea import (
+    DeepSeaConfig,
+    DeepSeaForSequencePrediction,
+    DeepSeaModel,
+    DeepSeaModelOutput,
+    DeepSeaPreTrainedModel,
+)
 from .deepstarr import (
     DeepStarrConfig,
     DeepStarrForSequencePrediction,
@@ -481,6 +488,11 @@ __all__ = [
     "DeltaSplicePreTrainedModel",
     "DeltaSpliceForTokenPrediction",
     "DeltaSpliceTokenPredictorOutput",
+    "DeepSeaConfig",
+    "DeepSeaModel",
+    "DeepSeaPreTrainedModel",
+    "DeepSeaModelOutput",
+    "DeepSeaForSequencePrediction",
     "DeepStarrConfig",
     "DeepStarrModel",
     "DeepStarrModelOutput",
