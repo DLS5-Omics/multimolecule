@@ -209,6 +209,14 @@ from .progen2 import (
     ProGen2ForTokenPrediction,
     ProGen2Model,
 )
+from .rbpeclip import (
+    RbpEclipConfig,
+    RbpEclipForSequencePrediction,
+    RbpEclipModel,
+    RbpEclipModelOutput,
+    RbpEclipPreTrainedModel,
+    RbpEclipSplineTransform,
+)
 from .ribonanzanet import (
     RibonanzaNetConfig,
     RibonanzaNetForContactPrediction,
@@ -492,6 +500,12 @@ __all__ = [
     "ProGen2ForTokenPrediction",
     "ProGen2ForCausalLM",
     "ProGen2ForPreTraining",
+    "RbpEclipConfig",
+    "RbpEclipModel",
+    "RbpEclipPreTrainedModel",
+    "RbpEclipForSequencePrediction",
+    "RbpEclipModelOutput",
+    "RbpEclipSplineTransform",
     "RibonanzaNetConfig",
     "RibonanzaNetModel",
     "RibonanzaNetForContactPrediction",
