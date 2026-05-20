@@ -81,6 +81,7 @@ from .chrombpnet import (
     ChromBPNetProfilePredictorOutput,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepbind import DeepBindConfig, DeepBindForSequencePrediction, DeepBindModel, DeepBindPreTrainedModel
 from .deepstarr import (
     DeepStarrConfig,
     DeepStarrForSequencePrediction,
@@ -390,6 +391,10 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "DeepBindConfig",
+    "DeepBindModel",
+    "DeepBindPreTrainedModel",
+    "DeepBindForSequencePrediction",
     "DeepStarrConfig",
     "DeepStarrModel",
     "DeepStarrModelOutput",
