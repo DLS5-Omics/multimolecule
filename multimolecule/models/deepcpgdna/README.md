@@ -5,6 +5,8 @@ tags:
   - DNA
 license: agpl-3.0
 library_name: multimolecule
+pipeline_tag: other
+pipeline: methylation
 ---
 
 # DeepCpG-DNA

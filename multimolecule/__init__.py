@@ -354,6 +354,7 @@ from .modules import (
     UNet,
 )
 from .pipelines import (
+    MethylationPipeline,
     PolyadenylationPipeline,
     RegulatoryActivityPipeline,
     RegulatoryProfilePipeline,
@@ -740,6 +741,7 @@ __all__ = [
     "RnaSecondaryStructurePipeline",
     "SpliceSitePipeline",
     "SpliceVariantEffectPipeline",
+    "MethylationPipeline",
     "PolyadenylationPipeline",
     "RegulatoryActivityPipeline",
     "RegulatoryTrackPipeline",

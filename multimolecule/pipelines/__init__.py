@@ -23,6 +23,7 @@
 from transformers.pipelines import PIPELINE_REGISTRY
 
 from ..models.modeling_auto import (
+    AutoModelForMethylationPrediction,
     AutoModelForPolyadenylationPrediction,
     AutoModelForRegulatoryActivityPrediction,
     AutoModelForRegulatoryProfilePrediction,
@@ -32,6 +33,7 @@ from ..models.modeling_auto import (
     AutoModelForSpliceSitePrediction,
     AutoModelForSpliceVariantEffectPrediction,
 )
+from .methylation import MethylationPipeline
 from .polyadenylation import PolyadenylationPipeline
 from .regulatory import (
     RegulatoryActivityPipeline,
@@ -98,6 +100,13 @@ PIPELINE_REGISTRY.register_pipeline(
     default={"model": ("multimolecule/deepsea", "main")},
 )
 
+PIPELINE_REGISTRY.register_pipeline(
+    "methylation",
+    MethylationPipeline,
+    pt_model=AutoModelForMethylationPrediction,
+    default={"model": ("multimolecule/deepcpgdna", "main")},
+)
+
 __all__ = [
     "RnaSecondaryStructurePipeline",
     "SpliceSitePipeline",
@@ -107,4 +116,5 @@ __all__ = [
     "RegulatoryTrackPipeline",
     "RegulatoryProfilePipeline",
     "RegulatoryVariantEffectPipeline",
+    "MethylationPipeline",
 ]
