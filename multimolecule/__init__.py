@@ -24,6 +24,11 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 from .data import Dataset
 from .graph import maximum_weight_matching
 from .models import (
+    A2zChromatinConfig,
+    A2zChromatinForSequencePrediction,
+    A2zChromatinModel,
+    A2zChromatinModelOutput,
+    A2zChromatinPreTrainedModel,
     AmplifyConfig,
     AmplifyForContactPrediction,
     AmplifyForMaskedLM,
@@ -456,6 +461,11 @@ __all__ = [
     "AutoModelForRegulatoryProfilePrediction",
     "AutoModelForRegulatoryVariantEffectPrediction",
     "validate_attention_dimensions",
+    "A2zChromatinConfig",
+    "A2zChromatinModel",
+    "A2zChromatinModelOutput",
+    "A2zChromatinPreTrainedModel",
+    "A2zChromatinForSequencePrediction",
     "AmplifyConfig",
     "AmplifyModel",
     "AmplifyForContactPrediction",

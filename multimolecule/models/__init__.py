@@ -23,6 +23,13 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
+from .a2zchromatin import (
+    A2zChromatinConfig,
+    A2zChromatinForSequencePrediction,
+    A2zChromatinModel,
+    A2zChromatinModelOutput,
+    A2zChromatinPreTrainedModel,
+)
 from .amplify import (
     AmplifyConfig,
     AmplifyForContactPrediction,
@@ -361,6 +368,11 @@ __all__ = [
     "AutoModelForRegulatoryProfilePrediction",
     "AutoModelForRegulatoryVariantEffectPrediction",
     "validate_attention_dimensions",
+    "A2zChromatinConfig",
+    "A2zChromatinModel",
+    "A2zChromatinModelOutput",
+    "A2zChromatinPreTrainedModel",
+    "A2zChromatinForSequencePrediction",
     "AmplifyConfig",
     "AmplifyModel",
     "AmplifyForContactPrediction",
