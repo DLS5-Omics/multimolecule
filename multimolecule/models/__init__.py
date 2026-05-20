@@ -81,6 +81,12 @@ from .chrombpnet import (
     ChromBPNetProfilePredictorOutput,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .cpgenie import (
+    CpGenieConfig,
+    CpGenieForSequencePrediction,
+    CpGenieModel,
+    CpGeniePreTrainedModel,
+)
 from .deepstarr import (
     DeepStarrConfig,
     DeepStarrForSequencePrediction,
@@ -390,6 +396,10 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "CpGenieConfig",
+    "CpGenieModel",
+    "CpGeniePreTrainedModel",
+    "CpGenieForSequencePrediction",
     "DeepStarrConfig",
     "DeepStarrModel",
     "DeepStarrModelOutput",
