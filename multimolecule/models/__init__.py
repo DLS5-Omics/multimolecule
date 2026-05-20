@@ -116,6 +116,13 @@ from .chrombpnet import (
     ChromBpNetProfilePredictorOutput,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepcpgdna import (
+    DeepCpgDnaConfig,
+    DeepCpgDnaForSequencePrediction,
+    DeepCpgDnaModel,
+    DeepCpgDnaModelOutput,
+    DeepCpgDnaPreTrainedModel,
+)
 from .deepmel import (
     DeepMelConfig,
     DeepMelForSequencePrediction,
@@ -514,6 +521,11 @@ __all__ = [
     "DeltaSplicePreTrainedModel",
     "DeltaSpliceForTokenPrediction",
     "DeltaSpliceTokenPredictorOutput",
+    "DeepCpgDnaConfig",
+    "DeepCpgDnaModel",
+    "DeepCpgDnaPreTrainedModel",
+    "DeepCpgDnaModelOutput",
+    "DeepCpgDnaForSequencePrediction",
     "DeepMelConfig",
     "DeepMelModel",
     "DeepMelModelOutput",
