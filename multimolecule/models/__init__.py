@@ -183,6 +183,13 @@ from .modeling_auto import (
     AutoModelForSpliceVariantEffectPrediction,
     AutoModelForTokenPrediction,
 )
+from .mpradragonn import (
+    MpraDragoNnConfig,
+    MpraDragoNnForSequencePrediction,
+    MpraDragoNnModel,
+    MpraDragoNnModelOutput,
+    MpraDragoNnPreTrainedModel,
+)
 from .mtsplice import (
     MtSpliceConfig,
     MtSpliceForSequencePrediction,
@@ -483,6 +490,11 @@ __all__ = [
     "MmSpliceModelOutput",
     "MmSplicePreTrainedModel",
     "MmSpliceForSequencePrediction",
+    "MpraDragoNnConfig",
+    "MpraDragoNnModel",
+    "MpraDragoNnModelOutput",
+    "MpraDragoNnPreTrainedModel",
+    "MpraDragoNnForSequencePrediction",
     "MtSpliceConfig",
     "MtSpliceModel",
     "MtSpliceModelOutput",
