@@ -82,6 +82,12 @@ from .chrombpnet import (
     ChromBpNetProfilePredictorOutput,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepsea import (
+    DeepSeaConfig,
+    DeepSeaForSequencePrediction,
+    DeepSeaModel,
+    DeepSeaPreTrainedModel,
+)
 from .deepstarr import (
     DeepStarrConfig,
     DeepStarrForSequencePrediction,
@@ -399,6 +405,10 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "DeepSeaConfig",
+    "DeepSeaModel",
+    "DeepSeaPreTrainedModel",
+    "DeepSeaForSequencePrediction",
     "DeepStarrConfig",
     "DeepStarrModel",
     "DeepStarrModelOutput",
