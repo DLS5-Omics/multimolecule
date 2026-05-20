@@ -82,6 +82,13 @@ from .chrombpnet import (
     ChromBpNetProfilePredictorOutput,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deepmel import (
+    DeepMelConfig,
+    DeepMelForSequencePrediction,
+    DeepMelModel,
+    DeepMelModelOutput,
+    DeepMelPreTrainedModel,
+)
 from .deepsea import (
     DeepSeaConfig,
     DeepSeaForSequencePrediction,
@@ -405,6 +412,11 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "DeepMelConfig",
+    "DeepMelModel",
+    "DeepMelModelOutput",
+    "DeepMelPreTrainedModel",
+    "DeepMelForSequencePrediction",
     "DeepSeaConfig",
     "DeepSeaModel",
     "DeepSeaPreTrainedModel",
