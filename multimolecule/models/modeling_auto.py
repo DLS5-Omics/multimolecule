@@ -68,3 +68,7 @@ class AutoModelForRegulatoryProfilePrediction(_BaseAutoModelClass):
 
 class AutoModelForRegulatoryVariantEffectPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForMethylationPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
