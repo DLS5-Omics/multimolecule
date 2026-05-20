@@ -259,6 +259,13 @@ from .openspliceai import (
     OpenSpliceAiStageConfig,
     OpenSpliceAiTokenPredictorOutput,
 )
+from .optimus5prime import (
+    Optimus5PrimeConfig,
+    Optimus5PrimeForSequencePrediction,
+    Optimus5PrimeModel,
+    Optimus5PrimeModelOutput,
+    Optimus5PrimePreTrainedModel,
+)
 from .pangolin import (
     PangolinConfig,
     PangolinForTokenPrediction,
@@ -620,6 +627,11 @@ __all__ = [
     "OpenSpliceAiPreTrainedModel",
     "OpenSpliceAiForTokenPrediction",
     "OpenSpliceAiTokenPredictorOutput",
+    "Optimus5PrimeConfig",
+    "Optimus5PrimeModel",
+    "Optimus5PrimeModelOutput",
+    "Optimus5PrimePreTrainedModel",
+    "Optimus5PrimeForSequencePrediction",
     "PangolinConfig",
     "PangolinStageConfig",
     "PangolinModel",
