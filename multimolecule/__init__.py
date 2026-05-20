@@ -372,6 +372,7 @@ from .modules import (
     UNet,
 )
 from .pipelines import (
+    MeanRibosomeLoadPipeline,
     MethylationPipeline,
     PolyadenylationPipeline,
     RegulatoryActivityPipeline,
@@ -783,6 +784,7 @@ __all__ = [
     "RegulatoryTrackPipeline",
     "RegulatoryProfilePipeline",
     "RegulatoryVariantEffectPipeline",
+    "MeanRibosomeLoadPipeline",
     "count_parameters",
     "Task",
     "TaskLevel",
