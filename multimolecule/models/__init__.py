@@ -57,6 +57,7 @@ from .amplify import (
     AmplifyForSequencePrediction,
     AmplifyForTokenPrediction,
     AmplifyModel,
+    AmplifyPreTrainedModel,
 )
 from .aparent import (
     AparentConfig,
@@ -188,6 +189,14 @@ from .ernierna import (
     ErnieRnaForSequencePrediction,
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
+)
+from .framepool import (
+    FramepoolConfig,
+    FramepoolForSequencePrediction,
+    FramepoolForSequencePredictorOutput,
+    FramepoolModel,
+    FramepoolModelOutput,
+    FramepoolPreTrainedModel,
 )
 from .hal import HalConfig, HalForSequencePrediction, HalModel, HalModelOutput, HalPreTrainedModel
 from .hyenadna import (
@@ -469,6 +478,7 @@ __all__ = [
     "AbLang2ForPreTraining",
     "AmplifyConfig",
     "AmplifyModel",
+    "AmplifyPreTrainedModel",
     "AmplifyForContactPrediction",
     "AmplifyForSequencePrediction",
     "AmplifyForTokenPrediction",
@@ -590,6 +600,12 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "FramepoolConfig",
+    "FramepoolModel",
+    "FramepoolModelOutput",
+    "FramepoolForSequencePredictorOutput",
+    "FramepoolPreTrainedModel",
+    "FramepoolForSequencePrediction",
     "HalConfig",
     "HalModel",
     "HalModelOutput",
