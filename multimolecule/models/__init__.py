@@ -151,6 +151,13 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
+from .framepool import (
+    FramepoolConfig,
+    FramepoolForSequencePrediction,
+    FramepoolModel,
+    FramepoolModelOutput,
+    FramepoolPreTrainedModel,
+)
 from .hal import HalConfig, HalForSequencePrediction, HalModel, HalModelOutput, HalPreTrainedModel
 from .hyenadna import (
     HyenaDnaConfig,
@@ -504,6 +511,11 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "FramepoolConfig",
+    "FramepoolModel",
+    "FramepoolModelOutput",
+    "FramepoolPreTrainedModel",
+    "FramepoolForSequencePrediction",
     "HalConfig",
     "HalModel",
     "HalModelOutput",
