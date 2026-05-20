@@ -323,6 +323,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="io/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  io
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="datasets/" class="md-tabs__link">
         
   
@@ -406,6 +425,44 @@
     
   
   pipelines
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="runner/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  runner
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="api/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  api
 
       </a>
     </li>
@@ -705,6 +762,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    io
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
       
@@ -783,6 +867,8 @@
       
         
       
+        
+      
     
     
     
@@ -844,6 +930,8 @@
       
         
       
+        
+      
     
     
     
@@ -868,7 +956,7 @@
   
   
   
-    <a href="models/calm/" class="md-nav__link">
+    <a href="models/a2zchromatin/" class="md-nav__link">
       
   
   
@@ -970,6 +1058,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -998,6 +1092,122 @@
     
   
     pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="runner/config/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    runner
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="api/run/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    api
   
 
     
@@ -1266,9 +1476,8 @@ Its modular design allows you to utilize only the components you need, integrati
 <li><a href="modules"><code>modules</code></a>: Modular neural network building blocks, including <a href="modules/embeddings">embeddings</a>, <a href="modules/heads">heads</a>, and criterions for constructing custom models.</li>
 <li><a href="models"><code>models</code></a>: Implementation of state-of-the-art pre-trained models in molecular biology.</li>
 <li><a href="tokenisers"><code>tokenisers</code></a>: Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.</li>
+<li><a href="runner"><code>runner</code></a>: DanLing-based training, evaluation, and inference runner for fine-tuning MultiMolecule models on local or Hugging Face datasets.</li>
 </ul>
-<!-- - [`runner`](runner): A powerful and extensible runner allows users to fine-tune models, evaluate and predict with ease. -->
-
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>Install the most recent stable version on PyPI:</p>
 <div class="language-shell highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>multimolecule
