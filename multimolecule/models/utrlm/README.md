@@ -4,6 +4,7 @@ tags:
   - Biology
   - RNA
   - 5' UTR
+  - Translation
 license: agpl-3.0
 datasets:
   - multimolecule/ensembl-genome-browser
@@ -94,7 +95,7 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
   - [Ensembl Genome Browser](https://ensembl.org)
   - [Human 5′ UTR design and variant effect prediction from a massively parallel translation assay](https://doi.org/10.1038/s41587-019-0164-5)
   - [High-Throughput 5’ UTR Engineering for Enhanced Protein Production in Non-Viral Gene Therapies](https://doi.org/10.1101/2021.10.14.464013)
-- **Paper**: [A 5’ UTR Language Model for Decoding Untranslated Regions of mRNA and Function Predictions](http://doi.org/10.1038/s41467-021-24436-7)
+- **Paper**: [A 5’ UTR Language Model for Decoding Untranslated Regions of mRNA and Function Predictions](https://doi.org/10.1101/2023.10.11.561938)
 - **Developed by**: Yanyi Chu, Dan Yu, Yupeng Li, Kaixuan Huang, Yue Shen, Le Cong, Jason Zhang, Mengdi Wang
 - **Model type**: [BERT](https://huggingface.co/google-bert/bert-base-uncased) - [ESM](https://huggingface.co/facebook/esm2_t48_15B_UR50D)
 - **Original Repository**: [a96123155/UTR-LM](https://github.com/a96123155/UTR-LM)
@@ -133,6 +134,18 @@ predictor = pipeline("rna-secondary-structure", model="multimolecule/utrlm-mrl")
 output = predictor("ggucucucugguuagaccagaucugagccu")
 ```
 
+#### Mean Ribosome Load Prediction
+
+The MRL variant can be used for sequence-level mean-ribosome-load prediction:
+
+```python
+import multimolecule  # you must import multimolecule to register models
+from transformers import pipeline
+
+predictor = pipeline("mean-ribosome-load", model="multimolecule/utrlm-mrl")
+output = predictor("ggucucucugguuagaccagaucugagccu")
+```
+
 ### Downstream Use
 
 #### Extract Features
@@ -155,7 +168,9 @@ output = model(**input)
 #### Sequence Classification / Regression
 
 > [!NOTE]
-> This model is not fine-tuned for any specific task. You will need to fine-tune the model on a downstream task to use it for sequence classification or regression.
+> The MRL checkpoint exposes its supervised mean-ribosome-load head through `UtrLmForPreTraining`.
+> The TE/EL checkpoint exposes a separate supervised translation-efficiency and expression-level head through the same class.
+> `UtrLmForSequencePrediction` creates a fresh sequence-level head for downstream fine-tuning.
 
 Here is how to use this model as backbone to fine-tune for a sequence-level task in PyTorch:
 
@@ -274,7 +289,7 @@ The model was trained on two clusters:
 	abstract = {The 5{\textquoteright} UTR, a regulatory region at the beginning of an mRNA molecule, plays a crucial role in regulating the translation process and impacts the protein expression level. Language models have showcased their effectiveness in decoding the functions of protein and genome sequences. Here, we introduced a language model for 5{\textquoteright} UTR, which we refer to as the UTR-LM. The UTR-LM is pre-trained on endogenous 5{\textquoteright} UTRs from multiple species and is further augmented with supervised information including secondary structure and minimum free energy. We fine-tuned the UTR-LM in a variety of downstream tasks. The model outperformed the best-known benchmark by up to 42\% for predicting the Mean Ribosome Loading, and by up to 60\% for predicting the Translation Efficiency and the mRNA Expression Level. The model also applies to identifying unannotated Internal Ribosome Entry Sites within the untranslated region and improves the AUPR from 0.37 to 0.52 compared to the best baseline. Further, we designed a library of 211 novel 5{\textquoteright} UTRs with high predicted values of translation efficiency and evaluated them via a wet-lab assay. Experiment results confirmed that our top designs achieved a 32.5\% increase in protein production level relative to well-established 5{\textquoteright} UTR optimized for therapeutics.Competing Interest StatementThe authors have declared no competing interest.},
 	URL = {https://www.biorxiv.org/content/early/2023/10/14/2023.10.11.561938},
 	eprint = {https://www.biorxiv.org/content/early/2023/10/14/2023.10.11.561938.full.pdf},
-	jourPre-trainingxiv}
+	journal = {bioRxiv}
 }
 ```
 

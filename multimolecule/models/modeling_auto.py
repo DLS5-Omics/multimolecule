@@ -76,3 +76,7 @@ class AutoModelForMethylationPrediction(_BaseAutoModelClass):
 
 class AutoModelForPolyadenylationPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForMeanRibosomeLoadPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())

@@ -35,6 +35,7 @@ from multimolecule.tokenisers import RnaTokenizer
 
 from ..modeling_auto import (
     AutoModelForContactPrediction,
+    AutoModelForMeanRibosomeLoadPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
@@ -72,6 +73,7 @@ AutoModel.register(UtrLmConfig, UtrLmModel)
 AutoModelForContactPrediction.register(UtrLmConfig, UtrLmForContactPrediction)
 AutoModelForSequencePrediction.register(UtrLmConfig, UtrLmForSequencePrediction)
 AutoModelForSequenceClassification.register(UtrLmConfig, UtrLmForSequencePrediction)
+AutoModelForMeanRibosomeLoadPrediction.register(UtrLmConfig, UtrLmForPreTraining)
 AutoModelForTokenPrediction.register(UtrLmConfig, UtrLmForTokenPrediction)
 AutoModelForTokenClassification.register(UtrLmConfig, UtrLmForTokenPrediction)
 AutoModelForMaskedLM.register(UtrLmConfig, UtrLmForMaskedLM)

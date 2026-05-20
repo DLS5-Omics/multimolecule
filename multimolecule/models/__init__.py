@@ -222,6 +222,7 @@ from .mmsplice import (
 )
 from .modeling_auto import (
     AutoModelForContactPrediction,
+    AutoModelForMeanRibosomeLoadPrediction,
     AutoModelForMethylationPrediction,
     AutoModelForPolyadenylationPrediction,
     AutoModelForProfilePrediction,
@@ -396,10 +397,12 @@ from .utrlm import (
     UtrLmForContactPrediction,
     UtrLmForMaskedLM,
     UtrLmForPreTraining,
+    UtrLmForPreTrainingOutput,
     UtrLmForSecondaryStructurePrediction,
     UtrLmForSequencePrediction,
     UtrLmForTokenPrediction,
     UtrLmModel,
+    UtrLmPreTrainedModel,
 )
 from .xpresso import (
     XpressoConfig,
@@ -417,6 +420,7 @@ __all__ = [
     "ProteinTokenizer",
     "AutoModelForContactPrediction",
     "AutoModelForMethylationPrediction",
+    "AutoModelForMeanRibosomeLoadPrediction",
     "AutoModelForPolyadenylationPrediction",
     "AutoModelForProfilePrediction",
     "AutoModelForSequencePrediction",
@@ -727,11 +731,13 @@ __all__ = [
     "UtrBertForPreTraining",
     "UtrLmConfig",
     "UtrLmModel",
+    "UtrLmPreTrainedModel",
     "UtrLmForContactPrediction",
     "UtrLmForSequencePrediction",
     "UtrLmForTokenPrediction",
     "UtrLmForMaskedLM",
     "UtrLmForPreTraining",
+    "UtrLmForPreTrainingOutput",
     "UtrLmForSecondaryStructurePrediction",
     "XpressoConfig",
     "XpressoModel",
