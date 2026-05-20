@@ -6,6 +6,8 @@ tags:
   - 3' UTR
 license: agpl-3.0
 library_name: multimolecule
+pipeline_tag: other
+pipeline: polyadenylation
 ---
 
 # APARENT

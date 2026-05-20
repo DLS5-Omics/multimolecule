@@ -23,10 +23,12 @@
 from transformers.pipelines import PIPELINE_REGISTRY
 
 from ..models.modeling_auto import (
+    AutoModelForPolyadenylationPrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSpliceSitePrediction,
     AutoModelForSpliceVariantEffectPrediction,
 )
+from .polyadenylation import PolyadenylationPipeline
 from .rna_secondary_structure import RnaSecondaryStructurePipeline
 from .splicing import SpliceSitePipeline, SpliceVariantEffectPipeline
 
@@ -51,4 +53,16 @@ PIPELINE_REGISTRY.register_pipeline(
     default={"model": ("multimolecule/mmsplice", "main")},
 )
 
-__all__ = ["RnaSecondaryStructurePipeline", "SpliceSitePipeline", "SpliceVariantEffectPipeline"]
+PIPELINE_REGISTRY.register_pipeline(
+    "polyadenylation",
+    PolyadenylationPipeline,
+    pt_model=AutoModelForPolyadenylationPrediction,
+    default={"model": ("multimolecule/aparent2", "main")},
+)
+
+__all__ = [
+    "RnaSecondaryStructurePipeline",
+    "SpliceSitePipeline",
+    "SpliceVariantEffectPipeline",
+    "PolyadenylationPipeline",
+]

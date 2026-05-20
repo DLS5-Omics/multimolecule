@@ -5,6 +5,8 @@ tags:
   - RNA
 license: agpl-3.0
 library_name: multimolecule
+pipeline_tag: other
+pipeline: polyadenylation
 ---
 
 # APARENT2

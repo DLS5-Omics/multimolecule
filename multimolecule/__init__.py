@@ -290,7 +290,12 @@ from .modules import (
     TokenPredictionHead,
     UNet,
 )
-from .pipelines import RnaSecondaryStructurePipeline, SpliceSitePipeline, SpliceVariantEffectPipeline
+from .pipelines import (
+    PolyadenylationPipeline,
+    RnaSecondaryStructurePipeline,
+    SpliceSitePipeline,
+    SpliceVariantEffectPipeline,
+)
 from .tasks import Task, TaskLevel, TaskType
 from .tokenisers import Alphabet, DnaTokenizer, DotBracketTokenizer, ProteinTokenizer, RnaTokenizer, Tokenizer
 from .utils import (
@@ -605,6 +610,7 @@ __all__ = [
     "RnaSecondaryStructurePipeline",
     "SpliceSitePipeline",
     "SpliceVariantEffectPipeline",
+    "PolyadenylationPipeline",
     "count_parameters",
     "Task",
     "TaskLevel",
