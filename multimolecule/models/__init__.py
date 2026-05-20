@@ -67,6 +67,7 @@ from .aparent2 import (
 )
 from .basenji import BasenjiBlockConfig, BasenjiConfig, BasenjiForTokenPrediction, BasenjiModel, BasenjiPreTrainedModel
 from .basset import BassetConfig, BassetForSequencePrediction, BassetModel, BassetModelOutput, BassetPreTrainedModel
+from .borzoi import BorzoiConfig, BorzoiForTokenPrediction, BorzoiModel, BorzoiPreTrainedModel
 from .bpfold import BpfoldConfig, BpfoldForRnaSecondaryStructurePrediction, BpfoldModel
 from .bpnet import (
     BpNetConfig,
@@ -435,6 +436,10 @@ __all__ = [
     "BassetPreTrainedModel",
     "BassetModelOutput",
     "BassetForSequencePrediction",
+    "BorzoiConfig",
+    "BorzoiModel",
+    "BorzoiPreTrainedModel",
+    "BorzoiForTokenPrediction",
     "BpNetConfig",
     "BpNetModel",
     "BpNetModelOutput",
