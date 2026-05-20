@@ -72,3 +72,7 @@ class AutoModelForRegulatoryVariantEffectPrediction(_BaseAutoModelClass):
 
 class AutoModelForMethylationPrediction(_BaseAutoModelClass):
     _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())
+
+
+class AutoModelForPolyadenylationPrediction(_BaseAutoModelClass):
+    _model_mapping = _LazyAutoMapping(CONFIG_MAPPING_NAMES, OrderedDict())

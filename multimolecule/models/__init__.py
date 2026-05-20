@@ -104,6 +104,7 @@ from .mmsplice import (
 from .modeling_auto import (
     AutoModelForContactPrediction,
     AutoModelForMethylationPrediction,
+    AutoModelForPolyadenylationPrediction,
     AutoModelForProfilePrediction,
     AutoModelForRegulatoryActivityPrediction,
     AutoModelForRegulatoryProfilePrediction,
@@ -257,6 +258,7 @@ __all__ = [
     "AutoModelForTokenPrediction",
     "AutoModelForProfilePrediction",
     "AutoModelForMethylationPrediction",
+    "AutoModelForPolyadenylationPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
     "AutoModelForSpliceSitePrediction",
     "AutoModelForSpliceVariantEffectPrediction",
