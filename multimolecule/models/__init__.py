@@ -23,6 +23,13 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
+from .a2zchromatin import (
+    A2zChromatinConfig,
+    A2zChromatinForSequencePrediction,
+    A2zChromatinModel,
+    A2zChromatinModelOutput,
+    A2zChromatinPreTrainedModel,
+)
 from .ablang import (
     AbLangConfig,
     AbLangForMaskedLM,
@@ -415,6 +422,11 @@ __all__ = [
     "AutoModelForRegulatoryProfilePrediction",
     "AutoModelForRegulatoryVariantEffectPrediction",
     "validate_attention_dimensions",
+    "A2zChromatinConfig",
+    "A2zChromatinModel",
+    "A2zChromatinModelOutput",
+    "A2zChromatinPreTrainedModel",
+    "A2zChromatinForSequencePrediction",
     "AbLangConfig",
     "AbLangModel",
     "AbLangPreTrainedModel",
