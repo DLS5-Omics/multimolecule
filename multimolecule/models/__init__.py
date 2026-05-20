@@ -266,6 +266,13 @@ from .optimus5prime import (
     Optimus5PrimeModelOutput,
     Optimus5PrimePreTrainedModel,
 )
+from .optmrl import (
+    OptMrlConfig,
+    OptMrlForSequencePrediction,
+    OptMrlModel,
+    OptMrlModelOutput,
+    OptMrlPreTrainedModel,
+)
 from .pangolin import (
     PangolinConfig,
     PangolinForTokenPrediction,
@@ -632,6 +639,11 @@ __all__ = [
     "Optimus5PrimeModelOutput",
     "Optimus5PrimePreTrainedModel",
     "Optimus5PrimeForSequencePrediction",
+    "OptMrlConfig",
+    "OptMrlModel",
+    "OptMrlModelOutput",
+    "OptMrlPreTrainedModel",
+    "OptMrlForSequencePrediction",
     "PangolinConfig",
     "PangolinStageConfig",
     "PangolinModel",
