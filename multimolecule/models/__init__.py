@@ -124,6 +124,13 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
+from .factornet import (
+    FactorNetConfig,
+    FactorNetForSequencePrediction,
+    FactorNetModel,
+    FactorNetModelOutput,
+    FactorNetPreTrainedModel,
+)
 from .hal import HalConfig, HalForSequencePrediction, HalModel, HalModelOutput, HalPreTrainedModel
 from .hyenadna import (
     HyenaDnaConfig,
@@ -426,6 +433,11 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "FactorNetConfig",
+    "FactorNetModel",
+    "FactorNetModelOutput",
+    "FactorNetPreTrainedModel",
+    "FactorNetForSequencePrediction",
     "HalConfig",
     "HalModel",
     "HalModelOutput",
