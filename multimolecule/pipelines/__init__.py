@@ -23,6 +23,7 @@
 from transformers.pipelines import PIPELINE_REGISTRY
 
 from ..models.modeling_auto import (
+    AutoModelForMeanRibosomeLoadPrediction,
     AutoModelForMethylationPrediction,
     AutoModelForPolyadenylationPrediction,
     AutoModelForRegulatoryActivityPrediction,
@@ -33,6 +34,7 @@ from ..models.modeling_auto import (
     AutoModelForSpliceSitePrediction,
     AutoModelForSpliceVariantEffectPrediction,
 )
+from .mean_ribosome_load import MeanRibosomeLoadPipeline
 from .methylation import MethylationPipeline
 from .polyadenylation import PolyadenylationPipeline
 from .regulatory import (
@@ -107,6 +109,13 @@ PIPELINE_REGISTRY.register_pipeline(
     default={"model": ("multimolecule/deepcpgdna-smallwood2014-serum", "main")},
 )
 
+PIPELINE_REGISTRY.register_pipeline(
+    "mean-ribosome-load",
+    MeanRibosomeLoadPipeline,
+    pt_model=AutoModelForMeanRibosomeLoadPrediction,
+    default={"model": ("multimolecule/optimus5prime", "main")},
+)
+
 __all__ = [
     "RnaSecondaryStructurePipeline",
     "SpliceSitePipeline",
@@ -117,4 +126,5 @@ __all__ = [
     "RegulatoryProfilePipeline",
     "RegulatoryVariantEffectPipeline",
     "MethylationPipeline",
+    "MeanRibosomeLoadPipeline",
 ]
