@@ -325,13 +325,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="io/" class="md-tabs__link">
+      <a href="datasets/" class="md-tabs__link">
         
   
   
     
   
-  io
+  datasets
 
       </a>
     </li>
@@ -344,13 +344,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="datasets/" class="md-tabs__link">
+      <a href="io/" class="md-tabs__link">
         
   
   
     
   
-  datasets
+  io
 
       </a>
     </li>
@@ -478,15 +478,8 @@
   
     
     
-      
-  
-  
-  
-  
-    
-    
       <li class="md-tabs__item">
-        <a href="utils/rna/secondary_structure/" class="md-tabs__link">
+        <a href="utils/rna/" class="md-tabs__link">
           
   
   
@@ -496,9 +489,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -675,7 +665,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        引用
+        社区
       
     </span>
   </a>
@@ -684,6 +674,17 @@
       
         <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        引用
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         许可证
@@ -764,33 +765,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="io/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    io
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
       
@@ -849,6 +823,69 @@
 
   
 
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="io/fasta/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    io
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
   
 
       
@@ -1066,6 +1103,18 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1086,7 +1135,7 @@
   
   
   
-    <a href="pipelines/rna_secondary_structure/" class="md-nav__link">
+    <a href="pipelines/mean-ribosome-load/" class="md-nav__link">
       
   
   
@@ -1120,6 +1169,8 @@
   
     
     
+      
+        
       
         
       
@@ -1182,6 +1233,8 @@
       
         
       
+        
+      
     
     
     
@@ -1239,6 +1292,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1259,11 +1316,7 @@
   
   
   
-    
-  
-  
-  
-    <a href="utils/rna/secondary_structure/" class="md-nav__link">
+    <a href="utils/rna/" class="md-nav__link">
       
   
   
@@ -1282,8 +1335,6 @@
         <span class="md-nav__icon md-icon"></span>
       
     </a>
-  
-
   
 
       
@@ -1415,7 +1466,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        引用
+        社区
       
     </span>
   </a>
@@ -1424,6 +1475,17 @@
       
         <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        引用
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         许可证
@@ -1471,13 +1533,15 @@
 MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松利用 AI，主要聚焦于生物分子数据（RNA、DNA 和蛋白质）。</p>
 <h2 id="_2">概览<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>MultiMolecule 以灵活性和易用性为设计核心。
-其模块化设计允许您根据需要仅使用所需的组件，并能无缝集成到现有的工作流程中，而不会增加不必要的复杂性。</p>
+其模块化设计允许您根据需要仅使用所需的组件，并能无缝集成到现有的工作流程中，而不会增加不必要的复杂性。
+模型与 Pipeline 目录覆盖 RNA、DNA 和蛋白质序列建模，包括二级结构预测、剪接、调控活性与谱图预测、DNA 甲基化、多聚腺苷酸化和平均核糖体负载等任务。</p>
 <ul>
 <li><a href="data"><code>data</code></a>：智能的 <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;multimolecule.data.Dataset&lt;/span&gt;" href="../data/dataset/#multimolecule.data.Dataset"><code>Dataset</code></a>，能够自动推断任务，包括任务的层级（序列、令牌、接触）和类型（分类、回归）。还提供多任务数据集和采样器，简化多任务学习，无需额外配置。</li>
 <li><a href="datasets"><code>datasets</code></a>：广泛使用的生物分子数据集集合。</li>
 <li><a href="modules"><code>modules</code></a>：模块化神经网络构建块，包括<a href="modules/embeddings">嵌入层</a>、<a href="modules/heads">预测头</a>和损失函数，用于构建自定义模型。</li>
 <li><a href="models"><code>models</code></a>：分子生物学领域的最先进预训练模型实现。</li>
 <li><a href="tokenisers"><code>tokenisers</code></a>：用于将 DNA、RNA、蛋白质及其他序列转换为独热编码的分词器。</li>
+<li><a href="pipelines"><code>pipelines</code></a>：面向具体任务的推理管道，覆盖结构预测、剪接、调控基因组学、甲基化、多聚腺苷酸化和平均核糖体负载。</li>
 <li><a href="runner"><code>runner</code></a>：基于 DanLing 的训练、评估和推理运行器，用于在本地或 Hugging Face 数据集上微调 MultiMolecule 模型。</li>
 </ul>
 <h2 id="_3">安装<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
@@ -1487,7 +1551,12 @@ MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松
 <p>从源代码安装最新版本：</p>
 <div class="language-shell highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/DLS5-Omics/MultiMolecule
 </span></code></pre></div></td></tr></table></div>
-<h2 id="_4">引用<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_4">社区<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://multimolecule.discourse.group">Discourse</a>：发布公告、使用问题、模型请求、RFC 和社区讨论。</li>
+<li><a href="https://github.com/DLS5-Omics/multimolecule/issues">GitHub Issues</a>：可复现的错误、API 问题和需要工程跟踪的功能请求。</li>
+</ul>
+<h2 id="_5">引用<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>本仓库提供的内容是 MultiMolecule 项目的一部分。
@@ -1513,7 +1582,7 @@ MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">  </span><span class="na">day</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="m">4</span>
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
-<h2 id="_5">许可证<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h2 id="_6">许可证<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>我们相信开放是研究的基础。</p>
 <p>MultiMolecule 在 <a href="license/">GNU Affero 通用公共许可证</a> 下授权。</p>
 <p>对于额外条款和澄清，请参阅我们的<a href="license-faq/">许可协议常见问题解答</a>。</p>
@@ -1654,6 +1723,35 @@ MultiMolecule 提供了一套全面且灵活的工具，帮助研究人员轻松
       All rights reserved &copy; 2024-Present, MultiMolecule Contributors
     </div>
   
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://multimolecule.discourse.group" target="_blank" rel="noopener" title="MultiMolecule Discourse" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M225.9 32C103.3 32 0 130.5 0 252.1 0 256 .1 480 .1 480l225.8-.2c122.7 0 222.1-102.3 222.1-223.9S348.6 32 225.9 32M224 384c-19.4 0-37.9-4.3-54.4-12.1L88.5 392l22.9-75c-9.8-18.1-15.4-38.9-15.4-61 0-70.7 57.3-128 128-128s128 57.3 128 128-57.3 128-128 128"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/DLS5-Omics/multimolecule" target="_blank" rel="noopener" title="MultiMolecule on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://huggingface.co/multimolecule" target="_blank" rel="noopener" title="MultiMolecule on Hugging Face" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512m-90.6-190.1c20.4 28 53.4 46.1 90.6 46.1s70.2-18.1 90.6-46.1c7.8-10.7 22.8-13.1 33.5-5.3s13.1 22.8 5.3 33.5C356.3 390 309.2 416 256 416s-100.3-26-129.4-65.9c-7.8-10.7-5.4-25.7 5.3-33.5s25.7-5.4 33.5 5.3M144 208a32 32 0 1 1 64 0 32 32 0 1 1-64 0m192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64"/></svg>
+    </a>
   
 </div>
       
