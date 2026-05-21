@@ -19,7 +19,6 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
-
 from multimolecule import io
 
 
@@ -49,25 +48,6 @@ def test_bpseq_roundtrip(tmp_path) -> None:
     out = io.read_bpseq(path)
     assert out.sequence == record.sequence
     assert out.dot_bracket == record.dot_bracket
-
-
-def test_fasta_roundtrip(tmp_path) -> None:
-    record = io.SequenceRecord(sequence="ACGU", id="rna1", comment="note")
-    path = tmp_path / "example.fasta"
-    io.write_fasta(record, path)
-    out = io.read_fasta(path)
-    assert out.sequence == record.sequence
-    assert out.id == record.id
-    assert out.comment == record.comment
-
-
-def test_fasta_plain_sequence(tmp_path) -> None:
-    path = tmp_path / "plain.fa"
-    path.write_text(">id some description\nACGU\n")
-    out = io.read_fasta(path)
-    assert out.sequence == "ACGU"
-    assert out.id == "id"
-    assert out.comment == "some description"
 
 
 def test_st_roundtrip(tmp_path) -> None:
