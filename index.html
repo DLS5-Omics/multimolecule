@@ -21,7 +21,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Neural Networks for RNA, DNA, and Protein">
+        <meta name="description" content="One-stop ecosystem for molecular biology machine learning.">
       
       
         <meta name="author" content="MultiMolecule">
@@ -44,12 +44,12 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed" href="feed_rss_created.xml">
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="feed_rss_updated.xml">
       
-      <link rel="icon" href="assets/images/logo.ico">
+      <link rel="icon" href="assets/images/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>MultiMolecule</title>
+        <title>MultiMolecule - MultiMolecule</title>
       
     
     
@@ -67,11 +67,15 @@
     
     
       
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans:300,300i,400,400i,700,700i%7CNoto+Sans+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans";--md-code-font:"Noto Sans Mono"}</style>
+      
     
     
       <link rel="stylesheet" href="assets/_mkdocstrings.css">
-    
-      <link rel="stylesheet" href="assets/css/fonts.css">
     
       <link rel="stylesheet" href="assets/css/extra.css">
     
@@ -110,7 +114,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#multimolecule" class="md-skip">
+        <a href="#what-are-you-trying-to-do" class="md-skip">
           Skip to content
         </a>
       
@@ -342,25 +346,6 @@
   
   
     <li class="md-tabs__item">
-      <a href="io/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  io
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
       <a href="modules/" class="md-tabs__link">
         
   
@@ -497,6 +482,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="io/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  io
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="about/" class="md-tabs__link">
         
   
@@ -519,1073 +523,234 @@
     
     <div class="md-container" data-md-component="container">
       
+  
+  <script>document.documentElement.classList.add("mm-home-page")</script>
+  <section class="mm-hero">
+    <div class="md-grid mm-hero__inner">
+      <div class="mm-hero__content">
+        <p class="mm-hero__eyebrow">Accelerate Molecular Biology Research with Machine Learning</p>
+        <h1>MultiMolecule</h1>
+        <p class="mm-hero__description">Run biological task predictions from RNA and DNA sequences, fine-tune pretrained molecular models on labelled data, and build new workflows with curated datasets and reusable data and model components.</p>
+        
+          <div class="mm-stats">
+            
+              <div class="mm-stat">
+                <strong>48</strong>
+                <span>model families</span>
+              </div>
+            
+              <div class="mm-stat">
+                <strong>16</strong>
+                <span>datasets</span>
+              </div>
+            
+              <div class="mm-stat">
+                <strong>10</strong>
+                <span>task pipelines</span>
+              </div>
+            
+          </div>
+        
+      </div>
+      <div class="mm-hero__side">
+        <div class="mm-hero__visual" aria-hidden="true">
+          <img
+            class="mm-hero__fallback"
+            src="assets/images/p53-dna-poster.webp"
+            alt=""
+            loading="eager"
+          />
+          <div
+            class="mm-hero__viewer"
+            data-mm-p53-viewer
+            data-structure-url="assets/structures/p53-dna-1tup.pdb"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
       
         
       
       <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
           
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="." title="MultiMolecule" class="md-nav__button md-logo" aria-label="MultiMolecule" data-md-component="logo">
-      
-  <img src="assets/images/logo.png" alt="logo">
-
-    </a>
-    MultiMolecule
-  </label>
-  
-    <div class="md-nav__source">
-      <a href="https://github.com/DLS5-Omics/multimolecule" title="Go to repository" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
-  </div>
-  <div class="md-source__repository">
-    MultiMolecule
-  </div>
-</a>
-    </div>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
           
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MultiMolecule
+  <div class="md-content mm-home" data-md-component="content">
+    <article class="md-content__inner md-typeset">
+      
   
 
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MultiMolecule
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#introduction" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Introduction
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#community" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Community
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#citation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Citation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        License
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="data/dataset/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    data
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    
-  
-  
-  
-    
-  
-  
-  
-    <a href="datasets/gencode/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    datasets
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-  
-
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="io/fasta/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    io
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="modules/embeddings/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    modules
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    
-  
-  
-  
-    <a href="models/a2zchromatin/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    models
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="tokenisers/dna/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tokenisers
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="pipelines/mean-ribosome-load/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    pipelines
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="runner/config/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    runner
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="api/run/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    api
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="utils/rna/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    utils
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-        
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="about/license/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    about
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#introduction" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Introduction
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#community" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Community
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#citation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Citation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        License
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                 
-                  
 
 
   
   
 
 
-<h1 id="multimolecule">MultiMolecule<a class="headerlink" href="#multimolecule" title="Permanent link">&para;</a></h1>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Accelerate Molecular Biology Research with Machine Learning</p>
+  <h1>MultiMolecule</h1>
+
+<section class="mm-section mm-section--paths" id="paths">
+<div class="mm-section__inner">
+<h2 id="what-are-you-trying-to-do">What are you trying to do?<a class="headerlink" href="#what-are-you-trying-to-do" title="Permanent link">&para;</a></h2>
+<p>Start from the outcome: run predictions, fine-tune on labelled sequence data, inspect a model family, or load a curated dataset with a known task schema.</p>
+<div aria-label="MultiMolecule workflows" class="mm-workflow-screens">
+<section class="mm-workflow-panel" id="tasks">
+<div class="mm-workflow-copy">
+<p><span>Prediction</span></p>
+<h3 id="run-task-level-inference">Run task-level inference<a class="headerlink" href="#run-task-level-inference" title="Permanent link">&para;</a></h3>
+<p>Choose a biological endpoint, pass in RNA or DNA sequences, and get task-level predictions through a standard pipeline backed by a documented checkpoint, model card, citation, and license.</p>
 </div>
-<p><a href="https://doi.org/10.5281/zenodo.15119050"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.15119050.svg" /></a></p>
-<p><a href="https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img alt="Codacy - Quality" src="https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69" /></a>
-<a href="https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_coverage"><img alt="Codacy - Coverage" src="https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69" /></a>
-<a href="https://codecov.io/gh/DLS5-Omics/multimolecule"><img alt="CodeCov - Coverage" src="https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE" /></a></p>
-<p><a href="https://pypi.org/project/multimolecule"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/multimolecule" /></a>
-<a href="https://pypi.org/project/multimolecule"><img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/multimolecule" /></a>
-<a href="https://multimolecule.danling.org"><img alt="Downloads Statistics" src="https://static.pepy.tech/badge/multimolecule/month" /></a></p>
-<p><a href="https://www.gnu.org/licenses/agpl-3.0"><img alt="License: AGPL v3" src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" /></a></p>
-<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
-<p>Welcome to MultiMolecule (浦原), a foundational library designed to accelerate scientific research in molecular biology through machine learning.
-MultiMolecule provides a comprehensive yet flexible set of tools for researchers aiming to leverage AI with ease, focusing on biomolecular data (RNA, DNA, and protein).</p>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>MultiMolecule is built with flexibility and ease of use in mind.
-Its modular design allows you to utilize only the components you need, integrating seamlessly into your existing workflows without adding unnecessary complexity.
-The model and pipeline catalog covers RNA, DNA, and protein sequence modeling, including secondary structure prediction, splicing, regulatory activity and profile prediction, DNA methylation, polyadenylation, and mean ribosome load tasks.</p>
-<ul>
-<li><a href="data"><code>data</code></a>: Smart <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;multimolecule.data.Dataset&lt;/span&gt;" href="data/dataset/#multimolecule.data.Dataset"><code>Dataset</code></a> that automatically infer tasks—including their level (sequence, token, contact) and type (classification, regression). Provides multi-task datasets and samplers to facilitate multitask learning without additional configuration.</li>
-<li><a href="datasets"><code>datasets</code></a>: A collection of widely-used biomolecular datasets.</li>
-<li><a href="modules"><code>modules</code></a>: Modular neural network building blocks, including <a href="modules/embeddings">embeddings</a>, <a href="modules/heads">heads</a>, and criterions for constructing custom models.</li>
-<li><a href="models"><code>models</code></a>: Implementation of state-of-the-art pre-trained models in molecular biology.</li>
-<li><a href="tokenisers"><code>tokenisers</code></a>: Tokenizers to convert DNA, RNA, protein and other sequences to one-hot encodings.</li>
-<li><a href="pipelines"><code>pipelines</code></a>: Task-focused inference pipelines for structure prediction, splicing, regulatory genomics, methylation, polyadenylation, and mean ribosome load.</li>
-<li><a href="runner"><code>runner</code></a>: DanLing-based training, evaluation, and inference runner for fine-tuning MultiMolecule models on local or Hugging Face datasets.</li>
-</ul>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>Install the most recent stable version on PyPI:</p>
-<div class="language-shell highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>multimolecule
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span>
+<span class="normal"><a href="#__codelineno-0-5">5</a></span>
+<span class="normal"><a href="#__codelineno-0-6">6</a></span>
+<span class="normal"><a href="#__codelineno-0-7">7</a></span>
+<span class="normal"><a href="#__codelineno-0-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multimolecule</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="n">predict</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>    <span class="s2">&quot;rna-secondary-structure&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a>    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;multimolecule/ernierna-ss&quot;</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">structure</span> <span class="o">=</span> <span class="n">predict</span><span class="p">(</span><span class="s2">&quot;AUCAGCCUUCGUUCUGUAAACGG&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-<p>Install the latest version from the source:</p>
-<div class="language-shell highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/DLS5-Omics/MultiMolecule
+</section>
+<section class="mm-workflow-panel">
+<div class="mm-workflow-copy">
+<p><span>Fine-tuning</span></p>
+<h3 id="fine-tune-a-pretrained-model">Fine-tune a pretrained model<a class="headerlink" href="#fine-tune-a-pretrained-model" title="Permanent link">&para;</a></h3>
+<p>Fine-tune a pretrained molecular model on a Hugging Face dataset or labelled local table. MultiMolecule maps sequence and label columns into trainable batches, then keeps training and evaluation in the runner.</p>
+</div>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5"></a>    <span class="n">pretrained</span><span class="o">=</span><span class="s2">&quot;multimolecule/ernierna&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6"></a>    <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7"></a>        <span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="s2">&quot;multimolecule/chanrg&quot;</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8"></a>        <span class="s2">&quot;feature_cols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">],</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9"></a>        <span class="s2">&quot;label_cols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;secondary_structure&quot;</span><span class="p">],</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10"></a>    <span class="p">},</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="p">)</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="n">runner</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">Runner</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="n">runner</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
+</section>
+<section class="mm-workflow-panel">
+<div class="mm-workflow-copy">
+<p><span>Model Hub</span></p>
+<h3 id="start-from-a-model-family">Start from a model family<a class="headerlink" href="#start-from-a-model-family" title="Permanent link">&para;</a></h3>
+<p>Start from pretrained families that package tokenisers, configs, task heads, output types, model cards, citations, and licenses. Use them for inference, fine-tuning, or as reference implementations for new architectures.</p>
+</div>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span>
+<span class="normal"><a href="#__codelineno-2-8">8</a></span>
+<span class="normal"><a href="#__codelineno-2-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mm</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">RnaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;multimolecule/ernierna-ss&quot;</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="n">model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">AutoModelForRnaSecondaryStructurePrediction</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a>    <span class="s2">&quot;multimolecule/ernierna-ss&quot;</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="p">)</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="n">inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;AUCAGCCUUCGUUCUGUAAACGG&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+</section>
+<section class="mm-workflow-panel">
+<div class="mm-workflow-copy">
+<p><span>Dataset Hub</span></p>
+<h3 id="use-curated-biological-datasets">Use curated biological datasets<a class="headerlink" href="#use-curated-biological-datasets" title="Permanent link">&para;</a></h3>
+<p>Load biological datasets with task labels, input schemas, source metadata, citations, and licenses already attached. Use them as benchmarks, examples, or training data for new workflows.</p>
+</div>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dataset</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;multimolecule/chanrg&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+</section>
+</div>
+</div>
+</section>
+<section class="mm-section mm-section--stack">
+<div class="mm-section__inner">
+<h2 id="one-stack-underneath">One stack underneath<a class="headerlink" href="#one-stack-underneath" title="Permanent link">&para;</a></h2>
+<p>Start with task-level pipelines, model families, and curated datasets. When a project needs custom files, labels, tokenisation, training settings, or model internals, the same stack exposes those layers directly.</p>
+<div class="mm-stack-tower">
+<div class="mm-stack-row mm-stack-row--top">
+<section class="mm-stack-step mm-stack-step--execution">
+<p><span>Execution</span></p>
+<p><strong>Task-level entry points</strong></p>
+<p>Use pipelines for task-level inference, API classes for model-level control, and the runner for supervised training, evaluation, and experiment configuration.</p>
+<p class="mm-stack-links"><a href="runner/"><code>runner</code></a> · <a href="pipelines/"><code>pipelines</code></a> · <a href="api/"><code>api</code></a></p>
+</section>
+</div>
+<div class="mm-stack-row mm-stack-row--middle">
+<section class="mm-stack-step mm-stack-step--resources">
+<p><span>Resources</span></p>
+<p><strong>Ready-to-use resources</strong></p>
+<p>Use documented datasets and model families that already carry task context, expected inputs, citations, licenses, and training-ready metadata.</p>
+<p class="mm-stack-links"><a href="datasets/"><code>datasets</code></a> · <a href="models/"><code>models</code></a></p>
+</section>
+</div>
+<div class="mm-stack-row mm-stack-row--base">
+<section class="mm-stack-step mm-stack-step--data">
+<p><span>Data layer</span></p>
+<p><strong>Biological inputs to model-ready batches</strong></p>
+<p>IO reads biological formats, tokenisers encode molecules, and data abstractions map sequence, feature, and label columns into runner-ready batches.</p>
+<p class="mm-stack-links"><a href="io/"><code>io</code></a> · <a href="tokenisers/"><code>tokenisers</code></a> · <a href="data/"><code>data</code></a></p>
+</section>
+<section class="mm-stack-step mm-stack-step--model">
+<p><span>Model layer</span></p>
+<p><strong>Composable model internals</strong></p>
+<p>Reuse configs, embeddings, backbones, heads, losses, and output contracts across model families, or swap in new modules when designing new architectures.</p>
+<p class="mm-stack-links"><a href="models/"><code>models</code></a> · <a href="modules/"><code>modules</code></a></p>
+</section>
+</div>
+</div>
+</div>
+</section>
+<section class="mm-section mm-section--tail">
+<div class="mm-section__inner">
 <h2 id="community">Community<a class="headerlink" href="#community" title="Permanent link">&para;</a></h2>
+<div class="grid cards mm-trust-grid">
 <ul>
-<li><a href="https://multimolecule.discourse.group">Discourse</a>: release announcements, usage questions, model requests, RFCs, and community discussion.</li>
-<li><a href="https://github.com/DLS5-Omics/multimolecule/issues">GitHub Issues</a>: reproducible bugs, API issues, and implementation-tracked feature requests.</li>
+<li>
+<p><strong>Google Group</strong></p>
+<p>Follow new model and dataset releases, API changes, migration notes, and design RFCs.</p>
+<p><a class="md-button md-button--primary" href="https://groups.google.com/g/multimolecule">Subscribe to announcements</a></p>
+</li>
+<li>
+<p><strong>Discourse</strong></p>
+<p>Ask which pipeline fits your sequence, assay, or dataset; get help interpreting inputs, choosing checkpoints, preparing fine-tuning configs, and discussing model components.</p>
+<p><a class="md-button" href="https://multimolecule.discourse.group">Join discussion</a></p>
+</li>
 </ul>
-<h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">&para;</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The artifacts distributed in this repository are part of the MultiMolecule project.
-If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:</p>
 </div>
-<div class="language-bibtex highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">BibTeX</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-2-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nc">@software</span><span class="p">{</span><span class="nl">chen_2024_12638419</span><span class="p">,</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="na">author</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{Chen, Zhiyuan and Zhu, Sophia Y.}</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="na">title</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{MultiMolecule}</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">  </span><span class="na">doi</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">{10.5281/zenodo.12638419}</span><span class="p">,</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">  </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Zenodo}</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="na">url</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.5281/zenodo.12638419}</span><span class="p">,</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">  </span><span class="na">year</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="m">2024</span><span class="p">,</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">  </span><span class="na">month</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="nv">may</span><span class="p">,</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">  </span><span class="na">day</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="m">4</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="p">}</span>
-</span></code></pre></div></td></tr></table></div>
-<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
-<p>We believe openness is the Foundation of Research.</p>
-<p>MultiMolecule is licensed under the <a href="license/">GNU Affero General Public License</a>.</p>
-<p>For additional terms and clarifications, please refer to our <a href="license-faq/">License FAQ</a>.</p>
-<p>Please join us in building an open research community.</p>
-<p><code>SPDX-License-Identifier: AGPL-3.0-or-later</code></p>
+</div>
+</section>
 
 
 
@@ -1606,7 +771,7 @@ If you use MultiMolecule in your research, you must cite the MultiMolecule proje
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="December 13, 2024 06:42:16 UTC">2024-12-13 06:42:16</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 15, 2026 14:11:26 UTC">2026-05-15 14:11:26</span>
   </span>
 
     
@@ -1619,60 +784,13 @@ If you use MultiMolecule in your research, you must cite the MultiMolecule proje
   
 
 
+  
 
 
-                
 
-<!-- Giscus -->
-<script
-  src="https://giscus.app/client.js"
-  data-repo="MultiMolecule/multimolecule"
-  data-repo-id="R_kgDOMtrA6Q"
-  data-category="General"
-  data-category-id="DIC_kwDOMtrA6c4CpX2s"
-  data-mapping="pathname"
-  data-strict="0"
-  data-reactions-enabled="1"
-  data-emit-metadata="0"
-  data-input-position="top"
-  data-theme="preferred_color_scheme"
-  data-lang="en"
-  data-loading="lazy"
-  crossorigin="anonymous"
-  async>
-</script>
+    </article>
+  </div>
 
-<!-- Reload on palette change -->
-<script>
-  var palette = __md_get("__palette");
-  if (palette && typeof palette.color === "object")
-    if (palette.color.scheme === "slate") {
-      var giscus = document.querySelector("script[src*=giscus]");
-      giscus.setAttribute("data-theme", "dark");
-    }
-
-  /* Register event handlers after documented loaded */
-  document.addEventListener("DOMContentLoaded", function () {
-    var ref = document.querySelector("[data-md-component=palette]");
-    ref.addEventListener("change", function () {
-      var palette = __md_get("__palette");
-      if (palette && typeof palette.color === "object") {
-        var theme = palette.color.scheme === "slate" ? "dark" : "light";
-
-        /* Instruct Giscus to change theme */
-        var frame = document.querySelector(".giscus-frame");
-        frame.contentWindow.postMessage(
-          { giscus: { setConfig: { theme } } },
-          "https://giscus.app",
-        );
-      }
-    });
-  });
-</script>
-
-              </article>
-            </div>
-          
           
   <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
 
@@ -1690,6 +808,8 @@ If you use MultiMolecule in your research, you must cite the MultiMolecule proje
         <footer class="md-footer">
   
     
+      
+        
       
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
@@ -1855,6 +975,8 @@ If you use MultiMolecule in your research, you must cite the MultiMolecule proje
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
         <script src="javascripts/shortcuts.js"></script>
+      
+        <script src="assets/javascripts/p53-hero.js"></script>
       
     
   </body>
