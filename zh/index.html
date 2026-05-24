@@ -21,7 +21,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="面向分子生物学机器学习的一站式生态。">
+        <meta name="description" content="面向端到端生物分子机器学习的模块化生态。">
       
       
         <meta name="author" content="MultiMolecule">
@@ -532,7 +532,7 @@
       <div class="mm-hero__content">
         <p class="mm-hero__eyebrow">机器学习加速分子生物学研究</p>
         <h1>MultiMolecule</h1>
-        <p class="mm-hero__description">MultiMolecule 支持从 RNA 和 DNA 序列运行生物任务预测，在标注数据上微调预训练分子模型，并用整理好的数据集与可复用的数据/模型组件构建新工作流。</p>
+        <p class="mm-hero__description">MultiMolecule 是面向端到端生物分子机器学习的模块化 Python 生态：整合面向任务的 pipeline，覆盖 DNA、RNA 和蛋白质任务的模型与数据集 hub，带有序列 tokeniser 与生物 I/O 的可复用神经网络模块，以及统一训练、评估和推理的 runner、CLI 与 API。</p>
         
           <div class="mm-stats">
             
@@ -595,13 +595,13 @@
 <section class="mm-section mm-section--paths" id="paths">
 <div class="mm-section__inner">
 <h2 id="_1">你想完成什么？<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>从你要得到的结果开始：运行预测、在标注序列数据上微调、查看模型家族，或加载带有已知任务 schema 的整理数据集。</p>
-<div aria-label="MultiMolecule workflows" class="mm-workflow-screens">
+<p>MultiMolecule 覆盖四类常见入口：任务级预测、模型微调、直接使用预训练模型，以及整理好的生物数据集。</p>
+<div aria-label="MultiMolecule entry points" class="mm-workflow-screens">
 <section class="mm-workflow-panel" id="tasks">
 <div class="mm-workflow-copy">
 <p><span>Prediction</span></p>
-<h3 id="_2">运行任务级推理<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<p>选择一个生物终点，输入 RNA 或 DNA 序列，就可以通过标准 pipeline 从带文档、模型卡、引用和许可证的 checkpoint 得到任务级预测。</p>
+<h3 id="_2">运行任务级预测<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>已注册的 pipeline 将生物任务名称和输入序列转换成结构化预测，不需要手动组装模型、tokeniser 和后处理。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
@@ -622,9 +622,9 @@
 </section>
 <section class="mm-workflow-panel">
 <div class="mm-workflow-copy">
-<p><span>Fine-tuning</span></p>
+<p><span>Training</span></p>
 <h3 id="_3">微调预训练模型<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>在 Hugging Face 数据集或本地标注表格上微调预训练分子模型。MultiMolecule 会把序列和标签列映射成可训练 batch，并由 runner 管理训练和评估。</p>
+<p>runner 将预训练模型与 Hugging Face 数据集或本地标注表格连接起来，并根据序列列和标签列构建任务感知 batch。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
@@ -655,9 +655,9 @@
 </section>
 <section class="mm-workflow-panel">
 <div class="mm-workflow-copy">
-<p><span>Model Hub</span></p>
-<h3 id="_4">从模型家族开始<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<p>从已经打包 tokeniser、config、任务 head、输出类型、模型卡、引用和许可证的预训练模型家族出发，用于推理、微调，或作为新架构的参考实现。</p>
+<p><span>Models</span></p>
+<h3 id="_4">使用预训练模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>带文档的预训练模型支持在 Python 里直接控制模型，而不只通过任务 pipeline 使用。模型卡提供 checkpoint ID、输入约定、引用和许可证。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
@@ -680,9 +680,9 @@
 </section>
 <section class="mm-workflow-panel">
 <div class="mm-workflow-copy">
-<p><span>Dataset Hub</span></p>
-<h3 id="_5">使用整理好的生物数据集<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<p>加载已经带有任务标签、输入 schema、来源信息、引用和许可证的生物数据集，用作 benchmark、示例或新工作流的训练数据。</p>
+<p><span>Datasets</span></p>
+<h3 id="_5">使用整理好的数据集<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>整理好的生物数据集包含序列与标签字段、任务元数据、来源信息、引用和许可证，可用于复现实验、尝试示例或开始微调。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
 <span class="normal"><a href="#__codelineno-3-2">2</a></span>
@@ -697,35 +697,35 @@
 <section class="mm-section mm-section--stack">
 <div class="mm-section__inner">
 <h2 id="_6">底层是一套栈<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
-<p>从任务级 pipeline、模型家族和整理好的数据集开始即可。需要进一步控制文件、标签、tokenisation、训练设置或模型内部结构时，同一套栈也暴露这些底层层级。</p>
+<p>MultiMolecule 为这些入口提供同一套底层层级：带文档的资源、生物输入处理、可复用模型组件，以及用于预测、训练、评估和脚本化使用的执行工具。</p>
 <div class="mm-stack-tower">
 <div class="mm-stack-row mm-stack-row--top">
 <section class="mm-stack-step mm-stack-step--execution">
 <p><span>Execution</span></p>
 <p><strong>任务级入口</strong></p>
-<p>使用 pipeline 运行任务级推理，使用 API 类进行模型级控制，使用 runner 管理监督训练、评估和实验配置。</p>
+<p>pipeline 提供现成任务预测，runner 管理监督训练和评估，API 入口支持脚本和应用。</p>
 <p class="mm-stack-links"><a href="runner/"><code>runner</code></a> · <a href="pipelines/"><code>pipelines</code></a> · <a href="api/"><code>api</code></a></p>
 </section>
 </div>
 <div class="mm-stack-row mm-stack-row--middle">
 <section class="mm-stack-step mm-stack-step--resources">
 <p><span>Resources</span></p>
-<p><strong>可以直接使用的资源</strong></p>
-<p>使用已经带有任务语境、输入说明、引用、许可证和训练元数据的数据集与模型家族。</p>
+<p><strong>带文档的资源</strong></p>
+<p>数据集卡和模型卡整理支持的输入、任务名称、模型 checkpoint、引用、许可证和训练元数据。</p>
 <p class="mm-stack-links"><a href="datasets/"><code>datasets</code></a> · <a href="models/"><code>models</code></a></p>
 </section>
 </div>
 <div class="mm-stack-row mm-stack-row--base">
 <section class="mm-stack-step mm-stack-step--data">
 <p><span>Data layer</span></p>
-<p><strong>从生物输入到模型 batch</strong></p>
-<p>IO 读取生物格式，tokeniser 编码分子，data 把序列、特征和标签列映射成 runner 可用的 batch。</p>
+<p><strong>从生物文件到可训练 batch</strong></p>
+<p>IO 读取生物序列与结构格式，tokeniser 编码分子，data 推断任务字段并准备 runner 可用的 batch。</p>
 <p class="mm-stack-links"><a href="io/"><code>io</code></a> · <a href="tokenisers/"><code>tokenisers</code></a> · <a href="data/"><code>data</code></a></p>
 </section>
 <section class="mm-stack-step mm-stack-step--model">
 <p><span>Model layer</span></p>
-<p><strong>可组合的模型内部组件</strong></p>
-<p>复用不同模型家族中的 config、embedding、backbone、head、loss 和输出约定；也可以替换 modules 来设计新架构。</p>
+<p><strong>可复用的模型组件</strong></p>
+<p>models 提供预训练 config、AutoModel 类、checkpoint 和输出约定；modules 提供 backbone、head、loss 和 embedding，用于自定义架构。</p>
 <p class="mm-stack-links"><a href="models/"><code>models</code></a> · <a href="modules/"><code>modules</code></a></p>
 </section>
 </div>
@@ -739,12 +739,12 @@
 <ul>
 <li>
 <p><strong>Google Group</strong></p>
-<p>跟进新模型和数据集发布、API 变更、迁移说明和设计 RFC。</p>
+<p>接收发布公告、迁移说明和设计 RFC，不需要跟进每一个 issue。</p>
 <p><a class="md-button md-button--primary" href="https://groups.google.com/g/multimolecule">订阅公告</a></p>
 </li>
 <li>
 <p><strong>Discourse</strong></p>
-<p>讨论你的序列、实验或数据集适合哪个 pipeline，也可以交流输入解释、checkpoint 选择、微调配置和模型组件设计。</p>
+<p>讨论某个生物问题适合哪个 pipeline、模型或数据集，也可以分享配置、请求模型和交流模型组件设计。</p>
 <p><a class="md-button" href="https://multimolecule.discourse.group">加入讨论</a></p>
 </li>
 </ul>

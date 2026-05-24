@@ -21,7 +21,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="One-stop ecosystem for molecular biology machine learning.">
+        <meta name="description" content="Modular ecosystem for end-to-end biomolecular machine learning.">
       
       
         <meta name="author" content="MultiMolecule">
@@ -530,7 +530,7 @@
       <div class="mm-hero__content">
         <p class="mm-hero__eyebrow">Accelerate Molecular Biology Research with Machine Learning</p>
         <h1>MultiMolecule</h1>
-        <p class="mm-hero__description">Run biological task predictions from RNA and DNA sequences, fine-tune pretrained molecular models on labelled data, and build new workflows with curated datasets and reusable data and model components.</p>
+        <p class="mm-hero__description">MultiMolecule is a modular Python ecosystem for end-to-end biomolecular machine learning: it brings together task-aware pipelines, integrated model and dataset hubs for DNA, RNA and protein tasks, reusable neural modules with sequence tokenisers and biological I/O, and a unified runner, CLI and API for training, evaluation and inference.</p>
         
           <div class="mm-stats">
             
@@ -593,13 +593,13 @@
 <section class="mm-section mm-section--paths" id="paths">
 <div class="mm-section__inner">
 <h2 id="what-are-you-trying-to-do">What are you trying to do?<a class="headerlink" href="#what-are-you-trying-to-do" title="Permanent link">&para;</a></h2>
-<p>Start from the outcome: run predictions, fine-tune on labelled sequence data, inspect a model family, or load a curated dataset with a known task schema.</p>
-<div aria-label="MultiMolecule workflows" class="mm-workflow-screens">
+<p>MultiMolecule covers four common entry points: task-level prediction, model fine-tuning, direct use of pretrained models, and curated biological datasets.</p>
+<div aria-label="MultiMolecule entry points" class="mm-workflow-screens">
 <section class="mm-workflow-panel" id="tasks">
 <div class="mm-workflow-copy">
 <p><span>Prediction</span></p>
-<h3 id="run-task-level-inference">Run task-level inference<a class="headerlink" href="#run-task-level-inference" title="Permanent link">&para;</a></h3>
-<p>Choose a biological endpoint, pass in RNA or DNA sequences, and get task-level predictions through a standard pipeline backed by a documented checkpoint, model card, citation, and license.</p>
+<h3 id="run-task-level-predictions">Run task-level predictions<a class="headerlink" href="#run-task-level-predictions" title="Permanent link">&para;</a></h3>
+<p>Registered pipelines turn biological task names and input sequences into structured predictions without manual model assembly.</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
@@ -620,9 +620,9 @@
 </section>
 <section class="mm-workflow-panel">
 <div class="mm-workflow-copy">
-<p><span>Fine-tuning</span></p>
-<h3 id="fine-tune-a-pretrained-model">Fine-tune a pretrained model<a class="headerlink" href="#fine-tune-a-pretrained-model" title="Permanent link">&para;</a></h3>
-<p>Fine-tune a pretrained molecular model on a Hugging Face dataset or labelled local table. MultiMolecule maps sequence and label columns into trainable batches, then keeps training and evaluation in the runner.</p>
+<p><span>Training</span></p>
+<h3 id="fine-tune-pretrained-models">Fine-tune pretrained models<a class="headerlink" href="#fine-tune-pretrained-models" title="Permanent link">&para;</a></h3>
+<p>The runner connects pretrained models with Hugging Face datasets or labelled local tables, using sequence and label columns to build task-aware batches.</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
@@ -655,9 +655,9 @@
 </section>
 <section class="mm-workflow-panel">
 <div class="mm-workflow-copy">
-<p><span>Model Hub</span></p>
-<h3 id="start-from-a-model-family">Start from a model family<a class="headerlink" href="#start-from-a-model-family" title="Permanent link">&para;</a></h3>
-<p>Start from pretrained families that package tokenisers, configs, task heads, output types, model cards, citations, and licenses. Use them for inference, fine-tuning, or as reference implementations for new architectures.</p>
+<p><span>Models</span></p>
+<h3 id="use-pretrained-models">Use pretrained models<a class="headerlink" href="#use-pretrained-models" title="Permanent link">&para;</a></h3>
+<p>Documented pretrained models are available for Python-level control beyond task pipelines. Model cards give checkpoint IDs, expected inputs, citations, and licenses.</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
@@ -680,9 +680,9 @@
 </section>
 <section class="mm-workflow-panel">
 <div class="mm-workflow-copy">
-<p><span>Dataset Hub</span></p>
-<h3 id="use-curated-biological-datasets">Use curated biological datasets<a class="headerlink" href="#use-curated-biological-datasets" title="Permanent link">&para;</a></h3>
-<p>Load biological datasets with task labels, input schemas, source metadata, citations, and licenses already attached. Use them as benchmarks, examples, or training data for new workflows.</p>
+<p><span>Datasets</span></p>
+<h3 id="use-curated-datasets">Use curated datasets<a class="headerlink" href="#use-curated-datasets" title="Permanent link">&para;</a></h3>
+<p>Curated biological datasets include sequence and label fields, task metadata, source information, citations, and licenses for benchmarks, examples, and fine-tuning.</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
 <span class="normal"><a href="#__codelineno-3-2">2</a></span>
@@ -697,35 +697,35 @@
 <section class="mm-section mm-section--stack">
 <div class="mm-section__inner">
 <h2 id="one-stack-underneath">One stack underneath<a class="headerlink" href="#one-stack-underneath" title="Permanent link">&para;</a></h2>
-<p>Start with task-level pipelines, model families, and curated datasets. When a project needs custom files, labels, tokenisation, training settings, or model internals, the same stack exposes those layers directly.</p>
+<p>MultiMolecule provides the same layers behind these entry points: documented resources, biological input handling, reusable model components, and execution tools for prediction, training, evaluation, and scripted use.</p>
 <div class="mm-stack-tower">
 <div class="mm-stack-row mm-stack-row--top">
 <section class="mm-stack-step mm-stack-step--execution">
 <p><span>Execution</span></p>
 <p><strong>Task-level entry points</strong></p>
-<p>Use pipelines for task-level inference, API classes for model-level control, and the runner for supervised training, evaluation, and experiment configuration.</p>
+<p>Pipelines provide ready task predictions, the runner manages supervised training and evaluation, and API entry points support scripts and applications.</p>
 <p class="mm-stack-links"><a href="runner/"><code>runner</code></a> · <a href="pipelines/"><code>pipelines</code></a> · <a href="api/"><code>api</code></a></p>
 </section>
 </div>
 <div class="mm-stack-row mm-stack-row--middle">
 <section class="mm-stack-step mm-stack-step--resources">
 <p><span>Resources</span></p>
-<p><strong>Ready-to-use resources</strong></p>
-<p>Use documented datasets and model families that already carry task context, expected inputs, citations, licenses, and training-ready metadata.</p>
+<p><strong>Documented resources</strong></p>
+<p>Dataset cards and model cards collect supported inputs, task names, model checkpoints, citations, licenses, and training metadata.</p>
 <p class="mm-stack-links"><a href="datasets/"><code>datasets</code></a> · <a href="models/"><code>models</code></a></p>
 </section>
 </div>
 <div class="mm-stack-row mm-stack-row--base">
 <section class="mm-stack-step mm-stack-step--data">
 <p><span>Data layer</span></p>
-<p><strong>Biological inputs to model-ready batches</strong></p>
-<p>IO reads biological formats, tokenisers encode molecules, and data abstractions map sequence, feature, and label columns into runner-ready batches.</p>
+<p><strong>Biological files to trainable batches</strong></p>
+<p>IO reads biological sequence and structure formats, tokenisers encode molecules, and data abstractions infer task fields and prepare runner-ready batches.</p>
 <p class="mm-stack-links"><a href="io/"><code>io</code></a> · <a href="tokenisers/"><code>tokenisers</code></a> · <a href="data/"><code>data</code></a></p>
 </section>
 <section class="mm-stack-step mm-stack-step--model">
 <p><span>Model layer</span></p>
-<p><strong>Composable model internals</strong></p>
-<p>Reuse configs, embeddings, backbones, heads, losses, and output contracts across model families, or swap in new modules when designing new architectures.</p>
+<p><strong>Reusable model components</strong></p>
+<p>Models provide pretrained configs, AutoModel classes, checkpoints, and output contracts; modules provide backbones, heads, losses, and embeddings for custom architectures.</p>
 <p class="mm-stack-links"><a href="models/"><code>models</code></a> · <a href="modules/"><code>modules</code></a></p>
 </section>
 </div>
@@ -739,12 +739,12 @@
 <ul>
 <li>
 <p><strong>Google Group</strong></p>
-<p>Follow new model and dataset releases, API changes, migration notes, and design RFCs.</p>
+<p>Receive release announcements, migration notes, and design RFCs without following every issue.</p>
 <p><a class="md-button md-button--primary" href="https://groups.google.com/g/multimolecule">Subscribe to announcements</a></p>
 </li>
 <li>
 <p><strong>Discourse</strong></p>
-<p>Ask which pipeline fits your sequence, assay, or dataset; get help interpreting inputs, choosing checkpoints, preparing fine-tuning configs, and discussing model components.</p>
+<p>Ask which pipeline, model, or dataset fits a biological problem; share configs, request models, and discuss model components.</p>
 <p><a class="md-button" href="https://multimolecule.discourse.group">Join discussion</a></p>
 </li>
 </ul>
