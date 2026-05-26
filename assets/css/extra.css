@@ -382,11 +382,15 @@ html:has(.mm-home) .md-main__inner {
   max-width: 61rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 0.05rem 0.1rem 0.4rem 0;
+  padding: 0.05rem 0.1rem 0.12rem 0;
   scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   width: 100%;
   -webkit-overflow-scrolling: touch;
+}
+
+.mm-section--paths .mm-workflow-screens::-webkit-scrollbar {
+  display: none;
 }
 
 .mm-section--paths .mm-workflow-panel {
@@ -461,6 +465,58 @@ html:has(.mm-home) .md-main__inner {
 
 .mm-section--paths .highlighttable {
   margin: 0;
+}
+
+.mm-section--paths .mm-workflow-dots {
+  align-items: center;
+  display: flex;
+  gap: 0.42rem;
+  justify-content: center;
+  margin: 0.6rem 0 0;
+}
+
+.mm-section--paths .mm-workflow-dot {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  box-sizing: border-box;
+  display: inline-flex;
+  height: 1rem;
+  justify-content: center;
+  padding: 0;
+  width: 1rem;
+}
+
+.mm-section--paths .mm-workflow-dot::before {
+  background: transparent;
+  border: 1.5px solid var(--md-default-fg-color--light);
+  border-radius: inherit;
+  content: "";
+  display: block;
+  height: 0.46rem;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+  width: 0.46rem;
+}
+
+.mm-section--paths .mm-workflow-dot:hover::before,
+.mm-section--paths .mm-workflow-dot:focus-visible::before {
+  border-color: var(--mm-accent);
+  transform: scale(1.08);
+}
+
+.mm-section--paths .mm-workflow-dot:focus-visible {
+  outline: 2px solid var(--mm-accent);
+  outline-offset: 0.18rem;
+}
+
+.mm-section--paths .mm-workflow-dot.is-active::before,
+.mm-section--paths .mm-workflow-dot[aria-current="true"]::before {
+  background: var(--mm-accent);
+  border-color: var(--mm-accent);
 }
 
 .mm-section--paths .highlighttable tbody,
@@ -848,7 +904,7 @@ html:has(.mm-home) .md-main__inner {
 
   .mm-section--paths .mm-workflow-screens {
     gap: 0.6rem;
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.12rem;
   }
 
   .mm-section--paths .mm-workflow-panel {

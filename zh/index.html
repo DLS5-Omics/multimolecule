@@ -620,7 +620,7 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">structure</span> <span class="o">=</span> <span class="n">predict</span><span class="p">(</span><span class="s2">&quot;AUCAGCCUUCGUUCUGUAAACGG&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 </section>
-<section class="mm-workflow-panel">
+<section class="mm-workflow-panel" id="training">
 <div class="mm-workflow-copy">
 <p><span>Training</span></p>
 <h3 id="_3">微调预训练模型<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
@@ -653,7 +653,7 @@
 </span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="n">runner</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
 </section>
-<section class="mm-workflow-panel">
+<section class="mm-workflow-panel" id="models">
 <div class="mm-workflow-copy">
 <p><span>Models</span></p>
 <h3 id="_4">使用预训练模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
@@ -678,7 +678,7 @@
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 </section>
-<section class="mm-workflow-panel">
+<section class="mm-workflow-panel" id="datasets">
 <div class="mm-workflow-copy">
 <p><span>Datasets</span></p>
 <h3 id="_5">使用整理好的数据集<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
@@ -692,6 +692,12 @@
 </span></code></pre></div></td></tr></table></div>
 </section>
 </div>
+<nav aria-label="首页入口面板" class="mm-workflow-dots">
+<a class="mm-workflow-dot is-active" href="#tasks" aria-current="true" aria-label="显示预测入口"></a>
+<a class="mm-workflow-dot" href="#training" aria-label="显示训练入口"></a>
+<a class="mm-workflow-dot" href="#models" aria-label="显示模型入口"></a>
+<a class="mm-workflow-dot" href="#datasets" aria-label="显示数据集入口"></a>
+</nav>
 </div>
 </section>
 <section class="mm-section mm-section--stack">
@@ -977,6 +983,8 @@
         <script src="../javascripts/shortcuts.js"></script>
       
         <script src="../assets/javascripts/p53-hero.js"></script>
+      
+        <script src="../assets/javascripts/workflow-dots.js"></script>
       
     
   </body>

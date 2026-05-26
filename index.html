@@ -618,7 +618,7 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">structure</span> <span class="o">=</span> <span class="n">predict</span><span class="p">(</span><span class="s2">&quot;AUCAGCCUUCGUUCUGUAAACGG&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 </section>
-<section class="mm-workflow-panel">
+<section class="mm-workflow-panel" id="training">
 <div class="mm-workflow-copy">
 <p><span>Training</span></p>
 <h3 id="fine-tune-pretrained-models">Fine-tune pretrained models<a class="headerlink" href="#fine-tune-pretrained-models" title="Permanent link">&para;</a></h3>
@@ -653,7 +653,7 @@
 </span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="n">runner</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
 </section>
-<section class="mm-workflow-panel">
+<section class="mm-workflow-panel" id="models">
 <div class="mm-workflow-copy">
 <p><span>Models</span></p>
 <h3 id="use-pretrained-models">Use pretrained models<a class="headerlink" href="#use-pretrained-models" title="Permanent link">&para;</a></h3>
@@ -678,7 +678,7 @@
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 </section>
-<section class="mm-workflow-panel">
+<section class="mm-workflow-panel" id="datasets">
 <div class="mm-workflow-copy">
 <p><span>Datasets</span></p>
 <h3 id="use-curated-datasets">Use curated datasets<a class="headerlink" href="#use-curated-datasets" title="Permanent link">&para;</a></h3>
@@ -692,6 +692,12 @@
 </span></code></pre></div></td></tr></table></div>
 </section>
 </div>
+<nav aria-label="Workflow panels" class="mm-workflow-dots">
+<a class="mm-workflow-dot is-active" href="#tasks" aria-current="true" aria-label="Show prediction workflow"></a>
+<a class="mm-workflow-dot" href="#training" aria-label="Show training workflow"></a>
+<a class="mm-workflow-dot" href="#models" aria-label="Show model workflow"></a>
+<a class="mm-workflow-dot" href="#datasets" aria-label="Show dataset workflow"></a>
+</nav>
 </div>
 </section>
 <section class="mm-section mm-section--stack">
@@ -977,6 +983,8 @@
         <script src="javascripts/shortcuts.js"></script>
       
         <script src="assets/javascripts/p53-hero.js"></script>
+      
+        <script src="assets/javascripts/workflow-dots.js"></script>
       
     
   </body>
