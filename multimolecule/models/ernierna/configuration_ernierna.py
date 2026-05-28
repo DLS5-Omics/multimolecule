@@ -22,8 +22,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from ..configuration_utils import (
     BaseHeadConfig,
     HeadConfig,
@@ -118,7 +116,7 @@ class ErnieRnaConfig(PreTrainedConfig):
         attention_dropout: float = 0.1,
         max_position_embeddings: int = 1026,
         initializer_range: float = 0.02,
-        layer_norm_eps: float = 1e-12,
+        layer_norm_eps: float = 1e-5,
         position_embedding_type: str = "sinusoidal",
         pairwise_alpha: float = 0.8,
         is_decoder: bool = False,
@@ -148,7 +146,9 @@ class ErnieRnaConfig(PreTrainedConfig):
         self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        lm_head_kwargs = dict(lm_head or {})
+        lm_head_kwargs.setdefault("layer_norm_eps", layer_norm_eps)
+        self.lm_head = MaskedLMHeadConfig(**lm_head_kwargs)
         self.output_attention_biases = output_attention_biases
         self.add_cross_attention = add_cross_attention
 
@@ -182,7 +182,7 @@ class ErnieRnaSecondaryStructureHeadConfig(BaseHeadConfig):
     """
 
     num_labels: int = 1
-    problem_type: Optional[str] = None
+    problem_type: str | None = None
     dropout: float = 0.3
     kernel_size: int = 7
     num_layers: int = 8

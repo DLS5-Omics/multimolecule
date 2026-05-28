@@ -96,7 +96,8 @@ class MaskedLMHead(BasePredictionHead):
 
         output = self.dropout(output)
         output = self.transform(output)
-        output = self.decoder(output)
+        bias = self.bias if self.config.bias else None
+        output = F.linear(output, self.decoder.weight, bias)
         if self.activation is not None:
             output = self.activation(output)
 

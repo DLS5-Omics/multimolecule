@@ -70,6 +70,7 @@ class RotaryEmbedding(nn.Module):
         embedding_dim: int,
         base: float = 10000.0,
         scale: float = 1.0,
+        interleaved: bool = False,
         device: torch.device | None = None,
         dtype: torch.dtype = torch.float32,
     ):
@@ -81,12 +82,14 @@ class RotaryEmbedding(nn.Module):
             base: Base for computing inverse frequencies. Defaults to 10000.0.
             scale: Scaling factor for frequencies. Values > 1.0 extend context length
                    (e.g., scale=2.0 doubles the effective context). Defaults to 1.0.
+            interleaved: Whether rotary pairs are laid out as even/odd features instead of first/second halves.
             dtype: Data type for computations. Defaults to torch.float32.
         """
         super().__init__()
         self.embedding_dim = embedding_dim
         self.base = base
         self.scale = scale
+        self.interleaved = interleaved
         inv_freq_exponent = torch.arange(0, self.embedding_dim, 2, device=device, dtype=dtype) / self.embedding_dim
         self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
         self._initialized = False
@@ -143,7 +146,11 @@ class RotaryEmbedding(nn.Module):
             t = torch.arange(seq_length, device=x.device, dtype=self.inv_freq.dtype)
             # Apply scaling: divide frequencies by scale to extend context length
             freqs = torch.outer(t, self.inv_freq) / self.scale
-            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
+            if self.interleaved:
+                emb = freqs.repeat_interleave(2, dim=-1)
+            else:
+                emb = torch.cat((freqs, freqs), dim=-1)
+            emb = emb.to(x.device)
             self._cos_cached = emb.cos()[None, None, :, :]
             self._sin_cached = emb.sin()[None, None, :, :]
         # At this point, _cos_cached and _sin_cached are guaranteed to be Tensor
@@ -180,7 +187,10 @@ class RotaryEmbedding(nn.Module):
         sin = self._sin_cached[:, :, offset : offset + x.shape[-2], :]
         return (x * cos) + (self.rotate_half(x) * sin)
 
-    @staticmethod
-    def rotate_half(x: Tensor) -> Tensor:
+    def rotate_half(self, x: Tensor) -> Tensor:
+        if self.interleaved:
+            x1 = x[..., ::2]
+            x2 = x[..., 1::2]
+            return torch.stack((-x2, x1), dim=-1).flatten(-2)
         x1, x2 = x.chunk(2, dim=-1)
         return torch.cat((-x2, x1), dim=-1)

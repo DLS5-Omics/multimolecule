@@ -25,6 +25,7 @@ from .data import Dataset
 from .graph import maximum_weight_matching
 from .models import (
     AutoModelForContactPrediction,
+    AutoModelForProfilePrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
@@ -301,6 +302,7 @@ __all__ = [
     "PreTrainedConfig",
     "AutoModel",
     "AutoModelForContactPrediction",
+    "AutoModelForProfilePrediction",
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",

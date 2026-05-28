@@ -22,6 +22,7 @@
 
 from __future__ import annotations
 
+import gc
 import os
 
 import chanfig
@@ -30,7 +31,12 @@ import torch
 from multimolecule.models import ProGen2Config as Config
 from multimolecule.models import ProGen2ForPreTraining as Model
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
+from multimolecule.models.conversion_utils import (
+    append_output_suffix,
+    load_checkpoint,
+    save_checkpoint,
+    should_derive_output_path,
+)
 from multimolecule.tokenisers.protein.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
@@ -63,7 +69,9 @@ def convert_checkpoint(convert_config: ConvertConfig):
     config.tie_word_embeddings = False
 
     ckpt = torch.load(
-        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"), map_location=torch.device("cpu")
+        os.path.join(convert_config.checkpoint_path, "pytorch_model.bin"),
+        map_location=torch.device("cpu"),
+        weights_only=True,
     )
 
     orig_vocab = list(original_vocab_list)
@@ -74,6 +82,9 @@ def convert_checkpoint(convert_config: ConvertConfig):
     model = Model(config)
 
     load_checkpoint(model, state_dict)
+    del ckpt, state_dict
+    gc.collect()
+
     save_checkpoint(convert_config, model, tokenizer_config=get_tokenizer_config())
     print(f"Checkpoint saved to {convert_config.output_path}")
 
@@ -108,17 +119,20 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         else:
             state_dict[key] = value
 
+    word_embed = state_dict["model.embeddings.word_embeddings.weight"]
+    decoder_weight = state_dict["lm_head.weight"]
+    decoder_bias = state_dict["lm_head.bias"]
     word_embed_weight, decoder_weight, decoder_bias = convert_word_embeddings(
-        state_dict["model.embeddings.word_embeddings.weight"],
-        state_dict["lm_head.weight"],
-        state_dict["lm_head.bias"],
+        word_embed,
+        decoder_weight,
+        decoder_bias,
         old_vocab=original_vocab_list,
         new_vocab=vocab_list,
         std=config.initializer_range,
     )
-    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight
-    state_dict["lm_head.weight"] = decoder_weight
-    state_dict["lm_head.bias"] = decoder_bias
+    state_dict["model.embeddings.word_embeddings.weight"] = word_embed_weight.to(dtype=word_embed.dtype)
+    state_dict["lm_head.weight"] = decoder_weight.to(dtype=state_dict["lm_head.weight"].dtype)
+    state_dict["lm_head.bias"] = decoder_bias.to(dtype=state_dict["lm_head.bias"].dtype)
 
     return state_dict
 
@@ -186,28 +200,28 @@ original_vocab_list = [
 
 
 class ConvertConfig(ConvertConfig_):
-    fp16: bool = True
     root: str = os.path.dirname(__file__)
     output_path: str = Config.model_type
     default_variant: str | None = "progen2-base"
 
     def post(self):
         # Determine model variant from checkpoint path
+        derive_output_path = should_derive_output_path(self, Config.model_type)
         checkpoint_path = self.checkpoint_path.lower()
-        if "xlarge" in checkpoint_path:
-            self.output_path += "-xlarge"
-        elif "large" in checkpoint_path:
-            self.output_path += "-large"
-        elif "medium" in checkpoint_path:
-            self.output_path += "-medium"
-        elif "small" in checkpoint_path:
-            self.output_path += "-small"
-        elif "bfd90" in checkpoint_path:
-            self.output_path += "-bfd90"
-        elif "oas" in checkpoint_path:
-            self.output_path += "-oas"
-        elif "base" in checkpoint_path:
-            self.output_path += "-base"
+        if "xlarge" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "xlarge")
+        elif "large" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "large")
+        elif "medium" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "medium")
+        elif "small" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "small")
+        elif "bfd90" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "bfd90")
+        elif "oas" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "oas")
+        elif "base" in checkpoint_path and derive_output_path:
+            append_output_suffix(self, "base")
         super().post()
 
 

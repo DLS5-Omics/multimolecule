@@ -63,6 +63,8 @@ class UfoldPreTrainedModel(PreTrainedModel):
         elif isinstance(module, nn.BatchNorm2d):
             init.ones_(module.weight)
             init.zeros_(module.bias)
+        elif isinstance(module, UfoldModel):
+            module._reset_prior_buffers()
 
 
 class UfoldModel(UfoldPreTrainedModel):
@@ -79,6 +81,10 @@ class UfoldModel(UfoldPreTrainedModel):
         >>> output["contact_map"].shape
         torch.Size([1, 6, 6])
     """
+
+    pair_score: Tensor
+    gaussian_weights: Tensor
+    pos_weight: Tensor
 
     def __init__(self, config: UfoldConfig):
         super().__init__(config)
@@ -110,6 +116,26 @@ class UfoldModel(UfoldPreTrainedModel):
         )
         self.register_buffer("pos_weight", torch.tensor([config.pos_weight]), persistent=False)
         self.post_init()
+
+    def _reset_prior_buffers(self) -> None:
+        self.pair_score = torch.tensor(
+            [
+                [0.0, 0.0, 0.0, 2.0],
+                [0.0, 0.0, 3.0, 0.0],
+                [0.0, 3.0, 0.0, 0.8],
+                [2.0, 0.0, 0.8, 0.0],
+            ],
+            device=self.pair_score.device,
+            dtype=self.pair_score.dtype,
+        )
+        self.gaussian_weights = torch.exp(
+            -0.5 * torch.arange(30, device=self.gaussian_weights.device, dtype=self.gaussian_weights.dtype).pow(2)
+        )
+        self.pos_weight = torch.tensor(
+            [self.config.pos_weight],
+            device=self.pos_weight.device,
+            dtype=self.pos_weight.dtype,
+        )
 
     def postprocess(self, outputs, input_ids=None, **kwargs):
         postprocessed_contact_map = outputs.get("postprocessed_contact_map")
@@ -484,6 +510,20 @@ def _contact_a(a_hat: Tensor, mask: Tensor) -> Tensor:
 class UfoldModelOutput(ModelOutput):
     """
     Output type for UFold.
+
+    Args:
+        loss (`torch.FloatTensor` of shape `(1,)`, *optional*, returned when `labels` is provided):
+            Binary cross-entropy loss (with positive-class weighting) for base-pair prediction.
+        logits (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`):
+            Raw pre-sigmoid prediction scores. These are NOT probabilities; apply `torch.sigmoid` to obtain
+            per-pair probabilities.
+        contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
+            Post-sigmoid base-pair probability matrix. When `use_postprocessing=True` this is the result of
+            the constrained post-processing loop (a binary 0/1 map); otherwise it equals
+            `torch.sigmoid(logits)`.
+        postprocessed_contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
+            Binary contact map produced by the constrained UFold post-processing loop. Only present when
+            `use_postprocessing=True`; identical to `contact_map` in that case.
     """
 
     loss: torch.FloatTensor | None = None

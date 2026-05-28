@@ -80,6 +80,7 @@ from .hyenadna import (
 )
 from .modeling_auto import (
     AutoModelForContactPrediction,
+    AutoModelForProfilePrediction,
     AutoModelForRnaSecondaryStructurePrediction,
     AutoModelForSequencePrediction,
     AutoModelForTokenPrediction,
@@ -190,6 +191,7 @@ __all__ = [
     "RnaTokenizer",
     "ProteinTokenizer",
     "AutoModelForContactPrediction",
+    "AutoModelForProfilePrediction",
     "AutoModelForSequencePrediction",
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",

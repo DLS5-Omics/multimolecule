@@ -132,5 +132,8 @@ class RnaErnieConfig(PreTrainedConfig):
         self.is_decoder = is_decoder
         self.use_cache = use_cache
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        lm_head_kwargs = dict(lm_head or {})
+        lm_head_kwargs.setdefault("transform_act", hidden_act)
+        lm_head_kwargs.setdefault("layer_norm_eps", layer_norm_eps)
+        self.lm_head = MaskedLMHeadConfig(**lm_head_kwargs)
         self.add_cross_attention = add_cross_attention

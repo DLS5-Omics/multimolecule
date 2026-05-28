@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from inspect import signature
 from typing import Any
 
 import torch
@@ -49,6 +50,8 @@ from multimolecule.modules import SequencePredictionHead, TokenPredictionHead, e
 
 from ..modeling_outputs import SequencePredictorOutput, TokenPredictorOutput
 from .configuration_progen2 import ProGen2Config
+
+_CREATE_CAUSAL_MASK_PARAMETERS = set(signature(create_causal_mask).parameters)
 
 
 class ProGen2PreTrainedModel(PreTrainedModel):
@@ -81,6 +84,11 @@ class ProGen2PreTrainedModel(PreTrainedModel):
 
 class ProGen2Model(ProGen2PreTrainedModel):
     """
+    Note:
+        When gradient checkpointing is enabled (``model.gradient_checkpointing_enable()``), ``use_cache`` is
+        incompatible with recomputation and should be set to ``False``; past key-value caching will not function
+        correctly under gradient checkpointing.
+
     Examples:
         >>> import torch
         >>> from multimolecule import ProGen2Config, ProGen2Model
@@ -91,7 +99,6 @@ class ProGen2Model(ProGen2PreTrainedModel):
     def __init__(self, config: ProGen2Config, add_pooling_layer: bool = True):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
-        self.gradient_checkpointing = False
         self.embeddings = ProGen2Embeddings(config)
         self.decoder = ProGen2Decoder(config)
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
@@ -145,14 +152,16 @@ class ProGen2Model(ProGen2PreTrainedModel):
         if position_ids is None:
             position_ids = cache_position.unsqueeze(0)
 
-        causal_mask = create_causal_mask(
-            config=self.config,
-            inputs_embeds=inputs_embeds,
-            attention_mask=attention_mask,
-            cache_position=cache_position,
-            past_key_values=past_key_values,
-            position_ids=position_ids,
-        )
+        causal_mask_kwargs = {
+            "config": self.config,
+            "inputs_embeds": inputs_embeds,
+            "attention_mask": attention_mask,
+            "past_key_values": past_key_values,
+            "position_ids": position_ids,
+        }
+        if "cache_position" in _CREATE_CAUSAL_MASK_PARAMETERS:
+            causal_mask_kwargs["cache_position"] = cache_position
+        causal_mask = create_causal_mask(**causal_mask_kwargs)
 
         position_embeddings = self.rotary_emb(inputs_embeds, position_ids=position_ids)
 

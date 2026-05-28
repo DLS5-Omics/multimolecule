@@ -31,7 +31,12 @@ import torch
 from multimolecule.models import RnaFmConfig as Config
 from multimolecule.models import RnaFmForPreTraining, RnaFmForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
+from multimolecule.models.conversion_utils import (
+    append_output_suffix,
+    load_checkpoint,
+    save_checkpoint,
+    should_derive_output_path,
+)
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
@@ -46,19 +51,21 @@ def convert_checkpoint(convert_config):
     tokenizer_config = chanfig.NestedDict(get_tokenizer_config())
     vocab_list = get_alphabet().vocabulary
     original_vocab_list = original_vocabs["single"]
+    derive_output_path = should_derive_output_path(convert_config, Config.model_type)
     if "mrna" in path or "cds" in path:
         Model = RnaFmForPreTraining
         config = Config(num_labels=1, hidden_size=1280, embed_norm=False)
         vocab_list = get_alphabet(nmers=3).vocabulary
         original_vocab_list = original_vocabs["3mer"]
-        convert_config.output_path = "mrnafm"
-        convert_config.repo_id = "multimolecule/mrnafm"
+        if derive_output_path:
+            convert_config.output_path = "rnafm-mrna"
+            convert_config.repo_id = "multimolecule/mrnafm"
         config.codon = True
         tokenizer_config["codon"] = True
     elif "resnet" in path:
         Model = RnaFmForSecondaryStructurePrediction
-        convert_config.output_path += "-ss"
-        convert_config.repo_id += "-ss"
+        if derive_output_path:
+            append_output_suffix(convert_config, "ss")
     else:
         Model = RnaFmForPreTraining
     config.vocab_size = len(vocab_list)

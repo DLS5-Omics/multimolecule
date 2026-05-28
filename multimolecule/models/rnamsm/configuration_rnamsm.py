@@ -112,7 +112,7 @@ class RnaMsmConfig(PreTrainedConfig):
         attention_dropout: float = 0.1,
         max_position_embeddings: int = 1024,
         initializer_range: float = 0.02,
-        layer_norm_eps: float = 1e-12,
+        layer_norm_eps: float = 1e-5,
         position_embedding_type: str = "absolute",
         is_decoder: bool = False,
         use_cache: bool = True,
@@ -170,4 +170,6 @@ class RnaMsmConfig(PreTrainedConfig):
         self.pkm_topk = pkm_topk
         self.pkm_head_size = pkm_head_size
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        lm_head_kwargs = dict(lm_head or {})
+        lm_head_kwargs.setdefault("layer_norm_eps", layer_norm_eps)
+        self.lm_head = MaskedLMHeadConfig(**lm_head_kwargs)

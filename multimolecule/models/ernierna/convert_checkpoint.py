@@ -29,7 +29,12 @@ import torch
 from multimolecule.models import ErnieRnaConfig as Config
 from multimolecule.models import ErnieRnaForPreTraining, ErnieRnaForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
+from multimolecule.models.conversion_utils import (
+    append_output_suffix,
+    load_checkpoint,
+    save_checkpoint,
+    should_derive_output_path,
+)
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
@@ -45,8 +50,8 @@ def convert_checkpoint(convert_config):
     if "ss" in convert_config.checkpoint_path:
         Model = ErnieRnaForSecondaryStructurePrediction
         config.output_attention_biases = True
-        convert_config.output_path += "-ss"
-        convert_config.repo_id += "-ss"
+        if should_derive_output_path(convert_config, Config.model_type):
+            append_output_suffix(convert_config, "ss")
 
     model = Model(config)
 

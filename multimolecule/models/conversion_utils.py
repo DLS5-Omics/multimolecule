@@ -22,15 +22,18 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
-from typing import Callable, Dict, List, Sequence
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Sequence
 from warnings import warn
 
 import frontmatter as fm
 import torch
 from chanfig import Config
+from safetensors.torch import load_file
 from torch import nn
 from tqdm import tqdm
 from transformers import PreTrainedModel, pipeline
@@ -214,6 +217,23 @@ def customize_readme_for_variant(readme_path: str, output_path: str, default_var
         f.write(content)
 
 
+def append_output_suffix(convert_config: ConvertConfig, suffix: str) -> None:
+    suffix = suffix if suffix.startswith("-") else f"-{suffix}"
+    output_name = os.path.basename(convert_config.output_path.rstrip(os.sep))
+    if not output_name.endswith(suffix):
+        convert_config.output_path += suffix
+    if convert_config.repo_id is not None:
+        repo_name = convert_config.repo_id.rsplit("/", 1)[-1]
+        if not repo_name.endswith(suffix):
+            convert_config.repo_id += suffix
+
+
+def should_derive_output_path(convert_config: ConvertConfig, default_output_path: str) -> bool:
+    output_name = os.path.basename(convert_config.output_path.rstrip(os.sep))
+    default_name = os.path.basename(default_output_path.rstrip(os.sep))
+    return output_name == default_name
+
+
 def write_model(
     model_path: str,
     output_path: str,
@@ -222,8 +242,6 @@ def write_model(
     default_variant: str | None = None,
 ):
     model.save_pretrained(output_path, safe_serialization=True)
-    # Transformers 5 saves safetensors unconditionally; keep an explicit PyTorch
-    # checkpoint for consumers and Hub tooling that still expect this filename.
     torch.save(model.state_dict(), os.path.join(output_path, "pytorch_model.bin"))
     if hasattr(model.config, "max_position_embeddings") and "model_max_length" not in tokenizer_config:
         position_embedding_type = getattr(model.config, "position_embedding_type", None)
@@ -298,6 +316,9 @@ def prepare_sequence(ppl: Pipeline, sequence: str) -> tuple[str, Dict[str, objec
 
         if is_codon:
             span, step = 3, 3
+            sequence = sequence[: len(sequence) - len(sequence) % span]
+            if len(sequence) < span:
+                return sequence, build_mask_meta(sequence, None)
         elif nmers > 1:
             span, step = nmers, 1
         else:
@@ -370,14 +391,167 @@ def push_to_hub(convert_config: ConvertConfig, output_path: str, repo_type: str 
         api.upload_folder(repo_id=repo_id, repo_type=repo_type, token=token, folder_path=output_path)
 
 
+def _load_golden_case(golden_root: Path, output_path: str) -> tuple[Path, dict[str, Any]]:
+    model_root = golden_root / "models"
+    matches = sorted(model_root.glob(f"*/{output_path}/meta.json"))
+    if not matches:
+        raise FileNotFoundError(f"No golden fixture found for converted checkpoint {output_path!r} under {model_root}")
+    if len(matches) != 1:
+        joined = ", ".join(str(path.parent) for path in matches)
+        raise RuntimeError(f"Ambiguous golden fixtures for {output_path!r}: {joined}")
+    meta_path = matches[0]
+    return meta_path.parent, json.loads(meta_path.read_text())
+
+
+def _golden_model_loaders() -> dict[str, Any]:
+    from transformers import AutoModel, AutoModelForCausalLM, AutoModelForMaskedLM, AutoModelForPreTraining
+
+    import multimolecule.models  # noqa: F401
+    from multimolecule.models.modeling_auto import (
+        AutoModelForProfilePrediction,
+        AutoModelForRnaSecondaryStructurePrediction,
+        AutoModelForSequencePrediction,
+        AutoModelForTokenPrediction,
+    )
+    from multimolecule.models.ribonanzanet import (
+        RibonanzaNetForDegradationPrediction,
+        RibonanzaNetForSequenceDropoutPrediction,
+    )
+
+    return {
+        "AutoModel": AutoModel,
+        "AutoModelForCausalLM": AutoModelForCausalLM,
+        "AutoModelForMaskedLM": AutoModelForMaskedLM,
+        "AutoModelForPreTraining": AutoModelForPreTraining,
+        "AutoModelForProfilePrediction": AutoModelForProfilePrediction,
+        "AutoModelForRnaSecondaryStructurePrediction": AutoModelForRnaSecondaryStructurePrediction,
+        "AutoModelForSequencePrediction": AutoModelForSequencePrediction,
+        "AutoModelForTokenPrediction": AutoModelForTokenPrediction,
+        "RibonanzaNetForDegradationPrediction": RibonanzaNetForDegradationPrediction,
+        "RibonanzaNetForSequenceDropoutPrediction": RibonanzaNetForSequenceDropoutPrediction,
+    }
+
+
+def _golden_output_tensor(outputs: Any, key: str, model: nn.Module) -> torch.Tensor:
+    if key == "vocab_embeddings":
+        embeddings = model.get_input_embeddings()
+        if embeddings is None:
+            raise AssertionError("Model has no input embeddings for golden output 'vocab_embeddings'")
+        return embeddings.weight
+
+    if key == "coverage":
+        # `coverage` is the post-activation (e.g. softplus) prediction. The model exposes raw pre-activation
+        # values under `logits`; the activated coverage is produced by `postprocess`, which returns a
+        # `(coverage, channels)` tuple. Validate against that activated output, not the raw `logits`.
+        if not hasattr(model, "postprocess"):
+            raise AssertionError("Model has no postprocess() for golden output 'coverage'")
+        processed = model.postprocess(outputs)
+        value = processed[0] if isinstance(processed, tuple) else processed
+    else:
+        value = outputs[key] if isinstance(outputs, dict) else getattr(outputs, key)
+    if value is None:
+        raise AssertionError(f"Model output {key!r} is None")
+    if isinstance(value, (tuple, list)):
+        if not value:
+            raise AssertionError(f"Model output {key!r} is empty")
+        value = torch.stack(tuple(value), dim=0)
+    if not isinstance(value, torch.Tensor):
+        raise AssertionError(f"Model output {key!r} is {type(value).__name__}, not a tensor")
+    return value
+
+
+def _select_golden_output_subset(
+    key: str,
+    actual: torch.Tensor,
+    target: torch.Tensor,
+    meta: dict[str, Any],
+) -> tuple[torch.Tensor, torch.Tensor]:
+    if actual.shape == target.shape:
+        return actual, target
+    is_hidden_states = key == "hidden_states"
+    same_rank = actual.ndim == target.ndim
+    has_extra_embedding_state = actual.shape[0] == target.shape[0] + 1
+    trailing_shape_matches = actual.shape[1:] == target.shape[1:]
+    if is_hidden_states and same_rank and has_extra_embedding_state and trailing_shape_matches:
+        return actual[1:], target
+    upstream = meta.get("upstream", {})
+    if not isinstance(upstream, dict):
+        return actual, target
+    target_slice = upstream.get("target_slice")
+    if isinstance(target_slice, list) and all(isinstance(index, int) for index in target_slice):
+        if key.startswith("logits") or key == "coverage":
+            sliced = actual[..., target_slice]
+            return (sliced, target) if sliced.shape == target.shape else (actual, target)
+        if key == "vocab_embeddings":
+            sliced = actual[target_slice, ...]
+            return (sliced, target) if sliced.shape == target.shape else (actual, target)
+    return actual, target
+
+
+def validate_checkpoint_with_golden(convert_config: ConvertConfig, output_path: str) -> None:
+    golden_root = Path(convert_config.golden_root).expanduser().resolve()
+    case_dir, meta = _load_golden_case(golden_root, os.path.basename(output_path.rstrip(os.sep)))
+    tolerance = meta["tolerance"]
+    expected = load_file(str(case_dir / "expected.safetensors"))
+    inputs = load_file(str(case_dir / "inputs.safetensors"))
+
+    auto_model = str(meta.get("auto_model", "AutoModel"))
+    loader = _golden_model_loaders().get(auto_model)
+    if loader is None:
+        raise ValueError(f"{case_dir / 'meta.json'}: unsupported auto_model {auto_model!r}")
+
+    model = loader.from_pretrained(output_path).float()
+    model.eval()
+
+    kwargs: dict[str, Any] = dict(inputs)
+    if "hidden_states" in expected:
+        kwargs["output_hidden_states"] = True
+    if "attentions" in expected:
+        kwargs["output_attentions"] = True
+
+    with torch.no_grad():
+        actual_outputs = model(**kwargs, return_dict=True)
+
+    print(f"Golden fixture: {case_dir}")
+    for key in meta["outputs"]:
+        actual = _golden_output_tensor(actual_outputs, key, model).detach().cpu()
+        target = expected[key].detach().cpu()
+        actual, target = _select_golden_output_subset(key, actual, target, meta)
+        torch.testing.assert_close(
+            actual,
+            target,
+            atol=float(tolerance["atol"]),
+            rtol=float(tolerance["rtol"]),
+            check_dtype=False,
+        )
+        diff = (actual - target).abs()
+        print(f"  {key}: max_abs={diff.max().item():.3e} mean_abs={diff.mean().item():.3e}")
+
+
 def save_checkpoint(convert_config: ConvertConfig, model: PreTrainedModel, tokenizer_config: Dict):
-    model_path, output_path = convert_config.root, convert_config.output_path
+    model_path = convert_config.root
+    output_path = convert_config.output_path
+    if convert_config.delete_after_validate and not convert_config.validate_golden:
+        raise ValueError("--delete_after_validate requires --validate_golden")
     if os.path.exists(output_path):
         warn(f"Output directory: {output_path} already exists. Deleting it.")
         shutil.rmtree(output_path)
     os.makedirs(output_path)
-    write_model(model_path, output_path, model, tokenizer_config, default_variant=convert_config.default_variant)
-    push_to_hub(convert_config, output_path)
+    try:
+        write_model(
+            model_path,
+            output_path,
+            model,
+            tokenizer_config,
+            default_variant=convert_config.default_variant,
+        )
+        if convert_config.validate_golden:
+            validate_checkpoint_with_golden(convert_config, output_path)
+        push_to_hub(convert_config, output_path)
+    finally:
+        if convert_config.delete_after_validate:
+            shutil.rmtree(output_path, ignore_errors=True)
+            print(f"Deleted converted checkpoint at {output_path}")
 
 
 class ConvertConfig(Config):
@@ -387,6 +561,9 @@ class ConvertConfig(Config):
     default_variant: str | None = None
     push_to_hub: bool = False
     delete_existing: bool = False
+    validate_golden: bool = False
+    delete_after_validate: bool = False
+    golden_root: str = str(Path(__file__).resolve().parents[2] / "golden")
     repo_id: str | None = None
     token: str | None = None
 

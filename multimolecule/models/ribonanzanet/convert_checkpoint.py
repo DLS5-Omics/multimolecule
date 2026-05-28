@@ -34,7 +34,12 @@ from multimolecule.models import (
     RibonanzaNetForSequenceDropoutPrediction,
 )
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
+from multimolecule.models.conversion_utils import (
+    append_output_suffix,
+    load_checkpoint,
+    save_checkpoint,
+    should_derive_output_path,
+)
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
@@ -42,26 +47,27 @@ torch.manual_seed(1016)
 
 def convert_checkpoint(convert_config):
     print(f"Converting RibonanzaNet checkpoint at {convert_config.checkpoint_path}")
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"), weights_only=True)
     ckpt = ckpt.get("model", ckpt)
 
     config = Config()
     config.use_triangular_attention = any("triangle_attention" in key for key in ckpt.keys())
     vocab_list = get_alphabet().vocabulary
     config.vocab_size = len(vocab_list)
+    derive_output_path = should_derive_output_path(convert_config, Config.model_type)
 
     if "ct_predictor.weight" in ckpt:
         Model = RibonanzaNetForSecondaryStructurePrediction
-        convert_config.output_path += "-ss"
-        convert_config.repo_id += "-ss"
+        if derive_output_path:
+            append_output_suffix(convert_config, "ss")
     elif "Deg" in convert_config.checkpoint_path:
         Model = RibonanzaNetForDegradationPrediction
-        convert_config.output_path += "-deg"
-        convert_config.repo_id += "-deg"
+        if derive_output_path:
+            append_output_suffix(convert_config, "deg")
     elif "Drop" in convert_config.checkpoint_path:
         Model = RibonanzaNetForSequenceDropoutPrediction
-        convert_config.output_path += "-drop"
-        convert_config.repo_id += "-drop"
+        if derive_output_path:
+            append_output_suffix(convert_config, "drop")
     else:
         Model = RibonanzaNetForPreTraining
 

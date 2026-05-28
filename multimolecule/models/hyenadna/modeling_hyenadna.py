@@ -38,7 +38,6 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.utils import ModelOutput, TransformersKwargs
 from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
-from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import SequencePredictionHead, TokenPredictionHead
 
@@ -100,7 +99,6 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
         self.embeddings.word_embeddings = value
 
     @merge_with_config_defaults
-    @capture_outputs
     def forward(
         self,
         input_ids: Tensor | NestedTensor | None = None,
@@ -135,16 +133,18 @@ class HyenaDnaModel(HyenaDnaPreTrainedModel):
         if hidden_mask is not None:
             hidden_states = hidden_states * hidden_mask.to(hidden_states.dtype)
         all_hidden_states: tuple[Tensor, ...] = ()
+        if output_hidden_states:
+            all_hidden_states = all_hidden_states + (hidden_states,)
 
         for layer in self.layers:
-            if output_hidden_states:
-                all_hidden_states = all_hidden_states + (hidden_states,)
             if self.gradient_checkpointing and self.training:
                 hidden_states = self._gradient_checkpointing_func(layer.__call__, hidden_states)
             else:
                 hidden_states = layer(hidden_states)
             if hidden_mask is not None:
                 hidden_states = hidden_states * hidden_mask.to(hidden_states.dtype)
+            if output_hidden_states:
+                all_hidden_states = all_hidden_states + (hidden_states,)
 
         hidden_states = self.final_layer_norm(hidden_states.to(dtype=self.final_layer_norm.weight.dtype))
         if hidden_mask is not None:
@@ -626,8 +626,8 @@ class HyenaDnaModelOutput(ModelOutput):
             when `config.output_hidden_states=True`):
             Tuple of hidden states from the embedding output, each Hyena block, and the final layer norm.
         attentions:
-            Always `None`; HyenaDNA uses implicit long convolutions rather than attention layers. Provided for
-            compatibility with the Transformers output convention.
+            Always `None`; HyenaDNA uses implicit long convolutions rather than attention layers, so
+            ``output_attentions`` has no effect. Provided for compatibility with the Transformers output convention.
     """
 
     last_hidden_state: torch.FloatTensor | None = None

@@ -43,7 +43,8 @@ def convert_checkpoint(convert_config):
 
     model = RnaErnieForPreTraining(config)
 
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    # PaddlePaddle checkpoints require weights_only=False to deserialise non-tensor objects
+    ckpt = torch.load(convert_config.checkpoint_path, weights_only=False, map_location=torch.device("cpu"))
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list)
 
     load_checkpoint(model, state_dict)
@@ -77,9 +78,7 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
         state_dict[key] = value
 
     for key, value in state_dict.items():
-        # Zhiyuan: Is this right? Why do we need to transpose these weights?
-        # All other weights are not transposed
-        if "output.dense.weight" in key or "intermediate.dense.weight" in key:
+        if _is_paddle_linear_weight(key):
             state_dict[key] = value.t()
 
     word_embed_weight, decoder_bias = convert_word_embeddings(
@@ -92,6 +91,21 @@ def _convert_checkpoint(config, original_state_dict, vocab_list, original_vocab_
     state_dict["model.embeddings.word_embeddings.weight"] = state_dict["lm_head.decoder.weight"] = word_embed_weight
     state_dict["lm_head.decoder.bias"] = state_dict["lm_head.bias"] = decoder_bias
     return state_dict
+
+
+def _is_paddle_linear_weight(key: str) -> bool:
+    return key.endswith(
+        (
+            "attention.self.query.weight",
+            "attention.self.key.weight",
+            "attention.self.value.weight",
+            "attention.output.dense.weight",
+            "intermediate.dense.weight",
+            "output.dense.weight",
+            "pooler.dense.weight",
+            "lm_head.transform.dense.weight",
+        )
+    )
 
 
 original_vocab_list = [

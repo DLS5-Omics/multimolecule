@@ -97,7 +97,6 @@ class RnaMsmModel(RnaMsmPreTrainedModel):
     def __init__(self, config: RnaMsmConfig, add_pooling_layer: bool = True):
         super().__init__(config)
         self.pad_token_id = config.pad_token_id
-        self.gradient_checkpointing = False
         self.embeddings = RnaMsmEmbeddings(config)
         self.encoder = RnaMsmEncoder(config)
         self.pooler = RnaMsmPooler(config) if add_pooling_layer else None
@@ -593,7 +592,7 @@ class RnaMsmEmbeddings(nn.Module):
             )
         else:
             self.register_parameter("msa_embeddings", None)
-        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=1e-12)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
     def forward(
@@ -931,8 +930,6 @@ class RnaMsmMultiheadAttention(nn.Module):
             )
             attention_scores = attention_scores.view(bsz * self.num_attention_heads, tgt_len, src_len)
 
-        # attention_probs = F.softmax(attention_scores, dim=-1, dtype=torch.float32)
-        # attention_probs = attention_probs.type_as(attention_scores)
         attention_probs = attention_scores.softmax(-1)
         attention_probs = F.dropout(
             attention_probs,

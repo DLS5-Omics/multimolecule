@@ -113,7 +113,7 @@ class CaLmConfig(PreTrainedConfig):
         attention_dropout: float = 0.1,
         max_position_embeddings: int = 1026,
         initializer_range: float = 0.02,
-        layer_norm_eps: float = 1e-12,
+        layer_norm_eps: float = 1e-5,
         position_embedding_type: str = "rotary",
         is_decoder: bool = False,
         use_cache: bool = True,
@@ -149,5 +149,8 @@ class CaLmConfig(PreTrainedConfig):
         self.emb_layer_norm_before = emb_layer_norm_before
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
+        lm_head_kwargs = dict(lm_head or {})
+        lm_head_kwargs.setdefault("layer_norm_eps", layer_norm_eps)
+        # CaLm always constructs lm_head (never None); contrasts with DnaBert where lm_head is optional.
+        self.lm_head = MaskedLMHeadConfig(**lm_head_kwargs)
         self.add_cross_attention = add_cross_attention

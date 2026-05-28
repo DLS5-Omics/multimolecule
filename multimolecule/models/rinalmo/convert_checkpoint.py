@@ -30,7 +30,12 @@ import torch
 from multimolecule.models import RiNALMoConfig as Config
 from multimolecule.models import RiNALMoForPreTraining, RiNALMoForSecondaryStructurePrediction
 from multimolecule.models.conversion_utils import ConvertConfig as ConvertConfig_
-from multimolecule.models.conversion_utils import load_checkpoint, save_checkpoint
+from multimolecule.models.conversion_utils import (
+    append_output_suffix,
+    load_checkpoint,
+    save_checkpoint,
+    should_derive_output_path,
+)
 from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alphabet, get_tokenizer_config
 
 torch.manual_seed(1016)
@@ -49,7 +54,7 @@ def convert_checkpoint(convert_config: ConvertConfig):
         raise ValueError(f"Unknown fine-tuning task: {convert_config.task}")
     model = Model(config)
 
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"), weights_only=True)
     ckpt = ckpt.get("model", ckpt)
     state_dict = _convert_checkpoint(config, ckpt, vocab_list, original_vocab_list, task=convert_config.task)
 
@@ -169,6 +174,7 @@ class ConvertConfig(ConvertConfig_):
     output_path: str = Config.model_type
 
     def post(self):
+        derive_output_path = should_derive_output_path(self, Config.model_type)
         checkpoint_path = Path(self.checkpoint_path).stem.lower()
         if "giga" in checkpoint_path:
             self.size = "giga"
@@ -180,7 +186,8 @@ class ConvertConfig(ConvertConfig_):
             self.size = "nano"
         else:
             raise ValueError(f"Unknown checkpoint size in {self.checkpoint_path}")
-        self.output_path += f"-{self.size}"
+        if derive_output_path:
+            append_output_suffix(self, self.size)
         if "pretrained" in checkpoint_path:
             self.task = None
         elif "ft" in checkpoint_path:
@@ -196,7 +203,8 @@ class ConvertConfig(ConvertConfig_):
                 self.task = "donor"
             else:
                 raise ValueError(f"Unknown fine-tuning task in {self.checkpoint_path}")
-            self.output_path += f"-{self.task}"
+            if derive_output_path:
+                append_output_suffix(self, self.task)
         else:
             raise ValueError(f"Unknown checkpoint type in {self.checkpoint_path}")
         super().post()

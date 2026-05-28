@@ -459,6 +459,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
                 "bi-directional self-attention."
             )
         self.model = CaLmModel(config, add_pooling_layer=False)
+        # CaLm always has an LM head (config.lm_head is never None, unlike DnaBert which allows None)
         self.lm_head = MaskedLMHead(config, weight=self.model.embeddings.word_embeddings.weight)
 
         # Initialize weights and apply final processing
@@ -507,7 +508,7 @@ class CaLmForMaskedLM(CaLmPreTrainedModel):
 
 
 class CaLmForPreTraining(CaLmForMaskedLM):
-    pass
+    """Alias for [`CaLmForMaskedLM`] used as the canonical pre-training entry point."""
 
 
 class CaLmEmbeddings(nn.Module):
@@ -785,7 +786,7 @@ class CaLmSelfAttention(nn.Module):
             self.max_position_embeddings = config.max_position_embeddings
             self.distance_embedding = nn.Embedding(2 * config.max_position_embeddings - 1, self.attention_head_size)
         elif self.position_embedding_type == "rotary":
-            self.rotary_embeddings = RotaryEmbedding(embedding_dim=self.attention_head_size)
+            self.rotary_embeddings = RotaryEmbedding(embedding_dim=self.attention_head_size, interleaved=True)
 
         self.is_decoder = config.is_decoder
         self.is_causal = config.is_decoder if is_causal is None else is_causal
@@ -902,6 +903,9 @@ class CaLmCrossAttention(nn.Module):
             self.max_position_embeddings = config.max_position_embeddings
             self.distance_embedding = nn.Embedding(2 * config.max_position_embeddings - 1, self.attention_head_size)
         elif self.position_embedding_type == "rotary":
+            # NOTE: CaLmSelfAttention uses interleaved=True but CaLmCrossAttention uses the default
+            # (interleaved=False). This mismatch is left as-is: cross-attention+rotary is not exercised
+            # in the default encoder config (is_decoder=False), so it does not affect golden outputs.
             self.rotary_embeddings = RotaryEmbedding(embedding_dim=self.attention_head_size)
 
         self.is_decoder = config.is_decoder

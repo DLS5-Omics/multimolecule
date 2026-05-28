@@ -36,12 +36,12 @@ from multimolecule.tokenisers.rna.utils import convert_word_embeddings, get_alph
 torch.manual_seed(1016)
 
 
-original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", "<eos>"]
+original_vocab_list = ["<pad>", "<eos>", "<unk>", "A", "G", "C", "U", "<cls>", "<mask>", None]
 
 
 def convert_checkpoint(convert_config):
     print(f"Converting UtrLM checkpoint at {convert_config.checkpoint_path}")
-    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"))
+    ckpt = torch.load(convert_config.checkpoint_path, map_location=torch.device("cpu"), weights_only=True)
 
     config = chanfig.FlatDict(num_labels=1)
     config.mfe_head = {"num_labels": 1}

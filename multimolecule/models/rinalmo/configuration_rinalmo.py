@@ -22,8 +22,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from ..configuration_utils import (
     BaseHeadConfig,
     HeadConfig,
@@ -82,8 +80,6 @@ class RiNALMoConfig(PreTrainedConfig):
         use_cache:
             Whether or not the model should return the last key/values attentions (not used by all models). Only
             relevant if `config.is_decoder=True`.
-        emb_layer_norm_before:
-            Whether to apply layer normalization after embeddings but before the main stem of the network.
         learnable_beta:
             Whether to make the swish-gate beta parameter learnable.
         token_dropout:
@@ -123,7 +119,6 @@ class RiNALMoConfig(PreTrainedConfig):
         position_embedding_type: str = "rotary",
         is_decoder: bool = False,
         use_cache: bool = True,
-        emb_layer_norm_before: bool = True,
         learnable_beta: bool = True,
         token_dropout: bool = True,
         head: HeadConfig | None = None,
@@ -131,6 +126,7 @@ class RiNALMoConfig(PreTrainedConfig):
         add_cross_attention: bool = False,
         **kwargs,
     ):
+        kwargs.setdefault("tie_word_embeddings", False)
         super().__init__(**kwargs)
         validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
@@ -150,8 +146,9 @@ class RiNALMoConfig(PreTrainedConfig):
         self.learnable_beta = learnable_beta
         self.token_dropout = token_dropout
         self.head = HeadConfig(**head) if head is not None else None
-        self.lm_head = MaskedLMHeadConfig(**lm_head) if lm_head is not None else None
-        self.emb_layer_norm_before = emb_layer_norm_before
+        lm_head_kwargs = dict(lm_head or {})
+        lm_head_kwargs.setdefault("layer_norm_eps", layer_norm_eps)
+        self.lm_head = MaskedLMHeadConfig(**lm_head_kwargs)
         self.add_cross_attention = add_cross_attention
 
 
@@ -194,7 +191,7 @@ class RiNALMoSecondaryStructureHeadConfig(BaseHeadConfig):
     """
 
     num_labels: int = 1
-    problem_type: Optional[str] = None
+    problem_type: str | None = None
     dropout: float = 0.0
     kernel_size: int = 3
     num_layers: int = 2
