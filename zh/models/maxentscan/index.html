@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -3984,7 +3984,7 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The artifacts distributed in this repository are part of the MultiMolecule project.
-If you use MultiMolecule in your research, you must cite the MultiMolecule project as follows:</p>
+If MultiMolecule supports your research, please cite the MultiMolecule project as follows:</p>
 </div>
 <div class="language-bibtex highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">BibTeX</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
@@ -4032,7 +4032,9 @@ If you use MultiMolecule in your research, you must cite the MultiMolecule proje
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -4055,6 +4057,7 @@ If you use MultiMolecule in your research, you must cite the MultiMolecule proje
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt; (&lt;code&gt;multimolecule.models.configuration_utils.PreTrainedConfig&lt;/code&gt;)" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
+
 
 
         <p>This is the configuration class to store the configuration of a
@@ -4173,7 +4176,8 @@ derived from <code>mode</code>.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/maxentscan/configuration_maxentscan.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-34"> 34</a></span>
 <span class="normal"><a href="#__codelineno-0-35"> 35</a></span>
@@ -4329,7 +4333,8 @@ derived from <code>mode</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4363,6 +4368,7 @@ derived from <code>mode</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MaxEntScanPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.maxentscan.modeling_maxentscan.MaxEntScanPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.maxentscan.MaxEntScanPreTrainedModel">MaxEntScanPreTrainedModel</a></code></p>
 
 
+
         <p>MaxEntScan scorer with sequence-level regression loss support.</p>
 
 
@@ -4388,7 +4394,8 @@ derived from <code>mode</code>.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/maxentscan/modeling_maxentscan.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-198">198</a></span>
 <span class="normal"><a href="#__codelineno-0-199">199</a></span>
@@ -4476,7 +4483,8 @@ derived from <code>mode</code>.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4510,6 +4518,7 @@ derived from <code>mode</code>.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;MaxEntScanPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.maxentscan.modeling_maxentscan.MaxEntScanPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.maxentscan.MaxEntScanPreTrainedModel">MaxEntScanPreTrainedModel</a></code></p>
 
 
+
         <p>Maximum-entropy splice-site scorer (Yeo &amp; Burge, 2004).</p>
 <p>The model has no trainable weights. It exposes a single maximum-entropy score per input window through fixed
 score-table buffers populated from the published Yeo &amp; Burge (2004) tables.</p>
@@ -4537,7 +4546,8 @@ score-table buffers populated from the published Yeo &amp; Burge (2004) tables.<
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/maxentscan/modeling_maxentscan.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-145">145</a></span>
 <span class="normal"><a href="#__codelineno-0-146">146</a></span>
@@ -4645,7 +4655,8 @@ score-table buffers populated from the published Yeo &amp; Burge (2004) tables.<
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4679,6 +4690,7 @@ score-table buffers populated from the published Yeo &amp; Burge (2004) tables.<
               Bases: <code><span title="transformers.modeling_utils.PreTrainedModel">PreTrainedModel</span></code></p>
 
 
+
         <p>An abstract class to handle the fixed maximum-entropy score tables and a simple interface for downloading and
 loading the published MaxEntScan parameters.</p>
 
@@ -4688,7 +4700,8 @@ loading the published MaxEntScan parameters.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/maxentscan/modeling_maxentscan.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-110">110</a></span>
 <span class="normal"><a href="#__codelineno-0-111">111</a></span>
@@ -4760,7 +4773,8 @@ loading the published MaxEntScan parameters.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4806,7 +4820,7 @@ loading the published MaxEntScan parameters.</p>
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 26, 2026 03:52:04 UTC">2026-05-26 03:52:04</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 28, 2026 17:16:50 UTC">2026-05-28 17:16:50</span>
   </span>
 
     
