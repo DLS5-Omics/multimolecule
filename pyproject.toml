@@ -99,11 +99,14 @@ output-format = "colorized"
 fail-under = 9.8
 
 [tool.pytest.ini_options]
-addopts = "--import-mode=importlib --doctest-modules --cov"
+addopts = "--import-mode=importlib --doctest-modules --cov multimolecule --cov-report xml --cov-report json --cov-report term"
+testpaths = [
+  "tests",
+  "multimolecule",
+]
 
 [tool.coverage.run]
 branch = true
-include = [ "multimolecule/**" ]
 
 [tool.coverage.paths]
 source = [ "multimolecule" ]

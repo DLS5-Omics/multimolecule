@@ -306,9 +306,9 @@ class DnaBertSForTokenPrediction(DnaBertSPreTrainedModel):
         >>> config = DnaBertSConfig()
         >>> model = DnaBertSForTokenPrediction(config)
         >>> input_ids = torch.randint(0, config.vocab_size, (1, 16))
-        >>> output = model(input_ids, labels=torch.randint(2, (1, 14)))
+        >>> output = model(input_ids, labels=torch.randint(2, (1, 16)))
         >>> output["logits"].shape
-        torch.Size([1, 14, 1])
+        torch.Size([1, 16, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
@@ -358,9 +358,9 @@ class DnaBertSForContactPrediction(DnaBertSPreTrainedModel):
         >>> config = DnaBertSConfig()
         >>> model = DnaBertSForContactPrediction(config)
         >>> input_ids = torch.randint(0, config.vocab_size, (1, 16))
-        >>> output = model(input_ids, labels=torch.randint(2, (1, 14, 14)))
+        >>> output = model(input_ids, labels=torch.randint(2, (1, 16, 16)))
         >>> output["logits"].shape
-        torch.Size([1, 14, 14, 1])
+        torch.Size([1, 16, 16, 1])
         >>> output["loss"]  # doctest:+ELLIPSIS
         tensor(..., grad_fn=<BinaryCrossEntropyWithLogitsBackward0>)
     """
@@ -434,7 +434,7 @@ class DnaBertSEmbeddings(nn.Module):
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
 
-        # DNABERT-S does not use token_type_ids
+        # DNABERT-S always uses token type 0 (no differentiation between segment types)
         token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=inputs_embeds.device)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
 
