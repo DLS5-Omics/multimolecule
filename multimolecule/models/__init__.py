@@ -102,6 +102,17 @@ from .progen2 import (
     ProGen2ForTokenPrediction,
     ProGen2Model,
 )
+from .proteinbert import (
+    ProteinBertConfig,
+    ProteinBertForMaskedLM,
+    ProteinBertForPreTraining,
+    ProteinBertForPreTrainingOutput,
+    ProteinBertForSequencePrediction,
+    ProteinBertForTokenPrediction,
+    ProteinBertModel,
+    ProteinBertModelOutput,
+    ProteinBertPreTrainedModel,
+)
 from .ribonanzanet import (
     RibonanzaNetConfig,
     RibonanzaNetForContactPrediction,
@@ -262,6 +273,15 @@ __all__ = [
     "ProGen2ForTokenPrediction",
     "ProGen2ForCausalLM",
     "ProGen2ForPreTraining",
+    "ProteinBertConfig",
+    "ProteinBertModel",
+    "ProteinBertPreTrainedModel",
+    "ProteinBertForSequencePrediction",
+    "ProteinBertForTokenPrediction",
+    "ProteinBertForMaskedLM",
+    "ProteinBertForPreTraining",
+    "ProteinBertModelOutput",
+    "ProteinBertForPreTrainingOutput",
     "RibonanzaNetConfig",
     "RibonanzaNetModel",
     "RibonanzaNetForContactPrediction",
