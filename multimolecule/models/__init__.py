@@ -42,6 +42,18 @@ from .calm import (
     CaLmForTokenPrediction,
     CaLmModel,
 )
+from .carp import (
+    CarpConfig,
+    CarpEncoderOutput,
+    CarpForContactPrediction,
+    CarpForMaskedLM,
+    CarpForPreTraining,
+    CarpForSequencePrediction,
+    CarpForTokenPrediction,
+    CarpModel,
+    CarpModelOutput,
+    CarpPreTrainedModel,
+)
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
 from .dnabert import (
     DnaBertConfig,
@@ -233,6 +245,16 @@ __all__ = [
     "CaLmForTokenPrediction",
     "CaLmForMaskedLM",
     "CaLmForPreTraining",
+    "CarpConfig",
+    "CarpModel",
+    "CarpPreTrainedModel",
+    "CarpModelOutput",
+    "CarpEncoderOutput",
+    "CarpForSequencePrediction",
+    "CarpForTokenPrediction",
+    "CarpForContactPrediction",
+    "CarpForMaskedLM",
+    "CarpForPreTraining",
     "DnaBertConfig",
     "DnaBertModel",
     "DnaBertForContactPrediction",
