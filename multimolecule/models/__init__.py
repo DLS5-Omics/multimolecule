@@ -32,6 +32,16 @@ from .ablang import (
     AbLangModel,
     AbLangPreTrainedModel,
 )
+from .ablang2 import (
+    AbLang2Config,
+    AbLang2ForContactPrediction,
+    AbLang2ForMaskedLM,
+    AbLang2ForPreTraining,
+    AbLang2ForSequencePrediction,
+    AbLang2ForTokenPrediction,
+    AbLang2Model,
+    AbLang2PreTrainedModel,
+)
 from .amplify import (
     AmplifyConfig,
     AmplifyForContactPrediction,
@@ -244,6 +254,14 @@ __all__ = [
     "AbLangForTokenPrediction",
     "AbLangForMaskedLM",
     "AbLangForPreTraining",
+    "AbLang2Config",
+    "AbLang2Model",
+    "AbLang2PreTrainedModel",
+    "AbLang2ForContactPrediction",
+    "AbLang2ForSequencePrediction",
+    "AbLang2ForTokenPrediction",
+    "AbLang2ForMaskedLM",
+    "AbLang2ForPreTraining",
     "AmplifyConfig",
     "AmplifyModel",
     "AmplifyForContactPrediction",
