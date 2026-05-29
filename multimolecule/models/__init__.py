@@ -23,6 +23,15 @@
 from multimolecule.modules import HeadConfig
 from multimolecule.tokenisers import DnaTokenizer, ProteinTokenizer, RnaTokenizer
 
+from .ablang import (
+    AbLangConfig,
+    AbLangForMaskedLM,
+    AbLangForPreTraining,
+    AbLangForSequencePrediction,
+    AbLangForTokenPrediction,
+    AbLangModel,
+    AbLangPreTrainedModel,
+)
 from .amplify import (
     AmplifyConfig,
     AmplifyForContactPrediction,
@@ -228,6 +237,13 @@ __all__ = [
     "AutoModelForTokenPrediction",
     "AutoModelForRnaSecondaryStructurePrediction",
     "validate_attention_dimensions",
+    "AbLangConfig",
+    "AbLangModel",
+    "AbLangPreTrainedModel",
+    "AbLangForSequencePrediction",
+    "AbLangForTokenPrediction",
+    "AbLangForMaskedLM",
+    "AbLangForPreTraining",
     "AmplifyConfig",
     "AmplifyModel",
     "AmplifyForContactPrediction",
