@@ -74,6 +74,15 @@ from .carp import (
     CarpPreTrainedModel,
 )
 from .configuration_utils import PreTrainedConfig, validate_attention_dimensions
+from .deltasplice import (
+    DeltaSpliceConfig,
+    DeltaSpliceForTokenPrediction,
+    DeltaSpliceLayerConfig,
+    DeltaSpliceModel,
+    DeltaSpliceModelOutput,
+    DeltaSplicePreTrainedModel,
+    DeltaSpliceTokenPredictorOutput,
+)
 from .dnabert import (
     DnaBertConfig,
     DnaBertForContactPrediction,
@@ -342,6 +351,13 @@ __all__ = [
     "CarpForContactPrediction",
     "CarpForMaskedLM",
     "CarpForPreTraining",
+    "DeltaSpliceConfig",
+    "DeltaSpliceLayerConfig",
+    "DeltaSpliceModel",
+    "DeltaSpliceModelOutput",
+    "DeltaSplicePreTrainedModel",
+    "DeltaSpliceForTokenPrediction",
+    "DeltaSpliceTokenPredictorOutput",
     "DnaBertConfig",
     "DnaBertModel",
     "DnaBertForContactPrediction",
