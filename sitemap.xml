@@ -421,13 +421,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/dnaberts/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/e2efold/</loc>
-        <lastmod>2026-05-31</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/e2efold/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/e2efold/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/models/enformer/</loc>
         <lastmod>2026-05-31</lastmod>
         <changefreq>daily</changefreq>
@@ -610,13 +603,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnamsm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/models/rnastateinf/</loc>
-        <lastmod>2026-05-31</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnastateinf/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnastateinf/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/models/scbasset/</loc>
         <lastmod>2026-05-31</lastmod>
         <changefreq>daily</changefreq>
@@ -643,13 +629,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/sptransformer/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/sptransformer/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/models/structrfm/</loc>
-        <lastmod>2026-05-31</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/structrfm/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/structrfm/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/models/ufold/</loc>
@@ -1289,13 +1268,6 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/dnaberts/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/e2efold/</loc>
-        <lastmod>2026-05-31</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/e2efold/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/e2efold/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/zh/models/enformer/</loc>
         <lastmod>2026-05-31</lastmod>
         <changefreq>daily</changefreq>
@@ -1478,13 +1450,6 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnamsm/"/>
     </url>
     <url>
-        <loc>https://multimolecule.danling.org/zh/models/rnastateinf/</loc>
-        <lastmod>2026-05-31</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/rnastateinf/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/rnastateinf/"/>
-    </url>
-    <url>
         <loc>https://multimolecule.danling.org/zh/models/scbasset/</loc>
         <lastmod>2026-05-31</lastmod>
         <changefreq>daily</changefreq>
@@ -1511,13 +1476,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/sptransformer/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/sptransformer/"/>
-    </url>
-    <url>
-        <loc>https://multimolecule.danling.org/zh/models/structrfm/</loc>
-        <lastmod>2026-05-31</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://multimolecule.danling.org/zh/models/structrfm/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://multimolecule.danling.org/models/structrfm/"/>
     </url>
     <url>
         <loc>https://multimolecule.danling.org/zh/models/ufold/</loc>
