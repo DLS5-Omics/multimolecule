@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -4540,9 +4540,7 @@ If MultiMolecule supports your research, please cite the MultiMolecule project a
 
 
 
-
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -4567,7 +4565,6 @@ If MultiMolecule supports your research, please cite the MultiMolecule project a
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt; (&lt;code&gt;multimolecule.models.configuration_utils.PreTrainedConfig&lt;/code&gt;)" href="../configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
 
 
-
         <p>This is the configuration class to store the configuration of a
 <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Aparent2Model&lt;/span&gt;" href="#multimolecule.models.aparent2.Aparent2Model"><code>Aparent2Model</code></a>. It is used to instantiate an APARENT2 model according to the
 specified arguments, defining the model architecture. Instantiating a configuration with the defaults will yield a
@@ -4581,14 +4578,14 @@ cleavage magnitude at nucleotide resolution. The network is fully convolutional 
 locally-connected library-bias layer; it does not contain any flatten/dense layers.</p>
 
 
-<p><span class="doc-section-title">参数：</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
     <table>
       <thead>
         <tr>
-          <th>名称</th>
-          <th>类型</th>
-          <th>描述</th>
-          <th>默认</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
@@ -4826,7 +4823,7 @@ variant-effect workflow always uses index 11.</p>
     </table>
 
 
-<p><span class="doc-section-title">示例：</span></p>
+<p><span class="doc-section-title">Examples:</span></p>
     <div class="language-pycon highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python Console Session</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
@@ -4848,9 +4845,8 @@ variant-effect workflow always uses index 11.</p>
 
 
 
-
-              <details class="mkdocstrings-source">
-                <summary>源代码位于： <code>multimolecule/models/aparent2/configuration_aparent2.py</code></summary>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/aparent2/configuration_aparent2.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-28"> 28</a></span>
 <span class="normal"><a href="#__codelineno-0-29"> 29</a></span>
 <span class="normal"><a href="#__codelineno-0-30"> 30</a></span>
@@ -5081,8 +5077,7 @@ variant-effect workflow always uses index 11.</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -5116,14 +5111,13 @@ variant-effect workflow always uses index 11.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Aparent2PreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.aparent2.modeling_aparent2.Aparent2PreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.aparent2.Aparent2PreTrainedModel">Aparent2PreTrainedModel</a></code></p>
 
 
-
         <p>APARENT2 with a sequence-level prediction head.</p>
 <p>The backbone already produces a <code>sequence_length + 1</code> dimensional cleavage score (the APA cleavage distribution
 before softmax), so this wrapper exposes those converted upstream scores directly and adds the shared
 MultiMolecule regression loss.</p>
 
 
-<p><span class="doc-section-title">示例：</span></p>
+<p><span class="doc-section-title">Examples:</span></p>
     <div class="language-pycon highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python Console Session</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
@@ -5149,9 +5143,8 @@ MultiMolecule regression loss.</p>
 
 
 
-
-              <details class="mkdocstrings-source">
-                <summary>源代码位于： <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-158">158</a></span>
 <span class="normal"><a href="#__codelineno-0-159">159</a></span>
 <span class="normal"><a href="#__codelineno-0-160">160</a></span>
@@ -5288,8 +5281,7 @@ MultiMolecule regression loss.</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -5323,7 +5315,6 @@ MultiMolecule regression loss.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Aparent2PreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.aparent2.modeling_aparent2.Aparent2PreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.aparent2.Aparent2PreTrainedModel">Aparent2PreTrainedModel</a></code></p>
 
 
-
         <p>The bare APARENT2 residual network.</p>
 <p>APARENT2 predicts a nucleotide-resolution cleavage distribution for a fixed 205 nt polyadenylation signal window.
 The core hexamer (e.g. <code>AAUAAA</code>) is expected to start at position 70 (0-indexed). Variant effect is an
@@ -5331,7 +5322,7 @@ The core hexamer (e.g. <code>AAUAAA</code>) is expected to start at position 70 
 isoform predictions; there is no separate ref/alt output dataclass.</p>
 
 
-<p><span class="doc-section-title">示例：</span></p>
+<p><span class="doc-section-title">Examples:</span></p>
     <div class="language-pycon highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python Console Session</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -5359,9 +5350,8 @@ isoform predictions; there is no separate ref/alt output dataclass.</p>
 
 
 
-
-              <details class="mkdocstrings-source">
-                <summary>源代码位于： <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-84"> 84</a></span>
 <span class="normal"><a href="#__codelineno-0-85"> 85</a></span>
 <span class="normal"><a href="#__codelineno-0-86"> 86</a></span>
@@ -5510,8 +5500,7 @@ isoform predictions; there is no separate ref/alt output dataclass.</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -5549,18 +5538,17 @@ isoform predictions; there is no separate ref/alt output dataclass.</p>
               Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
 
 
-
         <p>Base class for outputs of the APARENT2 model.</p>
 
 
-<p><span class="doc-section-title">参数：</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
     <table>
       <thead>
         <tr>
-          <th>名称</th>
-          <th>类型</th>
-          <th>描述</th>
-          <th>默认</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
@@ -5653,9 +5641,8 @@ isoform predictions; there is no separate ref/alt output dataclass.</p>
 
 
 
-
-              <details class="mkdocstrings-source">
-                <summary>源代码位于： <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-375">375</a></span>
 <span class="normal"><a href="#__codelineno-0-376">376</a></span>
 <span class="normal"><a href="#__codelineno-0-377">377</a></span>
@@ -5706,8 +5693,7 @@ isoform predictions; there is no separate ref/alt output dataclass.</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -5741,7 +5727,6 @@ isoform predictions; there is no separate ref/alt output dataclass.</p>
               Bases: <code><span title="transformers.modeling_utils.PreTrainedModel">PreTrainedModel</span></code></p>
 
 
-
         <p>An abstract class to handle weights initialization and a simple interface for downloading and loading pretrained
 models.</p>
 
@@ -5751,9 +5736,8 @@ models.</p>
 
 
 
-
-              <details class="mkdocstrings-source">
-                <summary>源代码位于： <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
+              <details class="quote">
+                <summary>Source code in <code>multimolecule/models/aparent2/modeling_aparent2.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-49">49</a></span>
 <span class="normal"><a href="#__codelineno-0-50">50</a></span>
 <span class="normal"><a href="#__codelineno-0-51">51</a></span>
@@ -5824,8 +5808,7 @@ models.</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -5871,7 +5854,7 @@ models.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 31, 2026 15:07:03 UTC">2026-05-31 15:07:03</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 31, 2026 15:16:23 UTC">2026-05-31 15:16:23</span>
   </span>
 
     
