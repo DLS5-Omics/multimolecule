@@ -45,7 +45,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../feed_rss_updated.xml">
       
       <link rel="icon" href="../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -532,12 +532,12 @@
       <div class="mm-hero__content">
         <p class="mm-hero__eyebrow">机器学习加速分子生物学研究</p>
         <h1>MultiMolecule</h1>
-        <p class="mm-hero__description">MultiMolecule 是面向端到端生物分子机器学习的模块化 Python 生态：整合面向任务的 pipeline，覆盖 DNA、RNA 和蛋白质任务的模型与数据集 hub，带有序列 tokeniser 与生物 I/O 的可复用神经网络模块，以及统一训练、评估和推理的 runner、CLI 与 API。</p>
+        <p class="mm-hero__description">MultiMolecule 为 RNA、DNA 和蛋白质序列研究提供可直接使用的 pipeline、预训练模型 checkpoint、整理好的数据集和训练工具。</p>
         
           <div class="mm-stats">
             
               <div class="mm-stat">
-                <strong>53</strong>
+                <strong>56</strong>
                 <span>模型家族</span>
               </div>
             
@@ -578,6 +578,1014 @@
       <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
           
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./" title="MultiMolecule" class="md-nav__button md-logo" aria-label="MultiMolecule" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="logo">
+
+    </a>
+    MultiMolecule
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DLS5-Omics/multimolecule" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MultiMolecule
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MultiMolecule
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MultiMolecule
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        你想完成什么？
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="你想完成什么？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基于序列预测
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        用自己的数据微调
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        加载预训练模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用整理好的数据集
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        底层是一套栈
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        社区
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="data/dataset/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    data
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    
+  
+  
+  
+    <a href="datasets/gencode/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    datasets
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="modules/embeddings/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modules
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="models/a2zchromatin/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    models
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="tokenisers/dna/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tokenisers
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="pipelines/mean-ribosome-load/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pipelines
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="runner/config/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    runner
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="api/run/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    api
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="utils/rna/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="io/fasta/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    io
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="about/license/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    about
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        你想完成什么？
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="你想完成什么？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基于序列预测
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        用自己的数据微调
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        加载预训练模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用整理好的数据集
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        底层是一套栈
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        社区
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
           
   <div class="md-content mm-home" data-md-component="content">
     <article class="md-content__inner md-typeset">
@@ -595,12 +1603,12 @@
 <section class="mm-section mm-section--paths" id="paths">
 <div class="mm-section__inner">
 <h2 id="_1">你想完成什么？<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>MultiMolecule 覆盖四类常见入口：任务级预测、模型微调、直接使用预训练模型，以及整理好的生物数据集。</p>
+<p>从你要完成的任务开始：基于序列预测、用自己的数据微调、加载预训练模型，或使用整理好的数据集。</p>
 <div aria-label="MultiMolecule entry points" class="mm-workflow-screens">
 <section class="mm-workflow-panel" id="tasks">
 <div class="mm-workflow-copy">
 <p><span>Prediction</span></p>
-<h3 id="_2">运行任务级预测<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<h3 id="_2">基于序列预测<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <p>已注册的 pipeline 将生物任务名称和输入序列转换成结构化预测，不需要手动组装模型、tokeniser 和后处理。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
@@ -623,8 +1631,8 @@
 <section class="mm-workflow-panel" id="training">
 <div class="mm-workflow-copy">
 <p><span>Training</span></p>
-<h3 id="_3">微调预训练模型<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>runner 将预训练模型与 Hugging Face 数据集或本地标注表格连接起来，并根据序列列和标签列构建任务感知 batch。</p>
+<h3 id="_3">用自己的数据微调<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>runner 将预训练 checkpoint 与 Hugging Face 数据集或本地标注表格连接起来，并根据序列列和标签列启动监督训练。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
@@ -656,8 +1664,8 @@
 <section class="mm-workflow-panel" id="models">
 <div class="mm-workflow-copy">
 <p><span>Models</span></p>
-<h3 id="_4">使用预训练模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<p>带文档的预训练模型支持在 Python 里直接控制模型，而不只通过任务 pipeline 使用。模型卡提供 checkpoint ID、输入约定、引用和许可证。</p>
+<h3 id="_4">加载预训练模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>模型卡提供 checkpoint ID、输入约定、引用和许可证；Python API 支持在任务 pipeline 之外直接控制模型。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
@@ -682,7 +1690,7 @@
 <div class="mm-workflow-copy">
 <p><span>Datasets</span></p>
 <h3 id="_5">使用整理好的数据集<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<p>整理好的生物数据集包含序列与标签字段、任务元数据、来源信息、引用和许可证，可用于复现实验、尝试示例或开始微调。</p>
+<p>整理好的生物数据集包含序列与标签字段、任务元数据、来源信息、引用和许可证，可用于基准、示例和微调。</p>
 </div>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
 <span class="normal"><a href="#__codelineno-3-2">2</a></span>
@@ -703,12 +1711,12 @@
 <section class="mm-section mm-section--stack">
 <div class="mm-section__inner">
 <h2 id="_6">底层是一套栈<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
-<p>MultiMolecule 为这些入口提供同一套底层层级：带文档的资源、生物输入处理、可复用模型组件，以及用于预测、训练、评估和脚本化使用的执行工具。</p>
+<p>当你需要更细的控制时，同一套生态也提供带文档的资源、生物输入处理、可复用模型组件，以及用于预测、训练、评估和脚本化使用的执行工具。</p>
 <div class="mm-stack-tower">
 <div class="mm-stack-row mm-stack-row--top">
 <section class="mm-stack-step mm-stack-step--execution">
 <p><span>Execution</span></p>
-<p><strong>任务级入口</strong></p>
+<p><strong>Pipeline、runner 和 API</strong></p>
 <p>pipeline 提供现成任务预测，runner 管理监督训练和评估，API 入口支持脚本和应用。</p>
 <p class="mm-stack-links"><a href="runner/"><code>runner</code></a> · <a href="pipelines/"><code>pipelines</code></a> · <a href="api/"><code>api</code></a></p>
 </section>
@@ -716,21 +1724,21 @@
 <div class="mm-stack-row mm-stack-row--middle">
 <section class="mm-stack-step mm-stack-step--resources">
 <p><span>Resources</span></p>
-<p><strong>带文档的资源</strong></p>
-<p>数据集卡和模型卡整理支持的输入、任务名称、模型 checkpoint、引用、许可证和训练元数据。</p>
+<p><strong>带来源信息的模型和数据集</strong></p>
+<p>数据集卡和模型卡整理支持的输入、任务名称、checkpoint ID、引用、许可证和训练元数据。</p>
 <p class="mm-stack-links"><a href="datasets/"><code>datasets</code></a> · <a href="models/"><code>models</code></a></p>
 </section>
 </div>
 <div class="mm-stack-row mm-stack-row--base">
 <section class="mm-stack-step mm-stack-step--data">
 <p><span>Data layer</span></p>
-<p><strong>从生物文件到可训练 batch</strong></p>
-<p>IO 读取生物序列与结构格式，tokeniser 编码分子，data 推断任务字段并准备 runner 可用的 batch。</p>
+<p><strong>从生物数据到模型输入</strong></p>
+<p>IO、tokeniser 和数据工具将生物序列、结构和注释转换成一致的输入，用于 pipeline、训练和评估。</p>
 <p class="mm-stack-links"><a href="io/"><code>io</code></a> · <a href="tokenisers/"><code>tokenisers</code></a> · <a href="data/"><code>data</code></a></p>
 </section>
 <section class="mm-stack-step mm-stack-step--model">
 <p><span>Model layer</span></p>
-<p><strong>可复用的模型组件</strong></p>
+<p><strong>可复用的模型构件</strong></p>
 <p>models 提供预训练 config、AutoModel 类、checkpoint 和输出约定；modules 提供 backbone、head、loss 和 embedding，用于自定义架构。</p>
 <p class="mm-stack-links"><a href="models/"><code>models</code></a> · <a href="modules/"><code>modules</code></a></p>
 </section>

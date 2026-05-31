@@ -56,6 +56,13 @@ html:has(.mm-home) .md-main__inner {
   margin-top: 0;
 }
 
+@media screen and (min-width: 76.25em) {
+  html.mm-home-page .md-sidebar--primary,
+  html:has(.mm-home) .md-sidebar--primary {
+    display: none;
+  }
+}
+
 .md-typeset .admonition.important,
 .md-typeset details.important {
   border-color: rgb(152, 110, 226);

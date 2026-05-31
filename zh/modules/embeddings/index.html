@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -2117,9 +2117,7 @@
 
 
 
-
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -2142,7 +2140,6 @@
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-external" title="&lt;code&gt;torch.nn.Module&lt;/code&gt;" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module">Module</a></code></p>
-
 
 
         <p>Rotary position embeddings based on those in
@@ -2186,8 +2183,7 @@ OrderedDict()</p>
 
 
 
-
-              <details class="mkdocstrings-source">
+              <details class="quote">
                 <summary>Source code in <code>multimolecule/modules/embeddings/rotary.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-34"> 34</a></span>
 <span class="normal"><a href="#__codelineno-0-35"> 35</a></span>
@@ -2525,8 +2521,7 @@ OrderedDict()</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -2544,7 +2539,14 @@ OrderedDict()</p>
 
 
 <a href="#multimolecule.modules.embeddings.RotaryEmbedding.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">__init__</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;embedding_dim&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(embedding_dim)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(embedding_dim)">embedding_dim</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;base&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(base)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(base)">base</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">10000.0</span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;scale&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(scale)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(scale)">scale</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;interleaved&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(interleaved)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(interleaved)">interleaved</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.RotaryEmbedding.__init__(device)">device</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.device&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device">device</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;dtype&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(dtype)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(dtype)">dtype</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.dtype&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.dtype">dtype</a></span> <span class="o">=</span> <span class="n"><span title="torch.float32">float32</span></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="nf"><a class="autorefs autorefs-internal" title="&lt;code&gt;embedding_dim&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(embedding_dim)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(embedding_dim)">embedding_dim</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;base&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(base)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(base)">base</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">10000.0</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;scale&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(scale)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(scale)">scale</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;interleaved&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(interleaved)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(interleaved)">interleaved</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n"><span title="multimolecule.modules.embeddings.RotaryEmbedding.__init__(device)">device</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.device&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device">device</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;dtype&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.__init__(dtype)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.__init__(dtype)">dtype</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.dtype&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.dtype">dtype</a></span> <span class="o">=</span> <span class="n"><span title="torch.float32">float32</span></span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2649,7 +2651,7 @@ OrderedDict()</p>
     </table>
 
 
-            <details class="mkdocstrings-source">
+            <details class="quote">
               <summary>Source code in <code>multimolecule/modules/embeddings/rotary.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-68">68</a></span>
 <span class="normal"><a href="#__codelineno-0-69">69</a></span>
@@ -2722,7 +2724,12 @@ OrderedDict()</p>
 
 
 <a href="#multimolecule.modules.embeddings.RotaryEmbedding.forward" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">forward</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;q&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(q)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(q)">q</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;k&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(k)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(k)">k</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;offset&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(offset)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(offset)">offset</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;seq_length&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(seq_length)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(seq_length)">seq_length</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Tuple&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">]</span>
+<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">forward</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;q&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(q)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(q)">q</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;k&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(k)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(k)">k</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;offset&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(offset)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(offset)">offset</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;seq_length&lt;/code&gt; (&lt;code&gt;multimolecule.modules.embeddings.RotaryEmbedding.forward(seq_length)&lt;/code&gt;)" href="../../../modules/embeddings/#multimolecule.modules.embeddings.RotaryEmbedding.forward(seq_length)">seq_length</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Tuple&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2834,7 +2841,7 @@ OrderedDict()</p>
     </table>
 
 
-            <details class="mkdocstrings-source">
+            <details class="quote">
               <summary>Source code in <code>multimolecule/modules/embeddings/rotary.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
 <span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
@@ -2986,7 +2993,7 @@ OrderedDict()</p>
     </table>
 
 
-            <details class="mkdocstrings-source">
+            <details class="quote">
               <summary>Source code in <code>multimolecule/modules/embeddings/rotary.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-160">160</a></span>
 <span class="normal"><a href="#__codelineno-0-161">161</a></span>
@@ -3077,7 +3084,6 @@ OrderedDict()</p>
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-external" title="&lt;code&gt;torch.nn.Embedding&lt;/code&gt;" href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html#torch.nn.Embedding">Embedding</a></code></p>
-
 
 
         <p>Sinusoidal positional embeddings for inputs with any length.</p>
@@ -3208,8 +3214,7 @@ OrderedDict()</p>
 
 
 
-
-              <details class="mkdocstrings-source">
+              <details class="quote">
                 <summary>Source code in <code>multimolecule/modules/embeddings/sinusoidal.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-35"> 35</a></span>
 <span class="normal"><a href="#__codelineno-0-36"> 36</a></span>
@@ -3457,8 +3462,7 @@ OrderedDict()</p>
 
 
 
-<div class="doc doc-children">
-
+  <div class="doc doc-children">
 
 
 
@@ -3480,7 +3484,13 @@ OrderedDict()</p>
   </span>
 
 <a href="#multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_embedding</span><span class="p">(</span><span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(num_embeddings)">num_embeddings</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(embedding_dim)">embedding_dim</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(padding_idx)">padding_idx</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(device)">device</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.device&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device">device</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(dtype)">dtype</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.dtype&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.dtype">dtype</a></span> <span class="o">=</span> <span class="n"><span title="torch.float32">float32</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span>
+<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_embedding</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(num_embeddings)">num_embeddings</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(embedding_dim)">embedding_dim</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(padding_idx)">padding_idx</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(device)">device</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.device&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.device">device</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_embedding(dtype)">dtype</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.dtype&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensor_attributes.html#torch.dtype">dtype</a></span> <span class="o">=</span> <span class="n"><span title="torch.float32">float32</span></span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3490,7 +3500,7 @@ OrderedDict()</p>
 &ldquo;Attention Is All You Need&rdquo;.</p>
 
 
-            <details class="mkdocstrings-source">
+            <details class="quote">
               <summary>Source code in <code>multimolecule/modules/embeddings/sinusoidal.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-100">100</a></span>
 <span class="normal"><a href="#__codelineno-0-101">101</a></span>
@@ -3559,7 +3569,9 @@ OrderedDict()</p>
   </span>
 
 <a href="#multimolecule.modules.embeddings.SinusoidalEmbedding.get_position_ids" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_position_ids</span><span class="p">(</span><span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_position_ids(tensor)">tensor</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_position_ids(padding_idx)">padding_idx</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_position_ids</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_position_ids(tensor)">tensor</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;torch.Tensor&lt;/code&gt;" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor">Tensor</a></span><span class="p">,</span> <span class="n"><span title="multimolecule.modules.embeddings.SinusoidalEmbedding.get_position_ids(padding_idx)">padding_idx</span></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3568,7 +3580,7 @@ OrderedDict()</p>
 <p>Position numbers begin at padding_idx+1. Padding symbols are ignored.</p>
 
 
-            <details class="mkdocstrings-source">
+            <details class="quote">
               <summary>Source code in <code>multimolecule/modules/embeddings/sinusoidal.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-126">126</a></span>
 <span class="normal"><a href="#__codelineno-0-127">127</a></span>
