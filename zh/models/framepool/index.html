@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -4653,7 +4653,9 @@ If MultiMolecule supports your research, please cite the MultiMolecule project a
 
 
 
-  <div class="doc doc-children">
+
+<div class="doc doc-children">
+
 
 
 
@@ -4676,6 +4678,7 @@ If MultiMolecule supports your research, please cite the MultiMolecule project a
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PreTrainedConfig&lt;/span&gt; (&lt;code&gt;multimolecule.models.configuration_utils.PreTrainedConfig&lt;/code&gt;)" href="../../../models/configuration_utils/#multimolecule.models.configuration_utils.PreTrainedConfig">PreTrainedConfig</a></code></p>
+
 
 
         <p>This is the configuration class to store the configuration of a
@@ -5009,7 +5012,8 @@ the <code>random</code> library used for variant effect prediction upstream (Kip
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/framepool/configuration_framepool.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-28"> 28</a></span>
 <span class="normal"><a href="#__codelineno-0-29"> 29</a></span>
@@ -5341,7 +5345,7 @@ the <code>random</code> library used for variant effect prediction upstream (Kip
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -5379,6 +5383,7 @@ the <code>random</code> library used for variant effect prediction upstream (Kip
 
 
 
+
   </div>
 
     </div>
@@ -5399,6 +5404,7 @@ the <code>random</code> library used for variant effect prediction upstream (Kip
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;FramepoolPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.framepool.modeling_framepool.FramepoolPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.framepool.FramepoolPreTrainedModel">FramepoolPreTrainedModel</a></code></p>
+
 
 
         <p>Framepool with a sequence-level prediction head.</p>
@@ -5442,7 +5448,8 @@ variant effect interface.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/framepool/modeling_framepool.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-138">138</a></span>
 <span class="normal"><a href="#__codelineno-0-139">139</a></span>
@@ -5622,7 +5629,8 @@ variant effect interface.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -5658,6 +5666,7 @@ variant effect interface.</p>
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
+
 
 
         <p>Base class for outputs of [<code>FramepoolForSequencePrediction</code>].</p>
@@ -5747,7 +5756,8 @@ variant effect interface.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/framepool/modeling_framepool.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-443">443</a></span>
 <span class="normal"><a href="#__codelineno-0-444">444</a></span>
@@ -5793,7 +5803,8 @@ variant effect interface.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -5827,6 +5838,7 @@ variant effect interface.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;FramepoolPreTrainedModel&lt;/span&gt; (&lt;code&gt;multimolecule.models.framepool.modeling_framepool.FramepoolPreTrainedModel&lt;/code&gt;)" href="#multimolecule.models.framepool.FramepoolPreTrainedModel">FramepoolPreTrainedModel</a></code></p>
 
 
+
         <p>The bare Framepool model, producing a frame-aware representation from a 5&rsquo;UTR sequence.</p>
 <p>Framepool replaces the fixed-length flatten of <a href="https://doi.org/10.1038/s41587-019-0164-5">Sample et al., 2019</a>
 with a frame-aware pooling layer that splits the convolutional feature map into the three reading frames relative
@@ -5857,7 +5869,8 @@ to the start codon and pools each frame independently. The resulting representat
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/framepool/modeling_framepool.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-71"> 71</a></span>
 <span class="normal"><a href="#__codelineno-0-72"> 72</a></span>
@@ -5993,7 +6006,8 @@ to the start codon and pools each frame independently. The resulting representat
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -6029,6 +6043,7 @@ to the start codon and pools each frame independently. The resulting representat
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><span title="transformers.modeling_outputs.ModelOutput">ModelOutput</span></code></p>
+
 
 
         <p>Base class for outputs of the Framepool model.</p>
@@ -6087,7 +6102,8 @@ sequence-level prediction head.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/framepool/modeling_framepool.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-426">426</a></span>
 <span class="normal"><a href="#__codelineno-0-427">427</a></span>
@@ -6123,7 +6139,8 @@ sequence-level prediction head.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -6157,6 +6174,7 @@ sequence-level prediction head.</p>
               Bases: <code><span title="transformers.modeling_utils.PreTrainedModel">PreTrainedModel</span></code></p>
 
 
+
         <p>An abstract class to handle weights initialization and a simple interface for downloading and loading pretrained
 models.</p>
 
@@ -6166,7 +6184,8 @@ models.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/models/framepool/modeling_framepool.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-47">47</a></span>
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
@@ -6216,7 +6235,8 @@ models.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -6262,7 +6282,7 @@ models.</p>
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 31, 2026 15:16:24 UTC">2026-05-31 15:16:24</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 31, 2026 15:26:09 UTC">2026-05-31 15:26:09</span>
   </span>
 
     
