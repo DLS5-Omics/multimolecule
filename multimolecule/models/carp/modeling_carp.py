@@ -25,9 +25,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import torch
-import torch.nn.functional as F
 from danling import NestedTensor
 from torch import Tensor, nn
+from torch.nn import functional as F
 from transformers.activations import ACT2FN
 from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import MaskedLMOutput
@@ -101,14 +101,6 @@ class CarpModel(CarpPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | CarpModelOutput:
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 

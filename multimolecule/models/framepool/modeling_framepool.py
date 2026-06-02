@@ -109,15 +109,6 @@ class FramepoolModel(FramepoolPreTrainedModel):
         if input_ids is None and inputs_embeds is None:
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
-
         # ``(batch, vocab_size, length)``; padding tokens (and tokens outside the nucleobase alphabet)
         # are encoded as all-zero columns.
         embedding_output, pad_mask = self.embeddings(

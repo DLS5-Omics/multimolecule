@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 from warnings import warn
@@ -35,7 +35,7 @@ from transformers import initialization as init
 from transformers.activations import ACT2FN
 from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import ModelOutput
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -49,6 +49,7 @@ from multimolecule.modules import (
     HeadOutput,
     SequencePredictionHead,
     TokenPredictionHead,
+    attention_forward,
 )
 
 from ..configuration_utils import HeadConfig
@@ -888,20 +889,17 @@ class RibonanzaNetSelfAttention(nn.Module):
         key_layer = self.transpose_for_scores(self.key(hidden_states))
         value_layer = self.transpose_for_scores(self.value(hidden_states))
 
-        attention_interface: Callable | None = None
         if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        if attention_interface is not None:
             attn_mask = attention_bias
             if self.fix_attention_mask and attention_mask is not None:
                 attn_mask = attention_mask if attn_mask is None else attn_mask + attention_mask
-            attn_output, attn_weights = attention_interface(
+            attn_output, attn_weights = attention_forward(
                 self,
                 query_layer,
                 key_layer,
                 value_layer,
                 attn_mask,
+                attn_implementation=self.config._attn_implementation,
                 dropout=0.0 if not self.training else self.dropout.p,
                 scaling=self.scaling,
                 **kwargs,

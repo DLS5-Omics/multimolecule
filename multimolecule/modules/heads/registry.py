@@ -28,7 +28,8 @@ from torch import nn
 class Registry(Registry_):  # pylint: disable=too-few-public-methods
 
     def build(self, config, head_config) -> nn.Module:  # type: ignore[override]
-        name = getattr(head_config, self.getattr("key"))
+        key = self.getattr("key")
+        name = head_config.get(key) if isinstance(head_config, dict) else getattr(head_config, self.getattr("key"))
         return self.init(self.lookup(name), config, head_config)  # type: ignore[arg-type]
 
 

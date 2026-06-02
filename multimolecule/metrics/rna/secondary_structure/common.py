@@ -505,10 +505,10 @@ def loop_substitution_cost(pred_loop, tgt_loop) -> float:
         components.append(_normalized_diff(pred_loop.asymmetry, tgt_loop.asymmetry))
     if (
         pred_loop.pseudoknot_type is not None
-        and tgt_loop.pseudoknot_type is not None  # noqa: W503
-        and pred_loop.pseudoknot_type is not PseudoknotType.UNKNOWN  # noqa: W503
-        and tgt_loop.pseudoknot_type is not PseudoknotType.UNKNOWN  # noqa: W503
-        and pred_loop.pseudoknot_type != tgt_loop.pseudoknot_type  # noqa: W503
+        and tgt_loop.pseudoknot_type is not None
+        and pred_loop.pseudoknot_type is not PseudoknotType.UNKNOWN
+        and tgt_loop.pseudoknot_type is not PseudoknotType.UNKNOWN
+        and pred_loop.pseudoknot_type != tgt_loop.pseudoknot_type
     ):
         components.append(1.0)
     if pred_loop.role is not None and tgt_loop.role is not None:

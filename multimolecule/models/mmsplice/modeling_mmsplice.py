@@ -155,14 +155,6 @@ class MmSpliceModel(MmSplicePreTrainedModel):
         attention_mask: Tensor | None,
         inputs_embeds: Tensor | NestedTensor | None,
     ) -> Tensor:
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
         embedding_output = self.embeddings(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -306,15 +298,9 @@ class MmSpliceEmbedding(nn.Module):
                 raise ValueError("You have to specify either input_ids or inputs_embeds")
             channel_ids = input_ids.to(torch.long)
             valid = (channel_ids >= 0) & (channel_ids < self.vocab_size)
-            inputs_embeds = torch.zeros(
-                (*channel_ids.shape, self.vocab_size),
-                dtype=self._float_tensor.dtype,
-                device=channel_ids.device,
-            )
-            inputs_embeds.scatter_(
-                -1,
-                channel_ids.clamp(min=0, max=self.vocab_size - 1).unsqueeze(-1),
-                valid.to(dtype=inputs_embeds.dtype).unsqueeze(-1),
+            one_hot = F.one_hot(channel_ids.clamp(min=0, max=self.vocab_size - 1), num_classes=self.vocab_size)
+            inputs_embeds = one_hot.to(dtype=self._float_tensor.dtype) * valid.unsqueeze(-1).to(
+                self._float_tensor.dtype
             )
         else:
             inputs_embeds = inputs_embeds.to(dtype=self._float_tensor.dtype)
@@ -358,7 +344,6 @@ class MmSpliceRegion(nn.Module):
         minimum = intronl + intronr + 1
         if inputs_embeds.size(-1) < minimum:
             inputs_embeds = F.pad(inputs_embeds, (0, minimum - inputs_embeds.size(-1)))
-        length = inputs_embeds.size(-1)
 
         # Upstream pads N if the available intron context is shorter than the
         # length the splice-site models were trained on.
@@ -374,7 +359,6 @@ class MmSpliceRegion(nn.Module):
             intronr += padr
         if padl or padr:
             inputs_embeds = F.pad(inputs_embeds, (padl, padr))
-            length = inputs_embeds.size(-1)
 
         if self.name == "acceptor_intron":
             return inputs_embeds[..., : intronl - self.acceptor_intron_cut]
@@ -383,16 +367,14 @@ class MmSpliceRegion(nn.Module):
             end = intronl + self.acceptor_exon_length
             return self._window(inputs_embeds, start, end)
         if self.name == "exon":
-            exon = inputs_embeds[..., intronl : length - intronr]
+            exon = inputs_embeds[..., intronl:-intronr]
             if exon.size(-1) == 0:
                 exon = inputs_embeds.new_zeros(inputs_embeds.size(0), inputs_embeds.size(1), 1)
             return exon
         if self.name == "donor":
-            start = length - intronr - self.donor_exon_length
-            end = length - intronr + self.donor_intron_length
-            return self._window(inputs_embeds, start, end)
+            return inputs_embeds[..., -(intronr + self.donor_exon_length) : -intronr + self.donor_intron_length]
         # donor_intron
-        return inputs_embeds[..., length - intronr + self.donor_intron_cut :]
+        return inputs_embeds[..., -intronr + self.donor_intron_cut :]
 
     @staticmethod
     def _window(inputs_embeds: Tensor, start: int, end: int) -> Tensor:

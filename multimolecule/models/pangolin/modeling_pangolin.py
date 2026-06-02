@@ -131,15 +131,6 @@ class PangolinModel(PangolinPreTrainedModel):
         kwargs["output_contexts"] = record_contexts
         kwargs["output_hidden_states"] = record_contexts
 
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
-
         embedding_output = self.embeddings(
             input_ids=input_ids,
             attention_mask=attention_mask,

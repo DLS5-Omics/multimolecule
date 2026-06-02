@@ -54,7 +54,7 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
                     config_cls: PretrainedConfig = getattr(transformers, type + "Config")
                     config, kwargs = config_cls.from_pretrained(name, return_unused_kwargs=True, **kwargs)
                     sequence_cls: PreTrainedModel = getattr(transformers, type + "Model")  # type: ignore[no-redef]
-                    sequence = sequence_cls.from_config(config, *args, **kwargs)
+                    sequence = sequence_cls._from_config(config, *args, **kwargs)
             else:
                 raise ValueError(f"Sequence {type} not found in registry or transformers")
         else:

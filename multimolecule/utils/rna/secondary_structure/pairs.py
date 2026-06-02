@@ -447,8 +447,8 @@ def pairs_to_duplex_segment_arrays(
     pairs: Tensor | np.ndarray | Pairs,
 ) -> (
     Tuple[Tensor, Tensor, Tensor, Tensor]
-    | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]  # noqa: W503
-    | Tuple[List[int], List[int], List[int], List[int]]  # noqa: W503
+    | Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+    | Tuple[List[int], List[int], List[int], List[int]]
 ):
     """
     Convert base pairs to bulge-tolerant duplex segments while preserving actual pairs.

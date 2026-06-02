@@ -22,14 +22,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import Any
 from warnings import warn
 
 import torch
-import torch.nn.functional as F
 from danling import NestedTensor
 from torch import Tensor, nn
+from torch.nn import functional as F
 from torch.nn import init
 from transformers.activations import ACT2FN
 from transformers.masking_utils import create_bidirectional_mask
@@ -39,11 +38,7 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPoolingAndCrossAttentions,
     MaskedLMOutput,
 )
-from transformers.modeling_utils import (
-    ALL_ATTENTION_FUNCTIONS,
-    OutputRecorder,
-    PreTrainedModel,
-)
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
 from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
@@ -55,7 +50,7 @@ from multimolecule.modules import (
     RotaryEmbedding,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 
 from ..modeling_outputs import (
@@ -140,26 +135,26 @@ class AbLang2Model(AbLang2PreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(input_ids=input_ids, inputs_embeds=inputs_embeds)
-        attn_mask = create_bidirectional_mask(
-            config=self.config,
-            inputs_embeds=embedding_output,
-            attention_mask=attention_mask,
-        )
+        if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+            attn_mask = None
+        else:
+            attn_mask = create_bidirectional_mask(
+                config=self.config,
+                inputs_embeds=embedding_output,
+                attention_mask=attention_mask,
+            )
 
         encoder_outputs = self.encoder(embedding_output, attention_mask=attn_mask, **kwargs)
         sequence_output = encoder_outputs.last_hidden_state
@@ -559,16 +554,13 @@ class AbLang2SelfAttention(nn.Module):
         value_states = self.value(hidden_states).view(hidden_shape).transpose(1, 2)
         query_states, key_states = self.rotary_embeddings(query_states, key_states)
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_states,
             key_states,
             value_states,
             attention_mask,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,

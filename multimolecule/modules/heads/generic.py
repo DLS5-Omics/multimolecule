@@ -86,9 +86,29 @@ class BasePredictionHead(nn.Module):
         if not head_config.problem_type:
             head_config.problem_type = config.problem_type
         self.config = head_config
-        self.bos_token_id = config.bos_token_id
-        self.eos_token_id = config.eos_token_id
-        self.pad_token_id = config.pad_token_id
+        if hasattr(config, "bos_token_id"):
+            self.bos_token_id = config.bos_token_id
+        elif hasattr(config, "cls_token_id"):
+            self.bos_token_id = config.cls_token_id
+        else:
+            warn(
+                f"Unable to infer bos_token_id for {self.__class__.__name__}, because neither bos_token_id nor "
+                "cls_token_id is set in the config. This may lead to incorrect special token handling."
+            )
+        if hasattr(config, "eos_token_id"):
+            self.eos_token_id = config.eos_token_id
+        else:
+            warn(
+                f"Unable to infer eos_token_id for {self.__class__.__name__}, because eos_token_id is not set in "
+                "the config. This may lead to incorrect special token handling."
+            )
+        if hasattr(config, "pad_token_id"):
+            self.pad_token_id = config.pad_token_id
+        else:
+            warn(
+                f"Unable to infer pad_token_id for {self.__class__.__name__}, because pad_token_id is not set in "
+                "the config. This may lead to incorrect special token handling."
+            )
         self.num_labels = self.config.num_labels  # type: ignore[assignment]
         if getattr(self.config, "output_name", None) is not None:
             self.output_name = self.config.output_name
@@ -131,9 +151,7 @@ class BasePredictionHead(nn.Module):
                 f"Unable to infer attention mask for {self.__class__.__name__}, because input_ids is None."
             )
         if self.pad_token_id is None:
-            raise ValueError(
-                f"Unable to infer attention mask for {self.__class__.__name__}, because pad_token_id is None."
-            )
+            return torch.ones_like(input_ids, dtype=torch.int32)
         return input_ids.ne(self.pad_token_id).int()
 
     @staticmethod
@@ -210,10 +228,7 @@ class BasePredictionHead(nn.Module):
         if self._has_eos_token(input_ids):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
-                if isinstance(input_ids, Tensor):
-                    input_ids = input_ids.masked_fill(~eos_mask, self.pad_token_id or 0)
-                if isinstance(eos_mask, NestedTensor):
-                    eos_mask = eos_mask.tensor
+                input_ids = input_ids.masked_fill(~eos_mask, self.pad_token_id or 0)
                 input_ids = input_ids[..., :-1]
             elif attention_mask is not None:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1
@@ -222,9 +237,9 @@ class BasePredictionHead(nn.Module):
             else:
                 raise ValueError("Unable to remove EOS tokens because input_ids and attention_mask are both None")
             output = (output * eos_mask.unsqueeze(-1))[..., :-1, :]
-            if attention_mask is not None:
+            if attention_mask is not None and not isinstance(eos_mask, NestedTensor):
                 attention_mask = (attention_mask * eos_mask)[..., :-1]
-        if attention_mask is not None:
+        if attention_mask is not None and not isinstance(output, NestedTensor):
             output = output * attention_mask.unsqueeze(-1)
         return output, attention_mask, input_ids
 

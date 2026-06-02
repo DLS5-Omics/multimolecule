@@ -276,7 +276,7 @@ class BpRnaSecondaryStructureTopology:
                     f"({self._format_pos(pos5)},{self._format_pos(pos3)}) "
                     f"{nuc1}:{nuc2} {pseudoknot_label}"
                 ).rstrip()
-                + "\n"  # noqa: W503
+                + "\n"
             )
             for knot_id in knots_in:
                 pseudoknot_loop_segments.setdefault(knot_id, []).append((label, h_start, h_stop))
@@ -302,7 +302,7 @@ class BpRnaSecondaryStructureTopology:
                     f"({self._format_pos(bp3_pos1)},{self._format_pos(bp3_pos2)}) "
                     f"{bp3_nt1}:{bp3_nt2} {pseudoknot_label}"
                 ).rstrip()
-                + "\n"  # noqa: W503
+                + "\n"
             )
             for knot_id in knots_in:
                 pseudoknot_loop_segments.setdefault(knot_id, []).append((label, b_start, b_stop))
@@ -325,7 +325,7 @@ class BpRnaSecondaryStructureTopology:
                         f"{self._format_pos(bp5_pos2)}) "
                         f"{nuc5_1}:{nuc5_2} {pseudoknot_label}"
                     ).rstrip()
-                    + "\n"  # noqa: W503
+                    + "\n"
                 )
                 for knot_id in knots_in:
                     pseudoknot_loop_segments.setdefault(knot_id, []).append((label, i_start, i_stop))
@@ -355,7 +355,7 @@ class BpRnaSecondaryStructureTopology:
                         f"{self._format_pos(bp3_pos2)}) "
                         f"{nuc3_1}:{nuc3_2} {pseudoknot_label}"
                     ).rstrip()
-                    + "\n"  # noqa: W503
+                    + "\n"
                 )
                 for knot_id in knots_in:
                     pseudoknot_loop_segments.setdefault(knot_id, []).append((label, m_start, m_stop))
@@ -402,7 +402,7 @@ class BpRnaSecondaryStructureTopology:
                     f"{self._format_pos(bp3_pos2)}) "
                     f"{nuc3_1}:{nuc3_2} {pseudoknot_label}"
                 ).rstrip()
-                + "\n"  # noqa: W503
+                + "\n"
             )
             for knot_id in knots_in:
                 pseudoknot_loop_segments.setdefault(knot_id, []).append((label, x_start, x_stop))
@@ -472,7 +472,7 @@ class BpRnaSecondaryStructureTopology:
                         f"PK{knot_id} {knot_size}bp {self._format_range(k_5p_start, k_5p_stop)} "
                         f"{self._format_range(k_3p_stop, k_3p_start)} {linked_loops}"
                     ).rstrip()
-                    + "\n"  # noqa: W503
+                    + "\n"
                 )
                 noncanonical_knot = noncanonical_pairs_set(knot_pairs, sequence_for_ncbp, unsafe=True)
                 for n_idx, (k_5p, k_3p) in enumerate(knot_pairs, start=1):

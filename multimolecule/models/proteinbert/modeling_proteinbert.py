@@ -26,9 +26,9 @@ from dataclasses import dataclass
 from typing import Any
 
 import torch
-import torch.nn.functional as F
 from danling import NestedTensor
 from torch import Tensor, nn
+from torch.nn import functional as F
 from torch.nn import init
 from transformers.activations import ACT2FN
 from transformers.modeling_layers import GradientCheckpointingLayer
@@ -118,28 +118,28 @@ class ProteinBertModel(ProteinBertPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | ProteinBertModelOutput:
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 
         hidden_states = self.embeddings(input_ids=input_ids, inputs_embeds=inputs_embeds)
-        if attention_mask is None:
-            if input_ids is not None and self.pad_token_id is not None:
-                attention_mask = input_ids.ne(self.pad_token_id)
-            else:
-                attention_mask = torch.ones(hidden_states.shape[:2], dtype=torch.bool, device=hidden_states.device)
-        else:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
+            attention_mask = input_ids.ne(self.pad_token_id)
+        elif attention_mask is not None:
             attention_mask = attention_mask.to(device=hidden_states.device, dtype=torch.bool)
-        hidden_states = hidden_states * attention_mask.unsqueeze(-1).to(dtype=hidden_states.dtype)
+        if attention_mask is not None:
+            hidden_states = hidden_states * attention_mask.unsqueeze(-1).to(dtype=hidden_states.dtype)
         if annotations is None:
-            annotations = hidden_states.new_zeros(hidden_states.shape[0], self.config.annotation_size)
+            annotations = torch.zeros(
+                hidden_states.shape[0],
+                self.config.annotation_size,
+                device=hidden_states.device,
+                dtype=hidden_states.dtype,
+            )
         annotations = annotations.to(device=hidden_states.device, dtype=hidden_states.dtype)
         global_states = self.embeddings.project_annotations(annotations)
 
@@ -428,9 +428,9 @@ class ProteinBertEmbeddings(nn.Module):
 
     def forward(
         self,
-        input_ids: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
-    ) -> Tensor:
+        input_ids: Tensor | NestedTensor | None = None,
+        inputs_embeds: Tensor | NestedTensor | None = None,
+    ) -> Tensor | NestedTensor:
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
         return inputs_embeds
@@ -536,12 +536,15 @@ class ProteinBertConvBranch(nn.Module):
         super().__init__()
         total_padding = dilation * (config.conv_kernel_size - 1)
         padding_left = total_padding // 2
-        self.padding = (padding_left, total_padding - padding_left)
+        padding_right = total_padding - padding_left
+        conv_padding = padding_left if padding_left == padding_right else 0
+        self.padding = (0, 0) if padding_left == padding_right else (padding_left, padding_right)
         self.conv = nn.Conv1d(
             config.hidden_size,
             config.hidden_size,
             kernel_size=config.conv_kernel_size,
             dilation=dilation,
+            padding=conv_padding,
         )
         self.activation = ACT2FN[config.hidden_act]
 
@@ -573,7 +576,7 @@ class ProteinBertGlobalAttention(nn.Module):
     def forward(
         self,
         global_states: Tensor,
-        hidden_states: Tensor,
+        hidden_states: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
         output_attentions: bool = False,
     ) -> tuple[Tensor, Tensor | None]:
@@ -589,6 +592,13 @@ class ProteinBertGlobalAttention(nn.Module):
             )
         attention_probs = torch.softmax(attention_scores, dim=-1)
         context = torch.einsum("bhl,bhlv->bhv", attention_probs, value_states)
+        if isinstance(context, NestedTensor):
+            # Global attention contracted the ragged length dim `l`, so every element is now a
+            # fixed `(heads, value_size)` with no ragged axis. Densify to a plain
+            # `(batch, heads, value_size)` tensor via the public `.tensor` API (compile-safe;
+            # no padding happens since nothing is ragged) — the per-sequence global vector is
+            # inherently dense from here on.
+            context = context.tensor
         context = context.reshape(global_states.shape[0], self.num_attention_heads * self.attention_value_size)
 
         return context, attention_probs if output_attentions else None

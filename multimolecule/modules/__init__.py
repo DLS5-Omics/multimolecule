@@ -20,10 +20,14 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 
+from .attention import (
+    attention_forward,
+    attention_forward_function,
+)
 from .backbones import BACKBONES, SEQUENCES, SequenceBackbone
 from .context import preserve_batch_norm_stats
 from .criterions import CRITERIONS, Criterion
-from .embeddings import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF, RotaryEmbedding, SinusoidalEmbedding
+from .embeddings import POSITION_EMBEDDINGS, POSITION_EMBEDDINGS_HF, ALiBi, RotaryEmbedding, SinusoidalEmbedding
 from .functional import eager_attention_forward
 from .heads import (
     HEAD_TRANSFORMS,
@@ -62,6 +66,7 @@ __all__ = [
     "MonoModel",
     "POSITION_EMBEDDINGS",
     "POSITION_EMBEDDINGS_HF",
+    "ALiBi",
     "RotaryEmbedding",
     "SinusoidalEmbedding",
     "BACKBONES",
@@ -99,6 +104,8 @@ __all__ = [
     "CRITERIONS",
     "Criterion",
     "LayerNorm2d",
+    "attention_forward",
+    "attention_forward_function",
     "eager_attention_forward",
     "preserve_batch_norm_stats",
 ]

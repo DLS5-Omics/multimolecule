@@ -22,6 +22,7 @@
 
 from __future__ import annotations
 
+import danling as dl
 import pytest
 import torch
 
@@ -47,6 +48,22 @@ class TestRotaryEmbedding:
         assert rotary_emb._sin_cached is not None
         assert rotary_emb._cos_cached.shape == (1, 1, seq_length, head_dim)
         assert rotary_emb._sin_cached.shape == (1, 1, seq_length, head_dim)
+
+    @pytest.mark.parametrize("interleaved", [False, True])
+    def test_nested_matches_dense(self, interleaved):
+        embedding_dim, num_heads = 64, 4
+        lengths = [7, 11, 5]
+        rotary_emb = RotaryEmbedding(embedding_dim, interleaved=interleaved)
+        q = dl.NestedTensor([torch.randn(num_heads, length, embedding_dim) for length in lengths])
+        k = dl.NestedTensor([torch.randn(num_heads, length, embedding_dim) for length in lengths])
+
+        q_rot, k_rot = rotary_emb(q, k)
+
+        for index in range(len(lengths)):
+            dense = RotaryEmbedding(embedding_dim, interleaved=interleaved)
+            q_ref, k_ref = dense(q[index].unsqueeze(0), k[index].unsqueeze(0))
+            torch.testing.assert_close(q_rot[index], q_ref[0], atol=1e-5, rtol=1e-5)
+            torch.testing.assert_close(k_rot[index], k_ref[0], atol=1e-5, rtol=1e-5)
 
     def test_cache_reuse(self):
         embedding_dim = 64

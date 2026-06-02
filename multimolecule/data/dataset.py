@@ -509,8 +509,8 @@ class Dataset(datasets.Dataset):
             k
             for k, v in self.features.items()
             if k not in self.id_cols
-            and v.pa_type is not None  # noqa: W503
-            and (pa.types.is_string(v.pa_type) or pa.types.is_large_string(v.pa_type))  # noqa: W503
+            and v.pa_type is not None
+            and (pa.types.is_string(v.pa_type) or pa.types.is_large_string(v.pa_type))
         ]
         unique_chars = {
             k: {ch for s in flatten_column(self._data.column(k))[0] if s.is_valid for ch in s.as_py()}
@@ -546,7 +546,7 @@ class Dataset(datasets.Dataset):
             k
             for k, v in unique_chars.items()
             if k.lower() in defaults.SECONDARY_STRUCTURE_COL_NAMES
-            or (v.issubset(DB_COMPLETE_ALPHABET) and v.issuperset(DB_MINIMAL_ALPHABET))  # noqa: W503
+            or (v.issubset(DB_COMPLETE_ALPHABET) and v.issuperset(DB_MINIMAL_ALPHABET))
         ]
 
         data_cols = [i for i in all_cols if i not in self.id_cols]

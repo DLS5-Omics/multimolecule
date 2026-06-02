@@ -22,7 +22,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 from warnings import warn
@@ -41,7 +40,7 @@ from transformers.modeling_outputs import (
     MaskedLMOutput,
     ModelOutput,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -54,7 +53,7 @@ from multimolecule.modules import (
     MaskedLMHead,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
@@ -173,8 +172,6 @@ class RnaBertModel(RnaBertPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor) and attention_mask is None:
-            attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -189,7 +186,12 @@ class RnaBertModel(RnaBertPreTrainedModel):
         if cache_position is None:
             cache_position = torch.arange(past_key_values_length, past_key_values_length + seq_length, device=device)
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(
@@ -244,9 +246,12 @@ class RnaBertModel(RnaBertPreTrainedModel):
                 past_key_values=past_key_values,
             )
         else:
-            attention_mask = create_bidirectional_mask(
-                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
-            )
+            if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+                attention_mask = None
+            else:
+                attention_mask = create_bidirectional_mask(
+                    config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
+                )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
@@ -583,42 +588,13 @@ class RnaBertForPreTraining(RnaBertPreTrainedModel):
         )
 
 
-class RnaBertLayerNorm(nn.Module):
-    """LayerNorm with explicit NestedTensor support.
-
-    `nn.LayerNorm` does not iterate per-batch tensors of a `NestedTensor`, so this
-    re-implementation normalises each storage tensor individually and rebuilds the
-    NestedTensor. Behaviour matches `nn.LayerNorm` exactly for dense inputs.
-    """
-
-    def __init__(self, hidden_size: int, eps: float = 1e-12):
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(hidden_size))
-        self.bias = nn.Parameter(torch.zeros(hidden_size))
-        self.variance_epsilon = eps
-
-    def forward(self, x: Tensor) -> Tensor:
-        if isinstance(x, NestedTensor):
-            storage = []
-            for t in x._storage:
-                u = t.mean(-1, keepdim=True)
-                s = (t - u).pow(2).mean(-1, keepdim=True)
-                t = (t - u) / torch.sqrt(s + self.variance_epsilon)
-                storage.append(self.weight * t + self.bias)
-            return NestedTensor(storage, **x._meta())
-        u = x.mean(-1, keepdim=True)
-        s = (x - u).pow(2).mean(-1, keepdim=True)
-        x = (x - u) / torch.sqrt(s + self.variance_epsilon)
-        return self.weight * x + self.bias
-
-
 class RnaBertEmbeddings(nn.Module):
     def __init__(self, config: RnaBertConfig):
         super().__init__()
         self.word_embeddings = nn.Embedding(config.vocab_size, config.hidden_size, padding_idx=config.pad_token_id)
         self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size)
         self.token_type_embeddings = nn.Embedding(config.type_vocab_size, config.hidden_size)
-        self.layer_norm = RnaBertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
         self.position_embedding_type = getattr(config, "position_embedding_type", "absolute")
         self.register_buffer(
@@ -632,46 +608,18 @@ class RnaBertEmbeddings(nn.Module):
         inputs_embeds: torch.FloatTensor | None = None,
         past_key_values_length: int = 0,
     ) -> Tensor:
-        if input_ids is not None:
-            input_shape = input_ids.size()
-        else:
-            input_shape = inputs_embeds.size()[:-1]  # type: ignore[union-attr]
-
-        seq_length = input_shape[1]
-
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
 
-        # RNA models do not use token_type_ids
-        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=self.position_ids.device)
-        token_type_embeddings = self.token_type_embeddings(token_type_ids)
-
+        reference = input_ids if input_ids is not None else inputs_embeds[..., 0]
+        token_type_embeddings = self.token_type_embeddings(torch.zeros_like(reference, dtype=torch.long))
         embeddings = inputs_embeds + token_type_embeddings
 
         if self.position_embedding_type == "absolute":
             if position_ids is None:
-                position_ids = self.position_ids[:, past_key_values_length : seq_length + past_key_values_length]
-                if position_ids.numel() == 0:
-                    position_ids = torch.arange(
-                        past_key_values_length,
-                        past_key_values_length + seq_length,
-                        device=embeddings.device,
-                    ).unsqueeze(0)
-                else:
-                    max_pos = int(position_ids.max())
-                    min_pos = int(position_ids.min())
-                    if max_pos >= self.position_embeddings.num_embeddings or min_pos < 0:
-                        position_ids = torch.arange(
-                            past_key_values_length,
-                            past_key_values_length + seq_length,
-                            device=embeddings.device,
-                        ).unsqueeze(0)
-            position_embeddings = self.position_embeddings(position_ids)
-            if isinstance(embeddings, NestedTensor):
-                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
-                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
-                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
-            embeddings += position_embeddings
+                position_ids = torch.cumsum(torch.ones_like(reference, dtype=torch.long), dim=1) - 1
+                position_ids = position_ids + past_key_values_length
+            embeddings = embeddings + self.position_embeddings(position_ids)
 
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
@@ -922,16 +870,13 @@ class RnaBertSelfAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1038,16 +983,13 @@ class RnaBertCrossAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1062,7 +1004,7 @@ class RnaBertSelfOutput(nn.Module):
     def __init__(self, config: RnaBertConfig):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        self.layer_norm = RnaBertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
     def forward(self, hidden_states: Tensor, input_tensor: Tensor) -> Tensor:
@@ -1091,7 +1033,7 @@ class RnaBertOutput(nn.Module):
     def __init__(self, config: RnaBertConfig):
         super().__init__()
         self.dense = nn.Linear(config.intermediate_size, config.hidden_size)
-        self.layer_norm = RnaBertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout)
 
     def forward(self, hidden_states: Tensor, input_tensor: Tensor) -> Tensor:

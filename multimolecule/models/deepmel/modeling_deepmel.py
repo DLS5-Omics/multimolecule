@@ -121,12 +121,10 @@ class DeepMelModel(DeepMelPreTrainedModel):
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
         if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
+            attention_mask = input_ids.mask
             input_ids = input_ids.tensor
         if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
+            attention_mask = inputs_embeds.mask
             inputs_embeds = inputs_embeds.tensor
 
         forward_embedding = self.embeddings(

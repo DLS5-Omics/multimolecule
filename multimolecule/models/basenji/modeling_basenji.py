@@ -125,12 +125,10 @@ class BasenjiModel(BasenjiPreTrainedModel):
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
         if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
+            attention_mask = input_ids.mask
             input_ids = input_ids.tensor
         if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
+            attention_mask = inputs_embeds.mask
             inputs_embeds = inputs_embeds.tensor
 
         embedding_output = self.embeddings(
@@ -366,7 +364,7 @@ class BasenjiEncoder(nn.Module):
                 all_hidden_states = all_hidden_states + (hidden_state.transpose(1, 2),)  # type: ignore[operator]
 
         if self.crop_bins > 0:
-            hidden_state = hidden_state[..., self.crop_bins : hidden_state.shape[-1] - self.crop_bins]
+            hidden_state = hidden_state[..., self.crop_bins : -self.crop_bins]
         hidden_state = self.head(hidden_state)
         hidden_state = self.act(hidden_state)
 

@@ -179,8 +179,8 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
             # meta device after `from_pretrained`, so re-register on the input device once
             # the real device is known.
             mean, std = self._build_input_stats(device=hidden_state.device)
-            self.register_buffer("input_mean", mean, persistent=False)
-            self.register_buffer("input_std", std, persistent=False)
+            self.register_buffer("input_mean", mean.to(self.input_mean.dtype), persistent=False)
+            self.register_buffer("input_std", std.to(self.input_std.dtype), persistent=False)
             self._initialized = True
         hidden_state = (hidden_state - self.input_mean.to(hidden_state.dtype)) / self.input_std.to(hidden_state.dtype)
 

@@ -132,8 +132,6 @@ class BpfoldModel(BpfoldPreTrainedModel):
         return_noncanonical: bool = False,
         **kwargs: Unpack[TransformersKwargs],
     ) -> BpfoldModelOutput:
-        if isinstance(input_ids, NestedTensor):
-            input_ids, attention_mask = input_ids.tensor, input_ids.mask
 
         if input_ids is not None and inputs_embeds is not None:
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
@@ -186,7 +184,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
             )
             for member in self.members
         ]
-        logits_with_tokens = torch.stack(member_logits, dim=0).mean(dim=0)
+        logits_with_tokens = sum(member_logits[1:], member_logits[0]) / len(member_logits)
 
         if inputs_embeds is not None:
             logits = logits_with_tokens
@@ -258,7 +256,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
         token_ids = input_ids[:, :network_length].clamp(min=0, max=self.config.vocab_size - 1)
         attention_mask = attention_mask[:, :network_length]
         _, base_mask, base_token_ids = self._remove_special_tokens(
-            token_ids.new_ones((*token_ids.shape, 1), dtype=torch.float32),
+            torch.ones_like(token_ids, dtype=torch.float32).unsqueeze(-1),
             attention_mask,
             token_ids,
         )
@@ -349,16 +347,18 @@ class BpfoldModel(BpfoldPreTrainedModel):
     ) -> Tensor:
         batch_size = base_indices.size(0)
         num_channels = 2 if self.config.separate_outer_inner_energy else 1
-        energy = self.outer_energy.new_zeros((batch_size, num_channels, target_length, target_length))
         pair_index = _pair_index_matrix().to(device=base_indices.device)
 
-        for batch_index in range(batch_size):
-            length = int(base_lengths[batch_index].item())
-            if length <= 0:
-                continue
-            seq = base_indices[batch_index, :length]
+        is_nested = isinstance(base_indices, NestedTensor)
+        eos_offset = 1 if self.config.eos_token_id is not None else 0
+        energy = (
+            None if is_nested else self.outer_energy.new_zeros((batch_size, num_channels, target_length, target_length))
+        )
+        elements = []
+
+        for batch_index, length in enumerate(base_lengths.tolist()):
             seq_energy = _build_energy_map_from_tokens(
-                seq,
+                base_indices[batch_index][:length],
                 pair_index,
                 self.outer_energy,
                 self.inner_chain_energy,
@@ -368,8 +368,14 @@ class BpfoldModel(BpfoldPreTrainedModel):
                 separate_outer_inner=self.config.separate_outer_inner_energy,
             )
             base_end = base_start + length
-            energy[batch_index, :, base_start:base_end, base_start:base_end] = seq_energy
-        return energy
+            if is_nested:
+                element_length = length + base_start + eos_offset
+                element_energy = self.outer_energy.new_zeros((num_channels, element_length, element_length))
+                element_energy[:, base_start:base_end, base_start:base_end] = seq_energy
+                elements.append(element_energy)
+            else:
+                energy[batch_index, :, base_start:base_end, base_start:base_end] = seq_energy  # type: ignore[index]
+        return NestedTensor(elements) if is_nested else energy
 
     def _postprocess(self, logits: Tensor, base_one_hot: Tensor, is_noncanonical: bool = False) -> Tensor:
         if is_noncanonical:
@@ -388,7 +394,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
         lr_max = self.config.postprocess_lr_max
         for _ in range(self.config.postprocess_iterations):
             violation = torch.sigmoid(2 * (_contact_a(a_hat, mask).sum(dim=-1) - 1))
-            grad_a = (lmbd * violation).unsqueeze(-1).expand_as(logits) - u / 2
+            grad_a = (lmbd * violation).unsqueeze(-1) - u / 2
             grad = a_hat * mask * (grad_a + grad_a.transpose(-1, -2))
             a_hat = a_hat - lr_min * grad
             lr_min *= 0.99
@@ -748,7 +754,7 @@ class BpfoldSqueezeExcitation(nn.Module):
         scale = self.activation(scale)
         scale = self.dense2(scale)
         scale = self.gate(scale).view(batch_size, channels, 1, 1)
-        return hidden_states * scale.expand_as(hidden_states)
+        return hidden_states * scale
 
 
 class BpfoldDynamicPositionBiasBlock(nn.Module):
@@ -787,7 +793,9 @@ class BpfoldDynamicPositionBias(nn.Module):
             raise ValueError("BpfoldDynamicPositionBias requires equal query and key lengths.")
         positions = torch.arange(query_length, device=self.device)
         relative_indices = positions[:, None] - positions[None, :] + query_length - 1
-        relative_positions = torch.arange(-query_length + 1, query_length, device=self.device, dtype=torch.float32)
+        relative_positions = torch.arange(
+            -query_length + 1, query_length, device=self.device, dtype=self.head.weight.dtype
+        )
         relative_positions = relative_positions[:, None]
         if self.log_distance:
             relative_positions = torch.sign(relative_positions) * torch.log(relative_positions.abs() + 1)
@@ -852,7 +860,7 @@ def _build_energy_map_from_tokens(
 ) -> Tensor:
     length = seq.size(0)
     channels = 2 if separate_outer_inner else 1
-    energy = seq.new_zeros((channels, length, length), dtype=torch.float32)
+    energy = outer_energy.new_zeros((channels, length, length))
     min_pair_distance = motif_radius + 1
     if length < min_pair_distance + 1:
         return energy
@@ -995,10 +1003,11 @@ def _constraint_matrix(x: Tensor, loop_min_len: int = 2, is_noncanonical: bool =
     ug = base_u.unsqueeze(2) * base_g.unsqueeze(1)
     pair_mask = au + au.transpose(-1, -2) + cg + cg.transpose(-1, -2) + ug + ug.transpose(-1, -2)
     if is_noncanonical:
-        pair_mask = torch.ones_like(pair_mask) - torch.eye(pair_mask.size(-1), device=pair_mask.device).unsqueeze(0)
+        ones = torch.ones_like(pair_mask, dtype=torch.bool)
+        diagonal = ones.triu(0) & ones.tril(0)
+        pair_mask = torch.ones_like(pair_mask) - diagonal.to(pair_mask.dtype)
 
-    length = pair_mask.size(-1)
-    sharp_loop = torch.ones(length, length, device=pair_mask.device, dtype=torch.bool).triu(diagonal=loop_min_len + 1)
+    sharp_loop = torch.ones_like(pair_mask, dtype=torch.bool).triu(diagonal=loop_min_len + 1)
     sharp_loop = sharp_loop | sharp_loop.transpose(-1, -2)
     return pair_mask * sharp_loop.to(dtype=pair_mask.dtype)
 
@@ -1007,7 +1016,8 @@ def _noncanonical_matrix(x: Tensor) -> Tensor:
     canonical = _constraint_matrix(x, loop_min_len=2, is_noncanonical=False).bool()
     valid = x.sum(dim=-1) > 0
     all_pairs = (valid.unsqueeze(1) & valid.unsqueeze(2)).bool()
-    diagonal = torch.eye(x.size(1), device=x.device, dtype=torch.bool).unsqueeze(0)
+    ones = torch.ones_like(all_pairs)
+    diagonal = ones.triu(0) & ones.tril(0)
     return all_pairs & ~canonical & ~diagonal
 
 

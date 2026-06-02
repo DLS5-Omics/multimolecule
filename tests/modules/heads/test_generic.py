@@ -55,10 +55,8 @@ class TestBasePredictionHead:
     def test_get_attention_mask_no_pad_token_id(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None, pad_token_id=None))
         input_ids = torch.tensor([[1, 3, 4, 2, 0]])
-        with pytest.raises(
-            ValueError, match="Unable to infer attention mask for BasePredictionHead, because pad_token_id is None"
-        ):
-            head.get_attention_mask(input_ids)
+        mask = head.get_attention_mask(input_ids)
+        assert torch.equal(mask, torch.ones_like(input_ids, dtype=torch.int32))
 
     def test_remove_special_tokens_both_bos_eos(self):
         head = BasePredictionHead(PreTrainedConfig(hidden_size=64, head=None))

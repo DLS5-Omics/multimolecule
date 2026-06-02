@@ -119,6 +119,15 @@ class RotaryEmbedding(nn.Module):
         if offset > 0 and seq_length is None:
             raise ValueError("seq_length must be provided when offset > 0")
 
+        if isinstance(q, NestedTensor):
+            reference = q[..., 0, :, 0]
+            positions = torch.cumsum(torch.ones_like(reference, dtype=torch.long), dim=-1) - 1 + offset
+            cos, sin = self.cos_sin_tables(positions, dtype=q.dtype)
+            return (
+                self.apply_rotary(q, cos, sin, interleaved=self.interleaved),
+                self.apply_rotary(k, cos, sin, interleaved=self.interleaved),
+            )
+
         if seq_length is None:
             seq_length = k.shape[-2]
 
@@ -172,18 +181,6 @@ class RotaryEmbedding(nn.Module):
         if self._cos_cached is None or self._sin_cached is None:
             raise RuntimeError("Cos/sin tables not initialized. Call forward() or _update_cos_sin_tables() first.")
 
-        if isinstance(x, NestedTensor):
-            storage = []
-            for t in x._storage:
-                seq_len = t.shape[-2]
-                cos = self._cos_cached[:, :, offset : offset + seq_len, :]
-                sin = self._sin_cached[:, :, offset : offset + seq_len, :]
-                cos = cos.squeeze(0).squeeze(0)
-                sin = sin.squeeze(0).squeeze(0)
-                rotated = (t * cos) + (self.rotate_half(t, interleaved=self.interleaved) * sin)
-                storage.append(rotated.type_as(t))
-            return NestedTensor(storage, **x._meta())
-
         cos = self._cos_cached[:, :, offset : offset + x.shape[-2], :]
         sin = self._sin_cached[:, :, offset : offset + x.shape[-2], :]
         rotated = (x * cos) + (self.rotate_half(x, interleaved=self.interleaved) * sin)
@@ -192,8 +189,47 @@ class RotaryEmbedding(nn.Module):
     @staticmethod
     def rotate_half(x: Tensor, interleaved: bool = False) -> Tensor:
         if interleaved:
-            x1 = x[..., ::2]
-            x2 = x[..., 1::2]
-            return torch.stack((-x2, x1), dim=-1).flatten(-2)
-        x1, x2 = x.chunk(2, dim=-1)
-        return torch.cat((-x2, x1), dim=-1)
+            return torch.stack((-x[..., 1::2], x[..., ::2]), dim=-1).flatten(-2)
+        half = x.shape[-1] // 2
+        return torch.stack((-x[..., half:], x[..., :half]), dim=-2).flatten(-2)
+
+    def cos_sin_tables(self, position_ids: Tensor, dtype: torch.dtype | None = None) -> Tuple[Tensor, Tensor]:
+        """Compute ``(cos, sin)`` rotary tables for explicit ``position_ids``.
+
+        Unlike :meth:`forward`, positions come from ``position_ids`` rather than an internal
+        ``arange`` over the sequence. This is what autoregressive models (KV-cache offsets,
+        generation) and packed ``NestedTensor`` inputs (per-sequence positions) require. Works for
+        dense ``position_ids`` of shape ``(batch, seq)`` and ragged ``NestedTensor`` positions alike;
+        the result broadcasts over the head dimension and is *not* cached (positions vary per call).
+
+        Args:
+            position_ids: Integer positions, shape ``(batch, seq)`` (dense or ``NestedTensor``).
+            dtype: Optional output dtype for ``cos``/``sin``. Frequencies are always accumulated in the
+                   ``inv_freq`` dtype (float32 by default) for numerical stability, then cast.
+
+        Returns:
+            Tuple of ``(cos, sin)`` each shaped ``(batch, 1, seq, embedding_dim)``.
+        """
+        if not self._initialized:
+            inv_freq_exponent = (
+                torch.arange(0, self.embedding_dim, 2, device=position_ids.device, dtype=self.inv_freq.dtype)
+                / self.embedding_dim
+            )
+            self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
+            self._initialized = True
+        freqs = position_ids.unsqueeze(-1).to(self.inv_freq.dtype) * self.inv_freq / self.scale
+        emb = torch.repeat_interleave(freqs, 2, dim=-1) if self.interleaved else torch.cat((freqs, freqs), dim=-1)
+        cos = emb.cos().unsqueeze(1)
+        sin = emb.sin().unsqueeze(1)
+        if dtype is not None:
+            cos, sin = cos.to(dtype), sin.to(dtype)
+        return cos, sin
+
+    @staticmethod
+    def apply_rotary(x: Tensor, cos: Tensor, sin: Tensor, interleaved: bool = False) -> Tensor:
+        """Apply precomputed ``cos``/``sin`` tables to ``x`` (no internal cache).
+
+        Companion to :meth:`cos_sin_tables` for models that precompute the tables once at the model level and
+        apply them inside attention (e.g. autoregressive models passing ``position_embeddings`` down).
+        """
+        return (x * cos) + (RotaryEmbedding.rotate_half(x, interleaved=interleaved) * sin)

@@ -153,9 +153,9 @@ class Runner(dl.Runner):
         model = self.unwrap(self.model)
         if (
             pretrained_ratio is not None
-            and isinstance(model, ModelBase)  # noqa: W503
-            and "lr" in optim_kwargs  # noqa: W503
-            and "weight_decay" in optim_kwargs  # noqa: W503
+            and isinstance(model, ModelBase)
+            and "lr" in optim_kwargs
+            and "weight_decay" in optim_kwargs
         ):
             parameters = model.trainable_parameters(
                 lr=optim_kwargs.lr,

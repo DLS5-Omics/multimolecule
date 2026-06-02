@@ -22,14 +22,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import Any
 from warnings import warn
 
 import torch
-import torch.nn.functional as F
 from danling import NestedTensor
 from torch import Tensor, nn
+from torch.nn import functional as F
 from transformers import initialization as init
 from transformers.masking_utils import create_bidirectional_mask
 from transformers.modeling_layers import GradientCheckpointingLayer
@@ -38,7 +37,7 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPoolingAndCrossAttentions,
     MaskedLMOutput,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -51,7 +50,7 @@ from multimolecule.modules import (
     RotaryEmbedding,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
@@ -136,21 +135,25 @@ class AmplifyModel(AmplifyPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
-        if isinstance(input_ids, NestedTensor) and attention_mask is None:
-            attention_mask = input_ids.mask
-        if isinstance(inputs_embeds, NestedTensor) and attention_mask is None:
-            attention_mask = inputs_embeds.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(input_ids=input_ids, inputs_embeds=inputs_embeds)
 
-        attn_mask = create_bidirectional_mask(
-            config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
-        )
+        if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+            attn_mask = None
+        else:
+            attn_mask = create_bidirectional_mask(
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
+            )
 
         encoder_outputs = self.encoder(embedding_output, attention_mask=attn_mask, **kwargs)
         sequence_output = encoder_outputs.last_hidden_state
@@ -567,16 +570,13 @@ class AmplifySelfAttention(nn.Module):
         if isinstance(hidden_states, NestedTensor):
             attention_bias = None
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_states,
             key_states,
             value_states,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,

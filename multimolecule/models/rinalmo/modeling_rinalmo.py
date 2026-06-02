@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from contextlib import suppress
 from typing import Any
 from warnings import warn
@@ -41,7 +41,7 @@ from transformers.modeling_outputs import (
     MaskedLMOutput,
     ModelOutput,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -57,7 +57,7 @@ from multimolecule.modules import (
     RotaryEmbedding,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 from multimolecule.tokenisers.rna.utils import get_alphabet
 
@@ -638,28 +638,12 @@ class RiNALMoEmbeddings(nn.Module):
             if input_ids is None:
                 raise ValueError("Token dropout is only supported when input_ids are provided")
             mask = input_ids == self.mask_token_id
-            if isinstance(embeddings, NestedTensor):
-                storage = []
-                for t, m in zip(embeddings._storage, mask._storage):
-                    storage.append(t.masked_fill(m.unsqueeze(-1), 0.0))
-                embeddings = NestedTensor(storage, **embeddings._meta())
-            else:
-                embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
+            embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RiNALMo model training runs
             src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
             dtype = embeddings.dtype
-            if isinstance(mask, NestedTensor):
-                mask_ratio_observed = mask.tensor.sum(-1).to(dtype=dtype) / src_lengths
-            else:
-                mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
-            if isinstance(embeddings, NestedTensor):
-                scale = (1 - mask_ratio_train) / (1 - mask_ratio_observed)
-                storage = []
-                for t, s in zip(embeddings._storage, scale):
-                    storage.append((t * s).to(t.dtype))
-                embeddings = NestedTensor(storage, **embeddings._meta())
-            else:
-                embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
+            mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
+            embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
 
         if self.position_embedding_type == "absolute":
             if position_ids is None:
@@ -672,10 +656,6 @@ class RiNALMoEmbeddings(nn.Module):
                 # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
                 position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
-            if isinstance(embeddings, NestedTensor):
-                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
-                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
-                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
             embeddings += position_embeddings
 
         if attention_mask is not None and not isinstance(embeddings, NestedTensor):
@@ -943,16 +923,13 @@ class RiNALMoSelfAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1069,16 +1046,13 @@ class RiNALMoCrossAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1171,7 +1145,7 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
             dtype=torch.long,
         )
         self.register_buffer("canonical_token_ids", canonical_token_ids, persistent=False)
-        self._canonical_token_ids_initialized = False
+        self._initialized = False
 
     def forward(  # type: ignore[override]  # pylint: disable=arguments-renamed
         self,
@@ -1238,7 +1212,7 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
         Returns:
             A binary matrix where 1 indicates positions that can form valid base pairs
         """
-        if not self._canonical_token_ids_initialized:
+        if not self._initialized:
             # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
             # meta device after `from_pretrained`, so re-register on the input device once
             # the real device is known.
@@ -1249,7 +1223,7 @@ class RiNALMoSecondaryStructurePredictionHead(BasePredictionHead):
                 device=input_ids.device,
             )
             self.register_buffer("canonical_token_ids", canonical_token_ids, persistent=False)
-            self._canonical_token_ids_initialized = True
+            self._initialized = True
         a_id, c_id, g_id, u_id = self.canonical_token_ids.unbind(0)
         dtype = torch.get_default_dtype()
         base_a = (input_ids == a_id).to(dtype)

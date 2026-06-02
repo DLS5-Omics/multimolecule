@@ -26,10 +26,8 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
-import numpy as np
 import torch
 from danling import NestedTensor
-from scipy.interpolate import splev
 from torch import Tensor, nn
 from torch.nn import functional as F
 from transformers import initialization as init
@@ -157,14 +155,6 @@ class MtSpliceModel(MtSplicePreTrainedModel):
         attention_mask: Tensor | None,
         inputs_embeds: Tensor | NestedTensor | None,
     ) -> Tensor:
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
         embedding_output = self.embeddings(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -181,11 +171,14 @@ class MtSpliceModel(MtSplicePreTrainedModel):
         return self.prediction(pooled)
 
     def _split(self, inputs_embeds: Tensor) -> tuple[Tensor, Tensor]:
-        length = inputs_embeds.size(-1)
-        acceptor_length = min(self.config.acceptor_length, length)
-        donor_length = min(self.config.donor_length, length)
-        acceptor = inputs_embeds[..., :acceptor_length]
-        donor = inputs_embeds[..., length - donor_length :]
+        acceptor = inputs_embeds[..., : self.config.acceptor_length]
+        donor = inputs_embeds[..., -self.config.donor_length :]
+        if isinstance(acceptor, NestedTensor):
+            # The windows are a fixed acceptor_length/donor_length, hence uniform (no padding):
+            # densify so the towers run as one batched dense conv. The ragged structure was only
+            # needed to slice each sequence's own window; threading it through the fixed-size
+            # towers would add per-element bookkeeping for no compute saving (and is slower).
+            acceptor, donor = acceptor.tensor, donor.tensor
         return acceptor, donor
 
 
@@ -366,9 +359,7 @@ class MtSpliceSplineWeight(nn.Module):
         key = (length, device, dtype)
         basis = self._basis_cache.get(key)
         if basis is None:
-            basis = torch.from_numpy(build_bspline_basis(length, self.spline_bases, self.spline_degree)).to(
-                device=device, dtype=dtype
-            )
+            basis = build_bspline_basis(length, self.spline_bases, self.spline_degree, device=device, dtype=dtype)
             self._basis_cache[key] = basis
         return basis
 
@@ -411,16 +402,25 @@ class MtSplicePredictionHead(nn.Module):
         return self.decoder(hidden_state)
 
 
-def build_bspline_basis(length: int, n_bases: int, spline_degree: int) -> np.ndarray:
+def build_bspline_basis(
+    length: int,
+    n_bases: int,
+    spline_degree: int,
+    *,
+    device: torch.device | None = None,
+    dtype: torch.dtype | None = None,
+) -> Tensor:
     """
     Construct the cubic B-spline design matrix used by the positional re-weighting.
 
-    Reproduces the upstream ``BSpline`` knot construction (mgcv-style) and
-    ``scipy.interpolate.splev`` evaluation so the deterministic constant matches
-    the original Keras ``SplineWeight1D`` layer.
+    Pure-torch Cox-de Boor evaluation of the upstream ``BSpline`` knot construction
+    (mgcv-style). ReprodUces the original Keras ``SplineWeight1D`` design matrix
+    (``scipy.interpolate.splev``) to machine precision while staying fully
+    ``torch.compile``-traceable -- no numpy/scipy enters the graph, so the layer is
+    natively compilable instead of forcing a graph break.
     """
 
-    positions: np.ndarray = np.arange(length, dtype=np.float64)
+    positions = torch.arange(length, dtype=torch.float64)
     start = 0.0
     end = float(length - 1)
     x_range = end - start
@@ -429,13 +429,29 @@ def build_bspline_basis(length: int, n_bases: int, spline_degree: int) -> np.nda
     m = spline_degree - 1
     nk = n_bases - m
     dknots = (hi - lo) / (nk - 1)
-    knots = np.linspace(start=lo - dknots * (m + 1), stop=hi + dknots * (m + 1), num=nk + 2 * m + 2)
-    basis: np.ndarray = np.zeros((length, n_bases), dtype=np.float64)
-    for i in range(n_bases):
-        coeffs = np.zeros(n_bases)
-        coeffs[i] = 1.0
-        basis[:, i] = splev(positions, (knots, coeffs, spline_degree), der=0)
-    return basis.astype(np.float32)
+    n_knots = nk + 2 * m + 2
+    knots = torch.linspace(lo - dknots * (m + 1), hi + dknots * (m + 1), n_knots, dtype=torch.float64)
+
+    x = positions.unsqueeze(1)
+    # Degree-0 basis: half-open knot intervals, matching FITPACK's convention.
+    basis = ((x >= knots[:-1]) & (x < knots[1:])).to(torch.float64)
+    # Cox-de Boor recursion up to the requested degree. Uniform knots => spans are never zero,
+    # but guard the denominators anyway so a degenerate 0/0 maps to 0 exactly as splev does.
+    for degree in range(1, spline_degree + 1):
+        count = n_knots - degree - 1
+        index = torch.arange(count)
+        left_span = knots[index + degree] - knots[index]
+        right_span = knots[index + degree + 1] - knots[index + 1]
+        left = torch.where(
+            left_span != 0, (x - knots[index]) / torch.where(left_span != 0, left_span, 1.0), torch.zeros_like(x)
+        )
+        right = torch.where(
+            right_span != 0,
+            (knots[index + degree + 1] - x) / torch.where(right_span != 0, right_span, 1.0),
+            torch.zeros_like(x),
+        )
+        basis = left * basis[:, :count] + right * basis[:, 1 : count + 1]
+    return basis[:, :n_bases].to(device=device, dtype=dtype)
 
 
 @dataclass

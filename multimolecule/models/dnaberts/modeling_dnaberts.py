@@ -22,8 +22,6 @@
 
 from __future__ import annotations
 
-import math
-from collections.abc import Callable
 from typing import Any
 from warnings import warn
 
@@ -38,7 +36,7 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
     BaseModelOutputWithPoolingAndCrossAttentions,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -46,10 +44,11 @@ from transformers.utils.generic import can_return_tuple, merge_with_config_defau
 from transformers.utils.output_capturing import capture_outputs
 
 from multimolecule.modules import (
+    ALiBi,
     ContactPredictionHead,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
@@ -163,8 +162,6 @@ class DnaBertSModel(DnaBertSPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor) and attention_mask is None:
-            attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -179,7 +176,12 @@ class DnaBertSModel(DnaBertSPreTrainedModel):
         if cache_position is None:
             cache_position = torch.arange(past_key_values_length, past_key_values_length + seq_length, device=device)
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(
@@ -231,9 +233,12 @@ class DnaBertSModel(DnaBertSPreTrainedModel):
                 past_key_values=past_key_values,
             )
         else:
-            attention_mask = create_bidirectional_mask(
-                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
-            )
+            if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+                attention_mask = None
+            else:
+                attention_mask = create_bidirectional_mask(
+                    config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
+                )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
@@ -426,16 +431,12 @@ class DnaBertSEmbeddings(nn.Module):
         input_ids: torch.LongTensor | None = None,
         inputs_embeds: torch.FloatTensor | None = None,
     ) -> Tensor:
-        if input_ids is not None:
-            input_shape = input_ids.size()
-        else:
-            input_shape = inputs_embeds.size()[:-1]  # type: ignore[union-attr]
-
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
 
         # DNABERT-S always uses token type 0 (no differentiation between segment types)
-        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=inputs_embeds.device)
+        reference = input_ids if input_ids is not None else inputs_embeds[..., 0]
+        token_type_ids = torch.zeros_like(reference, dtype=torch.long)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
 
         embeddings = inputs_embeds + token_type_embeddings
@@ -449,42 +450,7 @@ class DnaBertSEncoder(nn.Module):
     def __init__(self, config: DnaBertSConfig):
         super().__init__()
         self.config = config
-        self.num_attention_heads = config.num_attention_heads
         self.layer = nn.ModuleList([DnaBertSLayer(config, layer_idx=i) for i in range(config.num_hidden_layers)])
-        # Pre-build ALiBi tensor at starting size
-        self._current_alibi_size = config.alibi_starting_size
-        self.register_buffer(
-            "alibi",
-            self._build_alibi_tensor(config.alibi_starting_size, torch.device("cpu"), torch.float32),
-            persistent=False,
-        )
-        self._initialized = False
-
-    def _build_alibi_tensor(self, size: int, device: torch.device, dtype: torch.dtype) -> Tensor:
-        n_heads = self.num_attention_heads
-
-        def _get_alibi_head_slopes(n_heads: int) -> list[float]:
-            def get_slopes_power_of_2(n_heads: int) -> list[float]:
-                start = 2 ** (-(2 ** -(math.log2(n_heads) - 3)))
-                ratio = start
-                return [start * ratio**i for i in range(n_heads)]
-
-            if math.log2(n_heads).is_integer():
-                return get_slopes_power_of_2(n_heads)
-
-            closest_power_of_2 = 2 ** math.floor(math.log2(n_heads))
-            slopes_a = get_slopes_power_of_2(closest_power_of_2)
-            slopes_b = _get_alibi_head_slopes(2 * closest_power_of_2)
-            slopes_b = slopes_b[0::2][: n_heads - closest_power_of_2]
-            return slopes_a + slopes_b
-
-        context_position = torch.arange(size, device=device)[:, None]
-        memory_position = torch.arange(size, device=device)[None, :]
-        relative_position = torch.abs(memory_position - context_position)
-        relative_position = relative_position.unsqueeze(0).expand(n_heads, -1, -1)
-        slopes = torch.tensor(_get_alibi_head_slopes(n_heads), device=device, dtype=dtype)
-        alibi = slopes.unsqueeze(1).unsqueeze(1) * -relative_position
-        return alibi.unsqueeze(0)  # [1, n_heads, size, size]
 
     def forward(
         self,
@@ -497,35 +463,6 @@ class DnaBertSEncoder(nn.Module):
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | BaseModelOutputWithPastAndCrossAttentions:
-        seq_len = hidden_states.shape[1]
-
-        if not self._initialized:
-            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
-            # meta device after `from_pretrained`, so re-register on the input device once
-            # the real device is known.
-            self.register_buffer(
-                "alibi",
-                self._build_alibi_tensor(self._current_alibi_size, hidden_states.device, hidden_states.dtype),
-                persistent=False,
-            )
-            self._initialized = True
-
-        # Compute ALiBi bias for the current sequence length
-        if seq_len > self._current_alibi_size:
-            self.register_buffer(
-                "alibi",
-                self._build_alibi_tensor(seq_len, hidden_states.device, hidden_states.dtype),
-                persistent=False,
-            )
-            self._current_alibi_size = seq_len
-        alibi = self.alibi[:, :, :seq_len, :seq_len].to(device=hidden_states.device, dtype=hidden_states.dtype)
-
-        # Add ALiBi bias to attention mask
-        if attention_mask is not None:
-            attention_mask = attention_mask + alibi
-        else:
-            attention_mask = alibi
-
         for layer_module in self.layer:
             hidden_states = layer_module(
                 hidden_states,
@@ -705,6 +642,7 @@ class DnaBertSSelfAttention(nn.Module):
         self.value = nn.Linear(config.hidden_size, self.all_head_size)
 
         self.dropout = nn.Dropout(config.attention_dropout)
+        self.alibi = ALiBi(self.num_attention_heads)
 
         self.is_decoder = config.is_decoder
         self.is_causal = config.is_decoder if is_causal is None else is_causal
@@ -741,21 +679,17 @@ class DnaBertSSelfAttention(nn.Module):
 
         query_layer = self.transpose_for_scores(mixed_query_layer)
 
-        attention_bias = attention_mask
-
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
-            attention_bias,
+            attention_mask,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
+            alibi_slopes=self.alibi.slopes,
             **kwargs,
         )
 
@@ -834,16 +768,13 @@ class DnaBertSCrossAttention(nn.Module):
 
         attention_bias = attention_mask
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,

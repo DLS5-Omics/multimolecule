@@ -22,7 +22,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import Any
 from warnings import warn
 
@@ -39,7 +38,7 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPoolingAndCrossAttentions,
     MaskedLMOutput,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -51,7 +50,7 @@ from multimolecule.modules import (
     MaskedLMHead,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
@@ -171,8 +170,6 @@ class DnaBertModel(DnaBertPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor) and attention_mask is None:
-            attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -184,10 +181,15 @@ class DnaBertModel(DnaBertPreTrainedModel):
 
         # past_key_values_length
         past_key_values_length = past_key_values.get_seq_length() if past_key_values is not None else 0
-        if cache_position is None:
+        if cache_position is None and (self.config.is_decoder or past_key_values is not None):
             cache_position = torch.arange(past_key_values_length, past_key_values_length + seq_length, device=device)
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(
@@ -242,9 +244,12 @@ class DnaBertModel(DnaBertPreTrainedModel):
                 past_key_values=past_key_values,
             )
         else:
-            attention_mask = create_bidirectional_mask(
-                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
-            )
+            if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+                attention_mask = None
+            else:
+                attention_mask = create_bidirectional_mask(
+                    config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
+                )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
@@ -532,31 +537,18 @@ class DnaBertEmbeddings(nn.Module):
         inputs_embeds: torch.FloatTensor | None = None,
         past_key_values_length: int = 0,
     ) -> Tensor:
-        if input_ids is not None:
-            input_shape = input_ids.size()
-        else:
-            input_shape = inputs_embeds.size()[:-1]  # type: ignore[union-attr]
-
-        seq_length = input_shape[1]
-
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
 
-        # DNA models do not use token_type_ids
-        token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=inputs_embeds.device)
-        token_type_embeddings = self.token_type_embeddings(token_type_ids)
-
+        reference = input_ids if input_ids is not None else inputs_embeds[..., 0]
+        token_type_embeddings = self.token_type_embeddings(torch.zeros_like(reference, dtype=torch.long))
         embeddings = inputs_embeds + token_type_embeddings
 
         if self.position_embedding_type == "absolute":
             if position_ids is None:
-                position_ids = self.position_ids[:, past_key_values_length : seq_length + past_key_values_length]
-            position_embeddings = self.position_embeddings(position_ids)
-            if isinstance(embeddings, NestedTensor):
-                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
-                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
-                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
-            embeddings += position_embeddings
+                position_ids = torch.cumsum(torch.ones_like(reference, dtype=torch.long), dim=1) - 1
+                position_ids = position_ids + past_key_values_length
+            embeddings = embeddings + self.position_embeddings(position_ids)
 
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
@@ -752,8 +744,7 @@ class DnaBertSelfAttention(nn.Module):
         self.layer_idx = layer_idx
 
     def transpose_for_scores(self, x: Tensor) -> Tensor:
-        new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
-        x = x.view(new_x_shape)
+        x = x.view(x.size()[:-1] + (self.num_attention_heads, self.attention_head_size))
         return x.transpose(1, 2)
 
     def forward(
@@ -764,7 +755,6 @@ class DnaBertSelfAttention(nn.Module):
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...]:
-        mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
 
@@ -780,7 +770,7 @@ class DnaBertSelfAttention(nn.Module):
                 key_layer, value_layer, self.layer_idx, {"cache_position": cache_position}
             )
 
-        query_layer = self.transpose_for_scores(mixed_query_layer)
+        query_layer = self.transpose_for_scores(self.query(hidden_states))
 
         attention_bias = attention_mask
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
@@ -807,16 +797,13 @@ class DnaBertSelfAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -863,8 +850,7 @@ class DnaBertCrossAttention(nn.Module):
         self.layer_idx = layer_idx
 
     def transpose_for_scores(self, x: Tensor) -> Tensor:
-        new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
-        x = x.view(new_x_shape)
+        x = x.view(x.size()[:-1] + (self.num_attention_heads, self.attention_head_size))
         return x.transpose(1, 2)
 
     def forward(
@@ -877,7 +863,6 @@ class DnaBertCrossAttention(nn.Module):
     ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
-        mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
 
@@ -899,7 +884,7 @@ class DnaBertCrossAttention(nn.Module):
             key_layer = self.transpose_for_scores(self.key(encoder_hidden_states))
             value_layer = self.transpose_for_scores(self.value(encoder_hidden_states))
 
-        query_layer = self.transpose_for_scores(mixed_query_layer)
+        query_layer = self.transpose_for_scores(self.query(hidden_states))
 
         attention_bias = attention_mask
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
@@ -923,16 +908,13 @@ class DnaBertCrossAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,

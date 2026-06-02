@@ -100,12 +100,10 @@ class DeepSeaModel(DeepSeaPreTrainedModel):
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
         if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
+            attention_mask = input_ids.mask
             input_ids = input_ids.tensor
         if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
+            attention_mask = inputs_embeds.mask
             inputs_embeds = inputs_embeds.tensor
 
         embedding_output = self.embeddings(
@@ -214,12 +212,10 @@ class DeepSeaForSequencePrediction(DeepSeaPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None,
     ) -> tuple[Tensor | None, Tensor | None, Tensor | None]:
         if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
+            attention_mask = input_ids.mask
             input_ids = input_ids.tensor
         if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
+            attention_mask = inputs_embeds.mask
             inputs_embeds = inputs_embeds.tensor
         return input_ids, attention_mask, inputs_embeds
 

@@ -154,31 +154,6 @@ class DeltaSpliceModel(DeltaSplicePreTrainedModel):
         )
         record_contexts = bool(output_contexts) or bool(output_hidden_states)
 
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
-        if isinstance(alternative_input_ids, NestedTensor):
-            if alternative_attention_mask is None:
-                alternative_attention_mask = alternative_input_ids.mask
-            alternative_input_ids = alternative_input_ids.tensor
-        if isinstance(alternative_inputs_embeds, NestedTensor):
-            if alternative_attention_mask is None:
-                alternative_attention_mask = alternative_inputs_embeds.mask
-            alternative_inputs_embeds = alternative_inputs_embeds.tensor
-        if isinstance(reference_input_ids, NestedTensor):
-            if reference_attention_mask is None:
-                reference_attention_mask = reference_input_ids.mask
-            reference_input_ids = reference_input_ids.tensor
-        if isinstance(reference_inputs_embeds, NestedTensor):
-            if reference_attention_mask is None:
-                reference_attention_mask = reference_inputs_embeds.mask
-            reference_inputs_embeds = reference_inputs_embeds.tensor
-
         embedding_output = self.embeddings(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -573,15 +548,15 @@ def _center_crop(hidden_state: Tensor, target_length: int) -> Tensor:
     crop = length - target_length
     if crop % 2:
         raise ValueError(f"DeltaSplice valid-convolution crop must be even, got {crop}.")
-    start = crop // 2
-    return hidden_state[..., start : start + target_length]
+    half = crop // 2
+    return hidden_state[..., half:-half]
 
 
 def _average_tensors(values: list[Tensor | None]) -> Tensor | None:
     present = [value for value in values if value is not None]
     if not present:
         return None
-    return torch.mean(torch.stack(present), dim=0)
+    return sum(present) / len(present)
 
 
 @dataclass

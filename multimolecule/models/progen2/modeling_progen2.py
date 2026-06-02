@@ -22,7 +22,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from inspect import signature
 from typing import Any
 
@@ -40,13 +39,13 @@ from transformers.modeling_outputs import (
     BaseModelOutputWithPoolingAndCrossAttentions,
     CausalLMOutputWithPast,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
 from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
 from transformers.utils.output_capturing import capture_outputs
 
-from multimolecule.modules import SequencePredictionHead, TokenPredictionHead, eager_attention_forward
+from multimolecule.modules import RotaryEmbedding, SequencePredictionHead, TokenPredictionHead, attention_forward
 
 from ..modeling_outputs import SequencePredictorOutput, TokenPredictorOutput
 from .configuration_progen2 import ProGen2Config
@@ -102,7 +101,12 @@ class ProGen2Model(ProGen2PreTrainedModel):
         self.embeddings = ProGen2Embeddings(config)
         self.decoder = ProGen2Decoder(config)
         self.layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        self.rotary_emb = ProGen2RotaryEmbedding(config=config)
+        head_dim = config.hidden_size // config.num_attention_heads
+        rotary_dim = min(config.rotary_dim, head_dim) if config.rotary_dim is not None else head_dim
+        # ProGen2/GPT-J use the interleaved (rotate_every_two) RoPE variant; the shared RotaryEmbedding
+        # covers it. cos/sin are computed at the model level from explicit position_ids (KV-cache /
+        # generation / packed-NestedTensor per-sequence positions) and applied inside attention.
+        self.rotary_emb = RotaryEmbedding(embedding_dim=rotary_dim, interleaved=True)
         self.pooler = ProGen2Pooler(config) if add_pooling_layer else None
 
         # Initialize weights and apply final processing
@@ -127,8 +131,7 @@ class ProGen2Model(ProGen2PreTrainedModel):
         cache_position: torch.LongTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
-        if isinstance(input_ids, NestedTensor):
-            input_ids, attention_mask = input_ids.tensor, input_ids.mask
+        is_nested = isinstance(input_ids, NestedTensor) or isinstance(inputs_embeds, NestedTensor)
 
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
@@ -150,20 +153,27 @@ class ProGen2Model(ProGen2PreTrainedModel):
             )
 
         if position_ids is None:
-            position_ids = cache_position.unsqueeze(0)
+            if is_nested:
+                reference = input_ids if input_ids is not None else inputs_embeds[..., 0]
+                position_ids = torch.cumsum(torch.ones_like(reference, dtype=torch.long), dim=1) - 1
+            else:
+                position_ids = cache_position.unsqueeze(0)
 
-        causal_mask_kwargs = {
-            "config": self.config,
-            "inputs_embeds": inputs_embeds,
-            "attention_mask": attention_mask,
-            "past_key_values": past_key_values,
-            "position_ids": position_ids,
-        }
-        if "cache_position" in _CREATE_CAUSAL_MASK_PARAMETERS:
-            causal_mask_kwargs["cache_position"] = cache_position
-        causal_mask = create_causal_mask(**causal_mask_kwargs)
+        if is_nested:
+            causal_mask = None
+        else:
+            causal_mask_kwargs = {
+                "config": self.config,
+                "inputs_embeds": inputs_embeds,
+                "attention_mask": attention_mask,
+                "past_key_values": past_key_values,
+                "position_ids": position_ids,
+            }
+            if "cache_position" in _CREATE_CAUSAL_MASK_PARAMETERS:
+                causal_mask_kwargs["cache_position"] = cache_position
+            causal_mask = create_causal_mask(**causal_mask_kwargs)
 
-        position_embeddings = self.rotary_emb(inputs_embeds, position_ids=position_ids)
+        position_embeddings = self.rotary_emb.cos_sin_tables(position_ids, dtype=inputs_embeds.dtype)
 
         decoder_outputs = self.decoder(
             inputs_embeds,
@@ -451,7 +461,7 @@ class ProGen2Attention(nn.Module):
     """Multi-headed attention with partial rotary position embeddings (GPT-J style).
 
     Supports multiple attention backends (eager, SDPA, Flash Attention 2)
-    via the ``ALL_ATTENTION_FUNCTIONS`` dispatch mechanism.
+    through the shared MultiMolecule attention dispatch.
     """
 
     def __init__(self, config: ProGen2Config, layer_idx: int):
@@ -518,16 +528,13 @@ class ProGen2Attention(nn.Module):
             }
             key_states, value_states = past_key_values.update(key_states, value_states, self.layer_idx, cache_kwargs)
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_states,
             key_states,
             value_states,
             attention_mask,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.attention_dropout,
             scaling=self.scaling,
             **kwargs,
@@ -556,62 +563,6 @@ class ProGen2MLP(nn.Module):
         return hidden_states
 
 
-class ProGen2RotaryEmbedding(nn.Module):
-    """ProGen2/GPT-J-style rotary position embeddings.
-
-    Uses ``repeat_interleave(2)`` to produce interleaved frequencies that
-    match the ``rotate_every_two`` rotation pattern, unlike standard RoPE
-    which concatenates ``[freqs, freqs]``.
-    """
-
-    def __init__(self, config: ProGen2Config, device: torch.device | None = None):
-        super().__init__()
-        self.dim = (
-            min(config.rotary_dim, config.hidden_size // config.num_attention_heads)
-            if config.rotary_dim is not None
-            else config.hidden_size // config.num_attention_heads
-        )
-
-        inv_freq = 1.0 / (10000.0 ** (torch.arange(0, self.dim, 2, device=device, dtype=torch.float32) / self.dim))
-        self.register_buffer("inv_freq", inv_freq, persistent=False)
-        self._initialized = False
-
-    @torch.no_grad()
-    def forward(self, x: Tensor, position_ids: Tensor) -> tuple[Tensor, Tensor]:
-        """Compute cos and sin for rotary position embeddings.
-
-        Args:
-            x: Input tensor (used only for device/dtype).
-            position_ids: Shape ``(batch_size, seq_length)``.
-
-        Returns:
-            Tuple of ``(cos, sin)`` each of shape
-            ``(batch_size, 1, seq_length, rotary_dim)``.
-        """
-        if not self._initialized:
-            # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
-            # meta device after `from_pretrained`, so re-register on the input device once
-            # the real device is known.
-            inv_freq = 1.0 / (
-                10000.0 ** (torch.arange(0, self.dim, 2, device=x.device, dtype=torch.float32) / self.dim)
-            )
-            self.register_buffer("inv_freq", inv_freq, persistent=False)
-            self._initialized = True
-        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1).to(x.device)
-        position_ids_expanded = position_ids[:, None, :].float()
-
-        device_type = x.device.type
-        device_type = device_type if isinstance(device_type, str) and device_type != "mps" else "cpu"
-        with torch.autocast(device_type=device_type, enabled=False):
-            freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)
-            # Interleave: [f0, f0, f1, f1, ...] to match rotate_every_two
-            emb = freqs.repeat_interleave(2, dim=-1)
-            cos = emb.cos()
-            sin = emb.sin()
-
-        return cos.unsqueeze(1).to(dtype=x.dtype), sin.unsqueeze(1).to(dtype=x.dtype)
-
-
 class ProGen2Pooler(nn.Module):
     def __init__(self, config: ProGen2Config):
         super().__init__()
@@ -625,21 +576,11 @@ class ProGen2Pooler(nn.Module):
         return pooled_output
 
 
-def rotate_every_two(x: Tensor) -> Tensor:
-    """ProGen2/GPT-J-style rotation: rotate every two consecutive elements.
-
-    For input ``[a, b, c, d, e, f]``, returns ``[-b, a, -d, c, -f, e]``.
-
-    This differs from the standard ``rotate_half`` used by Llama which splits
-    the tensor in half along the last dimension.
-    """
-    x1 = x[..., ::2]
-    x2 = x[..., 1::2]
-    return torch.stack((-x2, x1), dim=-1).flatten(-2)
-
-
 def apply_rotary_pos_emb(q: Tensor, k: Tensor, cos: Tensor, sin: Tensor) -> tuple[Tensor, Tensor]:
-    """Apply ProGen2-style rotary position embeddings to query and key tensors.
+    """Apply ProGen2/GPT-J-style (interleaved ``rotate_every_two``) rotary embeddings to query and key.
+
+    Delegates to the shared :meth:`RotaryEmbedding.apply_rotary` with ``interleaved=True`` so the
+    rotation math lives in one place.
 
     Args:
         q: Query tensor of shape ``(batch, num_heads, seq_len, rotary_dim)``.
@@ -647,9 +588,10 @@ def apply_rotary_pos_emb(q: Tensor, k: Tensor, cos: Tensor, sin: Tensor) -> tupl
         cos: Cosine tensor of shape ``(batch, 1, seq_len, rotary_dim)``.
         sin: Sine tensor of shape ``(batch, 1, seq_len, rotary_dim)``.
     """
-    q_embed = (q * cos) + (rotate_every_two(q) * sin)
-    k_embed = (k * cos) + (rotate_every_two(k) * sin)
-    return q_embed, k_embed
+    return (
+        RotaryEmbedding.apply_rotary(q, cos, sin, interleaved=True),
+        RotaryEmbedding.apply_rotary(k, cos, sin, interleaved=True),
+    )
 
 
 ProGen2PreTrainedModel._can_record_outputs = {

@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 from warnings import warn
@@ -37,7 +37,7 @@ from transformers.cache_utils import Cache, DynamicCache, EncoderDecoderCache
 from transformers.masking_utils import create_bidirectional_mask, create_causal_mask
 from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import ModelOutput
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -53,7 +53,7 @@ from multimolecule.modules import (
     SequencePredictionHead,
     SinusoidalEmbedding,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 from multimolecule.tokenisers.rna.utils import get_alphabet
 
@@ -118,7 +118,7 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
-        self._inited = False
+        self._initialized = False
 
     def get_input_embeddings(self):
         return self.embeddings.word_embeddings
@@ -129,26 +129,21 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
     def get_pairwise_bias(
         self, input_ids: Tensor | NestedTensor, attention_mask: Tensor | NestedTensor | None = None
     ) -> Tensor | NestedTensor:
-        if isinstance(input_ids, NestedTensor):
-            input_ids = input_ids.tensor
-        batch_size, seq_length = input_ids.shape
-
-        # Broadcasting data indices to compute indices
-        data_index_x = input_ids.unsqueeze(2).expand(batch_size, seq_length, seq_length)
-        data_index_y = input_ids.unsqueeze(1).expand(batch_size, seq_length, seq_length)
-
-        # Get bias from pairwise_bias_map
-        if not self._inited:
+        if not self._initialized:
             # Workaround for transformers v5 meta-init: non-persistent buffers stay on the
             # meta device after `from_pretrained`, so re-register on the input device once
-            # the real device is known.
+            # the real device is known. Preserve the buffer's current dtype so a half/bf16
+            # model (e.g. ``.to(torch.bfloat16)``) does not get a float32 bias map rebuilt
+            # underneath it (which breaks the subsequent pairwise_bias_proj matmul).
             self.register_buffer(
                 "pairwise_bias_map",
-                _build_pairwise_bias_map(self.config.pairwise_alpha, self.config.vocab_size, device=input_ids.device),
+                _build_pairwise_bias_map(
+                    self.config.pairwise_alpha, self.config.vocab_size, device=input_ids.device
+                ).to(dtype=self.pairwise_bias_map.dtype),
                 persistent=False,
             )
-            self._inited = True
-        return self.pairwise_bias_map[data_index_x, data_index_y]
+            self._initialized = True
+        return self.pairwise_bias_map[input_ids.unsqueeze(-1), input_ids.unsqueeze(-2)]
 
     @merge_with_config_defaults
     @capture_outputs
@@ -209,14 +204,13 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if inputs_embeds is not None and isinstance(inputs_embeds, NestedTensor):
             raise TypeError("ErnieRnaModel does not support NestedTensor inputs_embeds")
+        if isinstance(input_ids, NestedTensor):
+            attention_mask = input_ids.mask
+            input_ids = input_ids.tensor
         if input_ids is not None:
             device = input_ids.device
             seq_length = input_ids.shape[1]
@@ -229,7 +223,12 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
         if cache_position is None:
             cache_position = torch.arange(past_key_values_length, past_key_values_length + seq_length, device=device)
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(
@@ -292,6 +291,8 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
                 cache_position=cache_position,
                 past_key_values=past_key_values,
             )
+        elif isinstance(embedding_output, NestedTensor) and attention_mask is None:
+            attention_mask = None
         else:
             attention_mask = create_bidirectional_mask(
                 config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
@@ -664,35 +665,19 @@ class ErnieRnaEmbeddings(nn.Module):
         inputs_embeds: torch.FloatTensor | None = None,
         past_key_values_length: int = 0,
     ) -> Tensor:
-        if input_ids is not None:
-            input_shape = input_ids.size()
-        else:
-            input_shape = inputs_embeds.size()[:-1]  # type: ignore[union-attr]
-
-        seq_length = input_shape[1]
-
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
-
         embeddings = inputs_embeds
-
+        reference = input_ids if input_ids is not None else inputs_embeds[..., 0]
         if self.position_embedding_type == "sinusoidal":
-            position_embeddings = self.position_embeddings(input_ids)
-            if isinstance(embeddings, NestedTensor):
-                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
-                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
-                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
-            embeddings += position_embeddings
+            # the sinusoidal module is keyed by input_ids and already returns a tensor matching the
+            # input layout (dense tensor for dense, NestedTensor for NT) — add it directly, no nested_like.
+            embeddings = embeddings + self.position_embeddings(input_ids)
         elif self.position_embedding_type == "absolute":
             if position_ids is None:
-                position_ids = self.position_ids[:, past_key_values_length : seq_length + past_key_values_length]
-            position_embeddings = self.position_embeddings(position_ids)
-            if isinstance(embeddings, NestedTensor):
-                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
-                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
-                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
-            embeddings += position_embeddings
-
+                position_ids = torch.cumsum(torch.ones_like(reference, dtype=torch.long), dim=1) - 1
+                position_ids = position_ids + past_key_values_length
+            embeddings = embeddings + self.position_embeddings(position_ids)
         embeddings = self.layer_norm(embeddings)
         embeddings = self.dropout(embeddings)
         return embeddings
@@ -934,6 +919,12 @@ class ErnieRnaSelfAttention(nn.Module):
         query_layer = self.transpose_for_scores(mixed_query_layer)
 
         attention_bias_mask = attention_mask
+        if isinstance(attention_bias_mask, Tensor) and attention_bias_mask.dtype == torch.bool:
+            # `create_bidirectional_mask` hands SDPA a BOOLEAN keep-mask; adding it directly to the float
+            # attention bias would leave padding unmasked (`False -> 0.0`). Convert to additive 0/-inf first.
+            attention_bias_mask = torch.zeros_like(attention_bias_mask, dtype=query_layer.dtype).masked_fill(
+                ~attention_bias_mask, float("-inf")
+            )
         relative_position_scores = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
             query_length, key_length = query_layer.shape[2], key_layer.shape[2]  # type: ignore[attr-defined]
@@ -966,16 +957,13 @@ class ErnieRnaSelfAttention(nn.Module):
                 attention_bias if attention_bias_mask is None else attention_bias_mask + attention_bias
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias_mask,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1101,16 +1089,13 @@ class ErnieRnaCrossAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,

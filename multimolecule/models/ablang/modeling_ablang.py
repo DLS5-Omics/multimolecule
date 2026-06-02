@@ -25,11 +25,11 @@ from __future__ import annotations
 from typing import Any
 
 import torch
-import torch.nn.functional as F
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import init
 from transformers.activations import ACT2FN
+from transformers.masking_utils import create_bidirectional_mask
 from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
@@ -41,7 +41,7 @@ from transformers.processing_utils import Unpack
 from transformers.utils import TransformersKwargs
 from transformers.utils.generic import can_return_tuple, merge_with_config_defaults
 
-from multimolecule.modules import MaskedLMHead, SequencePredictionHead, TokenPredictionHead
+from multimolecule.modules import MaskedLMHead, SequencePredictionHead, TokenPredictionHead, attention_forward
 
 from ..modeling_outputs import SequencePredictorOutput, TokenPredictorOutput
 from .configuration_ablang import AbLangConfig
@@ -56,6 +56,10 @@ class AbLangPreTrainedModel(PreTrainedModel):
     config_class = AbLangConfig
     base_model_prefix = "model"
     supports_gradient_checkpointing = True
+    _supports_flash_attn = True
+    _supports_sdpa = True
+    _supports_flex_attn = True
+    _supports_attention_backend = True
     _can_record_outputs: dict[str, Any] | None = None
     _no_split_modules = ["AbLangLayer"]
 
@@ -114,26 +118,17 @@ class AbLangModel(AbLangPreTrainedModel):
         inputs_embeds: Tensor | NestedTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 
-        if attention_mask is None:
-            if input_ids is not None and self.pad_token_id is not None:
-                attention_mask = input_ids.ne(self.pad_token_id)
-            else:
-                if inputs_embeds is None:
-                    raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
-                input_shape = inputs_embeds.shape[:2]
-                attention_mask = torch.ones(input_shape, dtype=torch.bool, device=inputs_embeds.device)
-        else:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
+            attention_mask = input_ids.ne(self.pad_token_id)
+        elif attention_mask is not None:
             attention_mask = attention_mask.to(torch.bool)
 
         embedding_output = self.embeddings(
@@ -141,9 +136,17 @@ class AbLangModel(AbLangPreTrainedModel):
             attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
         )
+        if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+            encoder_attention_mask = None
+        else:
+            encoder_attention_mask = create_bidirectional_mask(
+                config=self.config,
+                inputs_embeds=embedding_output,
+                attention_mask=attention_mask,
+            )
         encoder_outputs = self.encoder(
             embedding_output,
-            attention_mask=attention_mask,
+            attention_mask=encoder_attention_mask,
             output_hidden_states=kwargs.get("output_hidden_states", self.config.output_hidden_states),
             output_attentions=kwargs.get("output_attentions", self.config.output_attentions),
         )
@@ -351,10 +354,10 @@ class AbLangEmbeddings(nn.Module):
 
     def forward(
         self,
-        input_ids: Tensor | None = None,
+        input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
-        inputs_embeds: Tensor | None = None,
-    ) -> Tensor:
+        inputs_embeds: Tensor | NestedTensor | None = None,
+    ) -> Tensor | NestedTensor:
         if inputs_embeds is None:
             inputs_embeds = self.word_embeddings(input_ids)
         position_ids = self.create_position_ids(input_ids, attention_mask, inputs_embeds)
@@ -365,14 +368,16 @@ class AbLangEmbeddings(nn.Module):
 
     def create_position_ids(
         self,
-        input_ids: Tensor | None,
+        input_ids: Tensor | NestedTensor | None,
         attention_mask: Tensor | None,
-        inputs_embeds: Tensor,
-    ) -> Tensor:
+        inputs_embeds: Tensor | NestedTensor,
+    ) -> Tensor | NestedTensor:
         if input_ids is not None:
             mask = input_ids.ne(self.padding_idx)
         elif attention_mask is not None:
             mask = attention_mask.to(torch.bool)
+        elif isinstance(inputs_embeds, NestedTensor):
+            mask = inputs_embeds.mask
         else:
             mask = torch.ones(inputs_embeds.shape[:2], dtype=torch.bool, device=inputs_embeds.device)
         position_ids = torch.cumsum(mask.to(torch.long), dim=1) * mask.to(torch.long)
@@ -468,6 +473,7 @@ class AbLangAttention(nn.Module):
 class AbLangSelfAttention(nn.Module):
     def __init__(self, config: AbLangConfig):
         super().__init__()
+        self.config = config
         self.num_attention_heads = config.num_attention_heads
         self.attention_head_size = config.hidden_size // config.num_attention_heads
         self.all_head_size = self.num_attention_heads * self.attention_head_size
@@ -489,28 +495,27 @@ class AbLangSelfAttention(nn.Module):
         attention_mask: Tensor | None = None,
         output_attentions: bool = False,
     ) -> tuple[Tensor, Tensor | None]:
-        query_layer = self.transpose_for_scores(self.query(hidden_states))
-        key_layer = self.transpose_for_scores(self.key(hidden_states))
-        value_layer = self.transpose_for_scores(self.value(hidden_states))
+        input_shape = hidden_states.shape[:-1]
+        hidden_shape = (*input_shape, self.num_attention_heads, self.attention_head_size)
 
-        attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2)) * self.scaling
-        if attention_mask is not None:
-            if attention_mask.dim() != 2:
-                raise ValueError(
-                    f"attention_mask must have shape (batch, sequence); got {tuple(attention_mask.shape)}."
-                )
-            attention_scores = attention_scores.masked_fill(
-                ~attention_mask[:, None, None, :].to(torch.bool),
-                float("-inf"),
-            )
+        query_layer = self.query(hidden_states).view(hidden_shape).transpose(1, 2)
+        key_layer = self.key(hidden_states).view(hidden_shape).transpose(1, 2)
+        value_layer = self.value(hidden_states).view(hidden_shape).transpose(1, 2)
 
-        attention_probs = F.softmax(attention_scores, dim=-1)
-        dropout_probs = self.dropout(attention_probs)
-        context_layer = torch.matmul(dropout_probs, value_layer)
-        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
-        new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
-        context_layer = context_layer.view(new_context_layer_shape)
+        context_layer, attention_probs = attention_forward(
+            self,
+            query_layer,
+            key_layer,
+            value_layer,
+            attention_mask,
+            attn_implementation=self.config._attn_implementation,
+            dropout=0.0 if not self.training else self.dropout.p,
+            scaling=self.scaling,
+            is_causal=False,
+            output_attentions=output_attentions,
+        )
 
+        context_layer = context_layer.reshape(*input_shape, self.all_head_size).contiguous()
         return context_layer, attention_probs if output_attentions else None
 
 
@@ -560,17 +565,17 @@ class AbLangPooler(nn.Module):
 
     def forward(
         self,
-        hidden_states: Tensor,
+        hidden_states: Tensor | NestedTensor,
         attention_mask: Tensor | None = None,
-        input_ids: Tensor | None = None,
+        input_ids: Tensor | NestedTensor | None = None,
     ) -> Tensor:
-        if attention_mask is None:
+        if input_ids is not None:
+            mask = input_ids.ne(self.pad_token_id)
+            mask = mask & input_ids.ne(self.bos_token_id)
+            mask = mask & input_ids.ne(self.eos_token_id)
+        elif attention_mask is None:
             mask = hidden_states.new_ones(hidden_states.shape[:2], dtype=torch.bool)
         else:
             mask = attention_mask.to(torch.bool)
-        if input_ids is not None:
-            mask = mask & input_ids.ne(self.pad_token_id)
-            mask = mask & input_ids.ne(self.bos_token_id)
-            mask = mask & input_ids.ne(self.eos_token_id)
         denominator = mask.sum(dim=1, keepdim=True).clamp_min(1).to(dtype=hidden_states.dtype)
         return (hidden_states * mask.unsqueeze(-1).to(dtype=hidden_states.dtype)).sum(dim=1) / denominator

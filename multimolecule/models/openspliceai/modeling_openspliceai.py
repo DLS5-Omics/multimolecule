@@ -111,15 +111,6 @@ class OpenSpliceAiModel(OpenSpliceAiPreTrainedModel):
         )
         record_contexts = bool(output_contexts) or bool(output_hidden_states)
 
-        if isinstance(input_ids, NestedTensor):
-            if attention_mask is None:
-                attention_mask = input_ids.mask
-            input_ids = input_ids.tensor
-        if isinstance(inputs_embeds, NestedTensor):
-            if attention_mask is None:
-                attention_mask = inputs_embeds.mask
-            inputs_embeds = inputs_embeds.tensor
-
         embedding_output = self.embeddings(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -243,11 +234,7 @@ class OpenSpliceAiEmbedding(nn.Module):
             inputs_embeds = (inputs_embeds * attention_mask.unsqueeze(-1)).to(inputs_embeds.dtype)
         inputs_embeds = inputs_embeds.transpose(1, 2)
         if self.padding > 0:
-            batch_size = inputs_embeds.size(0)
-            pad = torch.zeros(
-                batch_size, self.vocab_size, self.padding, device=inputs_embeds.device, dtype=inputs_embeds.dtype
-            )
-            inputs_embeds = torch.cat([pad, inputs_embeds, pad], dim=2)
+            inputs_embeds = F.pad(inputs_embeds, (self.padding, self.padding))
         return inputs_embeds
 
 

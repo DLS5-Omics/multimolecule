@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 from warnings import warn
@@ -41,7 +41,7 @@ from transformers.modeling_outputs import (
     MaskedLMOutput,
     ModelOutput,
 )
-from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, OutputRecorder, PreTrainedModel
+from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
 from transformers.utils import TransformersKwargs
@@ -58,7 +58,7 @@ from multimolecule.modules import (
     RotaryEmbedding,
     SequencePredictionHead,
     TokenPredictionHead,
-    eager_attention_forward,
+    attention_forward,
 )
 
 from ..modeling_outputs import ContactPredictorOutput, SequencePredictorOutput, TokenPredictorOutput
@@ -177,8 +177,9 @@ class RnaFmModel(RnaFmPreTrainedModel):
                 else DynamicCache(config=self.config)
             )
 
-        if isinstance(input_ids, NestedTensor) and attention_mask is None:
-            attention_mask = input_ids.mask
+        embedding_attention_mask = attention_mask
+        if isinstance(input_ids, NestedTensor) and embedding_attention_mask is None:
+            embedding_attention_mask = input_ids.mask
         if (input_ids is None) ^ (inputs_embeds is not None):
             raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
         if input_ids is not None:
@@ -190,16 +191,21 @@ class RnaFmModel(RnaFmPreTrainedModel):
 
         # past_key_values_length
         past_key_values_length = past_key_values.get_seq_length() if past_key_values is not None else 0
-        if cache_position is None:
+        if cache_position is None and (self.config.is_decoder or past_key_values is not None):
             cache_position = torch.arange(past_key_values_length, past_key_values_length + seq_length, device=device)
 
-        if attention_mask is None and input_ids is not None and self.pad_token_id is not None:
+        if (
+            attention_mask is None
+            and input_ids is not None
+            and not isinstance(input_ids, NestedTensor)
+            and self.pad_token_id is not None
+        ):
             attention_mask = input_ids.ne(self.pad_token_id)
 
         embedding_output = self.embeddings(
             input_ids=input_ids,
             position_ids=position_ids,
-            attention_mask=attention_mask,
+            attention_mask=embedding_attention_mask,
             inputs_embeds=inputs_embeds,
             past_key_values_length=past_key_values_length,
         )
@@ -249,9 +255,12 @@ class RnaFmModel(RnaFmPreTrainedModel):
                 past_key_values=past_key_values,
             )
         else:
-            attention_mask = create_bidirectional_mask(
-                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
-            )
+            if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+                attention_mask = None
+            else:
+                attention_mask = create_bidirectional_mask(
+                    config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
+                )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
@@ -694,20 +703,11 @@ class RnaFmEmbeddings(nn.Module):
             if input_ids is None:
                 raise ValueError("Token dropout is only supported when input_ids are provided")
             mask = input_ids == self.mask_token_id
-            if isinstance(embeddings, NestedTensor):
-                storage = []
-                for t, m in zip(embeddings._storage, mask._storage):
-                    storage.append(t.masked_fill(m.unsqueeze(-1), 0.0))
-                embeddings = NestedTensor(storage, **embeddings._meta())
-            else:
-                embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
+            embeddings = embeddings.masked_fill(mask.unsqueeze(-1), 0.0)
             mask_ratio_train = 0.15 * 0.8  # Hardcoded as the ratio used in all RNA-FM model training runs
             src_lengths = attention_mask.sum(-1)  # type: ignore[union-attr]
             dtype = embeddings.dtype
-            if isinstance(mask, NestedTensor):
-                mask_ratio_observed = mask.tensor.sum(-1).to(dtype=dtype) / src_lengths
-            else:
-                mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
+            mask_ratio_observed = mask.sum(-1).to(dtype=dtype) / src_lengths
             embeddings = embeddings * (1 - mask_ratio_train) / (1 - mask_ratio_observed)[:, None, None]
 
         if self.position_embedding_type == "absolute":
@@ -721,11 +721,7 @@ class RnaFmEmbeddings(nn.Module):
                 # Reproduces an upstream off-by-one position shift; required for checkpoint compatibility.
                 position_ids = position_ids + 1
             position_embeddings = self.position_embeddings(position_ids)
-            if isinstance(embeddings, NestedTensor):
-                if position_embeddings.size(0) == 1 and embeddings.tensor.size(0) != 1:
-                    position_embeddings = position_embeddings.expand(embeddings.tensor.size(0), -1, -1)
-                position_embeddings = embeddings.nested_like(position_embeddings, strict=False)
-            embeddings += position_embeddings
+            embeddings = embeddings + position_embeddings
 
         if self.layer_norm is not None:
             embeddings = self.layer_norm(embeddings)
@@ -932,8 +928,7 @@ class RnaFmSelfAttention(nn.Module):
         self.layer_idx = layer_idx
 
     def transpose_for_scores(self, x: Tensor) -> Tensor:
-        new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
-        x = x.view(new_x_shape)
+        x = x.view(x.size()[:-1] + (self.num_attention_heads, self.attention_head_size))
         return x.transpose(1, 2)
 
     def forward(
@@ -944,7 +939,6 @@ class RnaFmSelfAttention(nn.Module):
         cache_position: torch.Tensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...]:
-        mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
 
@@ -960,7 +954,7 @@ class RnaFmSelfAttention(nn.Module):
                 key_layer, value_layer, self.layer_idx, {"cache_position": cache_position}
             )
 
-        query_layer = self.transpose_for_scores(mixed_query_layer)
+        query_layer = self.transpose_for_scores(self.query(hidden_states))
 
         if self.position_embedding_type == "rotary":
             query_layer, key_layer = self.rotary_embeddings(query_layer, key_layer)  # type: ignore[misc]
@@ -990,16 +984,13 @@ class RnaFmSelfAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1049,8 +1040,7 @@ class RnaFmCrossAttention(nn.Module):
         self.layer_idx = layer_idx
 
     def transpose_for_scores(self, x: Tensor) -> Tensor:
-        new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
-        x = x.view(new_x_shape)
+        x = x.view(x.size()[:-1] + (self.num_attention_heads, self.attention_head_size))
         return x.transpose(1, 2)
 
     def forward(
@@ -1063,7 +1053,6 @@ class RnaFmCrossAttention(nn.Module):
     ) -> tuple[Tensor, ...]:
         if encoder_hidden_states is None:
             raise ValueError("encoder_hidden_states must be provided for cross-attention.")
-        mixed_query_layer = self.query(hidden_states)
         if past_key_values is not None and self.layer_idx is None:
             raise ValueError("layer_idx must be set when using past_key_values.")
 
@@ -1085,7 +1074,7 @@ class RnaFmCrossAttention(nn.Module):
             key_layer = self.transpose_for_scores(self.key(encoder_hidden_states))
             value_layer = self.transpose_for_scores(self.value(encoder_hidden_states))
 
-        query_layer = self.transpose_for_scores(mixed_query_layer)
+        query_layer = self.transpose_for_scores(self.query(hidden_states))
 
         if self.position_embedding_type == "rotary":
             query_layer, key_layer = self.rotary_embeddings(query_layer, key_layer)  # type: ignore[misc]
@@ -1112,16 +1101,13 @@ class RnaFmCrossAttention(nn.Module):
                 relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
             )
 
-        attention_interface: Callable = eager_attention_forward
-        if self.config._attn_implementation != "eager":
-            attention_interface = ALL_ATTENTION_FUNCTIONS[self.config._attn_implementation]
-
-        attn_output, attn_weights = attention_interface(
+        attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
             attention_bias,
+            attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
@@ -1312,6 +1298,9 @@ def create_position_ids_from_input_ids(
 ) -> torch.LongTensor:
     # The series of casts and type-conversions here are carefully balanced to both work with ONNX export and XLA.
     mask = input_ids.ne(padding_idx).int()
+    if past_key_values_length == 0:
+        incremental_indices = torch.cumsum(mask, dim=1, dtype=mask.dtype) * mask
+        return incremental_indices.long() + padding_idx
     incremental_indices = (
         (torch.cumsum(mask, dim=1, dtype=mask.dtype) + past_key_values_length) * mask + past_key_values_length
     ) * mask
