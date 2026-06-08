@@ -112,11 +112,22 @@ class BpfoldModel(BpfoldPreTrainedModel):
 
         self.post_init()
 
-    def postprocess(self, outputs, input_ids=None, **kwargs):
-        postprocessed_contact_map = outputs.get("postprocessed_contact_map")
-        if postprocessed_contact_map is not None:
-            return postprocessed_contact_map
-        return outputs["contact_map"]
+    def postprocess(self, outputs, input_ids=None, attention_mask=None, threshold=None, **kwargs):
+        # ``use_postprocess`` defaults to False, so ``contact_map`` is usually the raw sigmoid. Recompute the
+        # binary base-pair structure from ``logits`` (``_postprocess`` is deterministic, hence idempotent if the
+        # forward pass already applied it with ``use_postprocess=True``).
+        contact_map = outputs["contact_map"]
+        logits = outputs.get("logits")
+        if input_ids is not None and logits is not None:
+            if isinstance(input_ids, NestedTensor):
+                input_ids = input_ids.tensor
+            if input_ids.ndim == 1:
+                input_ids = input_ids.unsqueeze(0)
+            _, _, _, _, base_one_hot = self._prepare_input_ids(input_ids, attention_mask=attention_mask)
+            base_one_hot = base_one_hot[:, : logits.size(-1)]
+            with torch.no_grad():
+                return self._postprocess(logits, base_one_hot, is_noncanonical=False, threshold=threshold)
+        return _bpfold_finalize_contact_map(contact_map)
 
     @merge_with_config_defaults
     @capture_outputs
@@ -128,7 +139,7 @@ class BpfoldModel(BpfoldPreTrainedModel):
         labels: Tensor | None = None,
         base_pair_energy: Tensor | None = None,
         base_pair_probability: Tensor | None = None,
-        use_postprocessing: bool | None = None,
+        use_postprocess: bool | None = None,
         return_noncanonical: bool = False,
         **kwargs: Unpack[TransformersKwargs],
     ) -> BpfoldModelOutput:
@@ -195,17 +206,15 @@ class BpfoldModel(BpfoldPreTrainedModel):
             logits = logits.squeeze(-1)
             valid_mask = valid_mask.bool()
 
-        should_postprocess = self.config.use_postprocessing if use_postprocessing is None else use_postprocessing
-        postprocessed_contact_map = None
+        should_postprocess = self.config.use_postprocess if use_postprocess is None else use_postprocess
         noncanonical_contact_map = None
         if should_postprocess:
             if base_one_hot is None:
                 raise ValueError("input_ids are required for BPfold post-processing when using inputs_embeds.")
             with torch.no_grad():
-                postprocessed_contact_map = self._postprocess(logits, base_one_hot, is_noncanonical=False)
+                contact_map = self._postprocess(logits, base_one_hot, is_noncanonical=False)
                 if return_noncanonical:
                     noncanonical_contact_map = self._postprocess(logits, base_one_hot, is_noncanonical=True)
-            contact_map = postprocessed_contact_map
         else:
             contact_map = torch.sigmoid(logits)
 
@@ -220,7 +229,6 @@ class BpfoldModel(BpfoldPreTrainedModel):
             loss=loss,
             logits=logits,
             contact_map=contact_map,
-            postprocessed_contact_map=postprocessed_contact_map,
             noncanonical_contact_map=noncanonical_contact_map,
         )
 
@@ -377,7 +385,11 @@ class BpfoldModel(BpfoldPreTrainedModel):
                 energy[batch_index, :, base_start:base_end, base_start:base_end] = seq_energy  # type: ignore[index]
         return NestedTensor(elements) if is_nested else energy
 
-    def _postprocess(self, logits: Tensor, base_one_hot: Tensor, is_noncanonical: bool = False) -> Tensor:
+    def _postprocess(
+        self, logits: Tensor, base_one_hot: Tensor, is_noncanonical: bool = False, threshold: float | None = None
+    ) -> Tensor:
+        if threshold is None:
+            threshold = self.config.threshold
         if is_noncanonical:
             rho = self.config.postprocess_nc_rho
             threshold_logit = self.config.postprocess_nc_s
@@ -407,10 +419,11 @@ class BpfoldModel(BpfoldPreTrainedModel):
             lr_max *= 0.99
 
         contact_map = _contact_a(a_hat, mask)
-        contact_map = (contact_map > self.config.threshold).to(dtype=logits.dtype)
+        contact_map = (contact_map > threshold).to(dtype=logits.dtype)
         if is_noncanonical:
-            contact_map = contact_map * _noncanonical_matrix(base_one_hot).to(dtype=logits.dtype)
-        return contact_map
+            # Non-canonical map mirrors upstream BPfold: greedy matching + lone-pair removal is canonical-only.
+            return contact_map * _noncanonical_matrix(base_one_hot).to(dtype=logits.dtype)
+        return _bpfold_finalize_contact_map(contact_map)
 
 
 class BpfoldForRnaSecondaryStructurePrediction(BpfoldModel):
@@ -1012,6 +1025,111 @@ def _constraint_matrix(x: Tensor, loop_min_len: int = 2, is_noncanonical: bool =
     return pair_mask * sharp_loop.to(dtype=pair_mask.dtype)
 
 
+def _bpfold_finalize_contact_map(contact_map: Tensor) -> Tensor:
+    if contact_map.ndim == 2:
+        return _bpfold_finalize_single_contact_map(contact_map)
+    return torch.stack([_bpfold_finalize_single_contact_map(contact_map[i]) for i in range(contact_map.size(0))])
+
+
+def _bpfold_finalize_single_contact_map(contact_map: Tensor) -> Tensor:
+    length = contact_map.size(0)
+    pair_i, pair_j = _bpfold_greedy_pairs(contact_map)
+    pair_i, pair_j = _bpfold_remove_lone_pairs(pair_i, pair_j, length)
+
+    output = torch.zeros_like(contact_map)
+    if pair_i.numel() > 0:
+        output[pair_i, pair_j] = 1
+        output[pair_j, pair_i] = 1
+    return output
+
+
+def _bpfold_greedy_pairs(contact_map: Tensor, loop_min_len: int = 3) -> tuple[Tensor, Tensor]:
+    """Greedily match base pairs by descending score.
+
+    Candidate generation and the stable descending sort are vectorized; the greedy maximal-matching
+    accept step is irreducibly sequential and runs as a bounded Python loop over the sorted candidates.
+    Candidates are emitted in insertion order (``i`` ascending, then ``j`` ascending) and the sort is
+    stable, so ties resolve exactly as the original ``list.sort(reverse=True)`` implementation did.
+    Returns the accepted pairs as two ``long`` tensors ``(i, j)`` on the contact map's device.
+
+    This cannot be replaced by the shared ``contact_map_to_pairs`` decoder: that decoder sorts with a
+    non-stable ``torch.argsort``, whereas BPfold parity requires stable insertion-order tie-breaking.
+    """
+    length = contact_map.size(0)
+    device = contact_map.device
+    empty = torch.empty(0, dtype=torch.long, device=device)
+
+    rows, cols = torch.triu_indices(length, length, offset=loop_min_len, device=device).unbind(0)
+    if rows.numel() == 0:
+        return empty, empty
+    scores = contact_map[rows, cols]
+    keep = scores > 0
+    rows, cols, scores = rows[keep], cols[keep], scores[keep]
+    if rows.numel() == 0:
+        return empty, empty
+
+    order = torch.argsort(scores, stable=True, descending=True)
+    sorted_i = rows[order].tolist()
+    sorted_j = cols[order].tolist()
+
+    paired: set[int] = set()
+    accept_i: list[int] = []
+    accept_j: list[int] = []
+    for i, j in zip(sorted_i, sorted_j):
+        if i not in paired and j not in paired:
+            accept_i.append(i)
+            accept_j.append(j)
+            paired.add(i)
+            paired.add(j)
+
+    return (
+        torch.tensor(accept_i, dtype=torch.long, device=device),
+        torch.tensor(accept_j, dtype=torch.long, device=device),
+    )
+
+
+def _bpfold_remove_lone_pairs(pair_i: Tensor, pair_j: Tensor, length: int, loop_len: int = 3) -> tuple[Tensor, Tensor]:
+    """Drop base pairs that lack a stacking neighbour, fully vectorized over the pair dimension.
+
+    A pair ``(i, j)`` is kept iff either endpoint has an immediate sequence neighbour whose partner
+    lies on the matching diagonal within ``loop_len`` of the opposite endpoint. The ``connects`` table
+    is built fresh from the original pairs (non-cascading), matching the reference exactly.
+    """
+    device = pair_i.device
+    if pair_i.numel() == 0:
+        empty = torch.empty(0, dtype=torch.long, device=device)
+        return empty, empty
+
+    connects = torch.zeros(length, dtype=torch.long, device=device)
+    connects[pair_i] = pair_j + 1
+    connects[pair_j] = pair_i + 1
+
+    keep = _bpfold_has_neighbor_pair(connects, pair_i, pair_j, length, loop_len) | _bpfold_has_neighbor_pair(
+        connects, pair_j, pair_i, length, loop_len
+    )
+    return pair_i[keep], pair_j[keep]
+
+
+def _bpfold_has_neighbor_pair(connects: Tensor, center: Tensor, partner: Tensor, length: int, loop_len: int) -> Tensor:
+    """Vectorized neighbour-pair test over the pair dimension; returns a bool tensor.
+
+    For each direction in ``{-1, +1}`` the immediate neighbour ``center + direction`` (if in bounds)
+    contributes a hit when its partner equals ``partner - offset * direction`` for some
+    ``offset in 1..loop_len``. ``connects`` is 1-indexed (0 means unpaired, giving partner ``-1``),
+    preserving the original ``-1 == -1`` boundary behaviour for unpaired neighbours.
+    """
+    result = torch.zeros_like(center, dtype=torch.bool)
+    for direction in (-1, 1):
+        neighbor = center + direction
+        in_bounds = (neighbor >= 0) & (neighbor < length)
+        safe_neighbor = neighbor.clamp(min=0, max=length - 1)
+        neighbor_partner = connects[safe_neighbor] - 1
+        for offset in range(1, loop_len + 1):
+            target = partner - offset * direction
+            result = result | (in_bounds & (neighbor_partner == target))
+    return result
+
+
 def _noncanonical_matrix(x: Tensor) -> Tensor:
     canonical = _constraint_matrix(x, loop_min_len=2, is_noncanonical=False).bool()
     valid = x.sum(dim=-1) > 0
@@ -1040,19 +1158,15 @@ class BpfoldModelOutput(ModelOutput):
             `logits = mean(logit_i for i in members)`. These are NOT probabilities; apply `torch.sigmoid`
             to obtain per-pair scores.
         contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
-            Post-sigmoid base-pair probability matrix. When `use_postprocessing=True` this is the result of
+            Post-sigmoid base-pair probability matrix. When `use_postprocess=True` this is the result of
             the constrained BPfold post-processing loop (a binary 0/1 map); otherwise it equals
             `torch.sigmoid(logits)`.
-        postprocessed_contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
-            Binary contact map produced by the constrained BPfold post-processing loop. Only present when
-            `use_postprocessing=True`; identical to `contact_map` in that case.
         noncanonical_contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
             Binary contact map for non-canonical base pairs produced by the post-processing loop. Only present
-            when `use_postprocessing=True` and `return_noncanonical=True`.
+            when `use_postprocess=True` and `return_noncanonical=True`.
     """
 
     loss: Tensor | None = None
     logits: Tensor | None = None
     contact_map: Tensor | None = None
-    postprocessed_contact_map: Tensor | None = None
     noncanonical_contact_map: Tensor | None = None

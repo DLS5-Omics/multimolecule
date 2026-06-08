@@ -98,6 +98,8 @@ class SpotRnaConfig(PreTrainedConfig):
             Dropout rate in the fully connected blocks.
         threshold:
             Probability threshold for predicting base pairs during post-processing.
+        use_postprocess:
+            Whether to run the SPOT-RNA threshold + multiplet-removal post-processing in `forward`.
 
     Examples:
         >>> from multimolecule import SpotRnaConfig, SpotRnaModel
@@ -116,7 +118,8 @@ class SpotRnaConfig(PreTrainedConfig):
         hidden_act: str = "relu",
         conv_dropout: float = 0.25,
         fc_dropout: float = 0.5,
-        threshold: float = 0.335,
+        threshold: float = 0.5,
+        use_postprocess: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -153,3 +156,4 @@ class SpotRnaConfig(PreTrainedConfig):
         self.conv_dropout = conv_dropout
         self.fc_dropout = fc_dropout
         self.threshold = threshold
+        self.use_postprocess = use_postprocess
