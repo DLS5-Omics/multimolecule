@@ -123,8 +123,60 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
         ).reshape(1, 1, 1, 8)
         return mean, std
 
-    def postprocess(self, outputs, input_ids=None, **kwargs):
-        return outputs["contact_map"]
+    def postprocess(self, outputs, input_ids=None, threshold: float | None = None, **kwargs):
+        contact_map = outputs["contact_map"]
+        if contact_map.ndim == 2:
+            contact_map = contact_map.unsqueeze(0)
+            squeeze_batch = True
+        else:
+            squeeze_batch = False
+        if contact_map.ndim == 4 and contact_map.shape[-1] == 1:
+            contact_map = contact_map.squeeze(-1)
+
+        valid_tokens = None
+        if input_ids is not None:
+            if isinstance(input_ids, NestedTensor):
+                input_ids = input_ids.tensor
+            if input_ids.ndim == 1:
+                input_ids = input_ids.unsqueeze(0)
+            num_bases = self.config.input_channels // 2
+            valid_tokens = (input_ids >= 0) & (input_ids < num_bases)
+
+        processed = self._postprocess(contact_map, valid_tokens=valid_tokens, threshold=threshold)
+        if squeeze_batch:
+            return processed.squeeze(0)
+        return processed
+
+    def _postprocess(
+        self, contact_map: Tensor, valid_tokens: Tensor | None = None, threshold: float | None = None
+    ) -> Tensor:
+        """Deterministic post-processing: pairing-probability map -> binary contact map.
+
+        Thresholds candidate base pairs and resolves multiplets so that each base pairs at most once.
+        Expects a batched ``(batch_size, length, length)`` score map and returns a binary map of the same shape.
+        """
+        if threshold is None:
+            threshold = self.config.threshold
+
+        processed = torch.zeros_like(contact_map)
+        for batch_index, scores in enumerate(contact_map):
+            length = scores.shape[-1]
+            if valid_tokens is None:
+                valid = torch.ones(length, dtype=torch.bool, device=scores.device)
+            else:
+                valid = valid_tokens[batch_index, :length].to(device=scores.device)
+                if valid.shape[0] < length:
+                    valid = F.pad(valid, (0, length - valid.shape[0]), value=False)
+
+            rows, cols = torch.triu_indices(length, length, offset=1, device=scores.device)
+            candidate_scores = scores[rows, cols]
+            pair_mask = valid[rows] & valid[cols] & (candidate_scores >= threshold)
+            pairs = torch.stack((rows[pair_mask], cols[pair_mask]), dim=-1)
+            surviving = _spotrna_multiplets_free_bp(pairs, candidate_scores[pair_mask])
+            if surviving.shape[0] > 0:
+                processed[batch_index, surviving[:, 0], surviving[:, 1]] = 1
+                processed[batch_index, surviving[:, 1], surviving[:, 0]] = 1
+        return processed
 
     def _prepare_inputs_embeds(
         self,
@@ -159,6 +211,7 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
         attention_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
+        use_postprocess: bool | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> SpotRnaModelOutput:
         if isinstance(input_ids, NestedTensor):
@@ -187,6 +240,15 @@ class SpotRnaModel(SpotRnaPreTrainedModel):
         member_logits = [member(hidden_state) for member in self.members]
         contact_map = torch.stack([torch.sigmoid(logits) for logits in member_logits]).mean(dim=0)
         logits = torch.stack(member_logits).mean(dim=0)
+
+        should_postprocess = self.config.use_postprocess if use_postprocess is None else use_postprocess
+        if should_postprocess:
+            valid_tokens = None
+            if input_ids is not None:
+                num_bases = self.config.input_channels // 2
+                valid_tokens = (input_ids >= 0) & (input_ids < num_bases)
+            with torch.no_grad():
+                contact_map = self._postprocess(contact_map, valid_tokens=valid_tokens)
 
         loss = None
         if labels is not None:
@@ -429,6 +491,76 @@ def _outer_concatenate(inputs_embeds: Tensor) -> Tensor:
     return torch.cat([column_features, row_features], dim=-1)
 
 
+def _spotrna_multiplets_free_bp(pairs: Tensor, pair_scores: Tensor) -> Tensor:
+    """Resolve base-pairing multiplets via iterative lowest-score removal.
+
+    Vectorized equivalent of the upstream SPOT-RNA greedy de-multipleting loop.
+    A "multiplet" is the group of surviving pairs that share a base index that is
+    currently used by more than one pair. While any base is used more than once,
+    each such base's group contributes its lowest-scoring pair for removal; ties
+    are broken by first occurrence in candidate order. All those pairs are removed
+    together and the process repeats until every base is used at most once.
+
+    This is not the shared ``contact_map_to_pairs`` max-weight matcher: SPOT-RNA does iterative
+    *lowest-score removal* (not best-partner selection) over the ensemble ``mean(sigmoid(logits))``
+    score map, which cannot be rebuilt from the averaged logits, so the scores must be passed in directly.
+
+    Args:
+        pairs: `(N, 2)` long tensor of candidate `(i, j)` pairs in candidate order
+            (the `triu_indices` order: ascending by `i`, then by `j`).
+        pair_scores: `(N,)` tensor of `scores[i, j]` for each pair, same order.
+
+    Returns:
+        `(M, 2)` long tensor of surviving pairs, preserving candidate order.
+    """
+    num_pairs = pairs.shape[0]
+    if num_pairs == 0:
+        return pairs
+
+    device = pairs.device
+    alive = torch.ones(num_pairs, dtype=torch.bool, device=device)
+    num_bases = int(pairs.max().item()) + 1
+    big_score = torch.finfo(pair_scores.dtype).max
+    big_pos = num_pairs + 1
+
+    while True:
+        alive_index = alive.nonzero(as_tuple=False).squeeze(-1)
+        if alive_index.numel() == 0:
+            break
+        current = pairs[alive_index]
+        counts = torch.bincount(current.reshape(-1), minlength=num_bases)
+        duplicated = counts > 1
+        if not bool(duplicated.any()):
+            break
+
+        # Each pair contributes to both of its endpoints; keep only contributions
+        # whose endpoint base is currently duplicated. `position` is the occurrence
+        # index within the surviving candidate order, used for tie-breaking.
+        position = torch.arange(current.shape[0], device=device)
+        contrib_base = current.reshape(-1)
+        contrib_score = pair_scores[alive_index].repeat_interleave(2)
+        contrib_position = position.repeat_interleave(2)
+        keep = duplicated[contrib_base]
+        contrib_base = contrib_base[keep]
+        contrib_score = contrib_score[keep]
+        contrib_position = contrib_position[keep]
+
+        # For each duplicated base, find the minimum score among its pairs, then
+        # the earliest-occurring pair attaining that minimum (first-occurrence ties).
+        min_score = torch.full((num_bases,), big_score, dtype=pair_scores.dtype, device=device)
+        min_score.scatter_reduce_(0, contrib_base, contrib_score, reduce="amin", include_self=True)
+        at_min = contrib_score == min_score[contrib_base]
+        min_position = torch.full((num_bases,), big_pos, dtype=torch.long, device=device)
+        min_position.scatter_reduce_(
+            0, contrib_base[at_min], contrib_position[at_min], reduce="amin", include_self=True
+        )
+
+        removed_position = min_position[duplicated.nonzero(as_tuple=False).squeeze(-1)]
+        alive[alive_index[removed_position]] = False
+
+    return pairs[alive.nonzero(as_tuple=False).squeeze(-1)]
+
+
 @dataclass
 class SpotRnaModelOutput(ModelOutput):
     """
@@ -444,7 +576,8 @@ class SpotRnaModelOutput(ModelOutput):
         contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
             Base-pair probability matrix computed as the mean of per-member sigmoid outputs:
             `contact_map = mean(sigmoid(logit_i) for i in members)`. Note that this is NOT equal to
-            `sigmoid(logits)` due to the non-linearity of sigmoid.
+            `sigmoid(logits)` due to the non-linearity of sigmoid. When `use_postprocess=True` this is instead
+            the binary base-pair matching produced by the threshold + multiplet-removal post-processing.
     """
 
     loss: torch.FloatTensor | None = None

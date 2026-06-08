@@ -69,7 +69,7 @@ class BpfoldConfig(PreTrainedConfig):
             Training-time maximum sequence length used by the original checkpoints.
         threshold:
             Probability threshold for predicting base pairs during post-processing.
-        use_postprocessing:
+        use_postprocess:
             Whether to run the constrained BPfold post-processing loop in `forward`.
         postprocess_iterations:
             Number of constrained post-processing iterations.
@@ -119,7 +119,7 @@ class BpfoldConfig(PreTrainedConfig):
         motif_radius: int = 3,
         max_length: int = 600,
         threshold: float = 0.5,
-        use_postprocessing: bool = False,
+        use_postprocess: bool = False,
         postprocess_iterations: int = 100,
         postprocess_lr_min: float = 0.01,
         postprocess_lr_max: float = 0.1,
@@ -160,7 +160,7 @@ class BpfoldConfig(PreTrainedConfig):
         self.motif_radius = motif_radius
         self.max_length = max_length
         self.threshold = threshold
-        self.use_postprocessing = use_postprocessing
+        self.use_postprocess = use_postprocess
         self.postprocess_iterations = postprocess_iterations
         self.postprocess_lr_min = postprocess_lr_min
         self.postprocess_lr_max = postprocess_lr_max

@@ -77,6 +77,7 @@ class RnaSecondaryStructurePipeline(Pipeline):
     def _forward(self, model_inputs):
         model_outputs = self.model(**model_inputs)
         model_outputs["input_ids"] = model_inputs["input_ids"]
+        model_outputs["attention_mask"] = model_inputs.get("attention_mask")
 
         if len(model_inputs["input_ids"]) > 1 and not getattr(self.model, "supports_batch_process", False):
             warn(
@@ -123,7 +124,12 @@ class RnaSecondaryStructurePipeline(Pipeline):
         #     and is used as-is;
         #   * `logits` / `logits_ss` are pre-activation pairing scores and must be passed through a sigmoid.
         if hasattr(self.model, "postprocess"):
-            outputs = self.model.postprocess(outputs=model_outputs, input_ids=input_ids)
+            outputs = self.model.postprocess(
+                outputs=model_outputs,
+                input_ids=input_ids,
+                attention_mask=model_outputs.get("attention_mask"),
+                threshold=threshold,
+            )
             is_logits = False
         elif model_outputs.get("contact_map") is not None:
             outputs = model_outputs["contact_map"]

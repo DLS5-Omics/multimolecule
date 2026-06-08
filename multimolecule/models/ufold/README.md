@@ -78,11 +78,11 @@ output = model(**inputs)
 contact_map = output.contact_map
 ```
 
-To run the original constrained post-processing loop:
+To run the original constrained post-processing loop (`contact_map` becomes the binary base-pair map):
 
 ```python
-output = model(**inputs, use_postprocessing=True)
-contact_map = output.postprocessed_contact_map
+output = model(**inputs, use_postprocess=True)
+contact_map = output.contact_map
 ```
 
 ## Training Details

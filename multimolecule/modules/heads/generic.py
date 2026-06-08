@@ -229,6 +229,8 @@ class BasePredictionHead(nn.Module):
             if input_ids is not None:
                 eos_mask = input_ids.ne(self.eos_token_id).to(output.device)
                 input_ids = input_ids.masked_fill(~eos_mask, self.pad_token_id or 0)
+                if isinstance(eos_mask, NestedTensor) and not isinstance(output, NestedTensor):
+                    eos_mask = eos_mask.tensor
                 input_ids = input_ids[..., :-1]
             elif attention_mask is not None:
                 last_valid_indices = attention_mask.sum(dim=-1) - 1

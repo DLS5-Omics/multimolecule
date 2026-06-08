@@ -56,7 +56,7 @@ class UfoldConfig(PreTrainedConfig):
             Momentum used by the BatchNorm2d layers.
         threshold:
             Probability threshold for predicting base pairs during post-processing.
-        use_postprocessing:
+        use_postprocess:
             Whether to run the UFold constrained post-processing loop in `forward`.
         postprocess_iterations:
             Number of constrained post-processing iterations.
@@ -69,7 +69,7 @@ class UfoldConfig(PreTrainedConfig):
         postprocess_with_l1:
             Whether to apply L1 shrinkage in UFold post-processing.
         postprocess_s:
-            Logit cutoff used by UFold post-processing. Defaults to `log(9)`, the original value.
+            Logit cutoff used by UFold post-processing. Defaults to `log(9)`.
         allow_noncanonical:
             Whether post-processing should allow non-canonical base pairs.
         pos_weight:
@@ -95,7 +95,7 @@ class UfoldConfig(PreTrainedConfig):
         batch_norm_eps: float = 1e-5,
         batch_norm_momentum: float = 0.1,
         threshold: float = 0.5,
-        use_postprocessing: bool = False,
+        use_postprocess: bool = False,
         postprocess_iterations: int = 100,
         postprocess_lr_min: float = 0.01,
         postprocess_lr_max: float = 0.1,
@@ -129,7 +129,7 @@ class UfoldConfig(PreTrainedConfig):
         self.batch_norm_eps = batch_norm_eps
         self.batch_norm_momentum = batch_norm_momentum
         self.threshold = threshold
-        self.use_postprocessing = use_postprocessing
+        self.use_postprocess = use_postprocess
         self.postprocess_iterations = postprocess_iterations
         self.postprocess_lr_min = postprocess_lr_min
         self.postprocess_lr_max = postprocess_lr_max

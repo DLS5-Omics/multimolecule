@@ -137,11 +137,25 @@ class UfoldModel(UfoldPreTrainedModel):
             dtype=self.pos_weight.dtype,
         )
 
-    def postprocess(self, outputs, input_ids=None, **kwargs):
-        postprocessed_contact_map = outputs.get("postprocessed_contact_map")
-        if postprocessed_contact_map is not None:
-            return postprocessed_contact_map
-        return outputs["contact_map"]
+    def postprocess(self, outputs, input_ids=None, attention_mask=None, threshold=None, **kwargs):
+        # ``use_postprocess`` defaults to False, so ``contact_map`` is usually the raw sigmoid. Recompute the
+        # binary base-pair map from ``logits`` (``_postprocess`` is deterministic, hence idempotent if the
+        # forward pass already applied it with ``use_postprocess=True``).
+        if threshold is None:
+            threshold = self.config.threshold
+        if input_ids is not None and outputs.get("logits") is not None:
+            if isinstance(input_ids, NestedTensor):
+                input_ids = input_ids.tensor
+            if input_ids.ndim == 1:
+                input_ids = input_ids.unsqueeze(0)
+            logits = outputs["logits"]
+            if attention_mask is not None:
+                attention_mask = attention_mask[:, : logits.size(-1)]
+            base_one_hot = self._prepare_inputs_embeds(input_ids[:, : logits.size(-1)], attention_mask=attention_mask)
+            with torch.no_grad():
+                return self._postprocess(logits, base_one_hot, threshold=threshold)
+        contact_map = outputs["contact_map"]
+        return (contact_map > threshold).to(dtype=contact_map.dtype)
 
     @merge_with_config_defaults
     @capture_outputs
@@ -151,7 +165,7 @@ class UfoldModel(UfoldPreTrainedModel):
         attention_mask: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         labels: Tensor | None = None,
-        use_postprocessing: bool | None = None,
+        use_postprocess: bool | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> UfoldModelOutput:
         if isinstance(input_ids, NestedTensor):
@@ -173,13 +187,11 @@ class UfoldModel(UfoldPreTrainedModel):
         max_length = int(lengths.max().item()) if lengths.numel() > 0 else 0
         logits = _crop_batch(logits_padded, lengths, max_length)
 
-        should_postprocess = self.config.use_postprocessing if use_postprocessing is None else use_postprocessing
-        postprocessed_contact_map = None
+        should_postprocess = self.config.use_postprocess if use_postprocess is None else use_postprocess
         if should_postprocess:
             with torch.no_grad():
-                postprocessed_contact_map_padded = self._postprocess(logits_padded, inputs_embeds)
-            postprocessed_contact_map = _crop_batch(postprocessed_contact_map_padded, lengths, max_length)
-            contact_map = postprocessed_contact_map
+                contact_map_padded = self._postprocess(logits_padded, inputs_embeds)
+            contact_map = _crop_batch(contact_map_padded, lengths, max_length)
         else:
             contact_map = torch.sigmoid(logits)
 
@@ -196,7 +208,6 @@ class UfoldModel(UfoldPreTrainedModel):
             loss=loss,
             logits=logits,
             contact_map=contact_map,
-            postprocessed_contact_map=postprocessed_contact_map,
         )
 
     def _prepare_inputs_embeds(
@@ -230,8 +241,11 @@ class UfoldModel(UfoldPreTrainedModel):
         )
         return _fit_length(inputs_embeds, padded_length)
 
-    def _postprocess(self, logits: Tensor, one_hot: Tensor) -> Tensor:
-        mask = _constraint_matrix(one_hot, allow_noncanonical=self.config.allow_noncanonical).to(dtype=logits.dtype)
+    def _postprocess(self, logits: Tensor, base_one_hot: Tensor, threshold: float | None = None) -> Tensor:
+        if threshold is None:
+            threshold = self.config.threshold
+        mask = _constraint_matrix(base_one_hot, allow_noncanonical=self.config.allow_noncanonical)
+        mask = mask.to(dtype=logits.dtype)
         u = torch.sigmoid(2 * (logits - self.config.postprocess_s)) * logits
         a_hat = torch.sigmoid(u) * torch.sigmoid(2 * (u - self.config.postprocess_s)).detach()
         lmbd = F.relu(_contact_a(a_hat, mask).sum(dim=-1) - 1).detach()
@@ -252,7 +266,13 @@ class UfoldModel(UfoldPreTrainedModel):
             lmbd = lmbd + lr_max * lmbd_grad
             lr_max *= 0.99
 
-        return _contact_a(a_hat, mask)
+        # Binarize the constrained score map exactly as upstream UFold does: a plain raw-score threshold
+        # (`map = (u_no_train > 0.5)`; upstream's row-sum threshold-escalation loop is commented out). The
+        # scores are unbounded (`_contact_a` returns a_hat**2), so we must NOT route them through the shared
+        # probability decoder, which would sigmoid them and turn every mask-zeroed entry into a 0.5 candidate.
+        # The constraint mask keeps disallowed/padded entries at 0, hence below threshold.
+        scores = _contact_a(a_hat, mask)
+        return (scores > threshold).to(dtype=logits.dtype)
 
 
 class UfoldForRnaSecondaryStructurePrediction(UfoldModel):
@@ -518,15 +538,12 @@ class UfoldModelOutput(ModelOutput):
             Raw pre-sigmoid prediction scores. These are NOT probabilities; apply `torch.sigmoid` to obtain
             per-pair probabilities.
         contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
-            Post-sigmoid base-pair probability matrix. When `use_postprocessing=True` this is the result of
-            the constrained post-processing loop (a binary 0/1 map); otherwise it equals
+            Post-sigmoid base-pair probability matrix. When `use_postprocess=True` this is instead the binary
+            base-pair map from the constrained post-processing (a raw constrained-score threshold; unlike
+            BPfold/SPOT-RNA it is not guaranteed conflict-free, mirroring upstream UFold); otherwise it equals
             `torch.sigmoid(logits)`.
-        postprocessed_contact_map (`torch.FloatTensor` of shape `(batch_size, seq_len, seq_len)`, *optional*):
-            Binary contact map produced by the constrained UFold post-processing loop. Only present when
-            `use_postprocessing=True`; identical to `contact_map` in that case.
     """
 
     loss: torch.FloatTensor | None = None
     logits: torch.FloatTensor | None = None
     contact_map: torch.FloatTensor | None = None
-    postprocessed_contact_map: torch.FloatTensor | None = None
