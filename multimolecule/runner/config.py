@@ -228,7 +228,7 @@ class Config(dl.RunnerConfig):
     r"""
     Top-level runner configuration.
 
-    Extends [`dl.RunnerConfig`][danling.runners.RunnerConfig] with MultiMolecule defaults and validation. The runner
+    Extends [`dl.RunnerConfig`][danling.runners.RunnerConfig] with MultiMolecule defaults. The runner
     accepts either a fully-constructed `Config` instance or any mapping that this class can be built from.
 
     The `name` attribute is auto-derived in [`post`][multimolecule.runner.Config.post] from the pretrained
