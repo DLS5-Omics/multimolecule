@@ -125,13 +125,8 @@ This keeps training cheap while avoiding approximate validation metrics for scor
 
 The runner inherits DanLing's checkpoint flow. The resume source is selected by the first key that is set, in order:
 
-1. `resume` — full-state checkpoint path.
-2. `checkpoint_path` — alias for `resume`.
-3. `auto_resume: true` — discover the latest backend checkpoint automatically.
-4. `model_pretrained` / `load_pretrained` — pretrained-only initialization (no optimizer / scheduler / RNG restore).
-
-`checkpoint` itself is reserved for DanLing's checkpoint _policy_ (`backend`, `interval`, `keep_latest_k`, ...); see
-the [DanLing runner documentation](https://danling.org/runners/) for the full surface.
+1. `checkpoint` — full-state checkpoint path.
+2. `resume: true` — discover the latest backend checkpoint automatically.
 
 Optional exponential moving average can be enabled with:
 

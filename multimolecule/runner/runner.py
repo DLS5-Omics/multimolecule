@@ -166,22 +166,16 @@ class Runner(dl.Runner):
             parameters = list(self.iter_optimizer_parameters())
         self.optimizer = dl.OPTIMIZERS.build(params=parameters, **optim_kwargs)
 
-    def _resolve_auto_restore_target(self) -> tuple[str, Mapping[Any, Any] | os.PathLike | str | bytes] | None:
-        resume_source = self.config.get("resume")
-        if resume_source:
-            return ("checkpoint", resume_source)
+    def _resolve_auto_restore_target(self) -> tuple[str, Any] | None:
+        restore_target = super()._resolve_auto_restore_target()
+        if restore_target is None:
+            return None
 
-        checkpoint_source = self.config.get("checkpoint_path")
-        if checkpoint_source:
-            return ("checkpoint", checkpoint_source)
-
-        if self.config.get("auto_resume", False):
-            return ("checkpoint", self._auto_resume_source())
-
-        pretrained_checkpoint = self.config.get("model_pretrained") or self.config.get("load_pretrained")
-        if pretrained_checkpoint:
-            return ("pretrained", pretrained_checkpoint)
-        return None
+        restore_kind, restore_source = restore_target
+        # DanLing uses `pretrained` as a checkpoint source; MultiMolecule uses it as the backbone identifier.
+        if restore_kind == "pretrained":
+            return None
+        return restore_kind, restore_source
 
     def train_step(self, data: Mapping[str, Any]) -> tuple[Any, Tensor | None]:
         data = self.to_device(data)

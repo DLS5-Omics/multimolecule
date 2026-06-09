@@ -125,13 +125,8 @@ Runner 的 metrics 由 `danling.METRICS` 构建，需要 DanLing `>=0.4.0`。
 
 Runner 继承 DanLing 的检查点流程。恢复源按以下顺序选择，使用第一个被设置的键：
 
-1. `resume` —— 完整状态的检查点路径。
-2. `checkpoint_path` —— `resume` 的别名。
-3. `auto_resume: true` —— 自动发现后端最新的检查点。
-4. `model_pretrained` / `load_pretrained` —— 仅初始化模型权重（不恢复 optimizer / scheduler / RNG）。
-
-`checkpoint` 本身保留给 DanLing 的检查点*策略*（`backend`、`interval`、`keep_latest_k` 等）；
-完整字段请参见 [DanLing runner 文档](https://danling.org/runners/)。
+1. `checkpoint` —— 完整状态的检查点路径。
+2. `resume: true` —— 自动发现后端最新的检查点。
 
 可选的指数滑动平均（EMA）通过下列配置启用：
 

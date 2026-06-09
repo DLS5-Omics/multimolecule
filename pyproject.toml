@@ -44,7 +44,7 @@ dynamic = [
 ]
 dependencies = [
   "chanfig>=0.0.105",
-  "danling[torch]>=0.4",
+  "danling[torch]>=0.4.1",
   "datasets",
   "matplotlib",
   "pandas",
