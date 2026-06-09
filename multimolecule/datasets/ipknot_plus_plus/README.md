@@ -25,27 +25,34 @@ IPknot++ is a benchmark dataset released with the IPknot++ RNA secondary structu
 It is intended as an external evaluation set rather than a training split.
 A common use is to train or tune RNA secondary structure prediction models on SPOT-RNA-style splits such as [bpRNA-spot](../bprna_spot), then evaluate generalization on IPknot++.
 
-The original release does not define train and validation partitions.
-The converted dataset is released as a single `test` split.
-The `split` column records the paper's benchmark block:
+The original release does not define train and validation partitions, so every variant is released as a single `test` split.
 
-- `bprna_1m`: single-sequence structures from bpRNA-1m.
-- `rfam_14_5`: single-sequence structures from Rfam 14.5.
-- `rfam_14_5_ref`: Rfam 14.5 reference alignments for common-structure prediction.
-- `rfam_14_5_mafft`: Rfam 14.5 MAFFT alignments for common-structure prediction.
+IPknot++ is released as three repositories that share the same RNA targets but differ in whether and how a multiple sequence alignment is provided:
 
-For alignment entries, `sequence` and `secondary_structure` are taken from the corresponding single-sequence BPSEQ file, and the full alignment is stored in `aligned_ids` and `aligned_sequences`.
+- `ipknot_plus_plus`: single-sequence structures with no alignment, covering both the bpRNA-1m and Rfam 14.5 targets.
+- `ipknot_plus_plus-ref`: Rfam 14.5 targets with the Rfam reference alignment, for common-structure prediction.
+- `ipknot_plus_plus-mafft`: Rfam 14.5 targets with a MAFFT alignment, for common-structure prediction.
+
+The `-ref` and `-mafft` variants cover the same set of Rfam 14.5 targets, with identical `id`, `sequence`, and `secondary_structure`; only `aligned_sequences` differs (the alignment members in `aligned_ids` are also identical). These targets are a subset of the single sequences in the no-alignment `ipknot_plus_plus` variant.
+
+For the alignment variants, `sequence` and `secondary_structure` are taken from the corresponding single-sequence BPSEQ file, and the full alignment is stored in `aligned_ids` and `aligned_sequences`.
 
 ## Schema
+
+The `ipknot_plus_plus` variant contains:
 
 | Column | Description |
 | --- | --- |
 | `id` | Identifier of the benchmark entry. |
 | `sequence` | Ungapped RNA sequence for the benchmark target. |
 | `secondary_structure` | Target secondary structure in dot-bracket notation. |
-| `aligned_ids` | Sequence IDs in the alignment. Single-sequence entries contain only their own ID. |
-| `aligned_sequences` | Aligned sequences, preserving gap characters. Single-sequence entries contain only the ungapped sequence. |
-| `split` | Source benchmark block: `bprna_1m`, `rfam_14_5`, `rfam_14_5_ref`, or `rfam_14_5_mafft`. |
+
+The `ipknot_plus_plus-ref` and `ipknot_plus_plus-mafft` variants add two alignment columns:
+
+| Column | Description |
+| --- | --- |
+| `aligned_ids` | Sequence IDs in the alignment. The first entry is the benchmark target itself. |
+| `aligned_sequences` | Aligned sequences, preserving gap characters. |
 
 ## Disclaimer
 
