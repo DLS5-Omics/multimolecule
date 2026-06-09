@@ -73,40 +73,58 @@ def convert_alignment(file: str | Path, bpseq_root: str | Path) -> dict:
     return record
 
 
-def _with_split(records: list[dict], split: str) -> list[dict]:
-    for record in records:
-        record["split"] = split
-    return records
+VARIANT_SUFFIXES = ("-ref", "-mafft")
+
+
+def _drop_alignment(records: list[dict]) -> list[dict]:
+    return [
+        {key: value for key, value in record.items() if key not in ("aligned_ids", "aligned_sequences")}
+        for record in records
+    ]
+
+
+def _build_datasets(root: str | Path) -> dict[str, dict[str, list[dict]]]:
+    root = Path(root)
+    bprna_1m = [
+        convert_bpseq(file) for file in tqdm(_get_files(root / "from_bpRNA-1m", ".bpseq"), desc="from_bpRNA-1m")
+    ]
+    rfam_14_5 = [
+        convert_bpseq(file) for file in tqdm(_get_files(root / "from_Rfam14.5", ".bpseq"), desc="from_Rfam14.5")
+    ]
+    rfam_14_5_ref = [
+        convert_alignment(file, root / "from_Rfam14.5")
+        for file in tqdm(_get_files(root / "from_Rfam14.5_ref", ".aln"), desc="from_Rfam14.5_ref")
+    ]
+    rfam_14_5_mafft = [
+        convert_alignment(file, root / "from_Rfam14.5")
+        for file in tqdm(_get_files(root / "from_Rfam14.5_mafft", ".aln"), desc="from_Rfam14.5_mafft")
+    ]
+    return {
+        "": {"test": _drop_alignment(bprna_1m + rfam_14_5)},
+        "ref": {"test": rfam_14_5_ref},
+        "mafft": {"test": rfam_14_5_mafft},
+    }
+
+
+def _strip_variant_suffix(value: str | None) -> str | None:
+    if value is not None and value.endswith(VARIANT_SUFFIXES):
+        return value.rsplit("-", 1)[0]
+    return value
 
 
 def convert_dataset(convert_config):
-    root = Path(convert_config.dataset_path)
-    bprna_1m = _with_split(
-        [convert_bpseq(file) for file in tqdm(_get_files(root / "from_bpRNA-1m", ".bpseq"), desc="from_bpRNA-1m")],
-        "bprna_1m",
-    )
-    rfam_14_5 = _with_split(
-        [convert_bpseq(file) for file in tqdm(_get_files(root / "from_Rfam14.5", ".bpseq"), desc="from_Rfam14.5")],
-        "rfam_14_5",
-    )
-    rfam_14_5_ref = _with_split(
-        [
-            convert_alignment(file, root / "from_Rfam14.5")
-            for file in tqdm(_get_files(root / "from_Rfam14.5_ref", ".aln"), desc="from_Rfam14.5_ref")
-        ],
-        "rfam_14_5_ref",
-    )
-    rfam_14_5_mafft = _with_split(
-        [
-            convert_alignment(file, root / "from_Rfam14.5")
-            for file in tqdm(_get_files(root / "from_Rfam14.5_mafft", ".aln"), desc="from_Rfam14.5_mafft")
-        ],
-        "rfam_14_5_mafft",
-    )
-    save_dataset(
-        convert_config,
-        {"test": bprna_1m + rfam_14_5 + rfam_14_5_ref + rfam_14_5_mafft},
-    )
+    datasets = _build_datasets(convert_config.dataset_path)
+    output_path, repo_id = convert_config.output_path, convert_config.repo_id
+    base_output_path = _strip_variant_suffix(output_path)
+    base_repo_id = _strip_variant_suffix(repo_id)
+    try:
+        for suffix, data in datasets.items():
+            convert_config.output_path = f"{base_output_path}-{suffix}" if suffix else base_output_path
+            convert_config.repo_id = f"{base_repo_id}-{suffix}" if suffix and base_repo_id else base_repo_id
+            save_dataset(convert_config, data)
+    finally:
+        convert_config.output_path = output_path
+        convert_config.repo_id = repo_id
 
 
 class ConvertConfig(ConvertConfig_):
