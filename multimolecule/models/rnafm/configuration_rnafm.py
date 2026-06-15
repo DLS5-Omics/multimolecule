@@ -131,11 +131,6 @@ class RnaFmConfig(PreTrainedConfig):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        expected_vocab_size = 131 if codon else 28
-        if vocab_size is None:
-            vocab_size = expected_vocab_size
-        elif vocab_size != expected_vocab_size:
-            raise ValueError(f"vocab_size ({vocab_size}) must be {expected_vocab_size} when codon={codon}.")
         validate_attention_dimensions(hidden_size, num_attention_heads)
         self.vocab_size = vocab_size
         self.codon = codon
