@@ -19,17 +19,29 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+import pytest
+
 from multimolecule import io
 
 
-def test_dbn_roundtrip(tmp_path) -> None:
-    record = io.RnaSecondaryStructureRecord(sequence="ACGU", dot_bracket="(())", id="test")
-    path = tmp_path / "test.dbn"
-    io.write_dbn(record, path)
-    out = io.read_dbn(path)
-    assert out.sequence == record.sequence
-    assert out.dot_bracket == record.dot_bracket
-    assert out.id == record.id
+@pytest.mark.parametrize("fmt", ["dbn", "bpseq", "ct"])
+@pytest.mark.parametrize(
+    "sequence, dot_bracket",
+    [
+        ("ACGU", "(())"),  # nested
+        ("ACGU", "...."),  # fully unpaired
+        ("ACGU", "([)]"),  # pseudoknot: crossing pairs survive the pairing table
+        ("GGGAAACCC", "(((...)))"),  # hairpin
+    ],
+)
+def test_roundtrip(tmp_path, fmt, sequence, dot_bracket) -> None:
+    record = io.RnaSecondaryStructureRecord(sequence=sequence, dot_bracket=dot_bracket, id="rna")
+    path = tmp_path / f"rna.{fmt}"
+    io.save(record, path)
+    out = io.load(path)
+    assert out.sequence == sequence
+    assert out.dot_bracket == dot_bracket
+    assert out.id == "rna"
 
 
 def test_dbn_energy_line(tmp_path) -> None:
@@ -41,17 +53,9 @@ def test_dbn_energy_line(tmp_path) -> None:
     assert record.id == "id"
 
 
-def test_bpseq_roundtrip(tmp_path) -> None:
-    record = io.RnaSecondaryStructureRecord(sequence="ACGU", dot_bracket="(())")
-    path = tmp_path / "example.bpseq"
-    io.write_bpseq(record, path)
-    out = io.read_bpseq(path)
-    assert out.sequence == record.sequence
-    assert out.dot_bracket == record.dot_bracket
-
-
-def test_st_roundtrip(tmp_path) -> None:
-    record = io.BpRnaRecord(
+@pytest.fixture
+def st_record() -> "io.BpRnaRecord":
+    return io.BpRnaRecord(
         sequence="ACGU",
         dot_bracket="(())",
         id="rna1",
@@ -60,8 +64,11 @@ def test_st_roundtrip(tmp_path) -> None:
         knot_array="NNNN",
         structure_types={"S": ["S1 1..2 3..4"]},
     )
+
+
+def test_st_roundtrip(tmp_path, st_record) -> None:
     path = tmp_path / "example.st"
-    io.write_st(record, path)
+    io.write_st(st_record, path)
     out = io.read_st(path)
     assert out.id == "rna1"
     assert out.sequence == "ACGU"
@@ -77,21 +84,4 @@ def test_st_comma_wrapped_length_header(tmp_path) -> None:
     out = io.read_st(path)
     assert out.id == "rna1"
     assert out.sequence == "ACGU"
-    assert out.dot_bracket == "(())"
-
-
-def test_sta_multiple_records(tmp_path) -> None:
-    record = io.BpRnaRecord(
-        sequence="ACGU",
-        dot_bracket="(())",
-        id="rna1",
-        page_number=1,
-        structure_array="SSSS",
-        knot_array="NNNN",
-        structure_types={},
-    )
-    path = tmp_path / "single.st"
-    io.write_st(record, path)
-    out = io.read_st(path)
-    assert out.id == "rna1"
     assert out.dot_bracket == "(())"

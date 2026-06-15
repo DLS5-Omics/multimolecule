@@ -22,10 +22,24 @@
 from .fasta import FASTA, read_fasta, read_fasta_records, write_fasta, write_fasta_records
 from .records import BpRnaRecord, InvalidStructureFile, RnaSecondaryStructureRecord, SequenceRecord
 from .registry import SUPPORTED, load, save
-from .rna_secondary_structure import BPSEQ, DBN, ST, read_bpseq, read_dbn, read_st, write_bpseq, write_dbn, write_st
+from .rna_secondary_structure import (
+    BPSEQ,
+    CT,
+    DBN,
+    ST,
+    read_bpseq,
+    read_ct,
+    read_dbn,
+    read_st,
+    write_bpseq,
+    write_ct,
+    write_dbn,
+    write_st,
+)
 
 __all__ = [
     "BPSEQ",
+    "CT",
     "DBN",
     "FASTA",
     "ST",
@@ -36,12 +50,14 @@ __all__ = [
     "SequenceRecord",
     "load",
     "read_bpseq",
+    "read_ct",
     "read_dbn",
     "read_fasta",
     "read_fasta_records",
     "read_st",
     "save",
     "write_bpseq",
+    "write_ct",
     "write_dbn",
     "write_fasta",
     "write_fasta_records",
