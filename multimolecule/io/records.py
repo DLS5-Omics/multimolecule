@@ -62,6 +62,12 @@ class RnaSecondaryStructureRecord:
         return read_bpseq(path)
 
     @classmethod
+    def read_ct(cls, path: str | Path) -> RnaSecondaryStructureRecord:
+        from .rna_secondary_structure import read_ct
+
+        return read_ct(path)
+
+    @classmethod
     def read_st(cls, path: str | Path) -> RnaSecondaryStructureRecord:
         from .rna_secondary_structure import read_rna_secondary_structure_st
 
@@ -76,6 +82,11 @@ class RnaSecondaryStructureRecord:
         from .rna_secondary_structure import write_bpseq
 
         return write_bpseq(self, path)
+
+    def write_ct(self, path: str | Path) -> Path:
+        from .rna_secondary_structure import write_ct
+
+        return write_ct(self, path)
 
 
 @dataclass(kw_only=True)

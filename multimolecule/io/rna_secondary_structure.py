@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Dict, List
 
@@ -33,6 +34,7 @@ from .records import BpRnaRecord, InvalidStructureFile, RnaSecondaryStructureRec
 DBN = ("db", "dbn")
 BPSEQ = ("bpseq",)
 ST = ("st", "sta")
+CT = ("ct",)
 
 
 def read_dbn(path: str | Path) -> RnaSecondaryStructureRecord:
@@ -156,6 +158,104 @@ def write_bpseq(record: RnaSecondaryStructureRecord, path: str | Path) -> Path:
             out_partner = partner + 1 if partner != -1 else 0
             fh.write(f"{idx + 1} {base} {out_partner}\n")
     return path
+
+
+def read_ct(path: str | Path) -> RnaSecondaryStructureRecord:
+    r"""Parse a Connect Table (.ct) file and return a record with dot-bracket notation."""
+
+    path = Path(path)
+    lines = _read_lines(path, drop_comments=False)
+    if not lines:
+        raise InvalidStructureFile(f"No CT records found in {path!s}")
+
+    header = lines[0].split(None, 1)
+    try:
+        count = int(header[0])
+    except (IndexError, ValueError) as exc:
+        raise InvalidStructureFile(f"Invalid CT header in {path!s}: {lines[0]}") from exc
+    if count < 0:
+        raise InvalidStructureFile(f"Invalid CT length {count} in {path!s}")
+    title = header[1].strip() if len(header) > 1 else ""
+    record_id = _ct_header_id(title) or path.stem
+
+    data = lines[1:]
+    if len(data) < count:
+        raise InvalidStructureFile(f"CT header declares {count} positions but only {len(data)} rows found in {path!s}")
+
+    sequence = [""] * count
+    pair_by_index: Dict[int, int] = {}
+    for lineno, line in enumerate(data[:count], 2):
+        parts = line.split()
+        if len(parts) < 5:
+            raise InvalidStructureFile(f"Expected at least 5 columns in CT at line {lineno}: {line}")
+        try:
+            idx = int(parts[0]) - 1
+            base = parts[1]
+            pair = int(parts[4])
+        except ValueError as exc:
+            raise InvalidStructureFile(f"Invalid CT data at line {lineno}: {line}") from exc
+        if idx < 0 or idx >= count:
+            raise InvalidStructureFile(f"Index {idx + 1} out of bounds at line {lineno}")
+        if sequence[idx]:
+            raise InvalidStructureFile(f"Position {idx + 1} duplicated at line {lineno}")
+        sequence[idx] = base
+        if pair == 0:
+            continue
+        pair_idx = pair - 1
+        if pair_idx < 0 or pair_idx >= count:
+            raise InvalidStructureFile(f"Invalid pair index {pair} at line {lineno}")
+        if idx == pair_idx:
+            raise InvalidStructureFile(f"Position {idx + 1} paired to itself (line {lineno})")
+        if idx in pair_by_index and pair_by_index[idx] != pair_idx:
+            raise InvalidStructureFile(f"Position {idx + 1} paired multiple times (line {lineno})")
+        pair_by_index[idx] = pair_idx
+
+    if any(base == "" for base in sequence):
+        raise InvalidStructureFile(f"Missing sequence positions in {path!s}")
+    for i, j in pair_by_index.items():
+        if pair_by_index.get(j) != i:
+            raise InvalidStructureFile(f"Inconsistent pairing: {i + 1} -> {j + 1} but reverse not found")
+
+    pairs = [(i, j) for i, j in pair_by_index.items() if i < j]
+    pairs = np.array(pairs, dtype=int) if pairs else np.empty((0, 2), dtype=int)
+    dot_bracket = notations.pairs_to_dot_bracket(pairs, length=count, unsafe=True)
+    return RnaSecondaryStructureRecord(sequence="".join(sequence), dot_bracket=dot_bracket, id=record_id)
+
+
+def write_ct(record: RnaSecondaryStructureRecord, path: str | Path) -> Path:
+    r"""Write a Connect Table (.ct) file from a record with dot-bracket notation."""
+
+    if not isinstance(record, RnaSecondaryStructureRecord):
+        raise TypeError("record must be a RnaSecondaryStructureRecord")
+    path = Path(path)
+    pairs = notations.dot_bracket_to_pairs(record.dot_bracket)
+    pair_index = _pair_index_from_pairs(pairs, len(record))
+    id = record.id or path.stem
+    length = len(record)
+    with path.open("w") as fh:
+        fh.write(f"{length} {id}\n")
+        for idx, base in enumerate(record.sequence):
+            partner = pair_index[idx]
+            out_partner = partner + 1 if partner != -1 else 0
+            next_idx = idx + 2 if idx + 1 < length else 0
+            fh.write(f"{idx + 1} {base} {idx} {next_idx} {out_partner} {idx + 1}\n")
+    return path
+
+
+def _ct_header_id(title: str) -> str | None:
+    r"""Extract a record id from a CT header title, stripping a leading energy descriptor.
+
+    CT header titles vary by tool: ``ENERGY = -1.2  name`` (mfold/UNAFold), ``dG = -1.2 name``,
+    or just ``name``. We drop a recognized energy term and keep the remainder as the id.
+    """
+
+    if not title:
+        return None
+    match = re.match(r"\s*(?:energy|dg|delta\s*g)\s*=\s*\S+\s*", title, flags=re.IGNORECASE)
+    if match:
+        title = title[match.end() :]
+    title = title.strip()
+    return title or None
 
 
 def read_rna_secondary_structure_st(path: str | Path) -> RnaSecondaryStructureRecord:

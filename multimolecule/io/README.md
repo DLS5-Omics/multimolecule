@@ -13,4 +13,5 @@ date: 2025-06-12
 | FASTA       | `.fa`, `.fas`, `.fasta`, `.fna`, `.ffn`, `.frn`, `.faa` | `SequenceRecord`              |
 | Dot-bracket | `.db`, `.dbn`                                           | `RnaSecondaryStructureRecord` |
 | BPSEQ       | `.bpseq`                                                | `RnaSecondaryStructureRecord` |
+| Connect     | `.ct`                                                   | `RnaSecondaryStructureRecord` |
 | bpRNA ST    | `.st`, `.sta`                                           | `BpRnaRecord`                 |

@@ -24,9 +24,22 @@ from __future__ import annotations
 from pathlib import Path
 
 from .fasta import FASTA, read_fasta, write_fasta
-from .rna_secondary_structure import BPSEQ, DBN, ST, read_bpseq, read_dbn, read_st, write_bpseq, write_dbn, write_st
+from .rna_secondary_structure import (
+    BPSEQ,
+    CT,
+    DBN,
+    ST,
+    read_bpseq,
+    read_ct,
+    read_dbn,
+    read_st,
+    write_bpseq,
+    write_ct,
+    write_dbn,
+    write_st,
+)
 
-SUPPORTED = DBN + BPSEQ + FASTA + ST
+SUPPORTED = DBN + BPSEQ + FASTA + ST + CT
 
 
 def save(record, path: str | Path, format: str | None = None, **kwargs) -> Path:
@@ -42,6 +55,8 @@ def save(record, path: str | Path, format: str | None = None, **kwargs) -> Path:
         return write_fasta(record, path)
     if format in ST:
         return write_st(record, path, **kwargs)
+    if format in CT:
+        return write_ct(record, path)
     raise ValueError(f"Trying to save {path!r} with unsupported extension={format!r}")
 
 
@@ -58,6 +73,8 @@ def load(path: str | Path, format: str | None = None):
         return read_fasta(path)
     if format in ST:
         return read_st(path)
+    if format in CT:
+        return read_ct(path)
     raise ValueError(f"Trying to load {path!r} with unsupported extension={format!r}")
 
 
