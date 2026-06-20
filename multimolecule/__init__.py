@@ -24,6 +24,12 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 from .data import Dataset
 from .graph import maximum_weight_matching
 from .models import (
+    RbpEclipConfig,
+    RbpEclipForSequencePrediction,
+    RbpEclipModel,
+    RbpEclipModelOutput,
+    RbpEclipPreTrainedModel,
+    RbpEclipSplineTransform,
     A2zChromatinConfig,
     A2zChromatinForSequencePrediction,
     A2zChromatinModel,
@@ -449,6 +455,12 @@ from .utils import (
 )
 
 __all__ = [
+    "RbpEclipConfig",
+    "RbpEclipModel",
+    "RbpEclipPreTrainedModel",
+    "RbpEclipForSequencePrediction",
+    "RbpEclipModelOutput",
+    "RbpEclipSplineTransform",
     "Config",
     "Runner",
     "modeling_auto",

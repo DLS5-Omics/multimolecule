@@ -435,7 +435,21 @@ from .xpresso import (
     XpressoPreTrainedModel,
 )
 
+from .rbpeclip import (
+    RbpEclipConfig,
+    RbpEclipForSequencePrediction,
+    RbpEclipModel,
+    RbpEclipModelOutput,
+    RbpEclipPreTrainedModel,
+    RbpEclipSplineTransform,
+)
 __all__ = [
+    "RbpEclipConfig",
+    "RbpEclipModel",
+    "RbpEclipPreTrainedModel",
+    "RbpEclipForSequencePrediction",
+    "RbpEclipModelOutput",
+    "RbpEclipSplineTransform",
     "PreTrainedConfig",
     "HeadConfig",
     "DnaTokenizer",
