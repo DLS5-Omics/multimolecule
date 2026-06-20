@@ -24,6 +24,10 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 from .data import Dataset
 from .graph import maximum_weight_matching
 from .models import (
+    CpGenieConfig,
+    CpGenieForSequencePrediction,
+    CpGenieModel,
+    CpGeniePreTrainedModel,
     A2zChromatinConfig,
     A2zChromatinForSequencePrediction,
     A2zChromatinModel,
@@ -449,6 +453,10 @@ from .utils import (
 )
 
 __all__ = [
+    "CpGenieConfig",
+    "CpGenieModel",
+    "CpGeniePreTrainedModel",
+    "CpGenieForSequencePrediction",
     "Config",
     "Runner",
     "modeling_auto",

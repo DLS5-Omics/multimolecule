@@ -435,7 +435,17 @@ from .xpresso import (
     XpressoPreTrainedModel,
 )
 
+from .cpgenie import (
+    CpGenieConfig,
+    CpGenieForSequencePrediction,
+    CpGenieModel,
+    CpGeniePreTrainedModel,
+)
 __all__ = [
+    "CpGenieConfig",
+    "CpGenieModel",
+    "CpGeniePreTrainedModel",
+    "CpGenieForSequencePrediction",
     "PreTrainedConfig",
     "HeadConfig",
     "DnaTokenizer",
