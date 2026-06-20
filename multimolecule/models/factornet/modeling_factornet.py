@@ -137,6 +137,19 @@ class FactorNetModel(FactorNetPreTrainedModel):
                 attention_mask = inputs_embeds.mask
             inputs_embeds = inputs_embeds.tensor
         batch_size = input_ids.size(0) if input_ids is not None else inputs_embeds.size(0)  # type: ignore[union-attr]
+        # The auxiliary cell-type signals (DNase / mappability) and per-window metadata (RNA-seq) are optional at
+        # inference: when omitted (e.g. sequence-only pipelines or model-card widgets) they default to zeros so the
+        # model still produces a sequence-only prediction. Callers with real cell-type data pass them explicitly.
+        reference = input_ids if input_ids is not None else inputs_embeds
+        sequence_length = reference.size(-1) if input_ids is not None else reference.size(1)  # type: ignore[union-attr]
+        if auxiliary_signal is None and self.config.num_auxiliary_signals > 0:
+            auxiliary_signal = reference.new_zeros(  # type: ignore[union-attr]
+                (batch_size, sequence_length, self.config.num_auxiliary_signals), dtype=self.dtype
+            )
+        if metadata_features is None and self.config.num_metadata_features > 0:
+            metadata_features = reference.new_zeros(  # type: ignore[union-attr]
+                (batch_size, self.config.num_metadata_features), dtype=self.dtype
+            )
         self._validate_metadata_features(metadata_features, batch_size)
 
         forward_embedding, reverse_embedding = self.embeddings(

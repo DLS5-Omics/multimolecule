@@ -24,7 +24,7 @@ from transformers import AutoConfig, AutoModel, AutoModelForSequenceClassificati
 
 from multimolecule.tokenisers import DnaTokenizer
 
-from ..modeling_auto import AutoModelForSequencePrediction
+from ..modeling_auto import AutoModelForRegulatoryActivityPrediction, AutoModelForSequencePrediction
 from .configuration_factornet import FactorNetConfig
 from .modeling_factornet import (
     FactorNetForSequencePrediction,
@@ -44,6 +44,7 @@ __all__ = [
 
 AutoConfig.register("factornet", FactorNetConfig)
 AutoModel.register(FactorNetConfig, FactorNetModel)
+AutoModelForRegulatoryActivityPrediction.register(FactorNetConfig, FactorNetForSequencePrediction)
 AutoModelForSequencePrediction.register(FactorNetConfig, FactorNetForSequencePrediction)
 AutoModelForSequenceClassification.register(FactorNetConfig, FactorNetForSequencePrediction)
 AutoTokenizer.register(FactorNetConfig, DnaTokenizer)

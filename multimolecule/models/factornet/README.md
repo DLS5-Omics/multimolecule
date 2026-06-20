@@ -5,7 +5,7 @@ tags:
   - DNA
 license: agpl-3.0
 library_name: multimolecule
-pipeline_tag: sequence-binding-prediction
+pipeline_tag: regulatory-activity
 ---
 
 # FactorNet
