@@ -435,7 +435,19 @@ from .xpresso import (
     XpressoPreTrainedModel,
 )
 
+from .factornet import (
+    FactorNetConfig,
+    FactorNetForSequencePrediction,
+    FactorNetModel,
+    FactorNetModelOutput,
+    FactorNetPreTrainedModel,
+)
 __all__ = [
+    "FactorNetConfig",
+    "FactorNetModel",
+    "FactorNetModelOutput",
+    "FactorNetPreTrainedModel",
+    "FactorNetForSequencePrediction",
     "PreTrainedConfig",
     "HeadConfig",
     "DnaTokenizer",
