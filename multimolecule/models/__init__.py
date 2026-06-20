@@ -435,7 +435,12 @@ from .xpresso import (
     XpressoPreTrainedModel,
 )
 
+from .deepbind import DeepBindConfig, DeepBindForSequencePrediction, DeepBindModel, DeepBindPreTrainedModel
 __all__ = [
+    "DeepBindConfig",
+    "DeepBindModel",
+    "DeepBindPreTrainedModel",
+    "DeepBindForSequencePrediction",
     "PreTrainedConfig",
     "HeadConfig",
     "DnaTokenizer",
