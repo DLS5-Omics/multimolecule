@@ -435,7 +435,23 @@ from .xpresso import (
     XpressoPreTrainedModel,
 )
 
+from .generanno import (
+    GenerannoConfig,
+    GenerannoForContactPrediction,
+    GenerannoForMaskedLM,
+    GenerannoForPreTraining,
+    GenerannoForSequencePrediction,
+    GenerannoForTokenPrediction,
+    GenerannoModel,
+)
 __all__ = [
+    "GenerannoConfig",
+    "GenerannoModel",
+    "GenerannoForContactPrediction",
+    "GenerannoForSequencePrediction",
+    "GenerannoForTokenPrediction",
+    "GenerannoForMaskedLM",
+    "GenerannoForPreTraining",
     "PreTrainedConfig",
     "HeadConfig",
     "DnaTokenizer",

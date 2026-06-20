@@ -24,6 +24,13 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer
 from .data import Dataset
 from .graph import maximum_weight_matching
 from .models import (
+    GenerannoConfig,
+    GenerannoForContactPrediction,
+    GenerannoForMaskedLM,
+    GenerannoForPreTraining,
+    GenerannoForSequencePrediction,
+    GenerannoForTokenPrediction,
+    GenerannoModel,
     A2zChromatinConfig,
     A2zChromatinForSequencePrediction,
     A2zChromatinModel,
@@ -449,6 +456,13 @@ from .utils import (
 )
 
 __all__ = [
+    "GenerannoConfig",
+    "GenerannoModel",
+    "GenerannoForContactPrediction",
+    "GenerannoForSequencePrediction",
+    "GenerannoForTokenPrediction",
+    "GenerannoForMaskedLM",
+    "GenerannoForPreTraining",
     "Config",
     "Runner",
     "modeling_auto",
