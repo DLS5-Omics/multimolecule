@@ -24,7 +24,7 @@ from transformers import AutoConfig, AutoModel, AutoModelForSequenceClassificati
 
 from multimolecule.tokenisers import DnaTokenizer
 
-from ..modeling_auto import AutoModelForSequencePrediction
+from ..modeling_auto import AutoModelForMethylationPrediction, AutoModelForSequencePrediction
 from .configuration_cpgenie import CpGenieConfig
 from .modeling_cpgenie import (
     CpGenieForSequencePrediction,
@@ -42,6 +42,7 @@ __all__ = [
 
 AutoConfig.register("cpgenie", CpGenieConfig)
 AutoModel.register(CpGenieConfig, CpGenieModel)
+AutoModelForMethylationPrediction.register(CpGenieConfig, CpGenieForSequencePrediction)
 AutoModelForSequencePrediction.register(CpGenieConfig, CpGenieForSequencePrediction)
 AutoModelForSequenceClassification.register(CpGenieConfig, CpGenieForSequencePrediction)
 AutoTokenizer.register(CpGenieConfig, DnaTokenizer)

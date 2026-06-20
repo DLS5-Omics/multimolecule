@@ -5,7 +5,7 @@ tags:
   - DNA
 license: agpl-3.0
 library_name: multimolecule
-pipeline_tag: methylation-prediction
+pipeline_tag: methylation
 ---
 
 # CpGenie
