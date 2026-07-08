@@ -125,7 +125,6 @@ def _convert_checkpoint(
     original_vocab_list: list[str],
 ) -> dict[str, torch.Tensor]:
     state_dict: dict[str, torch.Tensor] = {}
-    intermediate_size = _swiglu_intermediate_size(config.intermediate_size)
     for key, value in original_state_dict.items():
         # Word embeddings -> model.embeddings.word_embeddings
         if key == "encoder.weight":
@@ -174,15 +173,14 @@ def _convert_checkpoint(
             elif sub == "ffn.w12.weight":
                 # xformers.SwiGLU stacks ``gate`` and ``up`` projections in a
                 # single weight: ``[gate; up]``. Split them along dim 0.
-                if value.shape[0] != 2 * intermediate_size:
-                    raise ValueError(
-                        f"Unexpected w12.weight shape {tuple(value.shape)}; expected first dim "
-                        f"{2 * intermediate_size}."
-                    )
+                if value.shape[0] % 2 != 0:
+                    raise ValueError(f"Unexpected w12.weight shape {tuple(value.shape)}; first dim must be even.")
                 gate, up = value.chunk(2, dim=0)
                 state_dict[f"{base}.intermediate.gate_proj.weight"] = gate.contiguous()
                 state_dict[f"{base}.intermediate.up_proj.weight"] = up.contiguous()
             elif sub == "ffn.w12.bias":
+                if value.shape[0] % 2 != 0:
+                    raise ValueError(f"Unexpected w12.bias shape {tuple(value.shape)}; first dim must be even.")
                 gate_b, up_b = value.chunk(2, dim=0)
                 state_dict[f"{base}.intermediate.gate_proj.bias"] = gate_b.contiguous()
                 state_dict[f"{base}.intermediate.up_proj.bias"] = up_b.contiguous()
@@ -215,11 +213,6 @@ def _convert_checkpoint(
     if word_embed.shape[0] != config.vocab_size:
         raise ValueError(f"Converted embedding has {word_embed.shape[0]} rows; expected {config.vocab_size}.")
     return state_dict
-
-
-def _swiglu_intermediate_size(intermediate_size: int, multiple_of: int = 8) -> int:
-    reduced = int(2 * intermediate_size / 3)
-    return multiple_of * ((reduced + multiple_of - 1) // multiple_of)
 
 
 class ConvertConfig(ConvertConfig_):

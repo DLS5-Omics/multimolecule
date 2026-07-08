@@ -190,6 +190,16 @@ from .ernierna import (
     ErnieRnaForTokenPrediction,
     ErnieRnaModel,
 )
+from .esmc import (
+    EsmCConfig,
+    EsmCForContactPrediction,
+    EsmCForMaskedLM,
+    EsmCForPreTraining,
+    EsmCForSequencePrediction,
+    EsmCForTokenPrediction,
+    EsmCModel,
+    EsmCPreTrainedModel,
+)
 from .framepool import (
     FramepoolConfig,
     FramepoolForSequencePrediction,
@@ -600,6 +610,14 @@ __all__ = [
     "ErnieRnaForMaskedLM",
     "ErnieRnaForPreTraining",
     "ErnieRnaForSecondaryStructurePrediction",
+    "EsmCConfig",
+    "EsmCModel",
+    "EsmCPreTrainedModel",
+    "EsmCForContactPrediction",
+    "EsmCForSequencePrediction",
+    "EsmCForTokenPrediction",
+    "EsmCForMaskedLM",
+    "EsmCForPreTraining",
     "FramepoolConfig",
     "FramepoolModel",
     "FramepoolModelOutput",
