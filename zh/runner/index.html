@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1651,13 +1651,9 @@
 <h2 id="ema">检查点与 EMA<a class="headerlink" href="#ema" title="Permanent link">&para;</a></h2>
 <p>Runner 继承 DanLing 的检查点流程。恢复源按以下顺序选择，使用第一个被设置的键：</p>
 <ol>
-<li><code>resume</code> —— 完整状态的检查点路径。</li>
-<li><code>checkpoint_path</code> —— <code>resume</code> 的别名。</li>
-<li><code>auto_resume: true</code> —— 自动发现后端最新的检查点。</li>
-<li><code>model_pretrained</code> / <code>load_pretrained</code> —— 仅初始化模型权重（不恢复 optimizer / scheduler / RNG）。</li>
+<li><code>checkpoint</code> —— 完整状态的检查点路径。</li>
+<li><code>resume: true</code> —— 自动发现后端最新的检查点。</li>
 </ol>
-<p><code>checkpoint</code> 本身保留给 DanLing 的检查点*策略*（<code>backend</code>、<code>interval</code>、<code>keep_latest_k</code> 等）；
-完整字段请参见 <a href="https://danling.org/runners/">DanLing runner 文档</a>。</p>
 <p>可选的指数滑动平均（EMA）通过下列配置启用：</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>

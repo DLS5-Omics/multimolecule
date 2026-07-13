@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -2175,17 +2175,17 @@
 <p>IPknot++ is a benchmark dataset released with the IPknot++ RNA secondary structure prediction paper.
 It is intended as an external evaluation set rather than a training split.
 A common use is to train or tune RNA secondary structure prediction models on SPOT-RNA-style splits such as <a href="../bprna_spot/">bpRNA-spot</a>, then evaluate generalization on IPknot++.</p>
-<p>The original release does not define train and validation partitions.
-The converted dataset is released as a single <code>test</code> split.
-The <code>split</code> column records the paper&rsquo;s benchmark block:</p>
+<p>The original release does not define train and validation partitions, so every variant is released as a single <code>test</code> split.</p>
+<p>IPknot++ is released as three repositories that share the same RNA targets but differ in whether and how a multiple sequence alignment is provided:</p>
 <ul>
-<li><code>bprna_1m</code>: single-sequence structures from bpRNA-1m.</li>
-<li><code>rfam_14_5</code>: single-sequence structures from Rfam 14.5.</li>
-<li><code>rfam_14_5_ref</code>: Rfam 14.5 reference alignments for common-structure prediction.</li>
-<li><code>rfam_14_5_mafft</code>: Rfam 14.5 MAFFT alignments for common-structure prediction.</li>
+<li><code>ipknot_plus_plus</code>: single-sequence structures with no alignment, covering both the bpRNA-1m and Rfam 14.5 targets.</li>
+<li><code>ipknot_plus_plus-ref</code>: Rfam 14.5 targets with the Rfam reference alignment, for common-structure prediction.</li>
+<li><code>ipknot_plus_plus-mafft</code>: Rfam 14.5 targets with a MAFFT alignment, for common-structure prediction.</li>
 </ul>
-<p>For alignment entries, <code>sequence</code> and <code>secondary_structure</code> are taken from the corresponding single-sequence BPSEQ file, and the full alignment is stored in <code>aligned_ids</code> and <code>aligned_sequences</code>.</p>
+<p>The <code>-ref</code> and <code>-mafft</code> variants cover the same set of Rfam 14.5 targets, with identical <code>id</code>, <code>sequence</code>, and <code>secondary_structure</code>; only <code>aligned_sequences</code> differs (the alignment members in <code>aligned_ids</code> are also identical). These targets are a subset of the single sequences in the no-alignment <code>ipknot_plus_plus</code> variant.</p>
+<p>For the alignment variants, <code>sequence</code> and <code>secondary_structure</code> are taken from the corresponding single-sequence BPSEQ file, and the full alignment is stored in <code>aligned_ids</code> and <code>aligned_sequences</code>.</p>
 <h2 id="schema">Schema<a class="headerlink" href="#schema" title="Permanent link">&para;</a></h2>
+<p>The <code>ipknot_plus_plus</code> variant contains:</p>
 <table>
 <thead>
 <tr>
@@ -2206,17 +2206,24 @@ The <code>split</code> column records the paper&rsquo;s benchmark block:</p>
 <td><code>secondary_structure</code></td>
 <td>Target secondary structure in dot-bracket notation.</td>
 </tr>
+</tbody>
+</table>
+<p>The <code>ipknot_plus_plus-ref</code> and <code>ipknot_plus_plus-mafft</code> variants add two alignment columns:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>aligned_ids</code></td>
-<td>Sequence IDs in the alignment. Single-sequence entries contain only their own ID.</td>
+<td>Sequence IDs in the alignment. The first entry is the benchmark target itself.</td>
 </tr>
 <tr>
 <td><code>aligned_sequences</code></td>
-<td>Aligned sequences, preserving gap characters. Single-sequence entries contain only the ungapped sequence.</td>
-</tr>
-<tr>
-<td><code>split</code></td>
-<td>Source benchmark block: <code>bprna_1m</code>, <code>rfam_14_5</code>, <code>rfam_14_5_ref</code>, or <code>rfam_14_5_mafft</code>.</td>
+<td>Aligned sequences, preserving gap characters.</td>
 </tr>
 </tbody>
 </table>
@@ -2311,7 +2318,7 @@ If MultiMolecule supports your research, please cite the MultiMolecule project a
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 31, 2026 16:45:50 UTC">2026-05-31 16:45:50</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="July 13, 2026 17:39:00 UTC">2026-07-13 17:39:00</span>
   </span>
 
     

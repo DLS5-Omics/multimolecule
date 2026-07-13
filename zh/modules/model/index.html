@@ -47,7 +47,7 @@
         <link rel="alternate" type="application/rss+xml" title="已更新内容的 RSS 订阅" href="../../../feed_rss_updated.xml">
       
       <link rel="icon" href="../../../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1814,6 +1814,7 @@
               Bases: <code><a class="autorefs autorefs-external" title="&lt;code&gt;torch.nn.Module&lt;/code&gt;" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module">Module</a></code>, <code><a class="autorefs autorefs-external" title="&lt;code&gt;abc.ABC&lt;/code&gt;" href="https://docs.python.org/3/library/abc.html#abc.ABC">ABC</a></code></p>
 
 
+
         <p>Abstract base for all multimolecule models.</p>
 <p>Defines the contract that the runner expects: <code>forward</code> returns a per-task mapping (one
 <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;HeadOutput&lt;/span&gt;
@@ -1832,7 +1833,8 @@ discriminates models with <code>isinstance(model, ModelBase)</code> rather than 
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/modules/model.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-47">47</a></span>
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
@@ -1922,7 +1924,8 @@ discriminates models with <code>isinstance(model, ModelBase)</code> rather than 
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -1975,7 +1978,7 @@ discriminates models with <code>isinstance(model, ModelBase)</code> rather than 
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>multimolecule/modules/model.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-62">62</a></span>
 <span class="normal"><a href="#__codelineno-0-63">63</a></span>
@@ -2010,11 +2013,7 @@ discriminates models with <code>isinstance(model, ModelBase)</code> rather than 
   </span>
 
 <a href="#multimolecule.modules.model.ModelBase.trainable_parameters" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">trainable_parameters</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;lr&lt;/code&gt; (&lt;code&gt;multimolecule.modules.model.ModelBase.trainable_parameters(lr)&lt;/code&gt;)" href="../../../modules/model/#multimolecule.modules.model.ModelBase.trainable_parameters(lr)">lr</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;weight_decay&lt;/code&gt; (&lt;code&gt;multimolecule.modules.model.ModelBase.trainable_parameters(weight_decay)&lt;/code&gt;)" href="../../../modules/model/#multimolecule.modules.model.ModelBase.trainable_parameters(weight_decay)">weight_decay</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;pretrained_ratio&lt;/code&gt; (&lt;code&gt;multimolecule.modules.model.ModelBase.trainable_parameters(pretrained_ratio)&lt;/code&gt;)" href="../../../modules/model/#multimolecule.modules.model.ModelBase.trainable_parameters(pretrained_ratio)">pretrained_ratio</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">]</span>
+<div class="language-python doc-signature highlight"><span class="filename">Python</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">trainable_parameters</span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;lr&lt;/code&gt; (&lt;code&gt;multimolecule.modules.model.ModelBase.trainable_parameters(lr)&lt;/code&gt;)" href="../../../modules/model/#multimolecule.modules.model.ModelBase.trainable_parameters(lr)">lr</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;weight_decay&lt;/code&gt; (&lt;code&gt;multimolecule.modules.model.ModelBase.trainable_parameters(weight_decay)&lt;/code&gt;)" href="../../../modules/model/#multimolecule.modules.model.ModelBase.trainable_parameters(weight_decay)">weight_decay</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;code&gt;pretrained_ratio&lt;/code&gt; (&lt;code&gt;multimolecule.modules.model.ModelBase.trainable_parameters(pretrained_ratio)&lt;/code&gt;)" href="../../../modules/model/#multimolecule.modules.model.ModelBase.trainable_parameters(pretrained_ratio)">pretrained_ratio</a></span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2108,7 +2107,7 @@ discriminates models with <code>isinstance(model, ModelBase)</code> rather than 
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>multimolecule/modules/model.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-71">71</a></span>
 <span class="normal"><a href="#__codelineno-0-72">72</a></span>
@@ -2175,6 +2174,7 @@ discriminates models with <code>isinstance(model, ModelBase)</code> rather than 
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;multimolecule.modules.model.ModelBase&lt;/span&gt;" href="../../../modules/model/#multimolecule.modules.model.ModelBase">ModelBase</a></code></p>
 
 
+
         <p>Compose a backbone, optional neck, and one head per task into a single trainable model.</p>
 <p>Use when the task graph involves multiple labels, extra non-sequence features, or a neck transform.
 For the single-task / single-input case, prefer <a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;multimolecule.modules.model.MonoModel&lt;/span&gt;" href="#multimolecule.modules.model.MonoModel"><code>MonoModel</code></a>.</p>
@@ -2185,7 +2185,8 @@ For the single-task / single-input case, prefer <a class="autorefs autorefs-inte
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/modules/model.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-120">120</a></span>
 <span class="normal"><a href="#__codelineno-0-121">121</a></span>
@@ -2423,7 +2424,8 @@ For the single-task / single-input case, prefer <a class="autorefs autorefs-inte
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2455,6 +2457,7 @@ For the single-task / single-input case, prefer <a class="autorefs autorefs-inte
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;doc-symbol doc-symbol-heading doc-symbol-class&quot;&gt;&lt;/code&gt;            &lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;multimolecule.modules.model.ModelBase&lt;/span&gt;" href="../../../modules/model/#multimolecule.modules.model.ModelBase">ModelBase</a></code></p>
+
 
 
         <p>Single-task wrapper around a multimolecule <code>AutoModelFor*</code> prediction model.</p>
@@ -2550,7 +2553,8 @@ a Hugging Face model identifier.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>multimolecule/modules/model.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-238">238</a></span>
 <span class="normal"><a href="#__codelineno-0-239">239</a></span>
@@ -2774,7 +2778,8 @@ a Hugging Face model identifier.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -2811,7 +2816,7 @@ a Hugging Face model identifier.</p>
     <span class="md-icon" title="最后更新">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="May 31, 2026 16:45:52 UTC">2026-05-31 16:45:52</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime" title="July 13, 2026 17:39:01 UTC">2026-07-13 17:39:01</span>
   </span>
 
     
