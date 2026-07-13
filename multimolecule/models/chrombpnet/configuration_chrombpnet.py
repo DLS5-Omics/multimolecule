@@ -127,6 +127,8 @@ class ChromBpNetConfig(PreTrainedConfig):
         pad_token_id: int = 4,
         **kwargs,
     ):
+        self.num_tasks = num_tasks
+        self.num_strands = num_strands
         super().__init__(pad_token_id=pad_token_id, **kwargs)
         self.bos_token_id = bos_token_id  # type: ignore[assignment]
         self.eos_token_id = eos_token_id  # type: ignore[assignment]
@@ -169,8 +171,6 @@ class ChromBpNetConfig(PreTrainedConfig):
         self.bias_num_dilated_layers = bias_num_dilated_layers
         self.dilated_kernel_size = dilated_kernel_size
         self.profile_kernel_size = profile_kernel_size
-        self.num_tasks = num_tasks
-        self.num_strands = num_strands
         self.hidden_act = hidden_act
         self.count_loss_weight = count_loss_weight
         if head is None:
