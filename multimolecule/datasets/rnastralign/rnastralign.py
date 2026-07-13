@@ -24,52 +24,55 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
+from contextlib import contextmanager
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Iterator
 
 import torch
 from tqdm import tqdm
 
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import save_dataset
+from multimolecule.io import read_ct
 
 torch.manual_seed(1016)
+
+
+@contextmanager
+def preprocess_ct(file: Path) -> Iterator[Path]:
+    lines = [line for line in file.read_text().splitlines() if line.strip()]
+    first_line = lines[0].strip().split()
+    num_bases = int(first_line[0])
+    changed = False
+
+    for i in range(1, num_bases + 1):
+        if i >= len(lines) or int(lines[i].split()[0]) != i:
+            next_index = i + 1 if i < num_bases else 0
+            lines.insert(i, f"{i} N {i - 1} {next_index} 0 {i}")
+            changed = True
+
+        parts = lines[i].split()
+        if int(parts[4]) == -1:
+            parts[4] = "0"
+            lines[i] = " ".join(parts)
+            changed = True
+
+    if not changed:
+        yield file
+        return
+
+    with TemporaryDirectory() as directory:
+        corrected = Path(directory) / file.name
+        corrected.write_text("\n".join(lines) + "\n")
+        yield corrected
 
 
 def convert_ct(file, family: str) -> Mapping:
     if not isinstance(file, Path):
         file = Path(file)
-    with open(file) as f:
-        lines = f.read().splitlines()
-
-    first_line = lines[0].strip().split()
-    num_bases = int(first_line[0])
-
-    sequence = []
-    dot_bracket = ["."] * num_bases
-
-    # `N` does not exist in the ct files, so we need to add it
-    if len(lines) < num_bases + 1:
-        for i in range(1, num_bases + 1):
-            if i >= len(lines):
-                lines.append(f"{i} N {i-1} {i+1} 0 i")  # noqa: E226
-            if int(lines[i].strip().split()[0]) != i:
-                lines.insert(i, f"{i} N {i-1} {i+1} 0 i")  # noqa: E226
-
-    for i in range(1, num_bases + 1):
-        line = lines[i].strip().split()
-        if int(line[0]) != i:
-            raise ValueError(f"Invalid nucleotide index at position {i}: {line[0]} does not match the expected index.")
-        sequence.append(line[1])
-        pair_index = int(line[4])
-
-        if pair_index > 0:
-            if int(lines[pair_index].strip().split()[4]) != i:
-                raise ValueError(
-                    f"Invalid pairing at position {i}: pair_index {pair_index} does not point back correctly."
-                )
-            if pair_index > i:
-                dot_bracket[i - 1] = "("
-                dot_bracket[pair_index - 1] = ")"
+    with preprocess_ct(file) as corrected:
+        record = read_ct(corrected)
 
     parts = list(file.parts)
     parts = parts[parts.index(family + "_database") :]
@@ -78,11 +81,18 @@ def convert_ct(file, family: str) -> Mapping:
 
     return {
         "id": "-".join(parts),
-        "sequence": "".join(sequence),
-        "secondary_structure": "".join(dot_bracket),
+        "sequence": record.sequence,
+        "secondary_structure": record.dot_bracket,
         "family": family,
         "subfamily": parts[1] if len(parts) == 3 else None,
     }
+
+
+def _file_sort_key(file: str | Path, root: Path) -> tuple[str, int]:
+    relative = Path(file).relative_to(root).as_posix()
+    letters = "".join(filter(str.isalpha, relative))
+    digits = "".join(filter(str.isdigit, relative))
+    return letters, int(digits or 0)
 
 
 def _convert_dataset(family_dir, max_seq_len: int | None = None):
@@ -93,7 +103,7 @@ def _convert_dataset(family_dir, max_seq_len: int | None = None):
         for subdir in family_dir.iterdir():
             if subdir.is_dir():
                 files.extend([os.path.join(subdir, f) for f in os.listdir(subdir) if f.endswith(".ct")])
-    files.sort(key=lambda f: ("".join(filter(str.isalpha, f)), int("".join(filter(str.isdigit, f)))))
+    files.sort(key=lambda file: _file_sort_key(file, family_dir))
     data = [convert_ct(file, family) for file in tqdm(files, total=len(files))]
     if max_seq_len is not None:
         data = [d for d in data if len(d["sequence"]) <= max_seq_len]

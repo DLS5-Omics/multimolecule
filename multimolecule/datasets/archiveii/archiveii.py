@@ -31,6 +31,7 @@ from tqdm import tqdm
 
 from multimolecule.datasets.conversion_utils import ConvertConfig as ConvertConfig_
 from multimolecule.datasets.conversion_utils import save_dataset
+from multimolecule.io import read_ct
 
 torch.manual_seed(1016)
 
@@ -38,28 +39,7 @@ torch.manual_seed(1016)
 def convert_ct(file) -> Mapping:
     if not isinstance(file, Path):
         file = Path(file)
-    with open(file) as f:
-        lines = f.readlines()
-
-    first_line = lines[0].strip().split()
-    num_bases = int(first_line[0])
-
-    sequence = []
-    dot_bracket = ["."] * num_bases
-
-    for i in range(1, num_bases + 1):
-        line = lines[i].strip().split()
-        sequence.append(line[1])
-        pair_index = int(line[4])
-
-        if pair_index > 0:
-            if int(lines[pair_index].strip().split()[4]) != i:
-                raise ValueError(
-                    f"Invalid pairing at position {i}: pair_index {pair_index} does not point back correctly."
-                )
-            if pair_index > i:
-                dot_bracket[i - 1] = "("
-                dot_bracket[pair_index - 1] = ")"
+    record = read_ct(file)
 
     family, name = file.stem.split("_", 1)
     if family in ("5s", "16s", "23s"):
@@ -74,8 +54,8 @@ def convert_ct(file) -> Mapping:
 
     return {
         "id": id,
-        "sequence": "".join(sequence),
-        "secondary_structure": "".join(dot_bracket),
+        "sequence": record.sequence,
+        "secondary_structure": record.dot_bracket,
         "family": family,
     }
 
