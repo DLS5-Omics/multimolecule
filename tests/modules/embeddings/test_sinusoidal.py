@@ -226,3 +226,15 @@ class TestSinusoidalEmbedding:
 
         assert embeddings_fp16.dtype == torch.float16
         assert torch.allclose(embeddings_fp16.float(), embeddings_fp32, atol=1e-4, rtol=1e-2)
+
+    def test_materializes_after_meta_init(self):
+        with torch.device("meta"):
+            sinusoidal_emb = SinusoidalEmbedding(16, 8)
+        sinusoidal_emb.to_empty(device="cpu")
+
+        input_ids = torch.ones(1, 4, dtype=torch.long)
+        embeddings = sinusoidal_emb(input_ids)
+        expected = SinusoidalEmbedding.get_embedding(16, 8)
+
+        assert torch.equal(sinusoidal_emb.weight, expected)
+        assert torch.equal(embeddings, expected[1:5])

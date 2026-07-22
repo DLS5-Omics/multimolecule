@@ -111,6 +111,7 @@ class EsmCModel(EsmCPreTrainedModel):
         self,
         input_ids: Tensor | NestedTensor | None = None,
         attention_mask: Tensor | None = None,
+        sequence_id: Tensor | None = None,
         inputs_embeds: Tensor | NestedTensor | None = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> tuple[Tensor, ...] | BaseModelOutputWithPoolingAndCrossAttentions:
@@ -127,7 +128,9 @@ class EsmCModel(EsmCPreTrainedModel):
 
         embedding_output = self.embeddings(input_ids=input_ids, inputs_embeds=inputs_embeds)
 
-        if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+        if sequence_id is not None:
+            attn_mask = (sequence_id.unsqueeze(-1) == sequence_id.unsqueeze(-2)).unsqueeze(1)
+        elif isinstance(embedding_output, NestedTensor) and attention_mask is None:
             attn_mask = None
         else:
             attn_mask = create_bidirectional_mask(

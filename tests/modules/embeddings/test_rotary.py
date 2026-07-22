@@ -189,6 +189,18 @@ class TestRotaryEmbedding:
         assert torch.allclose(q_rot_fp16.float(), q_rot_fp32, atol=3e-3, rtol=1e-2)
         assert torch.allclose(k_rot_fp16.float(), k_rot_fp32, atol=3e-3, rtol=1e-2)
 
+    def test_materializes_after_meta_init(self):
+        embedding_dim = 8
+        with torch.device("meta"):
+            rotary_emb = RotaryEmbedding(embedding_dim)
+        rotary_emb.to_empty(device="cpu")
+
+        query = torch.randn(1, 1, 5, embedding_dim)
+        rotary_emb(query, query)
+        expected = 1.0 / (10000 ** (torch.arange(0, embedding_dim, 2) / embedding_dim))
+
+        assert torch.equal(rotary_emb.inv_freq, expected)
+
     @pytest.mark.parametrize("dtype", [torch.bfloat16, torch.float16])
     def test_preserves_input_dtype(self, dtype: torch.dtype):
         """A default (fp32-table) module fed low-precision inputs must return that input dtype.
