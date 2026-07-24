@@ -72,8 +72,6 @@ class SinusoidalEmbedding(nn.Embedding):
         OrderedDict()
     """
 
-    _is_hf_initialized = True
-
     def __init__(
         self,
         num_embeddings: int,
@@ -87,15 +85,25 @@ class SinusoidalEmbedding(nn.Embedding):
         weight = self.get_embedding(num_embeddings, embedding_dim, padding_idx, device=device, dtype=dtype)
         super().__init__(num_embeddings, embedding_dim, padding_idx, _weight=weight.detach(), _freeze=True, **kwargs)
         del self.weight
+        weight._is_hf_initialized = True  # type: ignore[attr-defined]
         self.register_buffer("weight", weight, persistent=False)
         self.bias = bias
-        self._initialized = False
+        self._materialized = False
 
-    def update_weight(self, num_embeddings: int):
+    def _apply(self, fn, recurse: bool = True):
+        result = super()._apply(fn, recurse=recurse)
+        self._materialized = False
+        return result
+
+    def update_weight(self, num_embeddings: int, device: torch.device | None = None):
+        if device is None:
+            device = self.weight.device
         weight = self.get_embedding(
-            num_embeddings, self.embedding_dim, self.padding_idx, dtype=self.weight.dtype, device=self.weight.device
+            num_embeddings, self.embedding_dim, self.padding_idx, dtype=self.weight.dtype, device=device
         )
+        weight._is_hf_initialized = True  # type: ignore[attr-defined]
         self.register_buffer("weight", weight, persistent=False)
+        self._materialized = True
 
     @staticmethod
     def get_embedding(
@@ -140,9 +148,8 @@ class SinusoidalEmbedding(nn.Embedding):
         return torch.cumsum(mask, dim=1, dtype=torch.long) * mask + padding_idx
 
     def forward(self, input_ids: Tensor) -> Tensor:
-        if not self._initialized:
-            self.update_weight(self.num_embeddings)
-            self._initialized = True
+        if not self._materialized or self.weight.device != input_ids.device:
+            self.update_weight(self.num_embeddings, input_ids.device)
         _, seq_length = input_ids.shape[:2]
         # expand embeddings if needed
         max_position = seq_length + self.bias + 1

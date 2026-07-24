@@ -60,7 +60,6 @@ class RotaryEmbedding(nn.Module):
         OrderedDict()
     """
 
-    _is_hf_initialized = True
     _seq_len_cached: int | None = None
     _cos_cached: Tensor | None = None
     _sin_cached: Tensor | None = None
@@ -91,9 +90,20 @@ class RotaryEmbedding(nn.Module):
         self.base = base
         self.scale = scale
         self.interleaved = interleaved
-        inv_freq_exponent = torch.arange(0, self.embedding_dim, 2, device=device, dtype=dtype) / self.embedding_dim
-        self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
-        self._initialized = False
+        self.register_buffer("inv_freq", self._compute_inv_freq(device, dtype), persistent=False)
+        self._materialized = False
+
+    def _compute_inv_freq(self, device: torch.device | None, dtype: torch.dtype) -> Tensor:
+        exponent = torch.arange(0, self.embedding_dim, 2, device=device, dtype=dtype) / self.embedding_dim
+        return 1.0 / (self.base**exponent)
+
+    def _apply(self, fn, recurse: bool = True):
+        result = super()._apply(fn, recurse=recurse)
+        self._seq_len_cached = None
+        self._cos_cached = None
+        self._sin_cached = None
+        self._materialized = False
+        return result
 
     def forward(self, q: Tensor, k: Tensor, offset: int = 0, seq_length: int | None = None) -> Tuple[Tensor, Tensor]:
         """
@@ -110,12 +120,9 @@ class RotaryEmbedding(nn.Module):
         Returns:
             Tuple of (rotated_query, rotated_key) tensors with the same shapes as inputs.
         """
-        if not self._initialized:
-            inv_freq_exponent = (
-                torch.arange(0, self.embedding_dim, 2, device=q.device, dtype=self.inv_freq.dtype) / self.embedding_dim
-            )
-            self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
-            self._initialized = True
+        if not self._materialized or self.inv_freq.device != q.device:
+            self.register_buffer("inv_freq", self._compute_inv_freq(q.device, self.inv_freq.dtype), persistent=False)
+            self._materialized = True
         if offset > 0 and seq_length is None:
             raise ValueError("seq_length must be provided when offset > 0")
 
@@ -149,7 +156,10 @@ class RotaryEmbedding(nn.Module):
             seq_length = x.shape[seq_len_dim]
 
         needs_update = (
-            seq_length != self._seq_len_cached or self._cos_cached is None or self._cos_cached.device != x.device
+            seq_length != self._seq_len_cached
+            or self._cos_cached is None
+            or self._cos_cached.device != x.device
+            or self._cos_cached.dtype != x.dtype
         )
         if needs_update:
             self._seq_len_cached = seq_length
@@ -160,8 +170,8 @@ class RotaryEmbedding(nn.Module):
                 emb = freqs.repeat_interleave(2, dim=-1).to(x.device)
             else:
                 emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
-            self._cos_cached = emb.cos()[None, None, :, :]
-            self._sin_cached = emb.sin()[None, None, :, :]
+            self._cos_cached = emb.cos().to(dtype=x.dtype)[None, None, :, :]
+            self._sin_cached = emb.sin().to(dtype=x.dtype)[None, None, :, :]
         # At this point, _cos_cached and _sin_cached are guaranteed to be Tensor
         assert self._cos_cached is not None and self._sin_cached is not None
         return self._cos_cached, self._sin_cached
@@ -210,13 +220,11 @@ class RotaryEmbedding(nn.Module):
         Returns:
             Tuple of ``(cos, sin)`` each shaped ``(batch, 1, seq, embedding_dim)``.
         """
-        if not self._initialized:
-            inv_freq_exponent = (
-                torch.arange(0, self.embedding_dim, 2, device=position_ids.device, dtype=self.inv_freq.dtype)
-                / self.embedding_dim
+        if not self._materialized or self.inv_freq.device != position_ids.device:
+            self.register_buffer(
+                "inv_freq", self._compute_inv_freq(position_ids.device, self.inv_freq.dtype), persistent=False
             )
-            self.register_buffer("inv_freq", 1.0 / (self.base**inv_freq_exponent), persistent=False)
-            self._initialized = True
+            self._materialized = True
         freqs = position_ids.unsqueeze(-1).to(self.inv_freq.dtype) * self.inv_freq / self.scale
         emb = torch.repeat_interleave(freqs, 2, dim=-1) if self.interleaved else torch.cat((freqs, freqs), dim=-1)
         cos = emb.cos().unsqueeze(1)

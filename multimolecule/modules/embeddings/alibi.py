@@ -54,13 +54,25 @@ class ALiBi(nn.Module):
         torch.Size([1, 8, 16, 16])
     """
 
-    _is_hf_initialized = True
-
     def __init__(self, num_heads: int, device: torch.device | None = None, dtype: torch.dtype = torch.float32):
         super().__init__()
         self.num_heads = num_heads
         slopes = torch.tensor(self.get_slopes(num_heads), device=device, dtype=dtype)
-        self.register_buffer("slopes", slopes, persistent=False)
+        self.register_buffer("_slopes", slopes, persistent=False)
+        self._materialized = False
+
+    def _apply(self, fn, recurse: bool = True):
+        result = super()._apply(fn, recurse=recurse)
+        self._materialized = False
+        return result
+
+    @property
+    def slopes(self) -> Tensor:
+        if not self._materialized:
+            slopes = torch.tensor(self.get_slopes(self.num_heads), device=self._slopes.device, dtype=self._slopes.dtype)
+            self.register_buffer("_slopes", slopes, persistent=False)
+            self._materialized = True
+        return self._slopes
 
     @staticmethod
     def get_slopes(num_heads: int) -> list[float]:
