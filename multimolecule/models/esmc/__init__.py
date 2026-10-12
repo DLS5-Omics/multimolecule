@@ -61,7 +61,7 @@ __all__ = [
     "EsmCForPreTraining",
 ]
 
-AutoConfig.register("esmc", EsmCConfig)
+AutoConfig.register("esmc", EsmCConfig, exist_ok=True)
 AutoBackbone.register(EsmCConfig, EsmCModel)
 AutoModel.register(EsmCConfig, EsmCModel)
 AutoModelForContactPrediction.register(EsmCConfig, EsmCForContactPrediction)

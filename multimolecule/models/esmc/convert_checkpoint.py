@@ -140,18 +140,19 @@ def _convert_checkpoint(
 ) -> dict[str, torch.Tensor]:
     state_dict: dict[str, torch.Tensor] = {}
     for key, value in original_state_dict.items():
+        key = key.removeprefix("esmc.")
         if key.endswith("._extra_state"):
             continue
-        if key == "esmc.embed.weight":
+        if key in ("embed.weight", "embed_tokens.weight"):
             state_dict["model.embeddings.word_embeddings.weight"] = value
             continue
-        if key == "esmc.transformer.norm.weight":
+        if key in ("transformer.norm.weight", "norm.weight"):
             state_dict["model.encoder.layer_norm.weight"] = value
             continue
-        if key.startswith("esmc.sequence_head.") or key.startswith("lm_head."):
+        if key.startswith(("sequence_head.", "lm_head.")):
             _convert_sequence_head_key(state_dict, key, value)
             continue
-        if key.startswith("esmc.transformer.blocks."):
+        if key.startswith(("transformer.blocks.", "layers.")):
             _convert_block_key(config, state_dict, key, value)
             continue
         raise KeyError(f"Unhandled checkpoint key: {key}")
@@ -177,21 +178,22 @@ def _convert_checkpoint(
 
 
 def _convert_sequence_head_key(state_dict: dict[str, torch.Tensor], key: str, value: torch.Tensor) -> None:
-    key = key.removeprefix("esmc.sequence_head.").removeprefix("lm_head.")
-    if key == "0.weight":
-        state_dict["lm_head.transform.dense.weight"] = value
-    elif key == "0.bias":
-        state_dict["lm_head.transform.dense.bias"] = value
-    elif key == "2.weight":
-        state_dict["lm_head.transform.layer_norm.weight"] = value
-    elif key == "2.bias":
-        state_dict["lm_head.transform.layer_norm.bias"] = value
-    elif key == "3.weight":
-        state_dict["lm_head.decoder.weight"] = value
-    elif key == "3.bias":
-        state_dict["lm_head.decoder.bias"] = value
-    else:
-        raise KeyError(f"Unhandled sequence-head key: {key}")
+    key = key.removeprefix("sequence_head.").removeprefix("lm_head.")
+    names = {
+        "0.weight": "transform.dense.weight",
+        "0.bias": "transform.dense.bias",
+        "dense.weight": "transform.dense.weight",
+        "dense.bias": "transform.dense.bias",
+        "2.weight": "transform.layer_norm.weight",
+        "2.bias": "transform.layer_norm.bias",
+        "layer_norm.weight": "transform.layer_norm.weight",
+        "layer_norm.bias": "transform.layer_norm.bias",
+        "3.weight": "decoder.weight",
+        "3.bias": "decoder.bias",
+        "decoder.weight": "decoder.weight",
+        "decoder.bias": "decoder.bias",
+    }
+    state_dict[f"lm_head.{names[key]}"] = value
 
 
 def _convert_block_key(
@@ -200,45 +202,57 @@ def _convert_block_key(
     key: str,
     value: torch.Tensor,
 ) -> None:
-    parts = key.split(".")
-    layer_idx, sub = parts[3], ".".join(parts[4:])
-    base = f"model.encoder.layer.{layer_idx}"
-    if sub == "attn.layernorm_qkv.layer_norm_weight":
-        state_dict[f"{base}.attention.layer_norm.weight"] = value
-    elif sub == "attn.layernorm_qkv.layer_norm_bias":
-        state_dict[f"{base}.attention.layer_norm.bias"] = value
-    elif sub == "attn.layernorm_qkv.weight":
+    prefix = "transformer.blocks." if key.startswith("transformer.blocks.") else "layers."
+    index, sub = key.removeprefix(prefix).split(".", 1)
+    base = f"model.encoder.layer.{index}"
+    if sub in ("attn.layernorm_qkv.weight", "attn.layernorm_qkv.1.weight"):
         if value.shape[0] != 3 * config.hidden_size:
             raise ValueError(
                 f"Unexpected QKV weight shape {tuple(value.shape)}; expected first dim {3 * config.hidden_size}."
             )
-        query, key_, value_ = value.chunk(3, dim=0)
-        state_dict[f"{base}.attention.self.query.weight"] = query.contiguous()
-        state_dict[f"{base}.attention.self.key.weight"] = key_.contiguous()
-        state_dict[f"{base}.attention.self.value.weight"] = value_.contiguous()
-    elif sub == "attn.q_ln.weight":
-        state_dict[f"{base}.attention.self.query_layer_norm.weight"] = value
-    elif sub == "attn.k_ln.weight":
-        state_dict[f"{base}.attention.self.key_layer_norm.weight"] = value
-    elif sub == "attn.out_proj.weight":
-        state_dict[f"{base}.attention.output.dense.weight"] = value
-    elif sub == "ffn.layer_norm_weight":
-        state_dict[f"{base}.layer_norm.weight"] = value
-    elif sub == "ffn.layer_norm_bias":
-        state_dict[f"{base}.layer_norm.bias"] = value
-    elif sub == "ffn.fc1_weight":
+        query, key_, value_ = value.split(config.hidden_size, dim=0)
+        state_dict[f"{base}.attention.self.query.weight"] = query.clone()
+        state_dict[f"{base}.attention.self.key.weight"] = key_.clone()
+        state_dict[f"{base}.attention.self.value.weight"] = value_.clone()
+    elif sub in ("ffn.fc1_weight", "ffn.1.weight"):
         if value.shape[0] != 2 * config.intermediate_size:
             raise ValueError(
                 f"Unexpected fc1_weight shape {tuple(value.shape)}; expected first dim "
                 f"{2 * config.intermediate_size}."
             )
-        gate, up = value.chunk(2, dim=0)
-        state_dict[f"{base}.intermediate.gate_proj.weight"] = gate.contiguous()
-        state_dict[f"{base}.intermediate.up_proj.weight"] = up.contiguous()
-    elif sub == "ffn.fc2_weight":
-        state_dict[f"{base}.output.dense.weight"] = value
+        gate, up = value.split(config.intermediate_size, dim=0)
+        state_dict[f"{base}.intermediate.gate_proj.weight"] = gate.clone()
+        state_dict[f"{base}.intermediate.up_proj.weight"] = up.clone()
     else:
-        raise KeyError(f"Unhandled encoder-block key: {key}")
+        names = {
+            "attn.layernorm_qkv.layer_norm_weight": "attention.layer_norm.weight",
+            "attn.layernorm_qkv.layer_norm_bias": "attention.layer_norm.bias",
+            "attn.layernorm_qkv.0.weight": "attention.layer_norm.weight",
+            "attn.layernorm_qkv.0.bias": "attention.layer_norm.bias",
+            "input_layernorm.weight": "attention.layer_norm.weight",
+            "input_layernorm.bias": "attention.layer_norm.bias",
+            "attn.q_ln.weight": "attention.self.query_layer_norm.weight",
+            "attn.k_ln.weight": "attention.self.key_layer_norm.weight",
+            "self_attn.q_norm.weight": "attention.self.query_layer_norm.weight",
+            "self_attn.k_norm.weight": "attention.self.key_layer_norm.weight",
+            "self_attn.q_proj.weight": "attention.self.query.weight",
+            "self_attn.k_proj.weight": "attention.self.key.weight",
+            "self_attn.v_proj.weight": "attention.self.value.weight",
+            "attn.out_proj.weight": "attention.output.dense.weight",
+            "self_attn.o_proj.weight": "attention.output.dense.weight",
+            "ffn.layer_norm_weight": "layer_norm.weight",
+            "ffn.layer_norm_bias": "layer_norm.bias",
+            "ffn.0.weight": "layer_norm.weight",
+            "ffn.0.bias": "layer_norm.bias",
+            "post_attention_layernorm.weight": "layer_norm.weight",
+            "post_attention_layernorm.bias": "layer_norm.bias",
+            "mlp.gate_proj.weight": "intermediate.gate_proj.weight",
+            "mlp.up_proj.weight": "intermediate.up_proj.weight",
+            "ffn.fc2_weight": "output.dense.weight",
+            "ffn.3.weight": "output.dense.weight",
+            "mlp.down_proj.weight": "output.dense.weight",
+        }
+        state_dict[f"{base}.{names[sub]}"] = value
 
 
 class ConvertConfig(ConvertConfig_):
@@ -247,6 +261,8 @@ class ConvertConfig(ConvertConfig_):
     default_variant: str | None = "esmc-300m"
 
     def post(self):
+        if self.output_path != Config.model_type:
+            return super().post()
         checkpoint_path = Path(self.checkpoint_path).name.lower()
         if "6b" in checkpoint_path:
             suffix = "6b"

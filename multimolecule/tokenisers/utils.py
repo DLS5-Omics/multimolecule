@@ -54,9 +54,17 @@ def convert_word_embeddings(
         if shape[0] != len(old_vocab):
             raise ValueError("The first dimension of the embeddings must match the size of the vocabulary.")
         if embeddings.ndim == 1:  # Bias
-            new_embeddings.append(torch.zeros(len(new_vocab)))
+            new_embeddings.append(embeddings.new_zeros(len(new_vocab)))
         else:
-            new_embeddings.append(torch.normal(size=(len(new_vocab), *shape[1:]), mean=mean, std=std))
+            new_embeddings.append(
+                torch.normal(
+                    size=(len(new_vocab), *shape[1:]),
+                    mean=mean,
+                    std=std,
+                    dtype=embeddings.dtype,
+                    device=embeddings.device,
+                )
+            )
 
     # First Pass, copy the embeddings for the tokens that are in both vocabularies
     for old_index, old_token in enumerate(old_vocab):
