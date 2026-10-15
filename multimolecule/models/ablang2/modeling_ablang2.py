@@ -642,7 +642,7 @@ class AbLang2LMHead(nn.Module):
         hidden_states = self.layer_norm(hidden_states)
         logits = F.linear(hidden_states, self.decoder.weight, self.bias)
         if labels is not None:
-            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), labels.view(-1))
+            loss = F.cross_entropy(logits.view(-1, logits.size(-1)).movedim(-1, 1), labels.view(-1))
             return HeadOutput(logits, loss)
         return HeadOutput(logits)
 

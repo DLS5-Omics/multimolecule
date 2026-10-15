@@ -47,4 +47,4 @@ class CrossEntropyLoss(nn.CrossEntropyLoss):
             input = input[target.mask.bool()]
             target = target.concat
         input, target = input.view(-1, input.size(-1)), target.view(-1)
-        return super().forward(input, target.long())
+        return super().forward(input.movedim(-1, 1), target.long())

@@ -104,7 +104,7 @@ class MaskedLMHead(BasePredictionHead):
         if labels is not None:
             if isinstance(labels, NestedTensor) and not isinstance(output, NestedTensor):
                 output = labels.nested_like(output, strict=False)
-            return HeadOutput(output, F.cross_entropy(output.view(-1, self.num_labels), labels.view(-1)))
+            return HeadOutput(output, F.cross_entropy(output.view(-1, self.num_labels).movedim(-1, 1), labels.view(-1)))
         return HeadOutput(output)
 
     def _tie_weights(self):

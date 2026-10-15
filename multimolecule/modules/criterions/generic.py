@@ -68,7 +68,7 @@ class Criterion(nn.Module):
                 labels = labels.unsqueeze(-1)
             return F.mse_loss(logits, labels.to(logits.dtype))
         if self.problem_type == "multiclass":
-            return F.cross_entropy(logits.view(-1, self.num_labels), labels.view(-1))
+            return F.cross_entropy(logits.view(-1, self.num_labels).movedim(-1, 1), labels.view(-1))
         if self.problem_type == "binary":
             if logits.ndim == labels.ndim + 1:
                 logits = logits.squeeze(-1)

@@ -83,13 +83,18 @@ class TestCrossEntropyLoss:
         assert loss_3d is not None
         torch.testing.assert_close(loss_2d, loss_3d, rtol=1e-4, atol=1e-4)
 
-    def test_nested_tensor(self, criterion):
-        """Test with NestedTensor input"""
-        logits = NestedTensor([torch.randn(5, 5), torch.randn(3, 5)])
-        labels = NestedTensor([torch.randint(0, 5, (5,)), torch.randint(0, 5, (3,))])
+    @pytest.mark.parametrize("criterion_type", [Criterion, CrossEntropyLoss])
+    def test_nested_tensor(self, config, criterion_type):
+        logits = [torch.randn(n, 5, requires_grad=True) for n in (5, 3)]
+        labels = [torch.randint(0, 5, (n,)) for n in (5, 3)]
 
-        loss = criterion(logits, labels)
-        assert loss is not None
+        loss = criterion_type(config)(NestedTensor(logits), NestedTensor(labels))
+        reference = torch.nn.functional.cross_entropy(torch.cat(logits), torch.cat(labels))
+        torch.testing.assert_close(loss, reference)
+        gradients = torch.autograd.grad(loss, logits, retain_graph=True)
+        expected = torch.autograd.grad(reference, logits)
+        for gradient, expected_gradient in zip(gradients, expected):
+            torch.testing.assert_close(gradient, expected_gradient)
 
     def test_custom_loss_params(self):
         """Test with custom loss parameters"""
