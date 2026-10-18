@@ -19,6 +19,7 @@
 # For additional terms and clarifications, please refer to our License FAQ at:
 # <https://multimolecule.danling.org/about/license-faq>.
 
+from .assignment import linear_sum_assignment
 from .matching import maximum_weight_matching
 from .ops import scatter, scatter_mean
 from .spatial import knn_graph, radius, radius_graph
@@ -29,6 +30,7 @@ __all__ = [
     "EdgeTable",
     "UndirectedGraph",
     "knn_graph",
+    "linear_sum_assignment",
     "maximum_weight_matching",
     "radius",
     "radius_graph",

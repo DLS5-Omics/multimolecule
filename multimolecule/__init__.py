@@ -22,7 +22,7 @@
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from .data import Dataset
-from .graph import maximum_weight_matching
+from .graph import linear_sum_assignment, maximum_weight_matching
 from .models import (
     A2zChromatinConfig,
     A2zChromatinForSequencePrediction,
@@ -467,6 +467,7 @@ __all__ = [
     "dot_bracket_to_pairs",
     "pairs_to_contact_map",
     "contact_map_to_pairs",
+    "linear_sum_assignment",
     "maximum_weight_matching",
     "pairs_to_dot_bracket",
     "crossing_mask",
