@@ -168,6 +168,9 @@ def test_contact_map_to_pairs_binary_errors(backend: str, data, match: str) -> N
 def test_contact_map_to_pairs_binary_valid(backend: str) -> None:
     contact_map = make_contact_map([[0, 1], [1, 0]], backend, dtype=bool)
     pairs = notations.contact_map_to_pairs(contact_map)
+    assert isinstance(pairs, torch.Tensor)
+    assert pairs.dtype == torch.long
+    assert pairs.device.type == "cpu"
     assert as_tuple_list(pairs) == [(0, 1)]
 
 
@@ -198,12 +201,17 @@ def test_contact_map_to_pairs_binary_empty(array_backend: str) -> None:
     else:
         contact_map = torch.zeros((0, 0), dtype=torch.bool)
     pairs = notations.contact_map_to_pairs(contact_map)
+    assert isinstance(pairs, torch.Tensor)
+    assert pairs.dtype == torch.long
     assert pairs.shape == (0, 2)
 
 
 def test_contact_map_to_pairs_float_basic(backend: str) -> None:
     contact_map = make_contact_map([[0.0, 0.9], [0.9, 0.0]], backend, dtype=torch.float)
     pairs = notations.contact_map_to_pairs(contact_map)
+    assert isinstance(pairs, torch.Tensor)
+    assert pairs.dtype == torch.long
+    assert pairs.device.type == "cpu"
     assert as_tuple_list(pairs) == [(0, 1)]
 
 
@@ -234,6 +242,8 @@ def test_contact_map_to_pairs_float_empty(array_backend: str) -> None:
     else:
         contact_map = torch.empty((0, 0), dtype=torch.float)
     pairs = notations.contact_map_to_pairs(contact_map)
+    assert isinstance(pairs, torch.Tensor)
+    assert pairs.dtype == torch.long
     assert pairs.shape == (0, 2)
 
 
@@ -288,6 +298,47 @@ def test_contact_map_to_pairs_float_blossom_matching(backend: str) -> None:
         blossom = notations.contact_map_to_pairs(contact_map, unsafe=True, matching="blossom")
     assert as_tuple_list(greedy) == [(0, 1)]
     assert as_tuple_list(blossom) == [(0, 2), (1, 3)]
+
+
+@pytest.mark.parametrize(
+    "device",
+    ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA"))],
+)
+@pytest.mark.parametrize("dtype", [torch.bool, torch.float32])
+@pytest.mark.parametrize("matching", ["greedy", "blossom"])
+def test_contact_map_matching_keeps_tensor_pairs_on_device(monkeypatch, device, dtype, matching) -> None:
+    contact_map = torch.tensor(
+        [[0.0, 0.9, 0.8, 0.0], [0.9, 0.0, 0.0, 0.8], [0.8, 0.0, 0.0, 0.0], [0.0, 0.8, 0.0, 0.0]],
+        dtype=dtype,
+        device=device,
+    )
+    before = contact_map.clone()
+
+    def reject_export(*args, **kwargs):
+        raise AssertionError("Contact-map decoding must not export tensor indices or scores")
+
+    with monkeypatch.context() as patch:
+        # Blossom packs component sizes into DanLing's CPU ragged metadata.
+        methods = ("cpu", "numpy") if matching == "blossom" else ("tolist", "cpu", "numpy")
+        for method in methods:
+            patch.setattr(torch.Tensor, method, reject_export)
+        with pytest.warns(UserWarning, match="[Mm]ultiple"):
+            pairs = notations.contact_map_to_pairs(contact_map, unsafe=True, matching=matching)
+
+    assert isinstance(pairs, torch.Tensor)
+    assert pairs.dtype == torch.long
+    assert pairs.device == contact_map.device
+    assert pairs.tolist() == ([[0, 2], [1, 3]] if matching == "blossom" else [[0, 1]])
+    assert torch.equal(contact_map, before)
+
+
+def test_numpy_contact_map_blossom_matching_builds_dot_bracket() -> None:
+    contact_map = np.array([[0.0, 0.9, 0.8, 0.0], [0.9, 0.0, 0.0, 0.8], [0.8, 0.0, 0.0, 0.0], [0.0, 0.8, 0.0, 0.0]])
+
+    with pytest.warns(UserWarning, match="Multiple pairings"):
+        dot_bracket = notations.contact_map_to_dot_bracket(contact_map, unsafe=True, matching="blossom")
+
+    assert dot_bracket == "([)]"
 
 
 def test_contact_map_to_pairs_float_upper_only_unsafe(backend: str) -> None:

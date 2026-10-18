@@ -226,36 +226,18 @@ def _numpy_pairs_to_contact_map(pairs: np.ndarray, length: int | None, unsafe: b
     return contact_map
 
 
-@overload
-def contact_map_to_pairs(
-    contact_map: Tensor, *, unsafe: bool = False, threshold: float | None = None, matching: Matching = "greedy"
-) -> Tensor: ...
-
-
-@overload
-def contact_map_to_pairs(  # type: ignore[overload-cannot-match]
-    contact_map: np.ndarray, *, unsafe: bool = False, threshold: float | None = None, matching: Matching = "greedy"
-) -> np.ndarray: ...
-
-
-@overload
-def contact_map_to_pairs(  # type: ignore[overload-cannot-match]
-    contact_map: Sequence, *, unsafe: bool = False, threshold: float | None = None, matching: Matching = "greedy"
-) -> PairsList: ...
-
-
 def contact_map_to_pairs(
     contact_map: Tensor | np.ndarray | Sequence,
     *,
     unsafe: bool = False,
     threshold: float | None = None,
     matching: Matching = "greedy",
-) -> Tensor | np.ndarray | PairsList:
+) -> Tensor:
     """
-    Convert a contact map to a list of base pairs.
+    Decode a contact map into a ``(K, 2)`` torch.LongTensor of base pairs.
 
-    If ``contact_map`` is a torch tensor, returns a ``(K, 2)`` torch.LongTensor.
-    Otherwise, returns a numpy ``(K, 2)`` int array (list inputs return a list of tuples).
+    Tensor inputs retain their device. NumPy arrays and sequences are converted
+    to tensors before decoding and return CPU tensors.
 
     For integer/bool contact maps, any non-zero entry is treated as a contact and the map is
     expected to represent a binary (symmetric) adjacency matrix.
@@ -286,8 +268,8 @@ def contact_map_to_pairs(
         [[0, 1]]
 
         List input
-        >>> contact_map_to_pairs([[0, 1], [1, 0]])
-        [(0, 1)]
+        >>> contact_map_to_pairs([[0, 1], [1, 0]]).tolist()
+        [[0, 1]]
     """
     if threshold is None:
         threshold = 0.5
@@ -296,30 +278,15 @@ def contact_map_to_pairs(
     threshold = float(threshold)
     matching = _validate_matching(matching)
 
-    if isinstance(contact_map, Tensor):
-        if contact_map.ndim != 2 or contact_map.shape[0] != contact_map.shape[1]:
-            raise ValueError("Contact map must be a square 2D matrix.")
-        if contact_map.is_floating_point():
-            return _torch_contact_map_to_pairs_float(contact_map, unsafe=unsafe, threshold=threshold, matching=matching)
-        return _torch_contact_map_to_pairs_binary(contact_map, unsafe=unsafe, matching=matching)
-    if isinstance(contact_map, np.ndarray):
-        if contact_map.ndim != 2 or contact_map.shape[0] != contact_map.shape[1]:
-            raise ValueError("Contact map must be a square 2D matrix.")
-        if np.issubdtype(contact_map.dtype, np.floating):
-            return _numpy_contact_map_to_pairs_float(contact_map, unsafe=unsafe, threshold=threshold, matching=matching)
-        return _numpy_contact_map_to_pairs_binary(contact_map, unsafe=unsafe, matching=matching)
-    if isinstance(contact_map, Sequence):
-        contact_map = np.asarray(contact_map)
-        if contact_map.ndim != 2 or contact_map.shape[0] != contact_map.shape[1]:
-            raise ValueError("Contact map must be a square 2D matrix.")
-        if np.issubdtype(contact_map.dtype, np.floating):
-            pairs = _numpy_contact_map_to_pairs_float(
-                contact_map, unsafe=unsafe, threshold=threshold, matching=matching
-            )
-        else:
-            pairs = _numpy_contact_map_to_pairs_binary(contact_map, unsafe=unsafe, matching=matching)
-        return [tuple(pair) for pair in pairs.tolist()]
-    raise TypeError("contact_map must be a torch.Tensor, numpy.ndarray, or sequence")
+    if not isinstance(contact_map, (Tensor, np.ndarray, Sequence)):
+        raise TypeError("contact_map must be a torch.Tensor, numpy.ndarray, or sequence")
+    if not isinstance(contact_map, Tensor):
+        contact_map = torch.as_tensor(contact_map, device="cpu")
+    if contact_map.ndim != 2 or contact_map.shape[0] != contact_map.shape[1]:
+        raise ValueError("Contact map must be a square 2D matrix.")
+    if contact_map.is_floating_point():
+        return _torch_contact_map_to_pairs_float(contact_map, unsafe=unsafe, threshold=threshold, matching=matching)
+    return _torch_contact_map_to_pairs_binary(contact_map, unsafe=unsafe, matching=matching)
 
 
 def _validate_matching(matching: str) -> Matching:
@@ -365,12 +332,12 @@ def _torch_contact_map_to_pairs_binary(contact_map: Tensor, unsafe: bool, matchi
     if multiple_pairings.numel() > 0:
         if not unsafe:
             raise ValueError(
-                f"Positions {multiple_pairings.tolist()} are paired to multiple other positions.\n"
+                f"{multiple_pairings.numel()} positions are paired to multiple other positions.\n"
                 "Each base can only pair with at most one other base.\n"
                 "Pass `unsafe=True` if this is expected."
             )
         warn(
-            f"Positions {multiple_pairings.tolist()} are paired to multiple other positions.\n"
+            f"{multiple_pairings.numel()} positions are paired to multiple other positions.\n"
             f"Resolving conflicts with {matching} matching."
         )
 
@@ -388,62 +355,6 @@ def _torch_contact_map_to_pairs_binary(contact_map: Tensor, unsafe: bool, matchi
         scores = torch.ones(ii.shape[0], dtype=torch.float32, device=ii.device)
         return maximum_weight_matching(edges, scores, num_nodes=n)
     return _torch_greedy_match(ii, jj, n)
-
-
-def _numpy_contact_map_to_pairs_binary(contact_map: np.ndarray, unsafe: bool, matching: Matching) -> np.ndarray:
-    contact_map_bool = contact_map != 0
-    n = contact_map_bool.shape[0]
-    if not np.array_equal(contact_map_bool, contact_map_bool.T):
-        if not unsafe:
-            raise ValueError("Contact map is not symmetric.\nPass `unsafe=True` if this is expected.")
-        lower_all_zero = not np.any(np.tril(contact_map_bool, k=-1))
-        upper_all_zero = not np.any(np.triu(contact_map_bool, k=1))
-        if lower_all_zero != upper_all_zero:
-            warn("Contact map is not symmetric.\nUsing the populated triangle to symmetrize.")
-            tri = np.triu(contact_map_bool, k=1) if lower_all_zero else np.tril(contact_map_bool, k=-1)
-            contact_map_bool = tri | tri.T
-        else:
-            warn("Contact map is not symmetric.\nSymmetrizing with `contact_map | contact_map.T`.")
-            contact_map_bool = contact_map_bool | contact_map_bool.T
-
-    if np.any(np.diag(contact_map_bool)):
-        if not unsafe:
-            raise ValueError(
-                "Contact map diagonal must be zero (bases cannot pair with themselves).\n"
-                "Pass `unsafe=True` if this is expected."
-            )
-        warn("Contact map diagonal is not zero (bases cannot pair with themselves).\nSetting diagonal to zero.")
-        np.fill_diagonal(contact_map_bool, False)
-
-    row_sums = np.count_nonzero(contact_map_bool, axis=1)
-    multiple_pairings = np.where(row_sums > 1)[0]
-    if len(multiple_pairings) > 0:
-        if not unsafe:
-            raise ValueError(
-                f"Positions {multiple_pairings.tolist()} are paired to multiple other positions.\n"
-                "Each base can only pair with at most one other base.\n"
-                "Pass `unsafe=True` if this is expected."
-            )
-        warn(
-            f"Positions {multiple_pairings.tolist()} are paired to multiple other positions.\n"
-            f"Resolving conflicts with {matching} matching."
-        )
-
-    if not len(multiple_pairings):
-        ii, jj = np.where(np.triu(contact_map_bool, k=1))
-        return np.column_stack((ii, jj))
-
-    ii, jj = np.where(np.triu(contact_map_bool, k=1))
-    if ii.size == 0:
-        return np.empty((0, 2), dtype=int)
-    ord_idx = np.lexsort((jj, ii))
-    ii = ii[ord_idx]
-    jj = jj[ord_idx]
-    if matching == "blossom":
-        edges = np.column_stack((ii, jj))
-        scores = np.ones(ii.shape[0], dtype=float)
-        return maximum_weight_matching(edges, scores, num_nodes=n)
-    return _numpy_greedy_match(ii, jj, n)
 
 
 def _torch_contact_map_to_pairs_float(
@@ -508,10 +419,10 @@ def _torch_contact_map_to_pairs_float(
     if multiple_pairings.numel() > 0:
         if not unsafe:
             raise ValueError(
-                f"Multiple pairings detected at positions {multiple_pairings.tolist()}. "
+                f"Multiple pairings detected at {multiple_pairings.numel()} positions. "
                 "Each base can pair with at most one other base. Pass unsafe=True to resolve using scores."
             )
-        warn(f"Multiple pairings at positions {multiple_pairings.tolist()}, resolving with {matching} matching.")
+        warn(f"Multiple pairings at {multiple_pairings.numel()} positions, resolving with {matching} matching.")
 
     ii, jj = torch.where(torch.triu(contact_map_bool, diagonal=1))
     if multiple_pairings.numel() == 0:
@@ -528,90 +439,6 @@ def _torch_contact_map_to_pairs_float(
     ii = ii[order].to(torch.long)
     jj = jj[order].to(torch.long)
     return _torch_greedy_match(ii, jj, n)
-
-
-def _numpy_contact_map_to_pairs_float(
-    contact_map: np.ndarray, unsafe: bool, threshold: float, matching: Matching
-) -> np.ndarray:
-    if not (0 <= threshold <= 1):
-        raise ValueError(f"threshold must be between 0 and 1, but got {threshold}.")
-
-    contact_map_values: np.ndarray = contact_map.astype(float, copy=False)
-    n = contact_map_values.shape[0]
-
-    if np.isnan(contact_map_values).any():
-        raise ValueError("Contact map contains NaN values; unable to decode base pairs.")
-
-    lower_all_zero = not np.any(np.tril(contact_map_values, k=-1))
-    upper_all_zero = not np.any(np.triu(contact_map_values, k=1))
-    if lower_all_zero != upper_all_zero:
-        if not unsafe:
-            raise ValueError("Contact map is not symmetric.\nPass `unsafe=True` if this is expected.")
-        warn("Contact map is not symmetric.\nUsing the populated triangle to symmetrize.")
-        contact_map_values = contact_map_values + contact_map_values.T
-
-    upper = np.triu(contact_map_values, k=1)
-    lower = np.tril(contact_map_values, k=-1)
-    out_of_range = np.any((upper < 0) | (upper > 1)) or np.any((lower < 0) | (lower > 1))
-    if out_of_range:
-        if not unsafe:
-            min_val = float(min(np.min(upper), np.min(lower)))
-            max_val = float(max(np.max(upper), np.max(lower)))
-            raise ValueError(
-                "Floating-point contact maps are expected to contain probabilities in [0, 1].\n"
-                f"Got min={min_val}, max={max_val} (excluding the diagonal).\n"
-                "Values outside [0, 1] look like logits or unbounded scores.\n"
-                "Pass `unsafe=True` to apply a sigmoid automatically."
-            )
-        warn("Contact map values are outside [0, 1]. Applying sigmoid.")
-        with np.errstate(over="ignore"):
-            contact_map_values = 1 / (1 + np.exp(-contact_map_values))
-
-    if not np.allclose(contact_map_values, contact_map_values.T, rtol=1e-5, atol=1e-6):
-        if not unsafe:
-            raise ValueError("Contact map is not symmetric.\nPass `unsafe=True` to symmetrize by averaging.")
-        warn("Contact map is not symmetric.\nSymmetrizing by averaging with its transpose.")
-        contact_map_values = (contact_map_values + contact_map_values.T) / 2
-
-    if n == 0:
-        return np.empty((0, 2), dtype=int)
-
-    score_matrix = contact_map_values.copy()
-    contact_map_bool = contact_map_values >= threshold
-
-    if np.any(np.diag(contact_map_bool)):
-        if not unsafe:
-            raise ValueError("Diagonal must be zero (self-pairing not allowed). Pass unsafe=True to fix.")
-        warn("Diagonal is non-zero, setting to zero (self-pairing not allowed).")
-        np.fill_diagonal(contact_map_bool, False)
-        np.fill_diagonal(score_matrix, 0)
-
-    row_sums = np.count_nonzero(contact_map_bool, axis=1)
-    multiple_pairings = np.where(row_sums > 1)[0]
-    if len(multiple_pairings) > 0:
-        if not unsafe:
-            raise ValueError(
-                f"Multiple pairings detected at positions {multiple_pairings.tolist()}. "
-                "Each base can pair with at most one other base. Pass unsafe=True to resolve using scores."
-            )
-        warn(f"Multiple pairings at positions {multiple_pairings.tolist()}, resolving with {matching} matching.")
-
-    if not len(multiple_pairings):
-        ii, jj = np.where(np.triu(contact_map_bool, k=1))
-        return np.column_stack((ii, jj))
-
-    ii, jj = np.where(np.triu(contact_map_bool, k=1))
-    if ii.size == 0:
-        return np.empty((0, 2), dtype=int)
-
-    pair_scores = score_matrix[ii, jj]
-    if matching == "blossom":
-        edges = np.column_stack((ii, jj))
-        return maximum_weight_matching(edges, pair_scores, num_nodes=n)
-    ord_idx = np.argsort(-pair_scores)
-    ii = ii[ord_idx]
-    jj = jj[ord_idx]
-    return _numpy_greedy_match(ii, jj, n)
 
 
 def _torch_greedy_match(ii: Tensor, jj: Tensor, length: int) -> Tensor:
@@ -631,25 +458,6 @@ def _torch_greedy_match(ii: Tensor, jj: Tensor, length: int) -> Tensor:
         return out
     key = out[:, 0] * length + out[:, 1]
     order = torch.argsort(key)
-    return out[order]
-
-
-def _numpy_greedy_match(ii: np.ndarray, jj: np.ndarray, length: int) -> np.ndarray:
-    if ii.size == 0:
-        return np.empty((0, 2), dtype=int)
-    used: np.ndarray = np.zeros(length, dtype=bool)
-    keep = np.zeros(ii.shape[0], dtype=bool)
-    for idx in range(ii.shape[0]):
-        i = ii[idx]
-        j = jj[idx]
-        if not used[i] and not used[j]:
-            keep[idx] = True
-            used[i] = True
-            used[j] = True
-    out = np.column_stack((ii[keep], jj[keep]))
-    if out.size == 0:
-        return out
-    order = np.lexsort((out[:, 1], out[:, 0]))
     return out[order]
 
 
@@ -769,14 +577,14 @@ def dot_bracket_to_contact_map(dot_bracket: str) -> np.ndarray:
 
 
 def contact_map_to_dot_bracket(
-    contact_map: Tensor | np.ndarray,
+    contact_map: Tensor | np.ndarray | Sequence,
     *,
     unsafe: bool = False,
     threshold: float | None = None,
     matching: Matching = "greedy",
 ) -> str:
     """
-    Convert a contact map (NumPy or Torch) to a dot-bracket notation string.
+    Convert a tensor, NumPy array, or sequence contact map to a dot-bracket string.
 
     Examples:
         Torch input

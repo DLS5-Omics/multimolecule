@@ -21,622 +21,432 @@
 #
 from __future__ import annotations
 
-from collections import defaultdict
-from dataclasses import dataclass, field
-from numbers import Integral, Real
-from typing import overload
+from numbers import Integral
 
-import numpy as np
 import torch
+from danling import NestedTensor
 from torch import Tensor
 
-Edge = tuple[int, int]
 
+def maximum_weight_matching(edge_index: Tensor, edge_weight: Tensor, num_nodes: int | None = None) -> Tensor:
+    """Compute an exact maximum-weight matching with tensor Edmonds blossom state.
 
-@overload
-def maximum_weight_matching(
-    edge_index: np.ndarray, edge_weight: np.ndarray, num_nodes: int | None = None
-) -> np.ndarray: ...
+    ``edge_index`` has shape ``(E, 2)`` and integer endpoints; ``edge_weight``
+    has shape ``(E,)``. Non-positive/non-finite weights and self-loops are
+    ignored, and repeated undirected edges keep their maximum weight. The
+    returned canonical edges retain the endpoint tensor's dtype and device.
 
-
-@overload
-def maximum_weight_matching(  # type: ignore[overload-cannot-match]
-    edge_index: Tensor,
-    edge_weight: Tensor | np.ndarray,
-    num_nodes: int | None = None,
-) -> Tensor: ...
-
-
-def maximum_weight_matching(
-    edge_index: Tensor | np.ndarray, edge_weight: Tensor | np.ndarray, num_nodes: int | None = None
-) -> Tensor | np.ndarray:
+    Graph data, blossom membership, labels, duals, and matching stay on the
+    input device. Edge scans and primal-dual updates are tensor operations;
+    blossom-tree traversal uses scalar synchronization for control flow.
+    Independent connected components are solved separately, so auxiliary
+    blossom tables require O(V²) space for the largest component.
+    The objective maximizes weight, without a maximum-cardinality tie-break.
     """
-    Compute an exact maximum-weight matching on an undirected simple graph.
-
-    Args:
-        edge_index: ``(E, 2)`` integer edge endpoints.
-        edge_weight: ``(E,)`` edge weights. Non-positive and non-finite weights are ignored.
-        num_nodes: Optional number of nodes. Isolated nodes are irrelevant and are not materialized.
-
-    Returns:
-        Matched edges with the same array backend as ``edge_index``.
-
-    Notes:
-        This is an in-house indexed Edmonds blossom/primal-dual implementation, specialized to the
-        max-weight objective used by RNA contact-map decoding. It intentionally does not implement a
-        max-cardinality tie-breaking objective.
-    """
-    if isinstance(edge_index, Tensor):
-        device = edge_index.device
-        edge_index_np = edge_index.detach().cpu().numpy()
-        edge_weight_np = (
-            edge_weight.detach().cpu().numpy() if isinstance(edge_weight, Tensor) else np.asarray(edge_weight)
-        )
-        out = _numpy_maximum_weight_matching(edge_index_np, edge_weight_np, num_nodes=num_nodes)
-        return torch.as_tensor(out, dtype=torch.long, device=device)
-    if isinstance(edge_index, np.ndarray):
-        edge_weight_np = (
-            edge_weight.detach().cpu().numpy() if isinstance(edge_weight, Tensor) else np.asarray(edge_weight)
-        )
-        return _numpy_maximum_weight_matching(edge_index, edge_weight_np, num_nodes=num_nodes)
-    raise TypeError("edge_index must be a torch.Tensor or numpy.ndarray")
-
-
-def _numpy_maximum_weight_matching(
-    edge_index: np.ndarray, edge_weight: np.ndarray, num_nodes: int | None = None
-) -> np.ndarray:
-    edge_index = np.asarray(edge_index)
-    edge_weight = np.asarray(edge_weight)
+    if not isinstance(edge_index, Tensor) or not isinstance(edge_weight, Tensor):
+        raise TypeError("edge_index and edge_weight must be torch tensors.")
     if edge_index.ndim != 2 or edge_index.shape[1] != 2:
         raise ValueError(f"edge_index must have shape (E, 2), but got {edge_index.shape}.")
     if edge_weight.ndim != 1 or edge_weight.shape[0] != edge_index.shape[0]:
-        raise ValueError("edge_weight must be a 1D array aligned with edge_index.")
-    if not np.issubdtype(edge_index.dtype, np.integer):
+        raise ValueError("edge_weight must be a 1D tensor aligned with edge_index.")
+    integer_dtypes = (torch.uint8, torch.int8, torch.int16, torch.int32, torch.int64)
+    if edge_index.dtype not in integer_dtypes:
         raise TypeError("edge_index must contain integer endpoints.")
-    if not (np.issubdtype(edge_weight.dtype, np.integer) or np.issubdtype(edge_weight.dtype, np.floating)):
+    if edge_weight.dtype not in integer_dtypes and not edge_weight.is_floating_point():
         raise TypeError("edge_weight must contain real numeric values.")
+    if edge_weight.device != edge_index.device:
+        raise ValueError("edge_index and edge_weight must be on the same device.")
     if num_nodes is not None:
         if isinstance(num_nodes, bool) or not isinstance(num_nodes, Integral):
             raise TypeError("num_nodes must be an integer.")
         if num_nodes < 0:
             raise ValueError(f"num_nodes must be non-negative, but got {num_nodes}.")
-        num_nodes = int(num_nodes)
-    if edge_index.shape[0] == 0:
-        return np.empty((0, 2), dtype=int)
-    if np.any(edge_index < 0):
+    if (edge_index < 0).any():
         raise ValueError("edge_index must contain non-negative endpoints.")
+    non_loop = edge_index[:, 0] != edge_index[:, 1]
+    if (
+        num_nodes is not None
+        and num_nodes <= torch.iinfo(edge_index.dtype).max
+        and (edge_index[non_loop] >= num_nodes).any()
+    ):
+        raise ValueError(f"edge is out of bounds for num_nodes={num_nodes}.")
+    keep = non_loop & torch.isfinite(edge_weight) & (edge_weight > 0)
+    edges = edge_index[keep].sort(dim=1).values
+    weights = edge_weight[keep].detach()
+    if edges.shape[0] == 0:
+        return edge_index.new_empty((0, 2))
+    edges, inverse = torch.unique(edges, dim=0, sorted=True, return_inverse=True)
+    integer_weights = not edge_weight.is_floating_point()
+    weights = weights.to(torch.int64 if integer_weights else torch.float64)
+    reduced = weights.new_zeros(edges.shape[0])
+    reduced.scatter_reduce_(0, inverse, weights, reduce="amax", include_self=True)
+    nodes, compact = torch.unique(edges.reshape(-1), sorted=True, return_inverse=True)
+    compact = compact.reshape(-1, 2)
+    if (torch.bincount(compact.reshape(-1), minlength=nodes.numel()) <= 1).all():
+        return edges
+    # Import lazily: graph.__init__ exports matching before topology.
+    from .topology import _connected_components
 
-    edge_weights: dict[Edge, float] = {}
-    integer_weights = True
-    for raw_edge, raw_weight in zip(edge_index, edge_weight):
-        u = int(raw_edge[0])
-        v = int(raw_edge[1])
-        if u == v:
+    components = _connected_components(compact, ())
+    node_order, shapes = components.concatenate()
+    node_order = node_order.reshape(-1)
+    sizes = compact.new_tensor([shape[0] for shape in shapes])
+    component_ids = torch.arange(len(shapes), device=nodes.device)
+    component_by_node = compact.new_empty(nodes.numel())
+    component_by_node[node_order] = torch.repeat_interleave(component_ids, sizes, output_size=nodes.numel())
+    edge_component = component_by_node[compact[:, 0]]
+    edge_order = edge_component.argsort(stable=True)
+    counts = torch.bincount(edge_component, minlength=len(shapes))
+    offsets = torch.cat((counts.new_zeros(1), counts.cumsum(0)))
+    selected = []
+    for index, component in enumerate(components):
+        # Scalar offsets control device slices; edge/node values stay on device.
+        group = edge_order[int(offsets[index]) : int(offsets[index + 1])]
+        if group.numel() == 1:
+            selected.append(compact[group])
             continue
-        if num_nodes is not None and not (0 <= u < num_nodes and 0 <= v < num_nodes):
-            raise ValueError(f"edge ({u}, {v}) is out of bounds for num_nodes={num_nodes}.")
-        weight = raw_weight.item() if isinstance(raw_weight, np.generic) else raw_weight
-        if isinstance(weight, bool) or not isinstance(weight, Real):
-            raise TypeError("edge_weight must contain real numeric values.")
-        if not np.isfinite(weight) or weight <= 0:
-            continue
-        a, b = (u, v) if u < v else (v, u)
-        previous = edge_weights.get((a, b))
-        if previous is None or weight > previous:
-            edge_weights[(a, b)] = weight
-        integer_weights = integer_weights and isinstance(weight, Integral)
-
-    if not edge_weights:
-        return np.empty((0, 2), dtype=int)
-
-    matched = _maximum_weight_matching_components(edge_weights, integer_weights=integer_weights)
-    if not matched:
-        return np.empty((0, 2), dtype=int)
-    out = np.array(sorted(matched), dtype=int).reshape(-1, 2)
-    return out
+        local_edges = torch.searchsorted(component, compact[group])
+        mate = _TensorBlossom(local_edges, reduced[group], component.numel()).solve()
+        vertices = torch.arange(component.numel(), device=nodes.device)
+        first = vertices[(mate >= 0) & (vertices < mate)]
+        selected.append(component[torch.stack((first, mate[first]), dim=1)])
+    matched = torch.cat(selected)
+    return nodes[matched[matched[:, 0].argsort()]]
 
 
-def _maximum_weight_matching_components(edge_weights: dict[Edge, float], *, integer_weights: bool) -> list[Edge]:
-    neighbors: dict[int, list[int]] = defaultdict(list)
-    degree: dict[int, int] = defaultdict(int)
-    for u, v in edge_weights:
-        neighbors[u].append(v)
-        neighbors[v].append(u)
-        degree[u] += 1
-        degree[v] += 1
-    if all(count <= 1 for count in degree.values()):
-        return list(edge_weights)
+class _TensorBlossom:
+    """Indexed weighted Edmonds search with persistent graph state in tensors."""
 
-    matched: list[Edge] = []
-    seen: set[int] = set()
-    for start in sorted(neighbors):
-        if start in seen:
-            continue
-        stack = [start]
-        component: set[int] = set()
-        while stack:
-            node = stack.pop()
-            if node in component:
-                continue
-            component.add(node)
-            stack.extend(neighbor for neighbor in neighbors[node] if neighbor not in component)
-        seen.update(component)
-        component_edges = {edge: weight for edge, weight in edge_weights.items() if edge[0] in component}
-        if len(component_edges) == 1:
-            matched.extend(component_edges)
+    def __init__(self, edges: Tensor, weights: Tensor, num_nodes: int):
+        self.edges = edges
+        self.n = num_nodes
+        self.capacity = 2 * self.n
+        self.device = edges.device
+        self.integer_weights = not weights.is_floating_point()
+        maximum = weights.max()
+        if self.integer_weights:
+            if maximum > torch.iinfo(torch.int64).max // 4:
+                raise ValueError("integer edge weights exceed the exact int64 primal-dual arithmetic range.")
+        elif maximum > torch.finfo(weights.dtype).max / 4:
+            # A power-of-two rescaling preserves every representable weight
+            # exactly unless the component spans an extreme subnormal range.
+            scaled = weights / 4
+            if not torch.equal(scaled * 4, weights):
+                raise ValueError("edge weight dynamic range exceeds exact floating primal-dual arithmetic.")
+            weights = scaled
+        self.weights = weights
+        n, capacity = self.n, self.capacity
+        self.vertices = torch.arange(n, device=self.device)
+        self.ids = torch.arange(capacity, device=self.device)
+        self.mate = edges.new_full((n,), -1)
+        self.label = edges.new_zeros(capacity)
+        self.label_edge = edges.new_full((capacity, 2), -1)
+        self.in_blossom = self.vertices.clone()
+        self.parent = edges.new_full((capacity,), -1)
+        self.base = self.ids.clone()
+        self.active = self.ids < n
+        # Ragged tensors store only O(V) active blossom links. DanLing keeps
+        # shape metadata on CPU and all child/edge values on the graph device.
+        # An unused sentinel row keeps DanLing's logical rank stable when the
+        # final active blossom is cleared and every actual row becomes empty.
+        self.children = NestedTensor(
+            [edges.new_empty(0)] * capacity + [edges.new_full((1,), -1)], dtype=edges.dtype, device=self.device
+        )
+        self.cycle_edges = NestedTensor(
+            [edges.new_empty((0, 2))] * capacity + [edges.new_full((1, 2), -1)], dtype=edges.dtype, device=self.device
+        )
+        self.member = torch.zeros((capacity, n), dtype=torch.bool, device=self.device)
+        self.member[self.vertices, self.vertices] = True
+        self.dual = weights.new_zeros(capacity)
+        self.dual[:n] = weights.max()
+        self.allowed = torch.zeros((n, n), dtype=torch.bool, device=self.device)
+        self.queued = torch.zeros(n, dtype=torch.bool, device=self.device)
+        self.adjacent = torch.zeros((n, n), dtype=torch.bool, device=self.device)
+        self.weight_matrix = weights.new_zeros((n, n))
+        source, target = edges.unbind(1)
+        self.adjacent[source, target] = self.adjacent[target, source] = True
+        self.weight_matrix[source, target] = self.weight_matrix[target, source] = weights
+
+    def assign_label(self, node: int, value: int, through: int = -1) -> None:
+        blossom = int(self.in_blossom[node])
+        self.label[node] = self.label[blossom] = value
+        if through < 0:
+            self.label_edge[node] = self.label_edge[blossom] = -1
         else:
-            matched.extend(_edmonds_maximum_weight_matching(component_edges, integer_weights=integer_weights))
-    return matched
+            self.label_edge[node, 0] = self.label_edge[blossom, 0] = through
+            self.label_edge[node, 1] = self.label_edge[blossom, 1] = node
+        if value == 1:
+            self.queued |= self.member[blossom]
+        else:
+            base = int(self.base[blossom])
+            self.assign_label(int(self.mate[base]), 1, base)
 
-
-@dataclass(eq=False, slots=True)
-class _Blossom:
-    children: list[int | _Blossom] = field(default_factory=list)
-    edges: list[Edge | None] = field(default_factory=list)
-    best_edges: list[Edge] | None = None
-
-    def leaves(self):
-        stack = [*self.children]
-        while stack:
-            item = stack.pop()
-            if isinstance(item, _Blossom):
-                stack.extend(item.children)
-            else:
-                yield item
-
-
-_NO_NODE = object()
-_LABEL_OUTER = 1
-_LABEL_INNER = 2
-_LABEL_SEEN = 4
-_LABEL_SCANNED_OUTER = _LABEL_OUTER | _LABEL_SEEN
-_DELTA_DONE = 1
-_DELTA_UNLABELED_VERTEX = 2
-_DELTA_OUTER_BLOSSOM = 3
-_DELTA_INNER_BLOSSOM = 4
-
-
-def _edmonds_maximum_weight_matching(edge_weights: dict[Edge, float], *, integer_weights: bool) -> list[Edge]:
-    # The inline asserts document invariants and may be stripped under python -O.
-    # For integer weights, verify_optimum() is the load-bearing post-condition check.
-    nodes = sorted({node for edge in edge_weights for node in edge})
-    if not nodes:
-        return []
-    node_to_idx = {node: idx for idx, node in enumerate(nodes)}
-    n = len(nodes)
-    neighbors: list[list[int]] = [[] for _ in range(n)]
-    weights: list[dict[int, float]] = [{} for _ in range(n)]
-    output_edge: dict[Edge, Edge] = {}
-    max_weight = 0.0
-    for (u_orig, v_orig), weight in edge_weights.items():
-        u = node_to_idx[u_orig]
-        v = node_to_idx[v_orig]
-        neighbors[u].append(v)
-        neighbors[v].append(u)
-        weights[u][v] = weight
-        weights[v][u] = weight
-        output_edge[(u, v) if u < v else (v, u)] = (u_orig, v_orig) if u_orig < v_orig else (v_orig, u_orig)
-        max_weight = max(max_weight, weight)
-
-    mate = [-1] * n
-    label: dict[int | _Blossom, int | None] = {}
-    label_edge: dict[int | _Blossom, Edge | None] = {}
-    in_blossom: list[int | _Blossom] = list(range(n))
-    blossom_parent: dict[int | _Blossom, int | _Blossom | None] = dict.fromkeys(range(n))
-    blossom_base: dict[int | _Blossom, int] = {node: node for node in range(n)}
-    best_edge: dict[int | _Blossom, Edge | None] = {}
-    dual_var = [max_weight] * n
-    blossom_dual: dict[_Blossom, float] = {}
-    allowed_edge: set[Edge] = set()
-    queue: list[int] = []
-
-    def canonical(u: int, v: int) -> Edge:
-        return (u, v) if u < v else (v, u)
-
-    def slack(u: int, v: int) -> float:
-        return dual_var[u] + dual_var[v] - 2 * weights[u][v]
-
-    def assign_label(node: int, label_value: int, through: int | None) -> None:
-        blossom = in_blossom[node]
-        assert label.get(node) is None and label.get(blossom) is None
-        label[node] = label[blossom] = label_value
-        label_edge[node] = label_edge[blossom] = None if through is None else (through, node)
-        best_edge[node] = best_edge[blossom] = None
-        if label_value == _LABEL_OUTER:
-            if isinstance(blossom, _Blossom):
-                queue.extend(blossom.leaves())
-            else:
-                queue.append(blossom)
-        elif label_value == _LABEL_INNER:
-            base = blossom_base[blossom]
-            assign_label(mate[base], _LABEL_OUTER, base)
-
-    def scan_blossom(v: int, w: int):
-        path: list[int | _Blossom] = []
-        base: int | object = _NO_NODE
-        while v is not _NO_NODE:
-            blossom = in_blossom[v]
-            if label[blossom] & _LABEL_SEEN:  # type: ignore[operator]
-                base = blossom_base[blossom]
+    def scan_blossom(self, v: int, w: int) -> int:
+        trace = torch.zeros(self.capacity, dtype=torch.bool, device=self.device)
+        base = -1
+        while v >= 0:
+            blossom = int(self.in_blossom[v])
+            if self.label[blossom] & 4:
+                base = int(self.base[blossom])
                 break
-            assert label[blossom] == _LABEL_OUTER
-            path.append(blossom)
-            label[blossom] = _LABEL_SCANNED_OUTER
-            edge = label_edge[blossom]
-            if edge is None:
-                assert mate[blossom_base[blossom]] == -1
-                v = _NO_NODE  # type: ignore[assignment]
+            trace[blossom] = True
+            self.label[blossom] = 5
+            through = int(self.label_edge[blossom, 0])
+            if through < 0:
+                v = -1
             else:
-                assert edge[0] == mate[blossom_base[blossom]]
-                v = edge[0]
-                blossom = in_blossom[v]
-                assert label[blossom] == _LABEL_INNER
-                v = label_edge[blossom][0]  # type: ignore[index]
-            if w is not _NO_NODE:
+                blossom = int(self.in_blossom[through])
+                v = int(self.label_edge[blossom, 0])
+            if w >= 0:
                 v, w = w, v
-        for blossom in path:
-            label[blossom] = _LABEL_OUTER
+        self.label[trace] = 1
         return base
 
-    def add_blossom(base: int, v: int, w: int) -> None:
-        base_blossom = in_blossom[base]
-        v_blossom = in_blossom[v]
-        w_blossom = in_blossom[w]
-        blossom = _Blossom()
-        blossom_base[blossom] = base
-        blossom_parent[blossom] = None
-        blossom_parent[base_blossom] = blossom
-        path = blossom.children
-        edges = blossom.edges
-        edges.append((v, w))
-
+    def add_blossom(self, base: int, v: int, w: int) -> None:
+        base_blossom = int(self.in_blossom[base])
+        v_blossom, w_blossom = int(self.in_blossom[v]), int(self.in_blossom[w])
+        blossom = int(torch.nonzero(~self.active & (self.ids >= self.n), as_tuple=False)[0, 0])
+        self.active[blossom] = True
+        self.base[blossom] = base
+        self.parent[blossom] = -1
+        self.parent[base_blossom] = blossom
+        children = self.edges.new_empty(self.capacity)
+        cycle_edges = self.edges.new_empty((self.capacity, 2))
+        count, edge_count = 0, 1
+        cycle_edges[0, 0] = v
+        cycle_edges[0, 1] = w
         while v_blossom != base_blossom:
-            blossom_parent[v_blossom] = blossom
-            path.append(v_blossom)
-            edge = label_edge[v_blossom]
-            assert edge is not None
-            edges.append(edge)
-            v = label_edge[v_blossom][0]  # type: ignore[index]
-            v_blossom = in_blossom[v]
-        path.append(base_blossom)
-        path.reverse()
-        edges.reverse()
-
+            self.parent[v_blossom] = blossom
+            children[count] = v_blossom
+            count += 1
+            cycle_edges[edge_count] = self.label_edge[v_blossom]
+            edge_count += 1
+            v = int(self.label_edge[v_blossom, 0])
+            v_blossom = int(self.in_blossom[v])
+        children[count] = base_blossom
+        count += 1
+        children[:count] = children[:count].flip(0)
+        cycle_edges[:edge_count] = cycle_edges[:edge_count].flip(0)
         while w_blossom != base_blossom:
-            blossom_parent[w_blossom] = blossom
-            path.append(w_blossom)
-            edge = label_edge[w_blossom]
-            edges.append((edge[1], edge[0]))  # type: ignore[index]
-            w = edge[0]  # type: ignore[index]
-            w_blossom = in_blossom[w]
+            self.parent[w_blossom] = blossom
+            children[count] = w_blossom
+            count += 1
+            cycle_edges[edge_count] = self.label_edge[w_blossom].flip(0)
+            edge_count += 1
+            w = int(self.label_edge[w_blossom, 0])
+            w_blossom = int(self.in_blossom[w])
+        self.children[blossom] = children[:count].clone()
+        self.cycle_edges[blossom] = cycle_edges[:edge_count].clone()
+        self.label[blossom] = 1
+        self.label_edge[blossom] = self.label_edge[base_blossom]
+        self.dual[blossom] = 0
+        self.member[blossom] = self.member[self.children[blossom]].any(dim=0)
+        self.queued |= self.member[blossom] & (self.label[self.in_blossom] == 2)
+        self.in_blossom[self.member[blossom]] = blossom
 
-        label[blossom] = _LABEL_OUTER
-        label_edge[blossom] = label_edge[base_blossom]
-        blossom_dual[blossom] = 0
-        for leaf in blossom.leaves():
-            if label[in_blossom[leaf]] == _LABEL_INNER:
-                queue.append(leaf)
-            in_blossom[leaf] = blossom
-
-        best_to: dict[int | _Blossom, Edge] = {}
-        for child in path:
-            if isinstance(child, _Blossom):
-                if child.best_edges is not None:
-                    candidate_edges = child.best_edges
-                    child.best_edges = None
-                else:
-                    candidate_edges = [(x, y) for x in child.leaves() for y in neighbors[x]]
-            else:
-                candidate_edges = [(child, y) for y in neighbors[child]]
-            for edge in candidate_edges:
-                i, j = edge
-                if in_blossom[j] == blossom:
-                    i, j = j, i
-                other = in_blossom[j]
-                if other != blossom and label.get(other) == _LABEL_OUTER:
-                    current = best_to.get(other)
-                    if current is None or slack(i, j) < slack(*current):
-                        best_to[other] = edge
-            best_edge[child] = None
-
-        blossom.best_edges = list(best_to.values())
-        best_edge[blossom] = None
-        for edge in blossom.best_edges:
-            current = best_edge[blossom]
-            if current is None or slack(*edge) < slack(*current):
-                best_edge[blossom] = edge
-
-    def expand_blossom(blossom: _Blossom, end_stage: bool) -> None:
-        def recurse(current: _Blossom, end: bool):
-            for child in current.children:
-                blossom_parent[child] = None
-                if isinstance(child, _Blossom):
-                    if end and blossom_dual[child] == 0:
+    def expand_blossom(self, blossom: int, end_stage: bool) -> None:
+        def recurse(current: int, end: bool):
+            count = self.children[current].numel()
+            for child_tensor in self.children[current]:
+                child = int(child_tensor)
+                self.parent[child] = -1
+                if child >= self.n:
+                    if end and self.dual[child] == 0:
                         yield child
                     else:
-                        for leaf in child.leaves():
-                            in_blossom[leaf] = child
+                        self.in_blossom[self.member[child]] = child
                 else:
-                    in_blossom[child] = child
-
-            if (not end) and label.get(current) == _LABEL_INNER:
-                entry_child = in_blossom[label_edge[current][1]]  # type: ignore[index]
-                idx = current.children.index(entry_child)
+                    self.in_blossom[child] = child
+            if not end and self.label[current] == 2:
+                entry_child = int(self.in_blossom[self.label_edge[current, 1]])
+                idx = int(torch.nonzero(self.children[current] == entry_child, as_tuple=False)[0, 0])
                 step = 1 if idx & 1 else -1
                 if idx & 1:
-                    idx -= len(current.children)
-                v, w = label_edge[current]  # type: ignore[misc]
+                    idx -= count
+                v, w = int(self.label_edge[current, 0]), int(self.label_edge[current, 1])
                 while idx != 0:
-                    edge = current.edges[idx] if step == 1 else current.edges[idx - 1]
-                    assert edge is not None
-                    p, q = edge if step == 1 else (edge[1], edge[0])
-                    label[w] = None
-                    label[q] = None
-                    assign_label(w, _LABEL_INNER, v)
-                    allowed_edge.add((p, q))
-                    allowed_edge.add((q, p))
+                    edge = self.cycle_edges[current][idx % count if step == 1 else (idx - 1) % count]
+                    p, q = (int(edge[0]), int(edge[1])) if step == 1 else (int(edge[1]), int(edge[0]))
+                    self.label[w] = self.label[q] = 0
+                    self.assign_label(w, 2, v)
+                    self.allowed[p, q] = self.allowed[q, p] = True
                     idx += step
-                    edge = current.edges[idx] if step == 1 else current.edges[idx - 1]
-                    assert edge is not None
-                    v, w = edge if step == 1 else (edge[1], edge[0])
-                    allowed_edge.add((v, w))
-                    allowed_edge.add((w, v))
+                    edge = self.cycle_edges[current][idx % count if step == 1 else (idx - 1) % count]
+                    v, w = (int(edge[0]), int(edge[1])) if step == 1 else (int(edge[1]), int(edge[0]))
+                    self.allowed[v, w] = self.allowed[w, v] = True
                     idx += step
-                next_child = current.children[idx]
-                label[w] = label[next_child] = _LABEL_INNER
-                label_edge[w] = label_edge[next_child] = (v, w)
-                best_edge[next_child] = None
+                child = int(self.children[current][idx % count])
+                self.label[w] = self.label[child] = 2
+                self.label_edge[w, 0] = self.label_edge[child, 0] = v
+                self.label_edge[w, 1] = self.label_edge[child, 1] = w
                 idx += step
-                while current.children[idx] != entry_child:
-                    child = current.children[idx]
-                    if label.get(child) == _LABEL_OUTER:
-                        idx += step
-                        continue
-                    if isinstance(child, _Blossom):
-                        for x in child.leaves():
-                            if label.get(x):
-                                break
-                    else:
-                        x = child
-                    if label.get(x):
-                        label[x] = None
-                        label[mate[blossom_base[child]]] = None
-                        assign_label(x, _LABEL_INNER, label_edge[x][0])  # type: ignore[index]
+                while int(self.children[current][idx % count]) != entry_child:
+                    child = int(self.children[current][idx % count])
+                    if self.label[child] != 1:
+                        leaves = torch.nonzero(self.member[child] & (self.label[: self.n] != 0), as_tuple=False)
+                        if leaves.numel():
+                            x = int(leaves[0, 0])
+                            self.label[x] = self.label[self.mate[self.base[child]]] = 0
+                            self.assign_label(x, 2, int(self.label_edge[x, 0]))
                     idx += step
-
-            label.pop(current, None)
-            label_edge.pop(current, None)
-            best_edge.pop(current, None)
-            del blossom_parent[current]
-            del blossom_base[current]
-            del blossom_dual[current]
+            self.active[current] = False
+            self.label[current] = 0
+            self.label_edge[current] = -1
+            self.parent[current] = -1
+            self.base[current] = -1
+            self.dual[current] = 0
+            self.member[current] = False
+            self.children[current] = self.edges.new_empty(0)
+            self.cycle_edges[current] = self.edges.new_empty((0, 2))
 
         stack = [recurse(blossom, end_stage)]
         while stack:
-            top = stack[-1]
-            for child in top:
+            for child in stack[-1]:
                 stack.append(recurse(child, end_stage))
                 break
             else:
                 stack.pop()
 
-    def augment_blossom(blossom: _Blossom, node: int) -> None:
-        def recurse(current: _Blossom, x: int):
-            child: int | _Blossom = x
-            while blossom_parent[child] != current:
-                child = blossom_parent[child]  # type: ignore[assignment]
-            if isinstance(child, _Blossom):
+    def augment_blossom(self, blossom: int, node: int) -> None:
+        def recurse(current: int, x: int):
+            child = x
+            while int(self.parent[child]) != current:
+                child = int(self.parent[child])
+            if child >= self.n:
                 yield child, x
-            start_idx = current.children.index(child)
-            idx = start_idx
-            step = 1 if start_idx & 1 else -1
-            if start_idx & 1:
-                idx -= len(current.children)
+            count = self.children[current].numel()
+            start = int(torch.nonzero(self.children[current] == child, as_tuple=False)[0, 0])
+            idx, step = start, 1 if start & 1 else -1
+            if start & 1:
+                idx -= count
             while idx != 0:
                 idx += step
-                child = current.children[idx]
-                edge = current.edges[idx] if step == 1 else current.edges[idx - 1]
-                assert edge is not None
-                w, y = edge if step == 1 else (edge[1], edge[0])
-                if isinstance(child, _Blossom):
+                child = int(self.children[current][idx % count])
+                edge = self.cycle_edges[current][idx % count if step == 1 else (idx - 1) % count]
+                w, y = (int(edge[0]), int(edge[1])) if step == 1 else (int(edge[1]), int(edge[0]))
+                if child >= self.n:
                     yield child, w
                 idx += step
-                child = current.children[idx]
-                if isinstance(child, _Blossom):
+                child = int(self.children[current][idx % count])
+                if child >= self.n:
                     yield child, y
-                mate[w] = y
-                mate[y] = w
-            current.children = current.children[start_idx:] + current.children[:start_idx]
-            current.edges = current.edges[start_idx:] + current.edges[:start_idx]
-            blossom_base[current] = blossom_base[current.children[0]]
-            assert blossom_base[current] == x
+                self.mate[w] = y
+                self.mate[y] = w
+            self.children[current] = self.children[current].roll(-start)
+            self.cycle_edges[current] = self.cycle_edges[current].roll(-start, dims=0)
+            self.base[current] = self.base[self.children[current][0]]
 
         stack = [recurse(blossom, node)]
         while stack:
-            top = stack[-1]
-            for args in top:
-                stack.append(recurse(*args))
+            for child, x in stack[-1]:
+                stack.append(recurse(child, x))
                 break
             else:
                 stack.pop()
 
-    def augment_matching(v: int, w: int) -> None:
-        for start, target in ((v, w), (w, v)):
-            node = start
-            target_node = target
+    def augment_matching(self, v: int, w: int) -> None:
+        for node, target in ((v, w), (w, v)):
             while True:
-                blossom = in_blossom[node]
-                assert label[blossom] == _LABEL_OUTER
-                if isinstance(blossom, _Blossom):
-                    augment_blossom(blossom, node)
-                mate[node] = target_node
-                edge = label_edge[blossom]
-                if edge is None:
+                blossom = int(self.in_blossom[node])
+                if blossom >= self.n:
+                    self.augment_blossom(blossom, node)
+                self.mate[node] = target
+                matched = int(self.label_edge[blossom, 0])
+                if matched < 0:
                     break
-                matched = edge[0]
-                other = in_blossom[matched]
-                node, target_node = label_edge[other]  # type: ignore[misc]
-                if isinstance(other, _Blossom):
-                    augment_blossom(other, target_node)
-                mate[target_node] = node
+                other = int(self.in_blossom[matched])
+                node, target = int(self.label_edge[other, 0]), int(self.label_edge[other, 1])
+                if other >= self.n:
+                    self.augment_blossom(other, target)
+                self.mate[target] = node
 
-    def verify_optimum() -> None:
-        assert min(dual_var) >= 0
-        assert len(blossom_dual) == 0 or min(blossom_dual.values()) >= 0
-        for i, j in output_edge:
-            s = dual_var[i] + dual_var[j] - 2 * weights[i][j]
-            i_blossoms: list[int | _Blossom] = [i]
-            j_blossoms: list[int | _Blossom] = [j]
-            while blossom_parent[i_blossoms[-1]] is not None:
-                i_blossoms.append(blossom_parent[i_blossoms[-1]])  # type: ignore[arg-type]
-            while blossom_parent[j_blossoms[-1]] is not None:
-                j_blossoms.append(blossom_parent[j_blossoms[-1]])  # type: ignore[arg-type]
-            i_blossoms.reverse()
-            j_blossoms.reverse()
-            for bi, bj in zip(i_blossoms, j_blossoms):
-                if bi != bj:
-                    break
-                s += 2 * blossom_dual[bi]  # type: ignore[index]
-            assert s >= 0
-            if mate[i] == j or mate[j] == i:
-                assert mate[i] == j and mate[j] == i
-                assert s == 0
-        for node in range(n):
-            assert mate[node] != -1 or dual_var[node] == 0
-        for blossom, dual in blossom_dual.items():
-            if dual > 0:
-                for edge in blossom.edges[1::2]:
-                    assert edge is not None
-                    i, j = edge
-                    assert mate[i] == j and mate[j] == i
+    def update_duals(self) -> int:
+        source, target = self.edges.unbind(1)
+        source_blossom, target_blossom = self.in_blossom[source], self.in_blossom[target]
+        source_label, target_label = self.label[source_blossom], self.label[target_blossom]
+        slack = self.dual[source] + self.dual[target] - 2 * self.weights
+        infinity = torch.iinfo(torch.int64).max if self.integer_weights else torch.inf
+        different = source_blossom != target_blossom
+        unlabeled = different & (
+            ((source_label == 1) & (target_label == 0)) | ((target_label == 1) & (source_label == 0))
+        )
+        outer = different & (source_label == 1) & (target_label == 1)
+        delta2, edge2 = torch.where(unlabeled, slack, infinity).min(dim=0)
+        half_slack = torch.div(slack, 2, rounding_mode="floor") if self.integer_weights else slack / 2
+        delta3, edge3 = torch.where(outer, half_slack, infinity).min(dim=0)
+        top_inner = self.active & (self.ids >= self.n) & (self.parent < 0) & (self.label == 2)
+        delta4, blossom4 = torch.where(top_inner, self.dual, infinity).min(dim=0)
+        values = torch.stack((self.dual[: self.n].amin(), delta2, delta3, delta4))
+        kind = int(values.argmin())
+        delta = values[kind]
+        vertex_labels = self.label[self.in_blossom]
+        self.dual[: self.n] += torch.where(vertex_labels == 2, delta, torch.where(vertex_labels == 1, -delta, 0))
+        top = self.active & (self.ids >= self.n) & (self.parent < 0)
+        self.dual[self.n :] += torch.where(
+            top[self.n :] & (self.label[self.n :] == 1),
+            delta,
+            torch.where(top[self.n :] & (self.label[self.n :] == 2), -delta, 0),
+        )
+        if kind in (1, 2):
+            edge_id = edge2 if kind == 1 else edge3
+            a, b = self.edges[edge_id].unbind()
+            v, w = (int(a), int(b)) if self.label[self.in_blossom[a]] == 1 else (int(b), int(a))
+            self.allowed[v, w] = self.allowed[w, v] = True
+            self.queued[v] = True
+        elif kind == 3:
+            self.expand_blossom(int(blossom4), False)
+        return kind
 
-    while True:
-        label.clear()
-        label_edge.clear()
-        best_edge.clear()
-        for blossom in blossom_dual:
-            blossom.best_edges = None
-        allowed_edge.clear()
-        queue[:] = []
-
-        for node in range(n):
-            if mate[node] == -1 and label.get(in_blossom[node]) is None:
-                assign_label(node, _LABEL_OUTER, None)
-
-        augmented = False
+    def solve(self) -> Tensor:
         while True:
-            while queue and not augmented:
-                v = queue.pop()
-                assert label[in_blossom[v]] == _LABEL_OUTER
-                for w in neighbors[v]:
-                    v_blossom = in_blossom[v]
-                    w_blossom = in_blossom[w]
-                    if v_blossom == w_blossom:
-                        continue
-                    edge_slack = slack(v, w)
-                    if (v, w) not in allowed_edge and edge_slack <= 0:
-                        allowed_edge.add((v, w))
-                        allowed_edge.add((w, v))
-                    if (v, w) in allowed_edge:
-                        if label.get(w_blossom) is None:
-                            assign_label(w, _LABEL_INNER, v)
-                        elif label.get(w_blossom) == _LABEL_OUTER:
-                            base = scan_blossom(v, w)
-                            if base is not _NO_NODE:
-                                add_blossom(base, v, w)  # type: ignore[arg-type]
+            self.label.zero_()
+            self.label_edge.fill_(-1)
+            self.allowed.zero_()
+            self.queued.zero_()
+            free = self.vertices[self.mate < 0]
+            roots = torch.unique(self.in_blossom[free])
+            self.label[free] = self.label[roots] = 1
+            self.queued |= self.member[roots].any(dim=0)
+            augmented = False
+            while True:
+                while self.queued.any() and not augmented:
+                    v = int(torch.nonzero(self.queued, as_tuple=False)[-1, 0])
+                    self.queued[v] = False
+                    different = self.in_blossom != self.in_blossom[v]
+                    tight = (
+                        self.adjacent[v]
+                        & different
+                        & (self.dual[v] + self.dual[: self.n] - 2 * self.weight_matrix[v] <= 0)
+                    )
+                    self.allowed[v] |= tight
+                    self.allowed[:, v] |= tight
+                    candidates = torch.nonzero(self.adjacent[v] & different & self.allowed[v], as_tuple=False).flatten()
+                    for neighbor in candidates:
+                        w = int(neighbor)
+                        v_blossom, w_blossom = int(self.in_blossom[v]), int(self.in_blossom[w])
+                        if v_blossom == w_blossom:
+                            continue
+                        if self.label[w_blossom] == 0:
+                            self.assign_label(w, 2, v)
+                        elif self.label[w_blossom] == 1:
+                            base = self.scan_blossom(v, w)
+                            if base >= 0:
+                                self.add_blossom(base, v, w)
                             else:
-                                augment_matching(v, w)
+                                self.augment_matching(v, w)
                                 augmented = True
                                 break
-                        elif label.get(w) is None:
-                            label[w] = _LABEL_INNER
-                            label_edge[w] = (v, w)
-                    elif label.get(w_blossom) == _LABEL_OUTER:
-                        edge = best_edge.get(v_blossom)
-                        if edge is None or edge_slack < slack(*edge):
-                            best_edge[v_blossom] = (v, w)
-                    elif label.get(w) is None:
-                        edge = best_edge.get(w)
-                        if edge is None or edge_slack < slack(*edge):
-                            best_edge[w] = (v, w)
-
-            if augmented:
+                        elif self.label[w] == 0:
+                            self.label[w] = 2
+                            self.label_edge[w, 0] = v
+                            self.label_edge[w, 1] = w
+                if augmented or self.update_duals() == 0:
+                    break
+            if not augmented:
                 break
-
-            delta_type = _DELTA_DONE
-            delta = min(dual_var)
-            delta_edge: Edge | None = None
-            delta_blossom: _Blossom | None = None
-
-            for node in range(n):
-                edge = best_edge.get(node)
-                if label.get(in_blossom[node]) is None and edge is not None:
-                    candidate = slack(*edge)
-                    if candidate < delta:
-                        delta = candidate
-                        delta_type = _DELTA_UNLABELED_VERTEX
-                        delta_edge = edge
-
-            for item, parent in blossom_parent.items():
-                edge = best_edge.get(item)
-                if parent is None and label.get(item) == _LABEL_OUTER and edge is not None:
-                    edge_slack = slack(*edge)
-                    candidate = edge_slack // 2 if integer_weights else edge_slack / 2.0
-                    if candidate < delta:
-                        delta = candidate
-                        delta_type = _DELTA_OUTER_BLOSSOM
-                        delta_edge = edge
-
-            for blossom, dual in blossom_dual.items():
-                if blossom_parent[blossom] is None and label.get(blossom) == _LABEL_INNER and dual < delta:
-                    delta = dual
-                    delta_type = _DELTA_INNER_BLOSSOM
-                    delta_blossom = blossom
-
-            for node in range(n):
-                if label.get(in_blossom[node]) == _LABEL_OUTER:
-                    dual_var[node] -= delta
-                elif label.get(in_blossom[node]) == _LABEL_INNER:
-                    dual_var[node] += delta
-            for blossom in blossom_dual:
-                if blossom_parent[blossom] is None:
-                    if label.get(blossom) == _LABEL_OUTER:
-                        blossom_dual[blossom] += delta
-                    elif label.get(blossom) == _LABEL_INNER:
-                        blossom_dual[blossom] -= delta
-
-            if delta_type == _DELTA_DONE:
-                break
-            if delta_type in (_DELTA_UNLABELED_VERTEX, _DELTA_OUTER_BLOSSOM):
-                assert delta_edge is not None
-                v, w = delta_edge
-                allowed_edge.add((v, w))
-                allowed_edge.add((w, v))
-                queue.append(v)
-            elif delta_type == _DELTA_INNER_BLOSSOM:
-                assert delta_blossom is not None
-                expand_blossom(delta_blossom, False)
-
-        for node, matched in enumerate(mate):
-            if matched != -1:
-                assert mate[matched] == node
-        if not augmented:
-            break
-        for blossom in list(blossom_dual.keys()):
-            should_expand = all(
-                (
-                    blossom in blossom_dual,
-                    blossom_parent[blossom] is None,
-                    label.get(blossom) == _LABEL_OUTER,
-                    blossom_dual[blossom] == 0,
-                )
-            )
-            if should_expand:
-                expand_blossom(blossom, True)
-
-    if integer_weights:
-        verify_optimum()
-
-    return [
-        output_edge[canonical(node, matched)] for node, matched in enumerate(mate) if matched != -1 and node < matched
-    ]
+            expandable = self.active & (self.ids >= self.n) & (self.parent < 0) & (self.label == 1) & (self.dual == 0)
+            for blossom_tensor in torch.nonzero(expandable, as_tuple=False).flatten():
+                blossom = int(blossom_tensor)
+                if self.active[blossom] and self.parent[blossom] < 0 and self.dual[blossom] == 0:
+                    self.expand_blossom(blossom, True)
+        return self.mate
