@@ -11,42 +11,49 @@ MultiMolecule provides a set of predefined alphabets for tokenization.
 ## Standard Alphabet
 
 The standard alphabet is an extended version of the [IUPAC alphabet](#iupac-alphabet).
-This extension includes three additional symbols to the [IUPAC alphabet](#iupac-alphabet), `I`, `X` and `*`.
+This extension includes two additional nucleotide symbols to the [IUPAC alphabet](#iupac-alphabet), `I` and `X`,
+and five sequence symbols, `|`, `.`, `*`, `-`, and `?`.
 
-- `I`: Inosine; is a post-transcriptional modification that is not a standard RNA base.
-  Inosine is the result of a deamination reaction of adenines that is catalyzed by adenosine deaminases acting on tRNAs (ADATs)
-- `X`: Any base; is slightly different from `N` which represents Unknown base.
-  In automatic word embedding conversion, the `X` will be initialized as the mean of `A`, `C`, `G`, and `U`, while `N` will not be further processed.
-- `*`: is not used in MultiMolecule and is reserved for future use.
+- `I`: Inosine; a non-canonical nucleotide, the product of adenine deamination,
+  for example by adenosine deaminases acting on tRNAs (ADATs).
+- `X`: Unknown or other nucleotide; a nucleotide that cannot be mapped to any other symbol of the alphabet.
+  It differs from `N`, which represents any one of `A`, `C`, `G`, and `U`.
+- `|`: Chain separator.
+- `-`: Gap; a deleted position in an aligned sequence.
+- `.`: Gap in an insertion column of an alignment.
+- `*`: Stop (terminator).
+- `?`: Missing data; the content of an aligned position is not known.
+  It differs from `-`, which states that the position is deleted.
 
-!!! tip "gap"
+`T` is not a symbol of the RNA alphabets: `RnaTokenizer` reads `T` as `U` by default (`replace_T_with_U=True`).
 
-    Note that we use `.` to represent a gap in the sequence.
+In automatic word embedding conversion, an ambiguity symbol (`N`, `R`, `Y`, `S`, `W`, `K`, `M`, `B`, `D`, `H`, `V`) or `X`
+that is absent from the original vocabulary is initialized as the mean of the nucleotides it represents; `X` uses `A`, `C`, `G`, and `U`.
 
-    While `-` exists in the standard alphabet, it is not used in MultiMolecule and is reserved for future use.
-
-| Code | Represents |
-| ---- | ---------- |
-| A    | Adenine    |
-| C    | Cytosine   |
-| G    | Guanine    |
-| U    | Uracil     |
-| N    | Unknown    |
-| R    | A or G     |
-| Y    | C or U     |
-| S    | C or G     |
-| W    | A or U     |
-| K    | G or U     |
-| M    | A or C     |
-| B    | C, G, or U |
-| D    | A, G, or U |
-| H    | A, C, or U |
-| V    | A, C, or G |
-| .    | Gap        |
-| X    | Any        |
-| \*   | Not Used   |
-| -    | Not Used   |
-| I    | Inosine    |
+| Code | Represents             |
+| ---- | ---------------------- |
+| A    | Adenine                |
+| C    | Cytosine               |
+| G    | Guanine                |
+| U    | Uracil                 |
+| N    | Any (A, C, G, or U)    |
+| R    | A or G                 |
+| Y    | C or U                 |
+| S    | C or G                 |
+| W    | A or U                 |
+| K    | G or U                 |
+| M    | A or C                 |
+| B    | C, G, or U             |
+| D    | A, G, or U             |
+| H    | A, C, or U             |
+| V    | A, C, or G             |
+| I    | Inosine                |
+| X    | Unknown or other       |
+| \|   | Chain separator        |
+| .    | Gap (insertion column) |
+| \*   | Stop                   |
+| -    | Gap                    |
+| ?    | Missing data           |
 
 ## IUPAC Alphabet
 
@@ -73,11 +80,11 @@ It consists of 10 symbols that represent ambiguity in the nucleotide sequence an
 | N    | A, C, G, or U |
 | .    | Gap           |
 
-Note that we use `.` to represent a gap in the sequence.
+In the IUPAC alphabet, `.` represents a gap.
 
 ## Streamline Alphabet
 
-The streamline alphabet includes one additional symbol to the [nucleobase alphabet](#nucleobase-alphabet), `N` to represent unknown nucleobase.
+The streamline alphabet includes one additional symbol to the [nucleobase alphabet](#nucleobase-alphabet), `N` to represent any nucleobase.
 
 | Code | Nucleotide |
 | ---- | ---------- |
@@ -85,7 +92,7 @@ The streamline alphabet includes one additional symbol to the [nucleobase alphab
 | C    | Cytosine   |
 | G    | Guanine    |
 | U    | Uracil     |
-| N    | Unknown    |
+| N    | Any        |
 
 ## Nucleobase Alphabet
 

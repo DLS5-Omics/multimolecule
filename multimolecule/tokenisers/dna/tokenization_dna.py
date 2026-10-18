@@ -36,7 +36,7 @@ class DnaTokenizer(Tokenizer):
     Args:
         alphabet: alphabet to use for tokenization.
 
-            - If is `None`, the standard RNA alphabet will be used.
+            - If is `None`, the standard DNA alphabet will be used.
             - If is a `string`, it should correspond to the name of a predefined alphabet. The options include
                 + `standard`
                 + `iupac`
@@ -51,8 +51,8 @@ class DnaTokenizer(Tokenizer):
     Examples:
         >>> from multimolecule import DnaTokenizer
         >>> tokenizer = DnaTokenizer()
-        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGTNRYSWKMBDHVX|.*-?')["input_ids"]
-        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 2]
+        >>> tokenizer('<pad><cls><eos><unk><mask><null>ACGTNRYSWKMBDHVIX|.*-?')["input_ids"]
+        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2]
         >>> tokenizer('acgt')["input_ids"]
         [1, 6, 7, 8, 9, 2]
         >>> tokenizer('acgu')["input_ids"]

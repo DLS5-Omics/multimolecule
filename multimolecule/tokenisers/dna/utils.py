@@ -80,7 +80,7 @@ def convert_word_embeddings(
     )
 
 
-STANDARD_ALPHABET = list("ACGTNRYSWKMBDHVX|.*-?")
+STANDARD_ALPHABET = list("ACGTNRYSWKMBDHVIX|.*-?")
 
 IUPAC_ALPHABET = list("ACGTNRYSWKMBDHV.")
 
