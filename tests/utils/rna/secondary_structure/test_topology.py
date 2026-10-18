@@ -878,7 +878,10 @@ def test_segment_edges_empty_pairs() -> None:
 def test_segment_edges_pseudoknot() -> None:
     structure = topology.RnaSecondaryStructureTopology("ACGU", "([)]")
     assert structure.nested_stem_segments.edges == []
-    assert structure.all_stem_segments.edges != []
+    stems = structure.all_stem_segments
+    assert stems.graph.edge_index.tolist() == [[0, 1], [0, 1], [1, 0]]
+    assert stems.graph.edge_features["type"].tolist() == [2, 3, 4]
+    assert [(edge.src, edge.dst, edge.type.value) for edge in stems.edges] == [(0, 1, 2), (0, 1, 3), (1, 0, 4)]
     assert [tier.stem_segments.edges for tier in structure.tiers] == [[], []]
     assert all(tier.stem_segments.edges == [] for tier in structure.tiers)
     assert all(tier.stem_segments.graph.num_nodes == 1 for tier in structure.tiers)

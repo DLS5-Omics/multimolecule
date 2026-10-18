@@ -29,6 +29,15 @@ from typing import Any
 import torch
 
 
+def _adjacency_list(edge_index: torch.Tensor, *, undirected: bool = False) -> dict[int, set[int]]:
+    adjacency: dict[int, set[int]] = {}
+    for u, v in edge_index.tolist():
+        adjacency.setdefault(u, set()).add(v)
+        if undirected:
+            adjacency.setdefault(v, set()).add(u)
+    return adjacency
+
+
 @dataclass
 class EdgeTable:
     """Edge index plus aligned feature tensors."""
@@ -63,39 +72,66 @@ class EdgeTable:
 
     def append(self, edge_index: torch.Tensor, feature: dict[str, Any] | None) -> None:
         """Append a single edge with optional features."""
-        edge_index = edge_index.view(1, 2).to(self.edge_index.device, dtype=torch.long)
-        self.edge_index = torch.cat([self.edge_index, edge_index], dim=0)
-        if feature is None:
-            if self.features is None:
-                return
-            raise ValueError("feature must be provided when appending to an EdgeTable with existing features")
-        normalized: dict[str, torch.Tensor] = {}
-        for k, v in feature.items():
-            t = torch.as_tensor(v, device=self.edge_index.device)
-            if t.dim() == 0 or t.shape[0] != 1:
-                t = t.unsqueeze(0)
-            normalized[k] = t
-        if self.features is None:
-            self.features = dict(normalized)
-            return
-        if set(normalized) != set(self.features):
-            missing = set(self.features) - set(normalized)
-            extra = set(normalized) - set(self.features)
-            raise ValueError(f"edge feature keys mismatch; missing={missing} extra={extra}")
-        for key, tensor in normalized.items():
-            self.features[key] = torch.cat([self.features[key], tensor.to(self.features[key].device)], dim=0)
+        self.extend(edge_index.view(1, 2), [feature])
 
     def extend(self, edge_indices: Iterable[torch.Tensor], features: Iterable[dict[str, Any] | None] | None) -> None:
-        if features is None:
-            for edge_idx in edge_indices:
-                self.append(edge_idx, None)
-            return
-        edge_list = list(edge_indices)
-        feat_list = list(features)
-        if len(edge_list) != len(feat_list):
+        """Append a batch, validating features before updating any tensors."""
+        if isinstance(edge_indices, torch.Tensor):
+            if edge_indices.numel() == 0:
+                new_edges = edge_indices.view(0, 2)
+            elif edge_indices.dim() == 2 and edge_indices.shape[1] == 2:
+                new_edges = edge_indices
+            else:
+                raise ValueError("edge indices must have shape (E,2)")
+            new_edges = new_edges.to(self.edge_index.device, dtype=torch.long)
+        else:
+            edge_list = list(edge_indices)
+            new_edges = (
+                torch.cat([edge.view(1, 2).to(self.edge_index.device, dtype=torch.long) for edge in edge_list])
+                if edge_list
+                else self.edge_index.new_empty((0, 2))
+            )
+        feat_list = list(features) if features is not None else [None] * len(new_edges)
+        if len(new_edges) != len(feat_list):
             raise ValueError("edge_indices and features must have the same length")
-        for edge_idx, feat in zip(edge_list, feat_list):
-            self.append(edge_idx, feat)
+        if len(new_edges) == 0:
+            return
+
+        feature_chunks: dict[str, list[torch.Tensor]] = {}
+        feature_keys = set(self.features) if self.features is not None else None
+        for feature in feat_list:
+            if feature is None:
+                if feature_keys is not None:
+                    raise ValueError("feature must be provided for every edge in an EdgeTable with features")
+                continue
+            if feature_keys is None:
+                if feature and (len(self) or any(previous is None for previous in feat_list)):
+                    raise ValueError("feature must be provided for every edge in an EdgeTable with features")
+                feature_keys = set(feature)
+            if set(feature) != feature_keys:
+                missing = feature_keys - set(feature)
+                extra = set(feature) - feature_keys
+                raise ValueError(f"edge feature keys mismatch; missing={missing} extra={extra}")
+            for key, value in feature.items():
+                tensor = torch.as_tensor(value, device=self.edge_index.device)
+                if tensor.dim() == 0 or tensor.shape[0] != 1:
+                    tensor = tensor.unsqueeze(0)
+                feature_chunks.setdefault(key, []).append(tensor)
+
+        new_features = None
+        if feature_keys is not None:
+            new_features = {}
+            for key, chunks in feature_chunks.items():
+                if self.features is not None:
+                    existing = self.features[key]
+                    chunks = [existing] + [chunk.to(existing.device) for chunk in chunks]
+                new_features[key] = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=0)
+        new_edge_index = torch.cat([self.edge_index, new_edges], dim=0)
+        self.edge_index = new_edge_index
+        if self.features is None:
+            self.features = new_features
+        elif new_features is not None:
+            self.features.update(new_features)
 
     def prune_(self, mask: torch.Tensor) -> None:
         """In-place keep only edges where mask is True."""
@@ -216,30 +252,41 @@ class _BaseGraph:
         attrs: Iterable[dict[str, Any] | None] | None = None,
     ) -> None:
         """Add multiple edges, optionally with attributes; skips duplicates unless multi-edges are allowed."""
-        if attrs is None:
-            for u, v in edges:
-                self.add_edge(u, v, attr=None)
-            return
-        edge_list = list(edges)
-        attr_list = list(attrs)
+        edge_list = [self._canonical_edge(u, v) for u, v in edges]
+        attr_list = list(attrs) if attrs is not None else [None] * len(edge_list)
         if len(edge_list) != len(attr_list):
             raise ValueError("edges and attrs must have the same length")
+        if not edge_list:
+            return
+        seen = set(map(tuple, self.edge_index.tolist())) if not self.allow_multi_edges else set()
+        accepted_edges = []
+        accepted_attrs = []
         for (u, v), attr in zip(edge_list, attr_list):
-            self.add_edge(u, v, attr=attr)
+            if not self.allow_self_loops and u == v:
+                continue
+            if not self.allow_multi_edges:
+                if (u, v) in seen:
+                    continue
+                seen.add((u, v))
+            accepted_edges.append((u, v))
+            accepted_attrs.append(attr)
+        if accepted_edges:
+            edge_index = torch.tensor(accepted_edges, dtype=torch.long, device=self.edge_index.device)
+            self._edges.extend(edge_index, accepted_attrs)
+        self.add_nodes(node for edge in edge_list for node in edge)
 
     def _canonical_edge(self, u: int, v: int) -> tuple[int, int]:
         """Canonicalize edge representation; overridden by undirected graphs."""
         return int(u), int(v)
 
     def reindex_nodes(self, mapping: dict[int, int]) -> None:
-        """Relabel nodes and update edges in-place according to a mapping."""
+        """Relabel nodes simultaneously in one pass over the original edge endpoints."""
         if not mapping:
             return
-        idx = self.edge_index.clone()
-        for src, dst in mapping.items():
-            idx[idx == int(src)] = int(dst)
-        self._edges.edge_index = idx
-        self.nodes = {mapping.get(n, n) for n in self.nodes}
+        mapping = {int(src): int(dst) for src, dst in mapping.items()}
+        edge_index = [[mapping.get(u, u), mapping.get(v, v)] for u, v in self.edge_index.tolist()]
+        self._edges.edge_index = self.edge_index.new_tensor(edge_index).reshape(-1, 2)
+        self.nodes = {mapping.get(node, node) for node in self.nodes}
 
     def coalesce(self) -> None:
         """Drop duplicate edges (keeping the first occurrence) and align features."""
@@ -294,19 +341,15 @@ class UndirectedGraph(_BaseGraph):
 
     def neighbors(self, node: int, edge_type: int | None = None) -> list[int]:
         node = int(node)
-        neigh = set()
-        if self.edge_index.numel() > 0:
-            mask0 = self.edge_index[:, 0] == node
-            mask1 = self.edge_index[:, 1] == node
-            mask = mask0 | mask1
-            type_mask = self._type_mask(edge_type)
-            if type_mask is not None:
-                mask = mask & type_mask
-            if torch.any(mask0):
-                neigh.update(self.edge_index[mask & mask0, 1].tolist())
-            if torch.any(mask1):
-                neigh.update(self.edge_index[mask & mask1, 0].tolist())
-        return sorted(neigh)
+        if self.edge_index.numel() == 0:
+            return []
+        mask = (self.edge_index[:, 0] == node) | (self.edge_index[:, 1] == node)
+        type_mask = self._type_mask(edge_type)
+        if type_mask is not None:
+            mask = mask & type_mask
+        incident = self.edge_index[mask]
+        neighbors = torch.where(incident[:, 0] == node, incident[:, 1], incident[:, 0])
+        return sorted(set(neighbors.tolist()))
 
     def edge_list(self, edge_type: int | None = None) -> list[tuple[int, int]]:
         if self.edge_index.numel() == 0:
@@ -322,15 +365,19 @@ class UndirectedGraph(_BaseGraph):
         return len(self.neighbors(node))
 
     def degree_by_type(self, node: int) -> dict[int, int]:
-        """Return degree counts split by edge type (when type feature exists)."""
-        counts: dict[int, int] = {}
+        """Count unique neighbors per edge type in one edge-table scan."""
         if self.edge_features is None or "type" not in self.edge_features:
-            counts[0] = self.degree(node)
-            return counts
-        types = torch.unique(self.edge_features["type"].reshape(-1)).tolist()
-        for edge_type in types:
-            counts[int(edge_type)] = len(self.neighbors(node, edge_type=edge_type))
-        return counts
+            return {0: self.degree(node)}
+        node = int(node)
+        neighbors_by_type: dict[int, set[int]] = {}
+        types = self.edge_features["type"].reshape(-1).tolist()
+        for (u, v), edge_type in zip(self.edge_index.tolist(), types):
+            neighbors = neighbors_by_type.setdefault(int(edge_type), set())
+            if u == node:
+                neighbors.add(v)
+            elif v == node:
+                neighbors.add(u)
+        return {edge_type: len(neighbors) for edge_type, neighbors in sorted(neighbors_by_type.items())}
 
     def _all_nodes(self) -> list[int]:
         if self.nodes:
@@ -341,23 +388,23 @@ class UndirectedGraph(_BaseGraph):
         return sorted(int(v) for v in vals)
 
     def connected_components(self) -> list[list[int]]:
-        """Return connected components with deterministic (sorted) ordering."""
+        """Return sorted components using an O(V + E) traversal, plus sorting."""
+        adjacency = _adjacency_list(self.edge_index, undirected=True)
         comps: list[list[int]] = []
-        all_nodes = sorted(self._all_nodes())
+        all_nodes = sorted(self.nodes or adjacency)
         visited: set[int] = set()
         for start in all_nodes:
             if start in visited:
                 continue
+            visited.add(start)
             stack = [start]
             comp: list[int] = []
             while stack:
                 v = stack.pop()
-                if v in visited:
-                    continue
-                visited.add(v)
                 comp.append(v)
-                for w in self.neighbors(v):
+                for w in adjacency.get(v, ()):
                     if w not in visited:
+                        visited.add(w)
                         stack.append(w)
             comps.append(sorted(comp))
         return comps
@@ -378,20 +425,21 @@ class UndirectedGraph(_BaseGraph):
         )
 
     def is_path_component(self, component: Sequence[int]) -> tuple[bool, list[int]]:
-        """Check whether the given component induces a simple path in this undirected graph."""
-        if len(component) == 1:
+        """Check for a simple path with one edge-table scan and a local traversal."""
+        if len(component) <= 1:
             return False, []
-        deg1 = [v for v in component if self.degree(v) == 1]
+        adjacency = _adjacency_list(self.edge_index, undirected=True)
+        deg1 = [v for v in component if len(adjacency.get(int(v), ())) == 1]
         if len(deg1) != 2:
             return False, []
-        if any(self.degree(v) > 2 for v in component):
+        if any(len(adjacency.get(int(v), ())) > 2 for v in component):
             return False, []
         start, end = sorted(deg1)
         path = [start]
         visited = {start}
         current = start
         while current != end:
-            nbrs = [n for n in self.neighbors(current) if n not in visited]
+            nbrs = [n for n in adjacency.get(int(current), ()) if n not in visited]
             if len(nbrs) != 1:
                 return False, []
             nxt = nbrs[0]
@@ -417,7 +465,7 @@ class DirectedGraph(_BaseGraph):
         type_mask = self._type_mask(edge_type)
         if type_mask is not None:
             mask = mask & type_mask
-        return sorted(set(self.edge_index[mask, 1].tolist())) if torch.any(mask) else []
+        return sorted(set(self.edge_index[mask, 1].tolist()))
 
     def predecessors(self, node: int, edge_type: int | None = None) -> list[int]:
         node = int(node)
@@ -427,7 +475,7 @@ class DirectedGraph(_BaseGraph):
         type_mask = self._type_mask(edge_type)
         if type_mask is not None:
             mask = mask & type_mask
-        return sorted(set(self.edge_index[mask, 0].tolist())) if torch.any(mask) else []
+        return sorted(set(self.edge_index[mask, 0].tolist()))
 
     def undirected(self) -> UndirectedGraph:
         g = UndirectedGraph(device=self.edge_index.device, allow_multi_edges=self.allow_multi_edges)
@@ -441,19 +489,20 @@ class DirectedGraph(_BaseGraph):
 
     def connected_components(self) -> list[list[int]]:
         """Return weakly connected components (via an undirected view)."""
-        return self.undirected().connected_components()
+        nodes = self.nodes | set(self.edge_index.reshape(-1).tolist())
+        return UndirectedGraph(edge_index=self.edge_index, nodes=nodes).connected_components()
 
     def is_path_component(self, component: Sequence[int]) -> bool:
         """Check whether the given component induces a simple path in this directed graph."""
         nodes = {int(v) for v in component}
         if len(nodes) <= 1:
             return False
-        start = sorted(nodes)[0]
-        path = self.walk_successor_path(start)
+        adjacency = _adjacency_list(self.edge_index)
+        path = self._walk_successor_path(min(nodes), adjacency)
         if set(path) != nodes or len(path) != len(nodes):
             return False
         # Last node must also have a successor (reject open-ended paths).
-        return len(self.successors(path[-1])) > 0
+        return bool(adjacency.get(path[-1]))
 
     def walk_successor_path(self, start: int) -> list[int]:
         """
@@ -462,16 +511,20 @@ class DirectedGraph(_BaseGraph):
         Returns the visited node sequence (including ``start``). Stops when out-degree != 1
         or the next node was already visited.
         """
+        return self._walk_successor_path(int(start), _adjacency_list(self.edge_index))
+
+    @staticmethod
+    def _walk_successor_path(start: int, adjacency: dict[int, set[int]]) -> list[int]:
         path: list[int] = []
-        current = int(start)
+        current = start
         visited: set[int] = set()
         while True:
             path.append(current)
             visited.add(current)
-            succ = self.successors(current)
+            succ = adjacency.get(current, set())
             if len(succ) != 1:
                 break
-            nxt = succ[0]
+            nxt = next(iter(succ))
             if nxt in visited:
                 break
             current = nxt

@@ -147,21 +147,27 @@ def _maximum_weight_matching_components(edge_weights: dict[Edge, float], *, inte
     if all(count <= 1 for count in degree.values()):
         return list(edge_weights)
 
-    matched: list[Edge] = []
-    seen: set[int] = set()
+    components: list[dict[Edge, float]] = []
+    component_by_node: dict[int, int] = {}
     for start in sorted(neighbors):
-        if start in seen:
+        if start in component_by_node:
             continue
+        component_idx = len(components)
+        components.append({})
         stack = [start]
-        component: set[int] = set()
+        component_by_node[start] = component_idx
         while stack:
             node = stack.pop()
-            if node in component:
-                continue
-            component.add(node)
-            stack.extend(neighbor for neighbor in neighbors[node] if neighbor not in component)
-        seen.update(component)
-        component_edges = {edge: weight for edge, weight in edge_weights.items() if edge[0] in component}
+            for neighbor in neighbors[node]:
+                if neighbor not in component_by_node:
+                    component_by_node[neighbor] = component_idx
+                    stack.append(neighbor)
+
+    for edge, weight in edge_weights.items():
+        components[component_by_node[edge[0]]][edge] = weight
+
+    matched: list[Edge] = []
+    for component_edges in components:
         if len(component_edges) == 1:
             matched.extend(component_edges)
         else:

@@ -730,13 +730,17 @@ class RnaSecondaryStructureTopology(UndirectedGraph):
         graph.add_nodes(helix_nodes)
 
         helix_key_to_idx = {(*helix.key, helix.tier): idx for idx, helix in enumerate(helices)}
+        edge_indices: List[Edge] = []
+        edge_attrs: List[Dict[str, int]] = []
         for loop_idx, loop in enumerate(loops):
             for helix in loop.anchor_helices:
                 key = (*helix.key, helix.tier)
                 helix_idx = helix_key_to_idx.get(key)
                 if helix_idx is None:
                     continue
-                graph.add_edge(loop_idx, loop_count + helix_idx, attr={"tier": helix.tier})
+                edge_indices.append((loop_idx, loop_count + helix_idx))
+                edge_attrs.append({"tier": helix.tier})
+        graph.add_edges(edge_indices, attrs=edge_attrs)
 
         return LoopHelixGraph(graph, loops, tuple(helices), loop_nodes, helix_nodes)
 
@@ -942,21 +946,7 @@ class LoopHelixGraph:
         return adj
 
     def _neighbors(self, node: int) -> Tuple[int, ...]:
-        edge_index = self.graph.edge_index
-        if edge_index.numel() == 0:
-            return ()
-        mask0 = edge_index[:, 0] == node
-        mask1 = edge_index[:, 1] == node
-        if not torch.any(mask0).item() and not torch.any(mask1).item():
-            return ()
-        neighbors: List[int] = []
-        if torch.any(mask0).item():
-            neighbors.extend(edge_index[mask0][:, 1].tolist())
-        if torch.any(mask1).item():
-            neighbors.extend(edge_index[mask1][:, 0].tolist())
-        if not neighbors:
-            return ()
-        return tuple(sorted({int(n) for n in neighbors}))
+        return tuple(self.graph.neighbors(node))
 
     def _neighbor_indices(self, node: int, *, loop_nodes: bool) -> Tuple[int, ...]:
         neighbors = self._neighbors(node)
@@ -2440,12 +2430,10 @@ class DuplexSegmentsBase(Generic[SegmentT]):
                 for dst in start_pos_to_segments.get(next_start, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.START_START.value})
                     edges.append(StemEdge(idx, dst, segment.start_3p, next_start, StemEdgeType.START_START, tier))
                 for dst in stop_pos_to_segments.get(next_start, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.START_STOP.value})
                     edges.append(StemEdge(idx, dst, segment.start_3p, next_start, StemEdgeType.START_STOP, tier))
 
             stop_pos = segment.stop_3p if stop_endpoint == "3p" else segment.stop_5p
@@ -2454,13 +2442,12 @@ class DuplexSegmentsBase(Generic[SegmentT]):
                 for dst in start_pos_to_segments.get(next_stop, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.STOP_START.value})
                     edges.append(StemEdge(idx, dst, stop_pos, next_stop, StemEdgeType.STOP_START, tier))
                 for dst in stop_pos_to_segments.get(next_stop, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.STOP_STOP.value})
                     edges.append(StemEdge(idx, dst, stop_pos, next_stop, StemEdgeType.STOP_STOP, tier))
+        graph.add_edges(((edge.src, edge.dst) for edge in edges), attrs=({"type": edge.type.value} for edge in edges))
         return graph, edges
 
     @staticmethod

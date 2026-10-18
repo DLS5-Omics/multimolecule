@@ -63,6 +63,15 @@ def test_maximum_weight_matching_torch_backend() -> None:
     assert got.tolist() == [[0, 2], [1, 3]]
 
 
+def test_maximum_weight_matching_handles_disconnected_components() -> None:
+    edge_index = np.array([(10, 11), (0, 1), (8, 9), (0, 2), (1, 3)])
+    edge_weight = np.array([0.4, 0.9, 0.6, 0.8, 0.8])
+
+    got = maximum_weight_matching(edge_index, edge_weight)
+
+    assert got.tolist() == [[0, 2], [1, 3], [8, 9], [10, 11]]
+
+
 def test_maximum_weight_matching_random_small_against_bruteforce() -> None:
     rng = np.random.default_rng(0)
     all_edges = np.array(list(itertools.combinations(range(7), 2)), dtype=int)
