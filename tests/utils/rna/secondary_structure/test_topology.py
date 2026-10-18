@@ -787,21 +787,21 @@ def test_loop_helix_graph_hairpin() -> None:
     loop_helix = structure.loop_helix_graph()
     assert len(loop_helix.loops) == 2
     assert len(loop_helix.helices) == 1
-    assert loop_helix.loop_nodes == (0, 1)
-    assert loop_helix.helix_nodes == (2,)
+    assert loop_helix.loop_nodes.tolist() == [0, 1]
+    assert loop_helix.helix_nodes.tolist() == [2]
     assert set(as_tuple_list(loop_helix.graph.edge_index)) == {(0, 2), (1, 2)}
     tiers = loop_helix.graph.edge_features["tier"].reshape(-1).tolist()
     assert set(tiers) == {0}
-    assert loop_helix.loop_helix_indices(0) == (0,)
-    assert loop_helix.loop_helix_indices(1) == (0,)
-    assert loop_helix.loop_neighbor_nodes(0) == (2,)
-    assert loop_helix.loop_neighbor_nodes(1) == (2,)
-    assert set(loop_helix.helix_loop_indices(0)) == {0, 1}
-    assert set(loop_helix.helix_neighbor_nodes(0)) == {0, 1}
+    assert loop_helix.loop_helix_indices(0).tolist() == [0]
+    assert loop_helix.loop_helix_indices(1).tolist() == [0]
+    assert loop_helix.loop_neighbor_nodes(0).tolist() == [2]
+    assert loop_helix.loop_neighbor_nodes(1).tolist() == [2]
+    assert loop_helix.helix_loop_indices(0).tolist() == [0, 1]
+    assert loop_helix.helix_neighbor_nodes(0).tolist() == [0, 1]
     assert len(loop_helix.loop_helices(0)) == 1
     assert len(loop_helix.helix_loops(0)) == 2
-    assert set(loop_helix.loop_helix_edges()) == {(0, 0), (1, 0)}
-    assert set(loop_helix.edge_list()) == {(0, 2), (1, 2)}
+    assert set(as_tuple_list(loop_helix.loop_helix_edges())) == {(0, 0), (1, 0)}
+    assert set(as_tuple_list(loop_helix.edge_list())) == {(0, 2), (1, 2)}
     adj = loop_helix.adjacency_matrix()
     assert tuple(adj.shape) == (3, 3)
     assert adj[0, 2].item() is True
@@ -824,13 +824,78 @@ def test_loop_helix_graph_multi_helix_neighbors() -> None:
     assert max(len(loop_helix.loop_helix_indices(idx)) for idx in range(loop_count)) > 1
     for idx in range(loop_count):
         neighbors = loop_helix.loop_neighbor_nodes(idx)
-        assert all(node >= loop_count for node in neighbors)
+        assert (neighbors >= loop_count).all().item()
         assert len(loop_helix.loop_helix_indices(idx)) == len(neighbors)
     for idx in range(helix_count):
         neighbors = loop_helix.helix_neighbor_nodes(idx)
-        assert neighbors
-        assert all(node < loop_count for node in neighbors)
+        assert neighbors.numel() > 0
+        assert (neighbors < loop_count).all().item()
         assert len(loop_helix.helix_loop_indices(idx)) == len(neighbors)
+
+
+@pytest.mark.parametrize(
+    "device",
+    ["cpu", pytest.param("cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA"))],
+)
+def test_loop_helix_queries_keep_tensors_on_device(monkeypatch, device) -> None:
+    structure = topology.RnaSecondaryStructureTopology("ACGUAA", "(...).", device=torch.device(device))
+    loop_helix = structure.loop_helix_graph()
+
+    def reject_export(*args, **kwargs):
+        raise AssertionError("Graph queries must keep their tensor data on device")
+
+    with monkeypatch.context() as patch:
+        for method in ("tolist", "item", "cpu", "numpy"):
+            patch.setattr(torch.Tensor, method, reject_export)
+        results = (
+            loop_helix.loop_helix_indices(0),
+            loop_helix.loop_neighbor_nodes(0),
+            loop_helix.helix_loop_indices(0),
+            loop_helix.helix_neighbor_nodes(0),
+            loop_helix.loop_helix_edges(),
+            loop_helix.edge_list(),
+        )
+
+    assert results[0].tolist() == [0]
+    assert results[1].tolist() == [2]
+    assert results[2].tolist() == results[3].tolist() == [0, 1]
+    assert results[4].tolist() == [[0, 0], [1, 0]]
+    assert results[5].tolist() == [[0, 2], [1, 2]]
+    assert all(isinstance(result, torch.Tensor) for result in results)
+    assert all(result.device == structure.device for result in results)
+    assert all(result.dtype == structure.edge_index.dtype for result in results)
+
+
+def test_secondary_structure_keeps_single_isolated_nucleotide() -> None:
+    structure = topology.RnaSecondaryStructureTopology("A", ".")
+
+    assert structure.nodes.tolist() == [0]
+    assert structure.num_nodes.item() == 1
+    assert structure.connected_components().tolist() == [[0]]
+
+
+def test_secondary_structure_edge_subgraph_returns_an_undirected_graph() -> None:
+    structure = topology.RnaSecondaryStructureTopology("AAAA", "(..)")
+    mask = structure.edge_mask(edge_type=topology.EdgeType.NESTED_PAIRS.value)
+
+    subgraph = structure.edge_subgraph(mask)
+
+    assert type(subgraph) is topology.UndirectedGraph
+    assert subgraph.edge_index.tolist() == [[0, 3]]
+    assert torch.equal(subgraph.nodes, structure.nodes)
+    assert torch.equal(subgraph.edge_features["type"], structure.edge_features["type"][mask])
+
+
+def test_loop_helix_graph_without_helices_has_empty_tensor_edges() -> None:
+    structure = topology.RnaSecondaryStructureTopology("AAAA", "....")
+    loop_helix = structure.loop_helix_graph()
+
+    assert loop_helix.helix_nodes.shape == (0,)
+    assert loop_helix.edge_list().shape == (0, 2)
+    assert loop_helix.loop_helix_edges().shape == (0, 2)
+    assert loop_helix.loop_helix_indices(0).shape == (0,)
+    assert loop_helix.loop_neighbor_nodes(0).shape == (0,)
+    assert loop_helix.loop_helices(0) == ()
 
 
 def test_loop_helix_graph_pairs_taxonomy() -> None:
@@ -839,7 +904,7 @@ def test_loop_helix_graph_pairs_taxonomy() -> None:
     loop_helix = structure.loop_helix_graph(pairs=pairs, mode="taxonomy")
     assert len(loop_helix.helices) == 1
     assert len(loop_helix.loops) == 1
-    assert loop_helix.loop_helix_edges() == [(0, 0)]
+    assert loop_helix.loop_helix_edges().tolist() == [[0, 0]]
 
 
 def test_loop_helix_graph_nested_view() -> None:
@@ -872,16 +937,19 @@ def test_segment_edges_empty_pairs() -> None:
     assert structure.nested_stem_segments.edges == []
     assert structure.all_stem_segments.edges == []
     assert structure.tiers[0].stem_segments.edges == []
-    assert structure.tiers[0].stem_segments.graph.num_nodes == 0
+    assert structure.tiers[0].stem_segments.graph.num_nodes.item() == 0
 
 
 def test_segment_edges_pseudoknot() -> None:
     structure = topology.RnaSecondaryStructureTopology("ACGU", "([)]")
     assert structure.nested_stem_segments.edges == []
-    assert structure.all_stem_segments.edges != []
+    stems = structure.all_stem_segments
+    assert stems.graph.edge_index.tolist() == [[0, 1], [0, 1], [1, 0]]
+    assert stems.graph.edge_features["type"].tolist() == [2, 3, 4]
+    assert [(edge.src, edge.dst, edge.type.value) for edge in stems.edges] == [(0, 1, 2), (0, 1, 3), (1, 0, 4)]
     assert [tier.stem_segments.edges for tier in structure.tiers] == [[], []]
     assert all(tier.stem_segments.edges == [] for tier in structure.tiers)
-    assert all(tier.stem_segments.graph.num_nodes == 1 for tier in structure.tiers)
+    assert all(tier.stem_segments.graph.num_nodes.item() == 1 for tier in structure.tiers)
 
 
 def test_stem_regions_contiguous() -> None:

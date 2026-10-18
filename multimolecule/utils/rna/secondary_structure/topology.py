@@ -171,6 +171,7 @@ class RnaSecondaryStructureTopology(UndirectedGraph):
         self._all_pairs = pairs
         self._nested_pairs = nested_pairs
         self._pseudoknot_pairs = pseudoknot_pairs
+        kwargs.setdefault("nodes", torch.arange(length, dtype=torch.long, device=device))
         super().__init__(edge_index=edge_index, edge_features={"type": edge_types}, device=device, **kwargs)
 
     @property
@@ -723,20 +724,25 @@ class RnaSecondaryStructureTopology(UndirectedGraph):
         helices = HelixSegments.segments_by_tier(pairs_list, tiers=level_indices, device=device)
 
         loop_count = len(loops)
-        loop_nodes = tuple(range(loop_count))
-        helix_nodes = tuple(range(loop_count, loop_count + len(helices)))
-        graph = UndirectedGraph(device=device)
-        graph.add_nodes(loop_nodes)
-        graph.add_nodes(helix_nodes)
+        loop_nodes = torch.arange(loop_count, dtype=torch.long, device=device)
+        helix_nodes = torch.arange(loop_count, loop_count + len(helices), dtype=torch.long, device=device)
+        graph = UndirectedGraph(nodes=torch.cat((loop_nodes, helix_nodes)), device=device)
 
         helix_key_to_idx = {(*helix.key, helix.tier): idx for idx, helix in enumerate(helices)}
+        edge_indices: List[Edge] = []
+        edge_tiers: List[int] = []
         for loop_idx, loop in enumerate(loops):
             for helix in loop.anchor_helices:
                 key = (*helix.key, helix.tier)
                 helix_idx = helix_key_to_idx.get(key)
                 if helix_idx is None:
                     continue
-                graph.add_edge(loop_idx, loop_count + helix_idx, attr={"tier": helix.tier})
+                edge_indices.append((loop_idx, loop_count + helix_idx))
+                edge_tiers.append(helix.tier)
+        graph.add_edges(
+            torch.tensor(edge_indices, dtype=torch.long, device=device).reshape(-1, 2),
+            attrs={"tier": torch.tensor(edge_tiers, dtype=torch.long, device=device)},
+        )
 
         return LoopHelixGraph(graph, loops, tuple(helices), loop_nodes, helix_nodes)
 
@@ -874,14 +880,14 @@ class LoopHelixGraph:
         graph: UndirectedGraph,
         loops: Loops,
         helices: Sequence[HelixSegment],
-        loop_nodes: Sequence[int],
-        helix_nodes: Sequence[int],
+        loop_nodes: Tensor,
+        helix_nodes: Tensor,
     ) -> None:
         self.graph = graph
         self.loops = loops
         self.helices = tuple(helices)
-        self.loop_nodes = tuple(loop_nodes)
-        self.helix_nodes = tuple(helix_nodes)
+        self.loop_nodes = torch.as_tensor(loop_nodes, dtype=graph.edge_index.dtype, device=graph.device)
+        self.helix_nodes = torch.as_tensor(helix_nodes, dtype=graph.edge_index.dtype, device=graph.device)
 
     def __repr__(self) -> str:
         edge_count = int(self.graph.edge_index.shape[0])
@@ -895,18 +901,18 @@ class LoopHelixGraph:
             parts.append(f"tiers={tiers}")
         return f"{self.__class__.__name__}({', '.join(parts)})"
 
-    def loop_helix_indices(self, loop_idx: int) -> Tuple[int, ...]:
+    def loop_helix_indices(self, loop_idx: int) -> Tensor:
         loop_node = self.loop_nodes[loop_idx]
         return self._neighbor_indices(loop_node, loop_nodes=False)
 
-    def loop_neighbor_nodes(self, loop_idx: int) -> Tuple[int, ...]:
+    def loop_neighbor_nodes(self, loop_idx: int) -> Tensor:
         return self._neighbors(self.loop_nodes[loop_idx])
 
-    def helix_loop_indices(self, helix_idx: int) -> Tuple[int, ...]:
+    def helix_loop_indices(self, helix_idx: int) -> Tensor:
         helix_node = self.helix_nodes[helix_idx]
         return self._neighbor_indices(helix_node, loop_nodes=True)
 
-    def helix_neighbor_nodes(self, helix_idx: int) -> Tuple[int, ...]:
+    def helix_neighbor_nodes(self, helix_idx: int) -> Tensor:
         return self._neighbors(self.helix_nodes[helix_idx])
 
     def loop_helices(self, loop_idx: int) -> Tuple[HelixSegment, ...]:
@@ -915,20 +921,17 @@ class LoopHelixGraph:
     def helix_loops(self, helix_idx: int) -> Tuple[Loop, ...]:
         return tuple(self.loops[idx] for idx in self.helix_loop_indices(helix_idx))
 
-    def loop_helix_edges(self) -> List[Edge]:
-        edge_list = self._edge_list()
-        if not edge_list:
-            return []
-        edges: List[Edge] = []
+    def loop_helix_edges(self) -> Tensor:
+        edge_index = self.graph.edge_index
         loop_count = len(self.loops)
-        for u, v in edge_list:
-            if u < loop_count <= v:
-                edges.append((u, v - loop_count))
-            elif v < loop_count <= u:
-                edges.append((v, u - loop_count))
-        return edges
+        source, target = edge_index.unbind(1)
+        forward = (source < loop_count) & (target >= loop_count)
+        reverse = (target < loop_count) & (source >= loop_count)
+        loops = torch.where(forward, source, target)
+        helices = torch.where(forward, target, source) - loop_count
+        return torch.stack((loops, helices), dim=1)[forward | reverse]
 
-    def edge_list(self) -> List[Edge]:
+    def edge_list(self) -> Tensor:
         return self._edge_list()
 
     def adjacency_matrix(self, dtype: torch.dtype = torch.bool) -> Tensor:
@@ -941,37 +944,18 @@ class LoopHelixGraph:
         adj[edge_index[:, 1], edge_index[:, 0]] = True if dtype == torch.bool else 1
         return adj
 
-    def _neighbors(self, node: int) -> Tuple[int, ...]:
-        edge_index = self.graph.edge_index
-        if edge_index.numel() == 0:
-            return ()
-        mask0 = edge_index[:, 0] == node
-        mask1 = edge_index[:, 1] == node
-        if not torch.any(mask0).item() and not torch.any(mask1).item():
-            return ()
-        neighbors: List[int] = []
-        if torch.any(mask0).item():
-            neighbors.extend(edge_index[mask0][:, 1].tolist())
-        if torch.any(mask1).item():
-            neighbors.extend(edge_index[mask1][:, 0].tolist())
-        if not neighbors:
-            return ()
-        return tuple(sorted({int(n) for n in neighbors}))
+    def _neighbors(self, node: int | Tensor) -> Tensor:
+        return self.graph.neighbors(node)
 
-    def _neighbor_indices(self, node: int, *, loop_nodes: bool) -> Tuple[int, ...]:
+    def _neighbor_indices(self, node: int | Tensor, *, loop_nodes: bool) -> Tensor:
         neighbors = self._neighbors(node)
-        if not neighbors:
-            return ()
         loop_count = len(self.loops)
         if loop_nodes:
-            return tuple(n for n in neighbors if n < loop_count)
-        return tuple(n - loop_count for n in neighbors if n >= loop_count)
+            return neighbors[neighbors < loop_count]
+        return neighbors[neighbors >= loop_count] - loop_count
 
-    def _edge_list(self) -> List[Edge]:
-        edge_index = self.graph.edge_index
-        if edge_index.numel() == 0:
-            return []
-        return [(int(edge[0]), int(edge[1])) for edge in edge_index.tolist()]
+    def _edge_list(self) -> Tensor:
+        return self.graph.edge_list()
 
 
 class Tier:
@@ -2413,7 +2397,9 @@ class DuplexSegmentsBase(Generic[SegmentT]):
         stop_endpoint: str = "5p",
         stop_target: str = "3p",
     ) -> Tuple[DirectedGraph, List[StemEdge]]:
-        graph = DirectedGraph(device=device, allow_multi_edges=True)
+        graph = DirectedGraph(
+            nodes=torch.arange(len(segments), dtype=torch.long, device=device), device=device, allow_multi_edges=True
+        )
         edges: List[StemEdge] = []
         if not segments:
             return graph, edges
@@ -2434,18 +2420,15 @@ class DuplexSegmentsBase(Generic[SegmentT]):
         next_pos_by_endpoint = DuplexSegmentsBase._next_positions_map(paired_positions, endpoints)
 
         for idx, segment in enumerate(segments):
-            graph.add_node(idx)
             next_start = next_pos_by_endpoint.get(segment.start_3p)
             if next_start is not None:
                 for dst in start_pos_to_segments.get(next_start, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.START_START.value})
                     edges.append(StemEdge(idx, dst, segment.start_3p, next_start, StemEdgeType.START_START, tier))
                 for dst in stop_pos_to_segments.get(next_start, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.START_STOP.value})
                     edges.append(StemEdge(idx, dst, segment.start_3p, next_start, StemEdgeType.START_STOP, tier))
 
             stop_pos = segment.stop_3p if stop_endpoint == "3p" else segment.stop_5p
@@ -2454,13 +2437,15 @@ class DuplexSegmentsBase(Generic[SegmentT]):
                 for dst in start_pos_to_segments.get(next_stop, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.STOP_START.value})
                     edges.append(StemEdge(idx, dst, stop_pos, next_stop, StemEdgeType.STOP_START, tier))
                 for dst in stop_pos_to_segments.get(next_stop, []):
                     if dst == idx:
                         continue
-                    graph.add_edge(idx, dst, attr={"type": StemEdgeType.STOP_STOP.value})
                     edges.append(StemEdge(idx, dst, stop_pos, next_stop, StemEdgeType.STOP_STOP, tier))
+        graph.add_edges(
+            torch.tensor([(edge.src, edge.dst) for edge in edges], dtype=torch.long, device=device).reshape(-1, 2),
+            attrs={"type": torch.tensor([edge.type.value for edge in edges], dtype=torch.long, device=device)},
+        )
         return graph, edges
 
     @staticmethod
