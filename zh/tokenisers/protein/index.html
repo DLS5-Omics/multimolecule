@@ -1896,15 +1896,20 @@
 </div><p>MultiMolecule provides a set of predefined alphabets for tokenization.</p>
 <h2 id="standard-alphabet">Standard Alphabet<a class="headerlink" href="#standard-alphabet" title="Permanent link">&para;</a></h2>
 <p>The standard alphabet is an extended version of the <a href="#iupac-alphabet">IUPAC alphabet</a>.
-This extension includes six additional symbols to the <a href="#iupac-alphabet">IUPAC alphabet</a>, <code>J</code>, <code>U</code>, <code>O</code>, <code>.</code>, <code>-</code>, and <code>*</code>.</p>
+This extension includes three additional amino acid symbols to the <a href="#iupac-alphabet">IUPAC alphabet</a>, <code>J</code>, <code>U</code>, and <code>O</code>,
+and five sequence symbols, <code>|</code>, <code>.</code>, <code>*</code>, <code>-</code>, and <code>?</code>.</p>
 <ul>
 <li><code>J</code>: Xle; Leucine (L) or Isoleucine (I)</li>
 <li><code>U</code>: Sec; Selenocysteine</li>
 <li><code>O</code>: Pyl; Pyrrolysine</li>
-<li><code>.</code>: is not used in MultiMolecule and is reserved for future use.</li>
-<li><code>-</code>: is not used in MultiMolecule and is reserved for future use.</li>
-<li><code>*</code>: is not used in MultiMolecule and is reserved for future use.</li>
+<li><code>|</code>: Chain separator.</li>
+<li><code>-</code>: Gap; a deleted position in an aligned sequence.</li>
+<li><code>.</code>: Gap in an insertion column of an alignment.</li>
+<li><code>*</code>: Stop; a translation stop (terminator).</li>
+<li><code>?</code>: Missing data; the content of an aligned position is not known.
+  It differs from <code>-</code>, which states that the position is deleted.</li>
 </ul>
+<p><code>X</code> represents an unknown or other amino acid: one that cannot be mapped to any other symbol of the alphabet.</p>
 <table>
 <thead>
 <tr>
@@ -2017,7 +2022,7 @@ This extension includes six additional symbols to the <a href="#iupac-alphabet">
 <tr>
 <td>X</td>
 <td>Xaa</td>
-<td>Any amino acid</td>
+<td>Unknown or other amino acid</td>
 </tr>
 <tr>
 <td>Z</td>
@@ -2045,19 +2050,29 @@ This extension includes six additional symbols to the <a href="#iupac-alphabet">
 <td>Pyrrolysine</td>
 </tr>
 <tr>
+<td>|</td>
+<td>|||</td>
+<td>Chain separator</td>
+</tr>
+<tr>
 <td>.</td>
 <td>&hellip;</td>
-<td>Not Used</td>
+<td>Gap (insertion column)</td>
 </tr>
 <tr>
 <td>*</td>
 <td>***</td>
-<td>Not Used</td>
+<td>Stop</td>
 </tr>
 <tr>
 <td>-</td>
 <td>&mdash;</td>
-<td>Not Used</td>
+<td>Gap</td>
+</tr>
+<tr>
+<td>?</td>
+<td>???</td>
+<td>Missing data</td>
 </tr>
 </tbody>
 </table>
@@ -2181,7 +2196,7 @@ This extension includes six additional symbols to the <a href="#iupac-alphabet">
 <tr>
 <td>X</td>
 <td>Xaa</td>
-<td>Any amino acid</td>
+<td>Unknown or other amino acid</td>
 </tr>
 <tr>
 <td>Z</td>
@@ -2304,7 +2319,7 @@ This extension includes six additional symbols to the <a href="#iupac-alphabet">
 <tr>
 <td>X</td>
 <td>Xaa</td>
-<td>Any amino acid</td>
+<td>Unknown or other amino acid</td>
 </tr>
 </tbody>
 </table>

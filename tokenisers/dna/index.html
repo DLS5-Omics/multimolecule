@@ -1755,6 +1755,7 @@
 
 <h1 id="dnatokenizer">DnaTokenizer<a class="headerlink" href="#dnatokenizer" title="Permanent link">&para;</a></h1>
 <p>DnaTokenizer is smart, it tokenizes raw DNA nucleotides into tokens, no matter if the input is in uppercase or lowercase, uses T (Thymine) or U (Uracil), and with or without special tokens.
+By default, U is read as T; pass <code>replace_U_with_T=False</code> to disable this.
 It also supports tokenization into nmers and codons, so you don&rsquo;t have to write complex code to preprocess your data.</p>
 <p>By default, <code>DnaTokenizer</code> uses the <a href="#standard-alphabet">standard alphabet</a>.
 If <code>nmers</code> is greater than <code>1</code>, or <code>codon</code> is set to <code>True</code>, it will instead use the <a href="#streamline-alphabet">streamline alphabet</a>.</p>
@@ -1802,7 +1803,7 @@ If <code>nmers</code> is greater than <code>1</code>, or <code>codon</code> is s
               <div class="doc-md-description">
                 <p>alphabet to use for tokenization.</p>
 <ul>
-<li>If is <code>None</code>, the standard RNA alphabet will be used.</li>
+<li>If is <code>None</code>, the standard DNA alphabet will be used.</li>
 <li>If is a <code>string</code>, it should correspond to the name of a predefined alphabet. The options include<ul>
 <li><code>standard</code></li>
 <li><code>iupac</code></li>
@@ -1908,8 +1909,8 @@ If <code>nmers</code> is greater than <code>1</code>, or <code>codon</code> is s
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
 <span class="normal"><a href="#__codelineno-0-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">multimolecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">DnaTokenizer</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">DnaTokenizer</span><span class="p">()</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">'&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGTNRYSWKMBDHVX|.*-?'</span><span class="p">)[</span><span class="s2">"input_ids"</span><span class="p">]</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="go">[1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 2]</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">'&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGTNRYSWKMBDHVIX|.*-?'</span><span class="p">)[</span><span class="s2">"input_ids"</span><span class="p">]</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="go">[1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2]</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">'acgt'</span><span class="p">)[</span><span class="s2">"input_ids"</span><span class="p">]</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="go">[1, 6, 7, 8, 9, 2]</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span><span class="p">(</span><span class="s1">'acgu'</span><span class="p">)[</span><span class="s2">"input_ids"</span><span class="p">]</span>
@@ -2030,7 +2031,7 @@ If <code>nmers</code> is greater than <code>1</code>, or <code>codon</code> is s
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        alphabet: alphabet to use for tokenization.</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">            - If is `None`, the standard RNA alphabet will be used.</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">            - If is `None`, the standard DNA alphabet will be used.</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">            - If is a `string`, it should correspond to the name of a predefined alphabet. The options include</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">                + `standard`</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">                + `iupac`</span>
@@ -2045,8 +2046,8 @@ If <code>nmers</code> is greater than <code>1</code>, or <code>codon</code> is s
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    Examples:</span>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        &gt;&gt;&gt; from multimolecule import DnaTokenizer</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        &gt;&gt;&gt; tokenizer = DnaTokenizer()</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">        &gt;&gt;&gt; tokenizer('&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGTNRYSWKMBDHVX|.*-?')["input_ids"]</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 2]</span>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">        &gt;&gt;&gt; tokenizer('&lt;pad&gt;&lt;cls&gt;&lt;eos&gt;&lt;unk&gt;&lt;mask&gt;&lt;null&gt;ACGTNRYSWKMBDHVIX|.*-?')["input_ids"]</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">        [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2]</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">        &gt;&gt;&gt; tokenizer('acgt')["input_ids"]</span>
 </span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">        [1, 6, 7, 8, 9, 2]</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">        &gt;&gt;&gt; tokenizer('acgu')["input_ids"]</span>
@@ -2135,17 +2136,22 @@ If <code>nmers</code> is greater than <code>1</code>, or <code>codon</code> is s
 </div><p>MultiMolecule provides a set of predefined alphabets for tokenization.</p>
 <h2 id="standard-alphabet">Standard Alphabet<a class="headerlink" href="#standard-alphabet" title="Permanent link">&para;</a></h2>
 <p>The standard alphabet is an extended version of the <a href="#iupac-alphabet">IUPAC alphabet</a>.
-This extension includes two additional symbols to the <a href="#iupac-alphabet">IUPAC alphabet</a>, <code>X</code> and <code>*</code>.</p>
+This extension includes two additional nucleotide symbols to the <a href="#iupac-alphabet">IUPAC alphabet</a>, <code>I</code> and <code>X</code>,
+and five sequence symbols, <code>|</code>, <code>.</code>, <code>*</code>, <code>-</code>, and <code>?</code>.</p>
 <ul>
-<li><code>X</code>: Any base; is slightly different from <code>N</code> which represents Unknown base.
-  In automatic word embedding conversion, the <code>X</code> will be initialized as the mean of <code>A</code>, <code>C</code>, <code>G</code>, and <code>T</code>, while <code>N</code> will not be further processed.</li>
-<li><code>*</code>: is not used in MultiMolecule and is reserved for future use.</li>
+<li><code>I</code>: Deoxyinosine; a non-canonical nucleotide, the product of adenine deamination.</li>
+<li><code>X</code>: Unknown or other nucleotide; a nucleotide that cannot be mapped to any other symbol of the alphabet.
+  It differs from <code>N</code>, which represents any one of <code>A</code>, <code>C</code>, <code>G</code>, and <code>T</code>.</li>
+<li><code>|</code>: Chain separator.</li>
+<li><code>-</code>: Gap; a deleted position in an aligned sequence.</li>
+<li><code>.</code>: Gap in an insertion column of an alignment.</li>
+<li><code>*</code>: Stop (terminator).</li>
+<li><code>?</code>: Missing data; the content of an aligned position is not known.
+  It differs from <code>-</code>, which states that the position is deleted.</li>
 </ul>
-<div class="admonition tip">
-<p class="admonition-title">gap</p>
-<p>Note that we use <code>.</code> to represent a gap in the sequence.</p>
-<p>While <code>-</code> exists in the standard alphabet, it is not used in MultiMolecule and is reserved for future use.</p>
-</div>
+<p><code>U</code> is not a symbol of the DNA alphabets: <code>DnaTokenizer</code> reads <code>U</code> as <code>T</code> by default (<code>replace_U_with_T=True</code>).</p>
+<p>In automatic word embedding conversion, an ambiguity symbol (<code>N</code>, <code>R</code>, <code>Y</code>, <code>S</code>, <code>W</code>, <code>K</code>, <code>M</code>, <code>B</code>, <code>D</code>, <code>H</code>, <code>V</code>) or <code>X</code>
+that is absent from the original vocabulary is initialized as the mean of the nucleotides it represents; <code>X</code> uses <code>A</code>, <code>C</code>, <code>G</code>, and <code>T</code>.</p>
 <table>
 <thead>
 <tr>
@@ -2172,7 +2178,7 @@ This extension includes two additional symbols to the <a href="#iupac-alphabet">
 </tr>
 <tr>
 <td>N</td>
-<td>Unknown</td>
+<td>Any (A, C, G, or T)</td>
 </tr>
 <tr>
 <td>R</td>
@@ -2215,20 +2221,32 @@ This extension includes two additional symbols to the <a href="#iupac-alphabet">
 <td>A, C, or G</td>
 </tr>
 <tr>
-<td>.</td>
-<td>Gap</td>
+<td>I</td>
+<td>Deoxyinosine</td>
 </tr>
 <tr>
 <td>X</td>
-<td>Any</td>
+<td>Unknown or other</td>
+</tr>
+<tr>
+<td>|</td>
+<td>Chain separator</td>
+</tr>
+<tr>
+<td>.</td>
+<td>Gap (insertion column)</td>
 </tr>
 <tr>
 <td>*</td>
-<td>Not Used</td>
+<td>Stop</td>
 </tr>
 <tr>
 <td>-</td>
-<td>Not Used</td>
+<td>Gap</td>
+</tr>
+<tr>
+<td>?</td>
+<td>Missing data</td>
 </tr>
 </tbody>
 </table>
@@ -2309,9 +2327,9 @@ This extension includes two additional symbols to the <a href="#iupac-alphabet">
 </tr>
 </tbody>
 </table>
-<p>Note that we use <code>.</code> to represent a gap in the sequence.</p>
+<p>In the IUPAC alphabet, <code>.</code> represents a gap.</p>
 <h2 id="streamline-alphabet">Streamline Alphabet<a class="headerlink" href="#streamline-alphabet" title="Permanent link">&para;</a></h2>
-<p>The streamline alphabet includes one additional symbol to the <a href="#nucleobase-alphabet">nucleobase alphabet</a>, <code>N</code> to represent unknown nucleobase.</p>
+<p>The streamline alphabet includes one additional symbol to the <a href="#nucleobase-alphabet">nucleobase alphabet</a>, <code>N</code> to represent any nucleobase.</p>
 <table>
 <thead>
 <tr>
@@ -2338,7 +2356,7 @@ This extension includes two additional symbols to the <a href="#iupac-alphabet">
 </tr>
 <tr>
 <td>N</td>
-<td>Unknown</td>
+<td>Any</td>
 </tr>
 </tbody>
 </table>
