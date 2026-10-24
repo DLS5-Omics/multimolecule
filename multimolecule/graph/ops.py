@@ -43,13 +43,6 @@ def _normalize_dim(dim: int, ndim: int) -> int:
 
 
 def _broadcast_index(index: Tensor, src: Tensor, dim: int) -> Tensor:
-    if index.dtype == torch.bool or torch.is_floating_point(index) or torch.is_complex(index):
-        raise TypeError("index must be an integer tensor")
-    index = index.to(torch.long)
-
-    if index.numel() and bool(torch.any(index < 0).item()):
-        raise ValueError("index must contain non-negative values")
-
     if index.dim() == 1:
         if index.numel() != src.size(dim):
             raise ValueError(f"1D index length must match src.size(dim), got {index.numel()} and {src.size(dim)}")
@@ -67,6 +60,35 @@ def _broadcast_index(index: Tensor, src: Tensor, dim: int) -> Tensor:
         raise ValueError(
             f"index with shape {tuple(index.shape)} cannot be broadcast to src shape {tuple(src.shape)}"
         ) from error
+
+
+def _output_size(index: Tensor, dim_size: int | None) -> int:
+    if torch.compiler.is_compiling() and dim_size is not None:
+        if dim_size < 0:
+            raise ValueError(f"dim_size must be non-negative, but got {dim_size}")
+        if index.numel():
+            # Keep validation on the device: Python boolean conversion would
+            # synchronize CUDA and break fullgraph compilation.
+            torch._assert_async(
+                ((index >= 0) & (index < dim_size)).all(),
+                "index must contain values in [0, dim_size)",
+            )
+        return dim_size
+
+    if index.numel():
+        minimum, maximum = torch.aminmax(index)
+        min_index, max_index = torch.stack((minimum, maximum)).tolist()
+        if min_index < 0:
+            raise ValueError("index must contain non-negative values")
+    else:
+        max_index = -1
+    if dim_size is None:
+        dim_size = max_index + 1
+    if dim_size < 0:
+        raise ValueError(f"dim_size must be non-negative, but got {dim_size}")
+    if max_index >= dim_size:
+        raise ValueError("index contains values greater than or equal to dim_size")
+    return dim_size
 
 
 def scatter(
@@ -87,32 +109,43 @@ def scatter(
 
     Returns:
         Aggregated tensor.
+
+    Mean reduction accumulates float16/bfloat16 sources in float32 and integer
+    or bool sources in float64, with int64 counts. Other floating and complex
+    sources retain their accumulation dtype. Floating and complex means retain
+    the source dtype; integer and bool means return float32. Integer conversion
+    to float64 can round values beyond ``2**53``, so integer means are not
+    guaranteed to equal the exact real-valued average.
+
+    With an explicit ``dim_size``, supports fullgraph compilation. Eager index
+    validation raises ``ValueError``; compiled validation uses a device assertion
+    and may raise ``RuntimeError`` instead. CUDA assertions are asynchronous.
     """
     dim = _normalize_dim(dim, src.dim())
+    if index.dtype == torch.bool or torch.is_floating_point(index) or torch.is_complex(index):
+        raise TypeError("index must be an integer tensor")
+    index = index.to(torch.long)
     idx = _broadcast_index(index, src, dim)
-
-    if dim_size is None:
-        if index.numel() == 0:
-            dim_size = 0
-        else:
-            dim_size = int(index.max().item()) + 1
-    if dim_size < 0:
-        raise ValueError(f"dim_size must be non-negative, but got {dim_size}")
-    if index.numel() and int(index.max().item()) >= dim_size:
-        raise ValueError("index contains values greater than or equal to dim_size")
+    dim_size = _output_size(index, dim_size)
 
     out_shape = list(src.shape)
     out_shape[dim] = dim_size
-    out = torch.zeros(*out_shape, dtype=src.dtype, device=src.device)
+    accumulator_dtype = src.dtype
+    if reduce == "mean":
+        if src.dtype in (torch.float16, torch.bfloat16):
+            accumulator_dtype = torch.float32
+        elif not src.is_floating_point() and not src.is_complex():
+            accumulator_dtype = torch.float64
+    out = torch.zeros(*out_shape, dtype=accumulator_dtype, device=src.device)
 
     if reduce == "sum":
         out.scatter_add_(dim, idx, src)
     elif reduce == "mean":
-        out.scatter_add_(dim, idx, src)
-        count_dtype = src.dtype if src.is_floating_point() else torch.float32
+        out.scatter_add_(dim, idx, src.to(accumulator_dtype))
+        count_dtype = torch.int64
         if index.dim() == 1:
             count = torch.zeros(dim_size, dtype=count_dtype, device=src.device)
-            count.scatter_add_(0, index.to(torch.long), torch.ones_like(index, dtype=count_dtype))
+            count.scatter_add_(0, index, torch.ones_like(index, dtype=count_dtype))
             shape = [1] * src.dim()
             shape[dim] = dim_size
             out = out / count.clamp_min(1).view(shape)
@@ -121,6 +154,8 @@ def scatter(
             ones = torch.ones((), dtype=count_dtype, device=src.device).expand_as(src)
             count.scatter_add_(dim, idx, ones)
             out = out / count.clamp_min(1)
+        result_dtype = src.dtype if src.is_floating_point() or src.is_complex() else torch.float32
+        out = out.to(result_dtype)
     elif reduce == "min":
         out.scatter_reduce_(dim, idx, src, reduce="amin", include_self=False)
     elif reduce == "max":
@@ -137,5 +172,5 @@ def scatter_mean(
     dim: int = 0,
     dim_size: int | None = None,
 ) -> Tensor:
-    """Scatter mean: average src values by index."""
+    """Average values by index, using the accumulation and output dtypes of :func:`scatter`."""
     return scatter(src, index, dim=dim, dim_size=dim_size, reduce="mean")

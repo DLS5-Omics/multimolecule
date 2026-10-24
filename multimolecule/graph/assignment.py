@@ -21,6 +21,7 @@
 #
 from __future__ import annotations
 
+import sys
 from math import prod
 
 import torch
@@ -48,9 +49,9 @@ def linear_sum_assignment(cost_matrix: Tensor, maximize: bool = False) -> Tensor
     ``dtype_max`` is the int64 or float64 maximum, respectively.
 
     The shortest augmenting path Hungarian algorithm batches column scans and
-    potential updates. CUDA search and augmentation loops use shape-derived
-    bounds and active masks; validation and the final feasibility check may
-    synchronize. CPU searches may exit early. No graph data leaves its device.
+    updates potentials once per augmentation. CUDA search and augmentation
+    loops use shape-derived bounds and active masks. Validation and the final
+    feasibility check may synchronize. CPU searches may exit early. No graph data leaves its device.
     Input gradients are not tracked because the result consists of indices.
 
     Raises:
@@ -74,7 +75,7 @@ def linear_sum_assignment(cost_matrix: Tensor, maximize: bool = False) -> Tensor
 
     batch_shape = cost_matrix.shape[:-2]
     rows, columns = cost_matrix.shape[-2:]
-    size, width = min(rows, columns), max(rows, columns)
+    size = min(rows, columns)
     batch_size = prod(batch_shape)
     if size == 0 or batch_size == 0:
         return torch.empty((*batch_shape, size, 2), dtype=torch.long, device=cost_matrix.device)
@@ -85,6 +86,8 @@ def linear_sum_assignment(cost_matrix: Tensor, maximize: bool = False) -> Tensor
     if transposed:
         costs = costs.transpose(1, 2)
 
+    sentinel: int | float
+    limit: int | float
     if integer_costs:
         sentinel = torch.iinfo(torch.int64).max
         limit = sentinel // (8 * (size + 1))
@@ -101,78 +104,7 @@ def linear_sum_assignment(cost_matrix: Tensor, maximize: bool = False) -> Tensor
     if maximize:
         costs = -costs
 
-    # Column zero is the dummy root. p maps columns to 1-based matched rows.
-    u = costs.new_zeros((batch_size, size + 1))
-    v = costs.new_zeros((batch_size, width + 1))
-    p = torch.zeros((batch_size, width + 1), dtype=torch.long, device=costs.device)
-    row_ids = torch.arange(size + 1, dtype=torch.long, device=costs.device)
-    failed = torch.zeros(batch_size, dtype=torch.bool, device=costs.device)
-    cpu = costs.device.type == "cpu"
-
-    for row in range(1, size + 1):
-        p[:, 0].copy_(row_ids[row].expand(batch_size))
-        current = p.new_zeros(batch_size)
-        way = torch.zeros_like(p)
-        used = torch.zeros_like(p, dtype=torch.bool)
-        minimum = costs.new_full((batch_size, width), sentinel)
-        active = ~failed
-
-        # At most row-1 occupied columns precede a free column.
-        for _ in range(row):
-            current_column = current.unsqueeze(1)
-            used.scatter_(1, current_column, used.gather(1, current_column) | active.unsqueeze(1))
-            matched_row = p.gather(1, current_column)
-            selected_rows = (matched_row - 1).clamp_min(0).unsqueeze(2).expand(-1, -1, width)
-            selected_costs = costs.gather(1, selected_rows).squeeze(1)
-            reduced = selected_costs - u.gather(1, matched_row) - v[:, 1:]
-            available = ~used[:, 1:]
-            improved = active.unsqueeze(1) & available & (reduced < minimum)
-            minimum = torch.where(improved, reduced, minimum)
-            way[:, 1:] = torch.where(improved, current_column, way[:, 1:])
-            delta, next_column = torch.where(available, minimum, sentinel).min(dim=1)
-            next_column = next_column + 1
-            finite = delta != sentinel if integer_costs else torch.isfinite(delta)
-            step = active & finite
-            failed = failed | (active & ~finite)
-            # Mask before arithmetic: an infeasible search must never use inf.
-            delta = torch.where(step, delta, 0)
-            potential_change = torch.where(used & step.unsqueeze(1), delta.unsqueeze(1), 0)
-            # Every nonzero update has a distinct matched-row target. Repeated
-            # p=0 indices belong to unused columns and contribute zero.
-            u.scatter_add_(1, p, potential_change)
-            v = v - potential_change
-            minimum = torch.where(
-                step.unsqueeze(1) & available & (minimum != sentinel), minimum - delta.unsqueeze(1), minimum
-            )
-            current = torch.where(step, next_column, current)
-            active = step & (p.gather(1, next_column.unsqueeze(1)).squeeze(1) != 0)
-            if cpu and not active.any():
-                break
-        failed = failed | active
-
-        augmenting = ~failed
-        for _ in range(row):
-            current_column = current.unsqueeze(1)
-            previous = way.gather(1, current_column)
-            replacement = p.gather(1, previous)
-            p.scatter_(
-                1, current_column, torch.where(augmenting.unsqueeze(1), replacement, p.gather(1, current_column))
-            )
-            current = torch.where(augmenting, previous.squeeze(1), current)
-            augmenting = augmenting & (current != 0)
-            if cpu and not augmenting.any():
-                break
-        failed = failed | augmenting
-
-    column_for_row = p.new_full((batch_size, size + 1), -1)
-    column_indices = torch.arange(width, device=costs.device).expand(batch_size, -1)
-    # Unmatched columns collide only at row zero, which is discarded.
-    column_for_row.scatter_(1, p[:, 1:], column_indices)
-    column_for_row = column_for_row[:, 1:]
-    failed = failed | (column_for_row < 0).any(dim=1)
-    if not integer_costs:
-        selected = costs.gather(2, column_for_row.clamp_min(0).unsqueeze(2)).squeeze(2)
-        failed = failed | ~torch.isfinite(selected).all(dim=1)
+    column_for_row, failed = _assignment_core(costs, integer_costs, costs.new_tensor(sentinel))
     if failed.any():
         raise ValueError("cost_matrix is infeasible: no full assignment covers the smaller dimension.")
 
@@ -183,3 +115,137 @@ def linear_sum_assignment(cost_matrix: Tensor, maximize: bool = False) -> Tensor
     else:
         pairs = torch.stack((row_indices, column_for_row), dim=2)
     return pairs.reshape(*batch_shape, size, 2)
+
+
+def _assignment_core(costs: Tensor, integer_costs: bool, sentinel: Tensor) -> tuple[Tensor, Tensor]:
+    """Run batched tensor assignment with reusable work arrays."""
+    batch_size, size, width = costs.shape
+    if costs.device.type == "cpu" and batch_size == 1:
+        return _assignment_single_cpu(costs, integer_costs, sentinel)
+    u, v = costs.new_zeros((batch_size, size)), costs.new_zeros((batch_size, width))
+    row_for_column = torch.full((batch_size, width), -1, dtype=torch.long, device=costs.device)
+    column_for_row = row_for_column.new_full((batch_size, size), -1)
+    predecessor = torch.zeros_like(row_for_column)
+    visited = torch.zeros_like(row_for_column, dtype=torch.bool)
+    distance = costs.new_empty((batch_size, width))
+    batch_indices = torch.arange(batch_size, device=costs.device)
+    failed = torch.zeros(batch_size, dtype=torch.bool, device=costs.device)
+    current_column = row_for_column.new_zeros(batch_size)
+    cpu = costs.device.type == "cpu"
+    for root in range(size):
+        visited.zero_()
+        distance.copy_(sentinel)
+        current_row = row_for_column.new_full((batch_size,), root)
+        minimum = costs.new_zeros(batch_size)
+        active = ~failed
+        # At most root occupied columns precede a free column.
+        for _ in range(root + 1):
+            reduced = (
+                minimum.unsqueeze(1) + costs[batch_indices, current_row] - u.gather(1, current_row.unsqueeze(1)) - v
+            )
+            improved = active.unsqueeze(1) & ~visited & (reduced < distance)
+            distance = torch.where(improved, reduced, distance)
+            predecessor = torch.where(improved, current_row.unsqueeze(1), predecessor)
+            next_minimum, next_column = torch.where(visited, sentinel, distance).min(dim=1)
+            finite = next_minimum != sentinel if integer_costs else torch.isfinite(next_minimum)
+            failed |= active & ~finite
+            step = active & finite
+            minimum = torch.where(step, next_minimum, minimum)
+            current_column = torch.where(step, next_column, current_column)
+            columns = current_column.unsqueeze(1)
+            visited.scatter_(1, columns, visited.gather(1, columns) | step.unsqueeze(1))
+            next_row = row_for_column.gather(1, columns).squeeze(1)
+            active = step & (next_row >= 0)
+            current_row = next_row.clamp_min(0)
+            if cpu and not active.any():
+                break
+        failed |= active
+        valid = ~failed
+        # All shortest distances are absolute within this search. Apply their
+        # cumulative dual changes only once, after reaching a free column.
+        u[:, root] += torch.where(valid, minimum, 0)
+        change = torch.where(visited & valid.unsqueeze(1), minimum.unsqueeze(1) - distance, 0)
+        u.scatter_add_(1, row_for_column.clamp_min(0), torch.where(row_for_column >= 0, change, 0))
+        v -= change
+        augmenting = valid
+        for _ in range(root + 1):
+            columns = current_column.unsqueeze(1)
+            row = predecessor.gather(1, columns)
+            previous = column_for_row.gather(1, row).squeeze(1)
+            row_for_column.scatter_(
+                1, columns, torch.where(augmenting.unsqueeze(1), row, row_for_column.gather(1, columns))
+            )
+            column_for_row.scatter_(
+                1, row, torch.where(augmenting.unsqueeze(1), columns, column_for_row.gather(1, row))
+            )
+            augmenting &= row.squeeze(1) != root
+            current_column = previous.clamp_min(0)
+            if cpu and not augmenting.any():
+                break
+        failed |= augmenting
+    return column_for_row, failed
+
+
+def _assignment_single_cpu(costs: Tensor, integer_costs: bool, sentinel: Tensor) -> tuple[Tensor, Tensor]:
+    """Accumulate shortest-path distances and update duals once per augmentation."""
+    _, size, width = costs.shape
+    matrix = costs[0]
+    u, v = costs.new_zeros(size), costs.new_zeros(width)
+    row_for_column = torch.full((width,), -1, dtype=torch.long, device=costs.device)
+    column_for_row = row_for_column.new_full((size,), -1)
+    predecessor = torch.empty_like(row_for_column)
+    visited_columns = torch.zeros(width, dtype=torch.bool, device=costs.device)
+    distance = costs.new_empty(width)
+    failed = torch.zeros(1, dtype=torch.bool, device=costs.device)
+    for root in range(size):
+        visited_columns.zero_()
+        distance.copy_(sentinel)
+        current_row = root
+        current_column = 0
+        minimum = costs.new_zeros(())
+        visited_matched = False
+        while True:
+            reduced = minimum + matrix[current_row] - u[current_row] - v
+            improved = ~visited_columns & (reduced < distance)
+            distance.copy_(torch.where(improved, reduced, distance))
+            predecessor.copy_(torch.where(improved, current_row, predecessor))
+            minimum, next_column = torch.where(visited_columns, sentinel, distance).min(dim=0)
+            finite = minimum != sentinel if integer_costs else torch.isfinite(minimum)
+            if not finite:
+                failed.fill_(True)
+                return column_for_row.unsqueeze(0), failed
+            current_column = int(next_column)
+            current_row = int(row_for_column[current_column])
+            if current_row < 0:
+                break
+            visited_columns[current_column] = True
+            visited_matched = True
+        # Previously matched visited rows are reached via their matched
+        # columns. Only these rows and the root need a potential update.
+        u[root] += minimum
+        if not visited_matched:
+            # A first-step free column has distance minimum, so its column
+            # potential change is zero and the augmenting path has one edge.
+            row_for_column[current_column] = root
+            column_for_row[root] = current_column
+            continue
+        matched_rows = row_for_column[visited_columns]
+        matched_distances = distance[visited_columns]
+        u[matched_rows] += minimum - matched_distances
+        v[visited_columns] -= minimum - matched_distances
+        while True:
+            current_row = int(predecessor[current_column])
+            previous = int(column_for_row[current_row])
+            row_for_column[current_column] = current_row
+            column_for_row[current_row] = current_column
+            if current_row == root:
+                break
+            current_column = previous
+    return column_for_row.unsqueeze(0), failed
+
+
+# TorchScript is unsupported on Python 3.14+. The same tensor routines run
+# eagerly there, keeping the package's advertised Python support intact.
+if sys.version_info < (3, 14):
+    _assignment_single_cpu = torch.jit.script(_assignment_single_cpu)
+    _assignment_core = torch.jit.script(_assignment_core)

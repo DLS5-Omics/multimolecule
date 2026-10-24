@@ -20,6 +20,7 @@
 # <https://multimolecule.danling.org/about/license-faq>.
 
 from .assignment import linear_sum_assignment
+from .isomorphism import ResourceLimitError, automorphisms, is_isomorphic, isomorphisms
 from .matching import maximum_weight_matching
 from .ops import scatter, scatter_mean
 from .spatial import knn_graph, radius, radius_graph
@@ -28,7 +29,11 @@ from .topology import DirectedGraph, EdgeTable, UndirectedGraph
 __all__ = [
     "DirectedGraph",
     "EdgeTable",
+    "ResourceLimitError",
     "UndirectedGraph",
+    "automorphisms",
+    "is_isomorphic",
+    "isomorphisms",
     "knn_graph",
     "linear_sum_assignment",
     "maximum_weight_matching",
