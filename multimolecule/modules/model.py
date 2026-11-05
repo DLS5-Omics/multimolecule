@@ -183,12 +183,16 @@ class PolyModel(ModelBase):
         dataset: str | None = None,
         **labels: NestedTensor | Tensor,
     ) -> FlatDict:
+        unknown = labels.keys() - self.heads.keys()
+        if unknown:
+            raise ValueError(f"Got labels for unknown tasks {sorted(unknown)}; known tasks are {list(self.heads)}.")
         ret = FlatDict()
         output, _ = self.backbone(sequence, discrete, continuous)
         if self.neck is not None:
             output = self.neck(**output)
-        for task, label in labels.items():
-            ret[task] = self.heads[task](output, input_ids=sequence, labels=label)
+        # Every configured head runs; labels are optional so unlabeled inference still returns predictions.
+        for task, head in self.heads.items():
+            ret[task] = head(output, input_ids=sequence, labels=labels.get(task))
         return ret
 
     def trainable_parameters(
