@@ -985,7 +985,7 @@ class UtrLmSelfAttention(nn.Module):
         if self.position_embedding_type == "rotary":
             query_layer, key_layer = self.rotary_embeddings(query_layer, key_layer)  # type: ignore[misc]
 
-        attention_bias = attention_mask
+        relative_position_scores = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
             query_length, key_length = query_layer.shape[2], key_layer.shape[2]  # type: ignore[attr-defined]
             if past_key_values is not None:
@@ -1006,20 +1006,18 @@ class UtrLmSelfAttention(nn.Module):
                 relative_position_scores = relative_position_scores_query + relative_position_scores_key
 
             relative_position_scores = relative_position_scores * self.scaling
-            attention_bias = (
-                relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
-            )
 
         attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
-            attention_bias,
+            attention_mask,
             attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
+            attention_bias=relative_position_scores,
             **kwargs,
         )
 
@@ -1107,7 +1105,7 @@ class UtrLmCrossAttention(nn.Module):
         if self.position_embedding_type == "rotary":
             query_layer, key_layer = self.rotary_embeddings(query_layer, key_layer)  # type: ignore[misc]
 
-        attention_bias = attention_mask
+        relative_position_scores = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
             query_length, key_length = query_layer.shape[2], key_layer.shape[2]  # type: ignore[attr-defined]
             position_ids_l = torch.arange(query_length, dtype=torch.long, device=hidden_states.device).view(-1, 1)
@@ -1125,20 +1123,18 @@ class UtrLmCrossAttention(nn.Module):
                 relative_position_scores = relative_position_scores_query + relative_position_scores_key
 
             relative_position_scores = relative_position_scores * self.scaling
-            attention_bias = (
-                relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
-            )
 
         attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
-            attention_bias,
+            attention_mask,
             attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
+            attention_bias=relative_position_scores,
             **kwargs,
         )
 
