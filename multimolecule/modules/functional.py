@@ -37,6 +37,7 @@ def eager_attention_forward(
     attention_mask: Tensor | None,
     scaling: float | None = None,
     dropout: float = 0.0,
+    is_causal: bool = False,
     **kwargs: Unpack[TransformersKwargs],
 ):
     if scaling is None:
@@ -47,6 +48,11 @@ def eager_attention_forward(
     if attention_mask is not None:
         attention_mask = attention_mask[:, :, :, : key.shape[-2]]
         attn_weights = attn_weights + attention_mask
+    elif is_causal:
+        # No mask was materialized (e.g. NestedTensor inputs); apply the causal pattern other backends get from
+        # `is_causal`, aligned to the last query so cached decoding still sees every key.
+        causal = torch.tril(torch.ones_like(attn_weights, dtype=torch.bool), diagonal=key.shape[-2] - query.shape[-2])
+        attn_weights = attn_weights.masked_fill(~causal, torch.finfo(attn_weights.dtype).min)
 
     attn_weights = F.softmax(attn_weights, dim=-1)
     attn_weights = F.dropout(attn_weights, p=dropout, training=module.training)

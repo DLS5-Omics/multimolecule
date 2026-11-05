@@ -537,6 +537,7 @@ class ProGen2Attention(nn.Module):
             attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.attention_dropout,
             scaling=self.scaling,
+            is_causal=self.is_causal,
             **kwargs,
         )
 

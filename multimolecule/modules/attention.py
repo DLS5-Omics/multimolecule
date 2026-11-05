@@ -55,6 +55,16 @@ def _dense_bias_from_score_mod(
     return score_mod(base, batch, head, q_idx, kv_idx)
 
 
+def _causal_mask_mod(batch: Tensor, head: Tensor, q_idx: Tensor, kv_idx: Tensor) -> Tensor:
+    return q_idx >= kv_idx
+
+
+def _nested_causal_block_mask(query: NestedTensor, key: NestedTensor):
+    from danling.tensors import create_flex_block_mask
+
+    return create_flex_block_mask(_causal_mask_mod, query, key)
+
+
 def _alibi_score_mod(slopes: Tensor) -> Callable:
     r"""
     ALiBi as a FlexAttention ``score_mod`` (``score - slope[head] * |q - kv|``): the eager/flex
@@ -78,19 +88,28 @@ def attention_forward(
     attn_implementation: str | None,
     scaling: float | None = None,
     dropout: float = 0.0,
-    is_causal: bool = False,
+    is_causal: bool | None = None,
     score_mod: Callable | None = None,
     alibi_slopes: Tensor | None = None,
     **kwargs: Unpack[TransformersKwargs],
 ) -> tuple[Tensor, Tensor | None]:
+    # Causal mask builders return None when the backend can apply `is_causal` itself, so an unset flag must follow
+    # the module rather than default to False.
+    if is_causal is None:
+        is_causal = getattr(module, "is_causal", False)
     # ALiBi can't ride the packed flash path: torch's bundled FlashAttention rejects alibi_slopes,
     # so it falls back to a FlexAttention score_mod. A real flash+ALiBi win would need the external
     # flash_attn library's varlen kernel.
     if alibi_slopes is not None and score_mod is None:
         score_mod = _alibi_score_mod(alibi_slopes)
-    if score_mod is not None and isinstance(query, NestedTensor):
+    if isinstance(query, NestedTensor) and (
+        score_mod is not None or (is_causal and attention_mask is None and attn_implementation == "flex_attention")
+    ):
+        # Ragged inputs carry no materialized mask, so causality has to ride in a block mask.
+        block_mask = _nested_causal_block_mask(query, key) if is_causal else None
+        output = flex_attn.flex_attention(query, key, value, score_mod=score_mod, block_mask=block_mask, scale=scaling)
         # flex_attention returns (batch, heads, seq, dim); interfaces return (batch, seq, heads, dim).
-        return flex_attn.flex_attention(query, key, value, score_mod=score_mod, scale=scaling).transpose(1, 2), None
+        return output.transpose(1, 2), None
     if score_mod is not None:
         bias = _dense_bias_from_score_mod(
             score_mod, query.shape[0], query.shape[1], query.shape[-2], device=query.device, dtype=query.dtype
