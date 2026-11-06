@@ -1304,9 +1304,7 @@ def create_position_ids_from_input_ids(
     if past_key_values_length == 0:
         incremental_indices = torch.cumsum(mask, dim=1, dtype=mask.dtype) * mask
         return incremental_indices.long() + padding_idx
-    incremental_indices = (
-        (torch.cumsum(mask, dim=1, dtype=mask.dtype) + past_key_values_length) * mask + past_key_values_length
-    ) * mask
+    incremental_indices = (torch.cumsum(mask, dim=1, dtype=mask.dtype) + past_key_values_length) * mask
     return incremental_indices.long() + padding_idx
 
 

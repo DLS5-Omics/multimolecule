@@ -1236,9 +1236,7 @@ def create_position_ids_from_input_ids(
 ) -> torch.LongTensor:
     # The series of casts and type-conversions here are carefully balanced to both work with ONNX export and XLA.
     mask = input_ids.ne(padding_idx).int()
-    incremental_indices = (
-        (torch.cumsum(mask, dim=1, dtype=mask.dtype) + past_key_values_length) * mask + past_key_values_length
-    ) * mask
+    incremental_indices = (torch.cumsum(mask, dim=1, dtype=mask.dtype) + past_key_values_length) * mask
     return incremental_indices.long() + padding_idx
 
 
