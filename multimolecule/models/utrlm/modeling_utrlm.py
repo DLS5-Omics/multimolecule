@@ -748,6 +748,8 @@ class UtrLmEmbeddings(nn.Module):
         if self.layer_norm is not None:
             embeddings = self.layer_norm(embeddings)
         if attention_mask is not None and not isinstance(embeddings, NestedTensor):
+            # With a KV cache the mask also covers earlier tokens; only its tail matches these embeddings.
+            attention_mask = attention_mask[:, -embeddings.shape[1] :]
             embeddings = (embeddings * attention_mask.unsqueeze(-1)).to(embeddings.dtype)
         return embeddings
 
