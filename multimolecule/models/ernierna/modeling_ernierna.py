@@ -917,13 +917,6 @@ class ErnieRnaSelfAttention(nn.Module):
 
         query_layer = self.transpose_for_scores(mixed_query_layer)
 
-        attention_bias_mask = attention_mask
-        if isinstance(attention_bias_mask, Tensor) and attention_bias_mask.dtype == torch.bool:
-            # `create_bidirectional_mask` hands SDPA a BOOLEAN keep-mask; adding it directly to the float
-            # attention bias would leave padding unmasked (`False -> 0.0`). Convert to additive 0/-inf first.
-            attention_bias_mask = torch.zeros_like(attention_bias_mask, dtype=query_layer.dtype).masked_fill(
-                ~attention_bias_mask, float("-inf")
-            )
         relative_position_scores = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
             query_length, key_length = query_layer.shape[2], key_layer.shape[2]  # type: ignore[attr-defined]
@@ -945,27 +938,24 @@ class ErnieRnaSelfAttention(nn.Module):
                 relative_position_scores = relative_position_scores_query + relative_position_scores_key
 
             relative_position_scores = relative_position_scores * self.scaling
-            attention_bias_mask = (
-                relative_position_scores
-                if attention_bias_mask is None
-                else attention_bias_mask + relative_position_scores
-            )
 
+        # Hand the pairwise and relative-position biases to attention_forward apart from the mask, so each backend
+        # combines them with its own mask format.
+        score_bias = relative_position_scores
         if attention_bias is not None:
-            attention_bias_mask = (
-                attention_bias if attention_bias_mask is None else attention_bias_mask + attention_bias
-            )
+            score_bias = attention_bias if score_bias is None else score_bias + attention_bias
 
         attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
-            attention_bias_mask,
+            attention_mask,
             attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
+            attention_bias=score_bias,
             **kwargs,
         )
 
@@ -979,14 +969,12 @@ class ErnieRnaSelfAttention(nn.Module):
             if isinstance(attention_scores, NestedTensor):
                 if relative_position_scores is not None and not isinstance(relative_position_scores, NestedTensor):
                     relative_position_scores = attention_scores.nested_like(relative_position_scores, strict=False)
-                if attention_mask is not None and not isinstance(attention_mask, NestedTensor):
-                    attention_mask = attention_scores.nested_like(attention_mask, strict=False)
                 if not isinstance(attention_bias, NestedTensor):
                     attention_bias = attention_scores.nested_like(attention_bias, strict=False)
             if relative_position_scores is not None:
                 attention_scores = attention_scores + relative_position_scores
-            if attention_mask is not None:
-                attention_scores = attention_scores + attention_mask
+            # The propagated bias stays unmasked: the next layer applies its own mask, and the mask format depends
+            # on the attention backend (boolean for sdpa, BlockMask for flex, additive minima that overflow for eager).
             attention_scores = attention_scores + attention_bias
             attention_bias_out = attention_scores
 
@@ -1066,7 +1054,7 @@ class ErnieRnaCrossAttention(nn.Module):
 
         query_layer = self.transpose_for_scores(mixed_query_layer)
 
-        attention_bias = attention_mask
+        relative_position_scores = None
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
             query_length, key_length = query_layer.shape[2], key_layer.shape[2]  # type: ignore[attr-defined]
             position_ids_l = torch.arange(query_length, dtype=torch.long, device=hidden_states.device).view(-1, 1)
@@ -1084,20 +1072,18 @@ class ErnieRnaCrossAttention(nn.Module):
                 relative_position_scores = relative_position_scores_query + relative_position_scores_key
 
             relative_position_scores = relative_position_scores * self.scaling
-            attention_bias = (
-                relative_position_scores if attention_bias is None else attention_bias + relative_position_scores
-            )
 
         attn_output, attn_weights = attention_forward(
             self,
             query_layer,
             key_layer,
             value_layer,
-            attention_bias,
+            attention_mask,
             attn_implementation=self.config._attn_implementation,
             dropout=0.0 if not self.training else self.dropout.p,
             scaling=self.scaling,
             is_causal=self.is_causal,
+            attention_bias=relative_position_scores,
             **kwargs,
         )
 
