@@ -246,7 +246,10 @@ class CaLmModel(CaLmPreTrainedModel):
         cache_position,
         past_key_values,
     ):
-        if self.config.is_decoder:
+        if isinstance(embedding_output, NestedTensor) and attention_mask is None:
+            # Ragged inputs need no padding mask; attention_forward applies causality from is_causal.
+            attention_mask = None
+        elif self.config.is_decoder:
             attention_mask = create_causal_mask(
                 config=self.config,
                 inputs_embeds=embedding_output,
@@ -254,12 +257,9 @@ class CaLmModel(CaLmPreTrainedModel):
                 past_key_values=past_key_values,
             )
         else:
-            if isinstance(embedding_output, NestedTensor) and attention_mask is None:
-                attention_mask = None
-            else:
-                attention_mask = create_bidirectional_mask(
-                    config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
-                )
+            attention_mask = create_bidirectional_mask(
+                config=self.config, inputs_embeds=embedding_output, attention_mask=attention_mask
+            )
 
         if encoder_attention_mask is not None:
             encoder_attention_mask = create_bidirectional_mask(
