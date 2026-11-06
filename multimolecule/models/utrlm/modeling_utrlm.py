@@ -199,6 +199,10 @@ class UtrLmModel(UtrLmPreTrainedModel):
             and self.pad_token_id is not None
         ):
             attention_mask = input_ids.ne(self.pad_token_id)
+            if past_key_values_length:
+                # input_ids only hold the new tokens; the cached ones are attended to as well.
+                cached = attention_mask.new_ones(input_ids.shape[0], past_key_values_length)
+                attention_mask = torch.cat([cached, attention_mask], dim=-1)
             # Token dropout in the embeddings needs the padding mask to count sequence lengths.
             embedding_attention_mask = attention_mask
 
