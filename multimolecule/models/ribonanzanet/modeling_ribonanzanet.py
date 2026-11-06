@@ -889,9 +889,11 @@ class RibonanzaNetSelfAttention(nn.Module):
         key_layer = self.transpose_for_scores(self.key(hidden_states))
         value_layer = self.transpose_for_scores(self.value(hidden_states))
 
-        if self.config._attn_implementation != "eager":
+        # The legacy mask (fix_attention_mask=False) overwrites scores with -1e-9 instead of adding to them, which no
+        # additive backend can express, so only the eager computation below reproduces it.
+        if self.config._attn_implementation != "eager" and self.fix_attention_mask:
             attn_mask = attention_bias
-            if self.fix_attention_mask and attention_mask is not None:
+            if attention_mask is not None:
                 attn_mask = attention_mask if attn_mask is None else attn_mask + attention_mask
             attn_output, attn_weights = attention_forward(
                 self,
