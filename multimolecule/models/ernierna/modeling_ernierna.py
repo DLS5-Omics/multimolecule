@@ -220,6 +220,9 @@ class ErnieRnaModel(ErnieRnaPreTrainedModel):
 
         # past_key_values_length
         past_key_values_length = past_key_values.get_seq_length() if past_key_values is not None else 0
+        if past_key_values_length:
+            # The pairwise bias pairs every token with every other one, so new tokens alone cannot rebuild it.
+            raise ValueError("ERNIE-RNA cannot decode incrementally from past_key_values.")
         if cache_position is None:
             cache_position = torch.arange(past_key_values_length, past_key_values_length + seq_length, device=device)
 
