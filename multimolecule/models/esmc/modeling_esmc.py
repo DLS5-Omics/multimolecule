@@ -28,7 +28,7 @@ from warnings import warn
 from danling import NestedTensor
 from torch import Tensor, nn
 from torch.nn import functional as F
-from transformers.masking_utils import create_bidirectional_mask
+from transformers.masking_utils import create_bidirectional_mask, packed_sequence_mask_function
 from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
@@ -129,7 +129,15 @@ class EsmCModel(EsmCPreTrainedModel):
         embedding_output = self.embeddings(input_ids=input_ids, inputs_embeds=inputs_embeds)
 
         if sequence_id is not None:
-            attn_mask = (sequence_id.unsqueeze(-1) == sequence_id.unsqueeze(-2)).unsqueeze(1)
+            # transformers' flash mask builder drops mask functions, so sequence_id would be ignored silently.
+            if "flash" in (self.config._attn_implementation or ""):
+                raise ValueError(f"sequence_id is not supported with {self.config._attn_implementation}.")
+            attn_mask = create_bidirectional_mask(
+                config=self.config,
+                inputs_embeds=embedding_output,
+                attention_mask=None,
+                and_mask_function=packed_sequence_mask_function(sequence_id),
+            )
         elif isinstance(embedding_output, NestedTensor) and attention_mask is None:
             attn_mask = None
         else:
