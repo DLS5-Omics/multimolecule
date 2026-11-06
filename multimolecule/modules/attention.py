@@ -125,6 +125,16 @@ def attention_forward(
     if score_mod is not None:
         bias = _dense_bias_from_score_mod(score_mod, query, key)
         attention_bias = bias if attention_bias is None else attention_bias + bias
+    if (
+        attn_implementation == "flex_attention"
+        and isinstance(attention_mask, Tensor)
+        and not isinstance(query, NestedTensor)
+    ):
+        # transformers adds tensor masks to flex scores as `score_mask[b][0][q][kv]`, which torch 2.15 miscompiles
+        # on CPU. An additive mask is just another bias, so fold it in; the mask then also covers causality.
+        mask = attention_mask[..., : key.shape[-2]]
+        attention_bias = mask if attention_bias is None else attention_bias + mask
+        attention_mask, is_causal = None, False
     if attention_bias is not None:
         if "flash" in (attn_implementation or ""):
             # Flash kernels take no score bias, and transformers' flash path would drop it silently.
