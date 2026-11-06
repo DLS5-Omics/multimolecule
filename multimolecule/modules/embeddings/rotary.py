@@ -110,7 +110,8 @@ class RotaryEmbedding(nn.Module):
         Apply rotary position embeddings to query and key tensors.
 
         Args:
-            q: Query tensor of shape `(batch_size, num_heads, seq_length, embedding_dim)`
+            q: Query tensor of shape `(batch_size, num_heads, seq_length, embedding_dim)`. During cached decoding
+                it is shorter than `k` and takes the last positions of `k`.
             k: Key tensor of shape `(batch_size, num_heads, seq_length, embedding_dim)`
             offset: Position offset for the start of the sequence (used with past_key_values).
                     Defaults to 0.
@@ -139,7 +140,8 @@ class RotaryEmbedding(nn.Module):
             seq_length = k.shape[-2]
 
         self._update_cos_sin_tables(k, seq_len_dim=-2, seq_length=seq_length)
-        return self.apply_rotary_pos_emb(q, offset=offset), self.apply_rotary_pos_emb(k, offset=offset)
+        q_offset = offset + k.shape[-2] - q.shape[-2]
+        return self.apply_rotary_pos_emb(q, offset=q_offset), self.apply_rotary_pos_emb(k, offset=offset)
 
     def _update_cos_sin_tables(
         self, x: Tensor, seq_len_dim: int = 2, seq_length: int | None = None
