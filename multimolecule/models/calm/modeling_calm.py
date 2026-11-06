@@ -195,6 +195,8 @@ class CaLmModel(CaLmPreTrainedModel):
             and self.pad_token_id is not None
         ):
             attention_mask = input_ids.ne(self.pad_token_id)
+            # Token dropout in the embeddings needs the padding mask to count sequence lengths.
+            embedding_attention_mask = attention_mask
 
         embedding_output = self.embeddings(
             input_ids=input_ids,
