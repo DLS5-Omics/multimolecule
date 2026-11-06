@@ -38,12 +38,15 @@ def eager_attention_forward(
     scaling: float | None = None,
     dropout: float = 0.0,
     is_causal: bool = False,
+    position_bias: Tensor | None = None,
     **kwargs: Unpack[TransformersKwargs],
 ):
     if scaling is None:
         scaling = query.size(-1) ** -0.5
 
     attn_weights = torch.matmul(query, key.transpose(2, 3)) * scaling
+    if position_bias is not None:
+        attn_weights = attn_weights + position_bias
 
     if attention_mask is not None:
         attention_mask = attention_mask[:, :, :, : key.shape[-2]]
