@@ -55,6 +55,7 @@ dependencies = [
   "torchmetrics",
   "transformers",
 ]
+optional-dependencies.interpret = [ "captum>=0.9" ]
 urls.documentation = "https://multimolecule.danling.org"
 urls.homepage = "https://multimolecule.danling.org"
 urls.repository = "https://github.com/DLS5-Omics/multimolecule"
