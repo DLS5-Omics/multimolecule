@@ -61,6 +61,7 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 | [`models`](models) | Model cards and API references for supported architectures. |
 | [`tokenisers`](tokenisers) | DNA, RNA, protein, and dot-bracket tokenisers. |
 | [`pipelines`](pipelines) | Task-focused inference workflows for supported biological tasks. |
+| [`interpret`](multimolecule/interpret) | Model attribution and a quickstart from tokenizer batch to token scores. |
 | [`runner`](runner) | Training, evaluation, and inference configuration. |
 | [`modules`](modules) | Reusable neural-network building blocks. |
 

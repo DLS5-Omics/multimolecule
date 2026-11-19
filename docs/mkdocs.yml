@@ -18,6 +18,8 @@ nav:
   - models: []
   - tokenisers: []
   - pipelines: []
+  - interpret:
+      - interpret/index.md
   - runner: []
   - api: []
   - utils: []

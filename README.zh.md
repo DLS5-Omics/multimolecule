@@ -61,6 +61,7 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 | [`models`](models) | 支持模型的模型卡与 API 参考。 |
 | [`tokenisers`](tokenisers) | DNA、RNA、蛋白质和 dot-bracket tokeniser。 |
 | [`pipelines`](pipelines) | 面向具体生物任务的推理流程。 |
+| [`interpret`](multimolecule/interpret) | 模型归因与快速入门，从 tokenizer batch 到 token 分数图。 |
 | [`runner`](runner) | 训练、评估和推理配置。 |
 | [`modules`](modules) | 可复用的神经网络构建模块。 |
 
