@@ -92,7 +92,7 @@ ESM Cambrian is an encoder-only protein language model trained on billions of pr
 
 ### Links
 
-- **Code**: [multimolecule.esmc](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/esmc)
+- **Code**: [multimolecule.esmc](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/esmc)
 - **Data**: [UniRef](https://www.uniprot.org/help/uniref), [MGnify](https://www.ebi.ac.uk/metagenomics/), and [Joint Genome Institute](https://jgi.doe.gov/)
 - **Paper**: [Language Modeling Materializes a World Model of Protein Biology](https://doi.org/10.64898/2026.06.03.729735)
 - **Developed by**: Salvatore Candido, Thomas Hayes, Alexander Derry, Roshan Rao, Zeming Lin, Robert Verkuil, Bryan Wu, Jin Sub Lee, Elise S. Bruguera, Jehan A. Keval, Mykhailo Kopylov, John E. Pak, Wesley Wu, Neil Thomas, Samson Mataraso, Alvin Hsu, Ashton C. Trotman-Grant, Kilian Fatras, Allan dos Santos Costa, Rohil Badkundri, Halil Akin, Deniz Oktay, Jonathan Deaton, Elizabeth Montabana, Hrishita Sitwala, Yue Yu, Marius Wiggert, Dylan Alexander Carlin, Anthony W. Goering, Tomasz Blazejewski, McCullen Sandora, Michael Hla, Tina Z. Jia, Leon H. Kloker, Nicholas J. Sofroniew, Masatoshi Uehara, Jassi Pannu, Sharrol Bachas, Daniel S. Liu, Tom Sercu, Alexander Rives
@@ -308,7 +308,7 @@ The upstream model card describes a two-stage training schedule.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [ESMC paper](https://doi.org/10.64898/2026.06.03.729735) for questions or comments on the paper/model.
 

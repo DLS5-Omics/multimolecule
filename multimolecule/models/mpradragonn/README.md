@@ -36,7 +36,7 @@ MPRA-DragoNN is a convolutional neural network (CNN) trained to quantitatively p
 
 ### Links
 
-- **Code**: [multimolecule.mpradragonn](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/mpradragonn)
+- **Code**: [multimolecule.mpradragonn](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/mpradragonn)
 - **Data**: [Sharpr-MPRA dataset](http://mitra.stanford.edu/kundaje/projects/mpra/) (Ernst et al. 2016)
 - **Paper**: [Deciphering regulatory DNA sequences and noncoding genetic variants using neural network models of massively parallel reporter assays](https://doi.org/10.1371/journal.pone.0218073)
 - **Developed by**: Rajiv Movva, Peyton Greenside, Georgi K. Marinov, Surag Nair, Avanti Shrikumar, Anshul Kundaje
@@ -131,7 +131,7 @@ The model was trained to minimise a task-wise mean-squared-error loss between pr
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [MPRA-DragoNN paper](https://doi.org/10.1371/journal.pone.0218073) for questions or comments on the paper/model.
 

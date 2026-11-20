@@ -38,7 +38,7 @@ DeepSTARR is a convolutional neural network (CNN) trained to quantitatively pred
 
 ### Links
 
-- **Code**: [multimolecule.deepstarr](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/deepstarr)
+- **Code**: [multimolecule.deepstarr](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/deepstarr)
 - **Data**: Drosophila S2 UMI-STARR-seq enhancer-activity data
 - **Paper**: [DeepSTARR predicts enhancer activity from DNA sequence and enables the de novo design of synthetic enhancers](https://doi.org/10.1038/s41588-022-01048-5)
 - **Developed by**: Bernardo P. de Almeida, Franziska Reiter, Michaela Pagani, Alexander Stark
@@ -135,7 +135,7 @@ The model was trained to minimize a mean-squared-error loss between predicted an
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DeepSTARR paper](https://doi.org/10.1038/s41588-022-01048-5) for questions or comments on the paper/model.
 

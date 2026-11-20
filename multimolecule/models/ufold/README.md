@@ -39,7 +39,7 @@ FLOPs and MACs are computed with `multimolecule.utils` for one 600 nt sequence.
 
 ### Links
 
-- **Code**: [multimolecule.ufold](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ufold)
+- **Code**: [multimolecule.ufold](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/ufold)
 - **Weights**: [multimolecule/ufold](https://huggingface.co/multimolecule/ufold)
 - **Paper**: [UFold: fast and accurate RNA secondary structure prediction with deep learning](https://doi.org/10.1093/nar/gkab1074)
 - **Developed by**: Laiyi Fu, Yingxin Cao, Jie Wu, Qinke Peng, Qing Nie, Xiaohui Xie
@@ -141,7 +141,7 @@ UFold was trained for RNA secondary structure prediction from annotated contact 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [UFold paper](https://doi.org/10.1093/nar/gkab1074) for questions or comments on the paper/model.
 

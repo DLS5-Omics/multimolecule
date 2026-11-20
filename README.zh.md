@@ -3,11 +3,11 @@
 > [!TIP]
 > 机器学习加速分子生物学研究。
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15119050.svg)](https://doi.org/10.5281/zenodo.15119050)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12638419.svg)](https://doi.org/10.5281/zenodo.12638419)
 
-[![Codacy - 代码质量](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Codacy - 测试覆盖](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
-[![CodeCov - 测试覆盖](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
+[![Codacy - 代码质量](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/MultiMolecule/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy - 测试覆盖](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/MultiMolecule/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![CodeCov - 测试覆盖](https://codecov.io/gh/MultiMolecule/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/MultiMolecule/multimolecule)
 
 [![PyPI - 版本](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule)
 [![PyPI - Python 版本](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule)
@@ -48,7 +48,7 @@ tokenizer = multimolecule.AutoTokenizer.from_pretrained("multimolecule/basset")
 如果需要未发布的最新修改，可以从源代码安装：
 
 ```shell
-pip install git+https://github.com/DLS5-Omics/MultiMolecule
+pip install git+https://github.com/MultiMolecule/multimolecule
 ```
 
 ## 浏览
@@ -68,14 +68,14 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ## 社区
 
 - [Discourse](https://multimolecule.discourse.group)：发布公告、使用问题、模型请求、RFC 和社区讨论。
-- [GitHub Issues](https://github.com/DLS5-Omics/multimolecule/issues)：可复现的错误、API 问题和需要工程跟踪的功能请求。
+- [GitHub Issues](https://github.com/MultiMolecule/multimolecule/issues)：可复现的错误、API 问题和需要工程跟踪的功能请求。
 - [Hugging Face](https://huggingface.co/multimolecule)：已发布的 checkpoint、数据集和演示 Space。
 
 ## 引用
 
 > [!NOTE]
 > 本仓库提供的内容是 MultiMolecule 项目的一部分。
-> 如果 MultiMolecule 对你的研究有帮助，请按如下方式引用 MultiMolecule。
+> 如果你在研究中使用 MultiMolecule 软件或资源，请引用本项目：
 
 ```bibtex
 @software{chen_2024_12638419,
@@ -87,6 +87,23 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
   year      = 2024,
   month     = may,
   day       = 4
+}
+```
+
+### 介绍 MultiMolecule 的论文
+
+如果你引用的是介绍该项目的论文，请引用我们的技术报告：
+
+```bibtex
+@misc{chen2026multimolecule,
+  title         = {{MultiMolecule}: a modular ecosystem for biomolecular sequence-model workflows},
+  author        = {Chen, Zhiyuan},
+  year          = {2026},
+  eprint        = {2606.16540},
+  archivePrefix = {arXiv},
+  primaryClass  = {q-bio.QM},
+  doi           = {10.48550/arXiv.2606.16540},
+  url           = {https://arxiv.org/abs/2606.16540}
 }
 ```
 

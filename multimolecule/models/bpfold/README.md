@@ -50,7 +50,7 @@ FLOPs and MACs are computed with `multimolecule.utils` for one 600 nt sequence.
 
 ### Links
 
-- **Code**: [multimolecule.bpfold](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/bpfold)
+- **Code**: [multimolecule.bpfold](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/bpfold)
 - **Paper**: [Deep generalizable prediction of RNA secondary structure via base pair motif energy](https://doi.org/10.1038/s41467-025-60048-1)
 - **Developed by**: Heqin Zhu, Fenghe Tang, Quan Quan, Ke Chen, Peng Xiong, S. Kevin Zhou
 - **Original Repository**: [heqin-zhu/BPfold](https://github.com/heqin-zhu/BPfold)
@@ -144,7 +144,7 @@ BPfold was trained for RNA secondary structure prediction with base-pair motif e
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [BPfold paper](https://doi.org/10.1038/s41467-025-60048-1) for questions or comments on the paper/model.
 

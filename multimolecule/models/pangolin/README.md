@@ -43,7 +43,7 @@ Please refer to the [Training Details](#training-details) section for more infor
 
 ### Links
 
-- **Code**: [multimolecule.pangolin](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/pangolin)
+- **Code**: [multimolecule.pangolin](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/pangolin)
 - **Data**: Cross-species RNA-seq splice-site usage from human, rhesus, rat, and mouse tissues
 - **Paper**: [Predicting RNA splicing from DNA sequence using Pangolin](https://doi.org/10.1186/s13059-022-02664-4)
 - **Developed by**: Tony Zeng, Yang I. Li
@@ -142,7 +142,7 @@ The model was trained to minimize a combination of cross-entropy loss over splic
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Pangolin paper](https://doi.org/10.1186/s13059-022-02664-4) for questions or comments on the paper/model.
 

@@ -38,7 +38,7 @@ Basset is a convolutional neural network (CNN) trained to predict the chromatin 
 
 ### Links
 
-- **Code**: [multimolecule.basset](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/basset)
+- **Code**: [multimolecule.basset](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/basset)
 - **Data**: ENCODE and Roadmap Epigenomics DNase-seq accessibility compendium across 164 cell types
 - **Paper**: [Basset: learning the regulatory code of the accessible genome with deep convolutional neural networks](https://doi.org/10.1101/gr.200535.115)
 - **Developed by**: David R. Kelley, Jasper Snoek, John L. Rinn
@@ -131,7 +131,7 @@ The model was trained to minimize a multi-label binary cross-entropy loss, compa
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Basset paper](https://doi.org/10.1101/gr.200535.115) for questions or comments on the paper/model.
 

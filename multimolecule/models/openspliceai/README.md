@@ -96,7 +96,7 @@ reported for a single 5,000-nucleotide output sequence.
 
 ### Links
 
-- **Code**: [multimolecule.openspliceai](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/openspliceai)
+- **Code**: [multimolecule.openspliceai](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/openspliceai)
 - **Data**: Human MANE/GENCODE for the MANE variants; species annotations follow the original OpenSpliceAI release.
 - **Paper**: [OpenSpliceAI: An efficient, modular implementation of SpliceAI enabling easy retraining on non-human species](https://doi.org/10.7554/eLife.107454.3)
 - **Developed by**: Kuan-Hao Chao, Alan Mao, Anqi Liu, Steven L. Salzberg, Mihaela Pertea
@@ -191,7 +191,7 @@ Please refer to the [OpenSpliceAI paper](https://doi.org/10.7554/eLife.107454.3)
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [OpenSpliceAI paper](https://doi.org/10.7554/eLife.107454.3) for questions or comments on the paper/model.
 

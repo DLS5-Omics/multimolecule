@@ -44,7 +44,7 @@ Please refer to the [Training Details](#training-details) section for more infor
 
 ### Links
 
-- **Code**: [multimolecule.sptransformer](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/sptransformer)
+- **Code**: [multimolecule.sptransformer](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/sptransformer)
 - **Data**: GTEx human RNA-seq across 15 tissues with gene annotations from GENCODE and multi-species sequence data
 - **Paper**: [SpliceTransformer predicts tissue-specific splicing linked to human diseases](https://doi.org/10.1038/s41467-024-53088-6)
 - **Developed by**: Ningyuan You, Chang Liu, Yuxin Gu, Rong Wang, Hanying Jia, Tianyun Zhang, Song Jiang, Jinsong Shi, Ming Chen, Min-Xin Guan, Siqi Sun, Shanshan Pei, Zhihong Liu, Ning Shen
@@ -144,7 +144,7 @@ The model was trained to minimize a combination of cross-entropy loss over splic
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [SpliceTransformer paper](https://doi.org/10.1038/s41467-024-53088-6) for questions or comments on the paper/model.
 

@@ -91,7 +91,7 @@ RiNALMo is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 
 ### Links
 
-- **Code**: [multimolecule.rinalmo](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rinalmo)
+- **Code**: [multimolecule.rinalmo](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/rinalmo)
 - **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: [RiNALMo: General-Purpose RNA Language Models Can Generalize Well on Structure Prediction Tasks](https://doi.org/10.48550/arXiv.2403.00043)
 - **Developed by**: Rafael Josip Penić, Tin Vlašić, Roland G. Huber, Yue Wan, Mile Šikić
@@ -300,7 +300,7 @@ The model was trained on 7 NVIDIA A100 GPUs with 80GiB memories.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [RiNALMo paper](https://doi.org/10.48550/arXiv.2403.00043) for questions or comments on the paper/model.
 

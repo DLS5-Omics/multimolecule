@@ -40,7 +40,7 @@ FLOPs and MACs are measured on the canonical 2114 bp ProCapNet input window.
 
 ### Links
 
-- **Code**: [multimolecule.procapnet](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/procapnet)
+- **Code**: [multimolecule.procapnet](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/procapnet)
 - **Data**: [K562 PRO-cap (ENCODE ENCSR261KBX)](https://www.encodeproject.org/experiments/ENCSR261KBX/)
 - **Paper**: [Dissecting the cis-regulatory syntax of transcription initiation with deep learning](https://doi.org/10.1101/2024.05.28.596138)
 - **Developed by**: Kelly Cochran, Melody Yin, Anika Mantripragada, Jacob Schreiber, Georgi K. Marinov, Sagar R. Shah, Haiyuan Yu, John T. Lis, Anshul Kundaje
@@ -139,7 +139,7 @@ The model was trained with a composite loss: a (strand-merged) multinomial negat
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [ProCapNet paper](https://doi.org/10.1101/2024.05.28.596138) for questions or comments on the paper/model.
 

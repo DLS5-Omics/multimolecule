@@ -56,7 +56,7 @@ CaLM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style mod
 
 ### Links
 
-- **Code**: [multimolecule.calm](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/calm)
+- **Code**: [multimolecule.calm](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/calm)
 - **Weights**: [multimolecule/calm](https://huggingface.co/multimolecule/calm)
 - **Data**: [European Nucleotide Archive](https://ebi.ac.uk/ena)
 - **Paper**: [Codon language embeddings provide strong signals for use in protein engineering](https://doi.org/10.1101/2022.12.15.519894)
@@ -250,7 +250,7 @@ The model was trained on 4 NVIDIA Quadro RTX4000 GPUs with 8GiB memories.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [CaLM paper](https://doi.org/10.1101/2022.12.15.519894) for questions or comments on the paper/model.
 

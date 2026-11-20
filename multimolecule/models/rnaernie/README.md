@@ -58,7 +58,7 @@ Note that during the conversion process, additional tokens such as `[IND]` and n
 
 ### Links
 
-- **Code**: [multimolecule.rnaernie](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnaernie)
+- **Code**: [multimolecule.rnaernie](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/rnaernie)
 - **Weights**: [multimolecule/rnaernie](https://huggingface.co/multimolecule/rnaernie)
 - **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: Multi-purpose RNA language modelling with motif-aware pretraining and type-guided fine-tuning
@@ -240,7 +240,7 @@ Citation information is not available for papers published in Closed Access / Au
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the RNAErnie paper for questions or comments on the paper/model.
 

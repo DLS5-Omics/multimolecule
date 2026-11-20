@@ -37,7 +37,7 @@ APARENT2 is a residual convolutional neural network (a ResNet successor to the o
 
 ### Links
 
-- **Code**: [multimolecule.aparent2](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/aparent2)
+- **Code**: [multimolecule.aparent2](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/aparent2)
 - **Data**: Massively-parallel polyadenylation MPRA with variant-effect evaluation data
 - **Paper**: [Deciphering the impact of genetic variation on human polyadenylation using APARENT2](https://doi.org/10.1186/s13059-022-02799-4)
 - **Developed by**: Johannes Linder, Samantha E. Koplik, Anshul Kundaje, Georg Seelig
@@ -146,7 +146,7 @@ The model minimizes a combination of a sigmoid KL-divergence isoform loss and a 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [APARENT2 paper](https://doi.org/10.1186/s13059-022-02799-4) for questions or comments on the paper/model.
 

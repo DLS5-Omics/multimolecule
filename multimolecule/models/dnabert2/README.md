@@ -61,7 +61,7 @@ DNABERT-2 is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-styl
 
 ### Links
 
-- **Code**: [multimolecule.dnabert2](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/dnabert2)
+- **Code**: [multimolecule.dnabert2](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/dnabert2)
 - **Data**: [GenBank](https://www.ncbi.nlm.nih.gov/genbank)
 - **Paper**: [DNABERT-2: Efficient Foundation Model and Benchmark for Multi-Species Genomes](https://openreview.net/forum?id=oMLQB4EZE1)
 - **Developed by**: Zhihan Zhou, Yanrong Ji, Weijian Li, Pratik Dutta, Ramana V Davuluri, Han Liu
@@ -246,7 +246,7 @@ The model was trained on 8 NVIDIA RTX 2080Ti GPUs.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DNABERT-2 paper](https://openreview.net/forum?id=oMLQB4EZE1) for questions or comments on the paper/model.
 

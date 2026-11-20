@@ -40,7 +40,7 @@ The architecture is a stack of three `Conv1D` layers (120 filters, kernel size 8
 
 ### Links
 
-- **Code**: [multimolecule.optmrl](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/optmrl)
+- **Code**: [multimolecule.optmrl](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/optmrl)
 - **Data**: 260,000 random 5'UTR reporters (pre-training) + 20,000 human 5'UTR reporters (fine-tuning)
 - **Paper**: [Interpreting Deep Neural Networks for the Prediction of Translation Rates](https://doi.org/10.1101/2023.06.02.543405)
 - **Developed by**: Frederick Korbel, Ekaterina Eroshok, Uwe Ohler
@@ -133,7 +133,7 @@ The model was first pre-trained as a regression task to predict the measured MRL
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [OptMRL paper](https://doi.org/10.1101/2023.06.02.543405) for questions or comments on the paper/model.
 

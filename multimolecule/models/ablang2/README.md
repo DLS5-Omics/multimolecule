@@ -43,7 +43,7 @@ AbLang2 is an antibody-specific encoder-only protein language model trained to r
 
 ### Links
 
-- **Code**: [multimolecule.ablang2](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ablang2)
+- **Code**: [multimolecule.ablang2](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/ablang2)
 - **Data**: [Observed Antibody Space](https://opig.stats.ox.ac.uk/webapps/oas/)
 - **Paper**: [Addressing the antibody germline bias and its effect on language models for improved antibody design](https://doi.org/10.1093/bioinformatics/btae618)
 - **Developed by**: Tobias H. Olsen, Iain H. Moal, Charlotte M. Deane
@@ -205,7 +205,7 @@ Please refer to the original paper for details on the training setup.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [AbLang2 paper](https://doi.org/10.1093/bioinformatics/btae618) for questions or comments on the paper/model.
 

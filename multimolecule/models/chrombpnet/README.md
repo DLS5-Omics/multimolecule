@@ -39,7 +39,7 @@ FLOPs and MACs are measured on the canonical 2114 bp ChromBPNet input window.
 
 ### Links
 
-- **Code**: [multimolecule.chrombpnet](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/chrombpnet)
+- **Code**: [multimolecule.chrombpnet](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/chrombpnet)
 - **Data**: [RoboATAC ChromBPNet Models](https://zenodo.org/records/16295014)
 - **Paper**: [ChromBPNet: bias factorized, base-resolution deep learning models of chromatin accessibility reveal cis-regulatory sequence syntax, transcription factor footprints and regulatory variants](https://doi.org/10.1101/2024.12.25.630221)
 - **Developed by**: Anusri Pampari, Anna Shcherbina, Evgeny Kvon, Michael Kosicki, Surag Nair, Soumya Kundu, Arwa S. Kathiria, Viviana I. Risca, Kristiina Simola, Melissa J. Funk, Eileen E. M. Furlong, Len A. Pennacchio, William J. Greenleaf, Anshul Kundaje
@@ -139,7 +139,7 @@ The model was trained with a composite loss: a multinomial negative log-likeliho
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [ChromBPNet paper](https://doi.org/10.1101/2024.12.25.630221) for questions or comments on the paper/model.
 

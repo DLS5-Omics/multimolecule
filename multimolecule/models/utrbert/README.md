@@ -83,7 +83,7 @@ The OFFICIAL repository of 3UTRBERT is at [yangyn533/3UTRBERT](https://github.co
 
 ### Links
 
-- **Code**: [multimolecule.utrbert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/utrbert)
+- **Code**: [multimolecule.utrbert](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/utrbert)
 - **Data**: [multimolecule/gencode-human](https://huggingface.co/datasets/multimolecule/gencode-human)
 - **Paper**: [Deciphering 3’ UTR mediated gene regulation using interpretable deep representation learning](https://doi.org/10.1101/2023.09.08.556883)
 - **Developed by**: Yuning Yang, Gen Li, Kuan Pang, Wuxinhao Cao, Xiangtao Li, Zhaolei Zhang
@@ -276,7 +276,7 @@ The model was trained on 4 NVIDIA Quadro RTX 6000 GPUs with 24GiB memories.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [3UTRBERT paper](https://doi.org/10.1101/2023.09.08.556883) for questions or comments on the paper/model.
 

@@ -90,7 +90,7 @@ UTR-LM is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style m
 
 ### Links
 
-- **Code**: [multimolecule.utrlm](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/utrlm)
+- **Code**: [multimolecule.utrlm](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/utrlm)
 - **Data**:
   - [Ensembl Genome Browser](https://ensembl.org)
   - [Human 5′ UTR design and variant effect prediction from a massively parallel translation assay](https://doi.org/10.1038/s41587-019-0164-5)
@@ -312,7 +312,7 @@ The model was trained on two clusters:
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [UTR-LM paper](https://doi.org/10.1101/2023.10.11.561938) for questions or comments on the paper/model.
 

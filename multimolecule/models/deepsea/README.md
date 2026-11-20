@@ -36,7 +36,7 @@ DeepSEA is a convolutional neural network (CNN) trained to predict 919 chromatin
 
 ### Links
 
-- **Code**: [multimolecule.deepsea](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/deepsea)
+- **Code**: [multimolecule.deepsea](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/deepsea)
 - **Data**: ENCODE and Roadmap Epigenomics chromatin-feature peak compendium covering 690 transcription-factor binding profiles, 125 DNase I hypersensitivity profiles, and 104 histone-mark profiles (919 chromatin features in total)
 - **Paper**: [Predicting effects of noncoding variants with deep learning-based sequence model](https://doi.org/10.1038/nmeth.3547)
 - **Developed by**: Jian Zhou, Olga G. Troyanskaya
@@ -128,7 +128,7 @@ The model was trained to minimize a multi-label binary cross-entropy loss, compa
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DeepSEA paper](https://doi.org/10.1038/nmeth.3547) for questions or comments on the paper/model.
 

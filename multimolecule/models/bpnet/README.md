@@ -38,7 +38,7 @@ BPNet is a convolutional neural network (CNN) trained to predict base-resolution
 
 ### Links
 
-- **Code**: [multimolecule.bpnet](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/bpnet)
+- **Code**: [multimolecule.bpnet](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/bpnet)
 - **Data**: [BPNet manuscript data](https://zenodo.org/records/4294904)
 - **Paper**: [Base-resolution models of transcription-factor binding reveal soft motif syntax](https://doi.org/10.1038/s41588-021-00782-6)
 - **Developed by**: Žiga Avsec, Melanie Weilert, Avanti Shrikumar, Sabrina Krueger, Amr Alexandari, Khyati Dalal, Robin Fropf, Charles McAnany, Julien Gagneur, Anshul Kundaje, Julia Zeitlinger
@@ -139,7 +139,7 @@ The model was trained with a composite loss: a multinomial negative log-likeliho
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [BPNet paper](https://doi.org/10.1038/s41588-021-00782-6) for questions or comments on the paper/model.
 

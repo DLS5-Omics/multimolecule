@@ -81,7 +81,7 @@ The DeepCpG-DNA module is trained per single-cell dataset, so each variant predi
 
 ### Links
 
-- **Code**: [multimolecule.deepcpgdna](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/deepcpgdna)
+- **Code**: [multimolecule.deepcpgdna](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/deepcpgdna)
 - **Data**: scBS-seq (Smallwood 2014) and scRRBS-seq (Hou 2016) single-cell bisulfite sequencing datasets
 - **Paper**: [DeepCpG: accurate prediction of single-cell DNA methylation states using deep learning](https://doi.org/10.1186/s13059-017-1189-z)
 - **Developed by**: Christof Angermueller, Heather J. Lee, Wolf Reik, Oliver Stegle
@@ -182,7 +182,7 @@ The model was trained to minimize a per-cell binary cross-entropy loss, comparin
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DeepCpG paper](https://doi.org/10.1186/s13059-017-1189-z) for questions or comments on the paper/model.
 

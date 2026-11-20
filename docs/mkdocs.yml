@@ -5,7 +5,7 @@ site_description: Neural Networks for RNA, DNA, and Protein
 copyright: All rights reserved &copy; 2024-Present, MultiMolecule Contributors
 
 repo_name: MultiMolecule
-repo_url: https://github.com/DLS5-Omics/multimolecule
+repo_url: https://github.com/MultiMolecule/multimolecule
 
 hooks:
   - gen_pages.py
@@ -101,7 +101,7 @@ extra:
       link: https://multimolecule.discourse.group
       name: MultiMolecule Discourse
     - icon: fontawesome/brands/github
-      link: https://github.com/DLS5-Omics/multimolecule
+      link: https://github.com/MultiMolecule/multimolecule
       name: MultiMolecule on GitHub
     - icon: fontawesome/solid/face-smile
       link: https://huggingface.co/multimolecule

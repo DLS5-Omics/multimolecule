@@ -47,7 +47,7 @@ DeltaSplice predicts splice-site usage (SSU) and splicing-altering mutation effe
 
 ### Links
 
-- **Code**: [multimolecule.deltasplice](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/deltasplice)
+- **Code**: [multimolecule.deltasplice](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/deltasplice)
 - **Paper**: [Reference-informed prediction of alternative splicing and splicing-altering mutations from sequences](https://doi.org/10.1101/gr.279044.124)
 - **Developed by**: Chencheng Xu, Suying Bao, Ye Wang, Wenxing Li, Hao Chen, Yufeng Shen, Tao Jiang, Chaolin Zhang
 - **Model type**: Dilated residual 1D CNN ensemble for splice-site usage and delta-SSU prediction
@@ -146,7 +146,7 @@ The official release provides five seed checkpoints with the same architecture a
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DeltaSplice paper](https://doi.org/10.1101/gr.279044.124) for questions or comments on the paper/model.
 

@@ -59,7 +59,7 @@ dependencies = [
 optional-dependencies.interpret = [ "captum>=0.9", "scikit-learn" ]
 urls.documentation = "https://multimolecule.danling.org"
 urls.homepage = "https://multimolecule.danling.org"
-urls.repository = "https://github.com/DLS5-Omics/multimolecule"
+urls.repository = "https://github.com/MultiMolecule/multimolecule"
 
 scripts.mmevaluate = "multimolecule.api.run:evaluate"
 scripts.mminfer = "multimolecule.api.run:infer"

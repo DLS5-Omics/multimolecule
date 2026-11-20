@@ -47,7 +47,7 @@ RNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 
 ### Links
 
-- **Code**: [multimolecule.rnabert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnabert)
+- **Code**: [multimolecule.rnabert](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/rnabert)
 - **Weights**: [multimolecule/rnabert](https://huggingface.co/multimolecule/rnabert)
 - **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: [Informative RNA-base embedding for functional RNA clustering and structural alignment](https://doi.org/10.1093/nargab/lqac012)
@@ -233,7 +233,7 @@ The model was trained on 1 NVIDIA V100 GPU.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [RNABERT paper](https://doi.org/10.1093/nargab/lqac012) for questions or comments on the paper/model.
 

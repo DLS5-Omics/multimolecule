@@ -84,7 +84,7 @@ Please refer to the [Training Details](#training-details) section for more infor
 
 ### Links
 
-- **Code**: [multimolecule.ribonanzanet](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ribonanzanet)
+- **Code**: [multimolecule.ribonanzanet](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/ribonanzanet)
 - **Weights**: [multimolecule/ribonanzanet](https://huggingface.co/multimolecule/ribonanzanet)
 - **Data**: [multimolecule/ribonanza](https://multimolecule.danling.org/datasets/ribonanza)
 - **Paper**: [Ribonanza: deep learning of RNA structure through dual crowdsourcing](https://doi.org/10.1101/2024.02.24.581671)
@@ -267,7 +267,7 @@ Sequence flip augmentation was applied to the training data.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [RibonanzaNet paper](https://doi.org/10.1101/2024.02.24.581671) for questions or comments on the paper/model.
 

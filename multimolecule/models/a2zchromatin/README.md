@@ -38,7 +38,7 @@ Please refer to the [Training Details](#training-details) section for more infor
 
 ### Links
 
-- **Code**: [multimolecule.a2zchromatin](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/a2zchromatin)
+- **Code**: [multimolecule.a2zchromatin](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/a2zchromatin)
 - **Data**: Leaf ATAC-seq from 12 angiosperm species + unmethylated-region calls from 10 angiosperms
 - **Paper**: [Modeling chromatin state from sequence across angiosperms using recurrent convolutional neural networks](https://doi.org/10.1002/tpg2.20249)
 - **Developed by**: Travis Wrightsman, Alexandre P. Marand, Peter A. Crisp, Nathan M. Springer, Edward S. Buckler
@@ -136,7 +136,7 @@ Each variant was trained to minimize a binary cross-entropy loss between its sig
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [a2z-chromatin paper](https://doi.org/10.1002/tpg2.20249) for questions or comments on the paper/model.
 

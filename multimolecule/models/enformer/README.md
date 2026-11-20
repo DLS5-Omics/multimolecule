@@ -43,7 +43,7 @@ FLOPs and MACs have not been recomputed for the canonical 196,608 bp Enformer in
 
 ### Links
 
-- **Code**: [multimolecule.enformer](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/enformer)
+- **Code**: [multimolecule.enformer](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/enformer)
 - **Data**: ENCODE, FANTOM5, GTEx CAGE, ChIP-seq, DNase-seq, and related genomic coverage tracks
 - **Paper**: [Effective gene expression prediction from sequence by integrating long-range interactions](https://doi.org/10.1038/s41592-021-01252-x)
 - **Developed by**: Žiga Avsec, Vikram Agarwal, Daniel Visentin, Joseph R. Ledsam, Agnieszka Grabska-Barwinska, Kyle R. Taylor, Yannis Assael, John Jumper, Pushmeet Kohli, David R. Kelley
@@ -146,7 +146,7 @@ coverage, using a softplus output activation to keep the predicted coverage non-
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Enformer paper](https://doi.org/10.1038/s41592-021-01252-x) for questions or comments on the paper/model.
 

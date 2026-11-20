@@ -113,7 +113,7 @@ ProGen2 is a [GPT-J](https://huggingface.co/EleutherAI/gpt-j-6b)-style model pre
 
 ### Links
 
-- **Code**: [multimolecule.progen2](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/progen2)
+- **Code**: [multimolecule.progen2](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/progen2)
 - **Weights**: [multimolecule/progen2](https://huggingface.co/multimolecule/progen2-base)
 - **Data**: [UniRef](https://www.uniprot.org/uniref), [BFD](https://bfd.mmseqs.com)
 - **Paper**: [ProGen2: Exploring the Boundaries of Protein Language Models](https://doi.org/10.1016/j.cels.2023.10.002)
@@ -301,7 +301,7 @@ The model was trained on Google TPU-v3 pods using JAX.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [ProGen2 paper](https://doi.org/10.1016/j.cels.2023.10.002) for questions or comments on the paper/model.
 

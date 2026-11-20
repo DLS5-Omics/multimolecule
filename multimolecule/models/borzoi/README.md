@@ -50,7 +50,7 @@ FLOPs and MACs are measured on the canonical 524,288 bp Borzoi input window.
 
 ### Links
 
-- **Code**: [multimolecule.borzoi](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/borzoi)
+- **Code**: [multimolecule.borzoi](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/borzoi)
 - **Data**: ENCODE, GTEx, FANTOM5 RNA-seq / CAGE / ATAC-seq / DNase-seq / ChIP-seq tracks aligned to human and mouse genomes
 - **Paper**: [Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation](https://doi.org/10.1038/s41588-024-02053-6)
 - **Developed by**: Johannes Linder, Divyanshi Srivastava, Han Yuan, Vikram Agarwal, David R. Kelley
@@ -150,7 +150,7 @@ The model was trained to minimize a Poisson-multinomial regression loss between 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Borzoi paper](https://doi.org/10.1038/s41588-024-02053-6) for questions or comments on the paper/model.
 

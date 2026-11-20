@@ -40,7 +40,7 @@ FLOPs and MACs are measured on the canonical 131,072 bp Basenji input window.
 
 ### Links
 
-- **Code**: [multimolecule.basenji](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/basenji)
+- **Code**: [multimolecule.basenji](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/basenji)
 - **Data**: ENCODE, FANTOM5, GTEx, and related genomic coverage tracks aligned to human and mouse genomes
 - **Paper**: [Sequential regulatory activity prediction across chromosomes with deep convolutional and recurrent neural networks](https://doi.org/10.1101/gr.227819.117)
 - **Developed by**: David R. Kelley, Yakir A. Reshef, Maxwell Bileschi, David Belanger, Cory Y. McLean, Jasper Snoek
@@ -140,7 +140,7 @@ The model was trained to minimize a Poisson regression loss between predicted an
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Basenji paper](https://doi.org/10.1101/gr.227819.117) for questions or comments on the paper/model.
 

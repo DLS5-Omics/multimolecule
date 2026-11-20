@@ -36,7 +36,7 @@ Xpresso is a deep convolutional neural network (CNN) that predicts steady-state 
 
 ### Links
 
-- **Code**: [multimolecule.xpresso](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/xpresso)
+- **Code**: [multimolecule.xpresso](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/xpresso)
 - **Data**: Roadmap Epigenomics gene-expression data with promoter sequence and mRNA half-life features
 - **Paper**: [Predicting mRNA Abundance Directly from Genomic Sequence Using Deep Convolutional Neural Networks](https://doi.org/10.1016/j.celrep.2020.107663)
 - **Developed by**: Vikram Agarwal, Jay Shendure
@@ -134,7 +134,7 @@ The model was trained to minimize a mean-squared-error loss between predicted an
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Xpresso paper](https://doi.org/10.1016/j.celrep.2020.107663) for questions or comments on the paper/model.
 

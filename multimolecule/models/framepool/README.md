@@ -40,7 +40,7 @@ The released `combined_residual` model is recommended by the upstream authors fo
 
 ### Links
 
-- **Code**: [multimolecule.framepool](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/framepool)
+- **Code**: [multimolecule.framepool](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/framepool)
 - **Data**: eGFP polysome-profiling massively parallel reporter assay (MPRA) from [Sample et al., 2019](https://doi.org/10.1038/s41587-019-0164-5), HEK293T cells, fixed-length (50 nt) and variable-length (25-100 nt) 5'UTR libraries
 - **Paper**: [Predicting mean ribosome load for 5'UTR of any length using deep learning](https://doi.org/10.1371/journal.pcbi.1008982)
 - **Developed by**: Alexander Karollus, Žiga Avsec, Julien Gagneur
@@ -141,7 +141,7 @@ Framepool was trained on the eGFP polysome-profiling MPRA libraries of [Sample e
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Framepool paper](https://doi.org/10.1371/journal.pcbi.1008982) for questions or comments on the paper/model.
 

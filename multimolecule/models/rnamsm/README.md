@@ -54,7 +54,7 @@ Please refer to the [Training Details](#training-details) section for more infor
 
 ### Links
 
-- **Code**: [multimolecule.rnamsm](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/rnamsm)
+- **Code**: [multimolecule.rnamsm](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/rnamsm)
 - **Weights**: [multimolecule/rnamsm](https://huggingface.co/multimolecule/rnamsm)
 - **Data**: [multimolecule/rfam](https://huggingface.co/datasets/multimolecule/rfam)
 - **Paper**: [Multiple sequence alignment-based RNA language model and its application to structural inference](https://doi.org/10.1093/nar/gkad1031)
@@ -260,7 +260,7 @@ The model was trained on 8 NVIDIA V100 GPUs with 32GiB memories.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [RNA-MSM paper](https://doi.org/10.1093/nar/gkad1031) for questions or comments on the paper/model.
 

@@ -63,7 +63,7 @@ DNABERT-S shares the same architecture as DNABERT-2: it uses Byte Pair Encoding 
 
 ### Links
 
-- **Code**: [multimolecule.dnaberts](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/dnaberts)
+- **Code**: [multimolecule.dnaberts](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/dnaberts)
 - **Data**: [GenBank](https://www.ncbi.nlm.nih.gov/genbank)
 - **Paper**: [DNABERT-S: pioneering species differentiation with species-aware DNA embeddings](https://doi.org/10.1093/bioinformatics/btaf188)
 - **Developed by**: Zhihan Zhou, Weimin Wu, Harrison Ho, Jiayi Wang, Lizhen Shi, Ramana V Davuluri, Zhong Wang, Han Liu
@@ -237,7 +237,7 @@ The model was trained on 8 NVIDIA A100 80GB GPUs.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DNABERT-S paper](https://doi.org/10.1093/bioinformatics/btaf188) for questions or comments on the paper/model.
 

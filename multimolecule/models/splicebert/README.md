@@ -80,7 +80,7 @@ SpliceBERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-sty
 
 ### Links
 
-- **Code**: [multimolecule.splicebert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/splicebert)
+- **Code**: [multimolecule.splicebert](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/splicebert)
 - **Data**: [UCSC Genome Browser](https://genome.ucsc.edu)
 - **Paper**: [Self-supervised learning on millions of pre-mRNA sequences improves sequence-based RNA splicing prediction](https://doi.org/10.1101/2023.01.31.526427)
 - **Developed by**: Ken Chen, Yue Zhou, Maolin Ding, Yu Wang, Zhixiang Ren, Yuedong Yang
@@ -271,7 +271,7 @@ SpliceBERT also pre-trained a model on human data only to validate the contribut
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [SpliceBERT paper](https://doi.org/10.1101/2023.01.31.526427) for questions or comments on the paper/model.
 

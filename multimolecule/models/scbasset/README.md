@@ -43,7 +43,7 @@ The cell-embedding layer is exposed through the shared [`SequencePredictionHead`
 
 ### Links
 
-- **Code**: [multimolecule.scbasset](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/scbasset)
+- **Code**: [multimolecule.scbasset](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/scbasset)
 - **Data**: [scBasset Buenrostro2018 tutorial data](https://storage.googleapis.com/scbasset_tutorial_data/buen_ad_sc.h5ad)
 - **Paper**: [scBasset: sequence-based modeling of single-cell ATAC-seq using convolutional neural networks](https://doi.org/10.1038/s41592-022-01562-8)
 - **Developed by**: Han Yuan, David R. Kelley
@@ -136,7 +136,7 @@ The model was trained to minimize a per-cell binary cross-entropy loss, comparin
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [scBasset paper](https://doi.org/10.1038/s41592-022-01562-8) for questions or comments on the paper/model.
 

@@ -75,7 +75,7 @@ AbLang v1 is an encoder-only Transformer trained on antibody sequences from the 
 
 ### Links
 
-- **Code**: [multimolecule.ablang](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ablang)
+- **Code**: [multimolecule.ablang](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/ablang)
 - **Data**: [Observed Antibody Space](https://opig.stats.ox.ac.uk/webapps/oas/)
 - **Paper**: [AbLang: an antibody language model for completing antibody sequences](https://doi.org/10.1093/bioadv/vbac046)
 - **Developed by**: Tobias H. Olsen, Iain H. Moal, Charlotte M. Deane
@@ -218,7 +218,7 @@ Please refer to the original paper for details on the training setup.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [AbLang paper](https://doi.org/10.1093/bioadv/vbac046) for questions or comments on the paper/model.
 

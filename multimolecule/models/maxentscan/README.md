@@ -63,7 +63,7 @@ MaxEntScan is a parameter-free maximum-entropy model. It performs fixed table lo
 
 ### Links
 
-- **Code**: [multimolecule.maxentscan](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/maxentscan)
+- **Code**: [multimolecule.maxentscan](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/maxentscan)
 - **Data**: Human RefSeq splice-site sequences curated by Yeo and Burge
 - **Paper**: [Maximum entropy modeling of short sequence motifs with applications to RNA splicing signals](https://doi.org/10.1089/1066527041410418)
 - **Developed by**: Gene Yeo, Christopher B. Burge
@@ -171,7 +171,7 @@ MaxEntScan does not use neural-network pre-training. Its maximum-entropy probabi
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [MaxEntScan paper](https://doi.org/10.1089/1066527041410418) for questions or comments on the paper/model.
 

@@ -48,7 +48,7 @@ MultiMolecule provides SPOT-RNA as a single checkpoint, [`multimolecule/spotrna`
 
 ### Links
 
-- **Code**: [multimolecule.spotrna](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/spotrna)
+- **Code**: [multimolecule.spotrna](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/spotrna)
 - **Weights**: [multimolecule/spotrna](https://huggingface.co/multimolecule/spotrna)
 - **Data**: [multimolecule/bprna-spot](https://huggingface.co/datasets/multimolecule/bprna-spot)
 - **Paper**: [RNA secondary structure prediction using an ensemble of two-dimensional deep neural networks and transfer learning](https://doi.org/10.1038/s41467-019-13395-9)
@@ -193,7 +193,7 @@ The pretrained TR0 models were retrained on TR1 with the same architecture and o
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [SPOT-RNA paper](https://doi.org/10.1038/s41467-019-13395-9) for questions or comments on the paper/model.
 

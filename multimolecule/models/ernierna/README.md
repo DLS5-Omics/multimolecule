@@ -44,7 +44,7 @@ ERNIE-RNA is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-styl
 
 ### Links
 
-- **Code**: [multimolecule.ernierna](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/ernierna)
+- **Code**: [multimolecule.ernierna](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/ernierna)
 - **Data**: [multimolecule/rnacentral](https://huggingface.co/datasets/multimolecule/rnacentral)
 - **Paper**: [ERNIE-RNA: An RNA Language Model with Structure-enhanced Representations](https://doi.org/10.1101/2024.03.17.585376)
 - **Developed by**: Weijie Yin, Zhaoyu Zhang, Liang He, Rui Jiang, Shuo Zhang, Gan Liu, Xuegong Zhang, Tao Qin, Zhen Xie
@@ -227,7 +227,7 @@ The model was trained on 24 NVIDIA V100 GPUs with 32GiB memories.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [ERNIE-RNA paper](https://doi.org/10.1101/2024.03.17.585376) for questions or comments on the paper/model.
 

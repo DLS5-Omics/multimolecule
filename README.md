@@ -3,11 +3,11 @@
 > [!TIP]
 > Accelerate Molecular Biology Research with Machine Learning.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15119050.svg)](https://doi.org/10.5281/zenodo.15119050)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12638419.svg)](https://doi.org/10.5281/zenodo.12638419)
 
-[![Codacy - Quality](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Codacy - Coverage](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/DLS5-Omics/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
-[![CodeCov - Coverage](https://codecov.io/gh/DLS5-Omics/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/DLS5-Omics/multimolecule)
+[![Codacy - Quality](https://app.codacy.com/project/badge/Grade/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/MultiMolecule/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy - Coverage](https://app.codacy.com/project/badge/Coverage/ad5fd8904c2e426bb0a865a9160d6c69)](https://app.codacy.com/gh/MultiMolecule/multimolecule/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![CodeCov - Coverage](https://codecov.io/gh/MultiMolecule/multimolecule/graph/badge.svg?token=G9WGWCOFQE)](https://codecov.io/gh/MultiMolecule/multimolecule)
 
 [![PyPI - Version](https://img.shields.io/pypi/v/multimolecule)](https://pypi.org/project/multimolecule)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/multimolecule)](https://pypi.org/project/multimolecule)
@@ -48,7 +48,7 @@ tokenizer = multimolecule.AutoTokenizer.from_pretrained("multimolecule/basset")
 Install the latest source version when you need unreleased changes:
 
 ```shell
-pip install git+https://github.com/DLS5-Omics/MultiMolecule
+pip install git+https://github.com/MultiMolecule/multimolecule
 ```
 
 ## Explore
@@ -68,14 +68,14 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
 ## Community
 
 - [Discourse](https://multimolecule.discourse.group): release announcements, usage questions, model requests, RFCs, and community discussion.
-- [GitHub Issues](https://github.com/DLS5-Omics/multimolecule/issues): reproducible bugs, API issues, and implementation-tracked feature requests.
+- [GitHub Issues](https://github.com/MultiMolecule/multimolecule/issues): reproducible bugs, API issues, and implementation-tracked feature requests.
 - [Hugging Face](https://huggingface.co/multimolecule): released checkpoints, datasets, and demo Spaces.
 
 ## Citation
 
 > [!NOTE]
 > The artifacts distributed in this repository are part of the MultiMolecule project.
-> If MultiMolecule supports your research, please cite the MultiMolecule project as follows:
+> If you use MultiMolecule software or resources in your research, please cite the project:
 
 ```bibtex
 @software{chen_2024_12638419,
@@ -87,6 +87,23 @@ pip install git+https://github.com/DLS5-Omics/MultiMolecule
   year      = 2024,
   month     = may,
   day       = 4
+}
+```
+
+### Paper describing MultiMolecule
+
+If you are citing the publication that describes the project, please cite our technical report:
+
+```bibtex
+@misc{chen2026multimolecule,
+  title         = {{MultiMolecule}: a modular ecosystem for biomolecular sequence-model workflows},
+  author        = {Chen, Zhiyuan},
+  year          = {2026},
+  eprint        = {2606.16540},
+  archivePrefix = {arXiv},
+  primaryClass  = {q-bio.QM},
+  doi           = {10.48550/arXiv.2606.16540},
+  url           = {https://arxiv.org/abs/2606.16540}
 }
 ```
 

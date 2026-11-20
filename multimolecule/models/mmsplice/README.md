@@ -39,7 +39,7 @@ MMSplice is a _modular_ neural network for predicting the effect of genetic vari
 
 ### Links
 
-- **Code**: [multimolecule.mmsplice](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/mmsplice)
+- **Code**: [multimolecule.mmsplice](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/mmsplice)
 - **Data**: Human splice-site and exon data with MPRA exon-skipping variant-effect measurements
 - **Paper**: [MMSplice: modular modeling improves the predictions of genetic variant effects on splicing](https://doi.org/10.1186/s13059-019-1653-z)
 - **Developed by**: Jun Cheng, Thi Yen Duong Nguyen, Kamil J. Cygan, Muhammed Hasan Çelik, William G. Fairbrother, Žiga Avsec, Julien Gagneur
@@ -157,7 +157,7 @@ Each module was trained with a sequence-to-scalar objective scoring its region. 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [MMSplice paper](https://doi.org/10.1186/s13059-019-1653-z) for questions or comments on the paper/model.
 

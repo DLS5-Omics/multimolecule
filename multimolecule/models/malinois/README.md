@@ -40,7 +40,7 @@ The architecture consists of three convolutional blocks, one shared fully-connec
 
 ### Links
 
-- **Code**: [multimolecule.malinois](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/malinois)
+- **Code**: [multimolecule.malinois](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/malinois)
 - **Data**: MPRA libraries across K562, HepG2, and SK-N-SH human cell lines
 - **Paper**: [Machine-guided design of cell-type-targeting cis-regulatory elements](https://doi.org/10.1038/s41586-024-08070-z)
 - **Developed by**: Sager J. Gosai, Rodrigo I. Castro, Natalia Fuentes, John C. Butts, Kousuke Mouri, Michael Alasoadura, Susan Kales, Thanh Thanh L. Nguyen, Ramil R. Noche, Arya S. Rao, Mary T. Joy, Pardis C. Sabeti, Steven K. Reilly, Ryan Tewhey
@@ -134,7 +134,7 @@ The model was trained to minimize an L1 + KL-divergence mixed loss between predi
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Malinois paper](https://doi.org/10.1038/s41586-024-08070-z) for questions or comments on the paper/model.
 

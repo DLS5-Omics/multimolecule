@@ -43,7 +43,7 @@ MTSplice is distributed as a deep four-member ensemble (`mtsplice_deep0..3`) and
 
 ### Links
 
-- **Code**: [multimolecule.mtsplice](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/mtsplice)
+- **Code**: [multimolecule.mtsplice](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/mtsplice)
 - **Data**: GTEx cassette-exon PSI quantifications across 56 tissues
 - **Paper**: [MTSplice predicts effects of genetic variants on tissue-specific splicing](https://doi.org/10.1186/s13059-021-02273-7)
 - **Developed by**: Jun Cheng, Muhammed Hasan Çelik, Anshul Kundaje, Julien Gagneur
@@ -151,7 +151,7 @@ The two sequence towers consume one-hot encoded RNA. A dilated-convolution stack
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [MTSplice paper](https://doi.org/10.1186/s13059-021-02273-7) for questions or comments on the paper/model.
 

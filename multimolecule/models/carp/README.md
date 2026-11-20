@@ -93,7 +93,7 @@ CARP is a family of ByteNet-style convolutional protein language models. It uses
 
 ### Links
 
-- **Code**: [multimolecule.carp](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/carp)
+- **Code**: [multimolecule.carp](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/carp)
 - **Data**: [UniRef50](https://www.uniprot.org/help/uniref)
 - **Paper**: [Convolutions are competitive with transformers for protein sequence pretraining](https://doi.org/10.1016/j.cels.2024.01.008)
 - **Developed by**: Kevin K. Yang, Nicolo Fusi, Alex X. Lu
@@ -261,7 +261,7 @@ Please refer to the original paper for details on the training setup.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [CARP paper](https://doi.org/10.1016/j.cels.2024.01.008) for questions or comments on the paper/model.
 

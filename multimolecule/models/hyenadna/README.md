@@ -114,7 +114,7 @@ HyenaDNA was pretrained across 5 architectures (Table A.1 in the paper), of whic
 
 ### Links
 
-- **Code**: [multimolecule.hyenadna](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/hyenadna)
+- **Code**: [multimolecule.hyenadna](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/hyenadna)
 - **Data**: [multimolecule/gencode-human](https://huggingface.co/datasets/multimolecule/gencode-human)
 - **Paper**: [HyenaDNA: Long-Range Genomic Sequence Modeling at Single Nucleotide Resolution](https://openreview.net/forum?id=ubzNoJjOKj)
 - **Developed by**: Eric Nguyen, Michael Poli, Marjan Faizi, Armin W. Thomas, Callum Birch-Sykes, Michael Wornow, Aman Patel, Clayton Rabideau, Stefano Massaroli, Yoshua Bengio, Stefano Ermon, Christopher Ré, Stephen A. Baccus
@@ -274,7 +274,7 @@ The model was trained on up to 8 NVIDIA A100 (80GB) GPUs.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [HyenaDNA paper](https://openreview.net/forum?id=ubzNoJjOKj) for questions or comments on the paper/model.
 

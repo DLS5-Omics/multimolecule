@@ -39,7 +39,7 @@ The base, non-normalised APARENT model is recommended by the original authors fo
 
 ### Links
 
-- **Code**: [multimolecule.aparent](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/aparent)
+- **Code**: [multimolecule.aparent](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/aparent)
 - **Data**: Massively-parallel polyadenylation MPRA, GEO [GSE113849](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE113849)
 - **Paper**: [A Deep Neural Network for Predicting and Engineering Alternative Polyadenylation](https://doi.org/10.1016/j.cell.2019.04.046)
 - **Developed by**: Nicholas Bogard, Johannes Linder, Alexander B. Rosenberg, Georg Seelig
@@ -141,7 +141,7 @@ The model was trained to minimize a combined objective: a sigmoid KL-divergence 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [APARENT paper](https://doi.org/10.1016/j.cell.2019.04.046) for questions or comments on the paper/model.
 

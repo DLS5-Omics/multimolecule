@@ -37,7 +37,7 @@ HAL is a linear (additive) model that scores alternative 5' splice-site usage fr
 
 ### Links
 
-- **Code**: [multimolecule.hal](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/hal)
+- **Code**: [multimolecule.hal](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/hal)
 - **Data**: Rosenberg lab random-library 5' splice-site MPRA
 - **Paper**: [Learning the Sequence Determinants of Alternative Splicing from Millions of Random Sequences](https://doi.org/10.1016/j.cell.2015.09.054)
 - **Developed by**: Alexander B. Rosenberg, Rupali P. Patwardhan, Jay Shendure, Georg Seelig
@@ -131,7 +131,7 @@ The HAL model uses the published `HAL_mer_scores.npz` hexamer coefficient table 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [HAL paper](https://doi.org/10.1016/j.cell.2015.09.054) for questions or comments on the paper/model.
 

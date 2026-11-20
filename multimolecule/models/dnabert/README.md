@@ -82,7 +82,7 @@ DNABERT is a [bert](https://huggingface.co/google-bert/bert-base-uncased)-style 
 
 ### Links
 
-- **Code**: [multimolecule.dnabert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/dnabert)
+- **Code**: [multimolecule.dnabert](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/dnabert)
 - **Data**: [multimolecule/gencode-human](https://huggingface.co/datasets/multimolecule/gencode-human)
 - **Paper**: [DNABERT: pre-trained Bidirectional Encoder Representations from Transformers model for DNA-language in genome](https://doi.org/10.1093/bioinformatics/btab083)
 - **Developed by**: Yanrong Ji, Zhihan Zhou, Han Liu, Ramana V Davuluri
@@ -303,7 +303,7 @@ The model was trained on 8 NVIDIA RTX 2080Ti GPUs.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DNABERT paper](https://doi.org/10.1093/bioinformatics/btab083) for questions or comments on the paper/model.
 

@@ -40,7 +40,7 @@ The MRL scalar is the per-sequence mean of polysome-profile-derived ribosome loa
 
 ### Links
 
-- **Code**: [multimolecule.optimus5prime](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/optimus5prime)
+- **Code**: [multimolecule.optimus5prime](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/optimus5prime)
 - **Data**: Massively parallel polysome-profiling MRL library on randomized 50 nt 5'UTRs in HEK293T, GEO [GSE114002](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE114002)
 - **Paper**: [Human 5' UTR design and variant effect prediction from a massively parallel translation assay](https://doi.org/10.1038/s41587-019-0164-5)
 - **Developed by**: Paul J. Sample, Ban Wang, David W. Reid, Vlad Presnyak, Iain J. McFadyen, David R. Morris, Georg Seelig
@@ -157,7 +157,7 @@ The published `main_MRL_model` was trained with mean-squared-error loss against 
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [Optimus 5-Prime paper](https://doi.org/10.1038/s41587-019-0164-5) for questions or comments on the paper/model.
 

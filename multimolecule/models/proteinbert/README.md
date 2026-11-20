@@ -40,7 +40,7 @@ ProteinBERT uses convolutional local branches and global-attention layers instea
 
 ### Links
 
-- **Code**: [multimolecule.proteinbert](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/proteinbert)
+- **Code**: [multimolecule.proteinbert](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/proteinbert)
 - **Data**: [UniRef90](https://www.uniprot.org/help/uniref)
 - **Paper**: [ProteinBERT: a universal deep-learning model of protein sequence and function](https://doi.org/10.1093/bioinformatics/btac020)
 - **Developed by**: Nadav Brandes, Dan Ofer, Yam Peleg, Nadav Rappoport, Michal Linial
@@ -178,7 +178,7 @@ Please refer to the original paper for details on the training setup.
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [ProteinBERT paper](https://doi.org/10.1093/bioinformatics/btac020) for questions or comments on the paper/model.
 

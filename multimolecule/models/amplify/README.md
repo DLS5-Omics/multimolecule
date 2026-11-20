@@ -80,7 +80,7 @@ AMPLIFY is a modern encoder-only protein language model with RMSNorm, SwiGLU, an
 
 ### Links
 
-- **Code**: [multimolecule.amplify](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/amplify)
+- **Code**: [multimolecule.amplify](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/amplify)
 - **Data**: [chandar-lab/UR100P](https://huggingface.co/datasets/chandar-lab/UR100P)
 - **Paper**: [Protein Language Models: Is Scaling Necessary?](https://doi.org/10.1101/2024.09.23.614603)
 - **Developed by**: Quentin Fournier, Robert M. Vernon, Almer van der Sloot, Benjamin Schulz, Sarath Chandar, Christopher James Langmead
@@ -259,7 +259,7 @@ Both stages use AdamW with betas `(0.9, 0.95)`, weight decay `0.01`, gradient cl
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [AMPLIFY paper](https://doi.org/10.1101/2024.09.23.614603) for questions or comments on the paper/model.
 

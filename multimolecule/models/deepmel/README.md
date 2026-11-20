@@ -36,7 +36,7 @@ DeepMEL is a hybrid convolutional / recurrent neural network trained to predict 
 
 ### Links
 
-- **Code**: [multimolecule.deepmel](https://github.com/DLS5-Omics/multimolecule/tree/master/multimolecule/models/deepmel)
+- **Code**: [multimolecule.deepmel](https://github.com/MultiMolecule/multimolecule/tree/master/multimolecule/models/deepmel)
 - **Data**: Melanoma cell-line single-cell ATAC-seq topic models
 - **Paper**: [Cross-species analysis of enhancer logic using deep learning](https://doi.org/10.1101/gr.260844.120)
 - **Developed by**: Liesbeth Minnoye, Ibrahim Ihsan Taskiran, David Mauduit, Maurizio Fazio, Linde Van Aerschot, Gert Hulselmans, Valerie Christiaens, Samira Makhzami, Monika Seltenhammer, Panagiotis Karras, Aline Primot, Edouard Cadieu, Ellen van Rooijen, Jean-Christophe Marine, Giorgia Egidy, Ghanem-Elias Ghanem, Leonard Zon, Jasper Wouters, Stein Aerts
@@ -129,7 +129,7 @@ The model was trained to minimize a multi-label binary cross-entropy loss betwee
 
 ## Contact
 
-Please use GitHub issues of [MultiMolecule](https://github.com/DLS5-Omics/multimolecule/issues) for any questions or comments on the model card.
+Please use GitHub issues of [MultiMolecule](https://github.com/MultiMolecule/multimolecule/issues) for any questions or comments on the model card.
 
 Please contact the authors of the [DeepMEL paper](https://doi.org/10.1101/gr.260844.120) for questions or comments on the paper/model.
 
