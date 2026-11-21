@@ -176,6 +176,3 @@ def infer(config: Config | None = None) -> Any:
     result = runner.infer()
     runner.save(result, config.result_path)
     return result
-
-
-__all__ = ["dynamic_import", "evaluate", "infer", "prepare_config", "train"]

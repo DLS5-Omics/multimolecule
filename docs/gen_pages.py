@@ -226,44 +226,35 @@ def python_module_pages(section: str, package_root: Path, package: str) -> list[
     if readme.exists():
         pages.append((f"{section}/index.md", readme_page(readme)))
 
-    if not autodoc_enabled():
-        pages.extend(
-            (
-                f"{section}/{module_file.stem}.md",
-                f"# {title_from_slug(module_file.stem)}",
-            )
-            for module_file in python_module_files(package_root)
-        )
-        return pages
-
+    autodoc = autodoc_enabled()
     for module_file in python_module_files(package_root):
         slug = module_file.stem
-        object_paths = public_object_paths(f"{package}.{slug}")
-        if object_paths:
-            pages.append((f"{section}/{slug}.md", api_page(title_from_slug(slug), object_paths)))
+        api = ""
+        if autodoc:
+            api = (
+                f"::: {package}.{slug}\n"
+                "    options:\n"
+                "      filters: public\n"
+                "      show_if_no_docstring: true\n"
+                "      show_root_heading: false"
+            )
+        pages.append((f"{section}/{slug}.md", join_sections(f"# {title_from_slug(slug)}", api)))
     return pages
 
 
-def python_module_nav(section: str, package_root: Path, package: str) -> dict[str, list[NavItem]]:
+def python_module_nav(section: str, package_root: Path) -> dict[str, list[NavItem]]:
     nav: list[NavItem] = []
     if (package_root / "README.md").exists():
         nav.append(f"{section}/index.md")
-    if not autodoc_enabled():
-        nav.extend(
-            {title_from_slug(module_file.stem): f"{section}/{module_file.stem}.md"}
-            for module_file in python_module_files(package_root)
-        )
-        return {section: nav}
-
-    for module_file in python_module_files(package_root):
-        slug = module_file.stem
-        if public_object_paths(f"{package}.{slug}"):
-            nav.append({title_from_slug(slug): f"{section}/{slug}.md"})
+    nav.extend(
+        {title_from_slug(module_file.stem): f"{section}/{module_file.stem}.md"}
+        for module_file in python_module_files(package_root)
+    )
     return {section: nav}
 
 
 def python_module_files(package_root: Path) -> list[Path]:
-    return [module_file for module_file in sorted(package_root.glob("*.py")) if module_file.name != "__init__.py"]
+    return sorted(module_file for module_file in package_root.glob("*.py") if not module_file.name.startswith("_"))
 
 
 def dataset_readmes() -> list[Path]:
@@ -609,7 +600,7 @@ def data_nav() -> dict[str, list[NavItem]]:
 
 
 def api_nav() -> dict[str, list[NavItem]]:
-    return python_module_nav("api", API_README.parent, "multimolecule.api")
+    return python_module_nav("api", API_README.parent)
 
 
 def datasets_nav() -> dict[str, list[NavItem]]:
@@ -631,7 +622,7 @@ def datasets_nav() -> dict[str, list[NavItem]]:
 
 
 def io_nav() -> dict[str, list[NavItem]]:
-    return python_module_nav("io", IO_README.parent, "multimolecule.io")
+    return python_module_nav("io", IO_README.parent)
 
 
 def modules_nav() -> dict[str, list[NavItem]]:
@@ -646,7 +637,7 @@ def modules_nav() -> dict[str, list[NavItem]]:
 
 
 def runner_nav() -> dict[str, list[NavItem]]:
-    return python_module_nav("runner", RUNNER_README.parent, "multimolecule.runner")
+    return python_module_nav("runner", RUNNER_README.parent)
 
 
 def tokenisers_nav() -> dict[str, list[NavItem]]:

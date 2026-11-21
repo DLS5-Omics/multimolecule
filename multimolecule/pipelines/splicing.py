@@ -612,6 +612,3 @@ def _score_value(scores: Tensor) -> float | list[float]:
     if len(values) == 1:
         return float(values[0])
     return [float(value) for value in values]
-
-
-__all__ = ["SpliceSitePipeline", "SpliceVariantEffectPipeline"]

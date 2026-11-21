@@ -70,5 +70,3 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
 
 
 SEQUENCES = Registry()
-
-__all__ = ["SEQUENCES"]

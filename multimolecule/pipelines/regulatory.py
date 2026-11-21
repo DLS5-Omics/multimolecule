@@ -776,11 +776,3 @@ def _sequence_channels(num_channels: int, model: Any, config: Any) -> list[str]:
 
 def _model_prefix(model: Any) -> str:
     return getattr(model, "base_model_prefix", "model")
-
-
-__all__ = [
-    "RegulatoryActivityPipeline",
-    "RegulatoryTrackPipeline",
-    "RegulatoryProfilePipeline",
-    "RegulatoryVariantEffectPipeline",
-]

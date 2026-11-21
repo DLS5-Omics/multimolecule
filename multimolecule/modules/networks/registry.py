@@ -32,5 +32,3 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
 
 
 NETWORKS = Registry()
-
-__all__ = ["NETWORKS"]

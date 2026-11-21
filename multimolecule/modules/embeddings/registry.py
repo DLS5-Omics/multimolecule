@@ -24,5 +24,3 @@ from chanfig import ConfigRegistry, Registry
 
 POSITION_EMBEDDINGS = Registry()
 POSITION_EMBEDDINGS_HF = ConfigRegistry("position_embedding_type")
-
-__all__ = ["POSITION_EMBEDDINGS", "POSITION_EMBEDDINGS_HF"]

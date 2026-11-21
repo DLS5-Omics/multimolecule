@@ -33,5 +33,3 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
 
 
 CRITERIONS = Registry(fallback=True)
-
-__all__ = ["CRITERIONS"]

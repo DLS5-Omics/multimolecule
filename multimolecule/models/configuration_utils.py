@@ -26,15 +26,10 @@ from dataclasses import asdict, is_dataclass
 
 from transformers.configuration_utils import PretrainedConfig
 
-from multimolecule.modules import BaseHeadConfig, HeadConfig, MaskedLMHeadConfig
-
-__all__ = [
-    "PreTrainedConfig",
-    "BaseHeadConfig",
-    "HeadConfig",
-    "MaskedLMHeadConfig",
-    "validate_attention_dimensions",
-]
+# Keep the head config imports available to existing model configuration modules and callers.
+from multimolecule.modules import BaseHeadConfig as BaseHeadConfig  # noqa: F401
+from multimolecule.modules import HeadConfig as HeadConfig
+from multimolecule.modules import MaskedLMHeadConfig as MaskedLMHeadConfig  # noqa: F401
 
 
 def validate_attention_dimensions(hidden_size: int, num_attention_heads: int) -> None:

@@ -187,6 +187,3 @@ def _tokenizer_kwargs(tokenizer_kwargs: dict[str, Any] | None) -> dict[str, Any]
     if tokenizer_kwargs is not None:
         kwargs.update(tokenizer_kwargs)
     return kwargs
-
-
-__all__ = ["MeanRibosomeLoadPipeline"]

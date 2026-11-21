@@ -38,5 +38,3 @@ class Registry(ConfigRegistry):
 
 
 RUNNERS = Registry()
-
-__all__ = ["RUNNERS"]

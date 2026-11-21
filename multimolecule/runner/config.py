@@ -354,14 +354,3 @@ class Config(dl.RunnerConfig):
         if key == "data" and isinstance(value, str):
             value = DataConfig(root=value)
         super().set(key, value)
-
-
-__all__ = [
-    "Config",
-    "DataConfig",
-    "DataloaderConfig",
-    "EmaConfig",
-    "NetworkConfig",
-    "OptimConfig",
-    "SchedulerConfig",
-]

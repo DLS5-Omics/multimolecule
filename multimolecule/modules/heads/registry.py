@@ -37,5 +37,3 @@ HEADS = Registry(default_factory=Registry, fallback=True)
 
 HEAD_TRANSFORMS = chanfig.Registry()
 HEAD_TRANSFORMS_HF = chanfig.ConfigRegistry(key="transform")
-
-__all__ = ["HEADS", "HEAD_TRANSFORMS", "HEAD_TRANSFORMS_HF"]

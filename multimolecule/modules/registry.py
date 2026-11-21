@@ -69,5 +69,3 @@ class Registry(Registry_):  # pylint: disable=too-few-public-methods
 
 
 MODELS = Registry()
-
-__all__ = ["MODELS"]
