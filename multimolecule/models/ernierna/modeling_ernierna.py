@@ -36,7 +36,11 @@ from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache, EncoderDecoderCache
 from transformers.masking_utils import create_bidirectional_mask, create_causal_mask
 from transformers.modeling_layers import GradientCheckpointingLayer
-from transformers.modeling_outputs import ModelOutput
+from transformers.modeling_outputs import (
+    BaseModelOutputWithPastAndCrossAttentions,
+    BaseModelOutputWithPoolingAndCrossAttentions,
+    ModelOutput,
+)
 from transformers.modeling_utils import OutputRecorder, PreTrainedModel
 from transformers.processing_utils import Unpack
 from transformers.pytorch_utils import apply_chunking_to_forward
@@ -1424,23 +1428,12 @@ class ErnieRnaModelOutput(ModelOutput):
 
 
 @dataclass
-class ErnieRnaModelOutputWithPoolingAndCrossAttentions(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    pooler_output: torch.FloatTensor = None
-    hidden_states: tuple[torch.FloatTensor, ...] | None = None
-    past_key_values: tuple[tuple[torch.FloatTensor, ...]] | None = None
-    attentions: tuple[torch.FloatTensor, ...] | None = None
-    cross_attentions: tuple[torch.FloatTensor, ...] | None = None
+class ErnieRnaModelOutputWithPoolingAndCrossAttentions(BaseModelOutputWithPoolingAndCrossAttentions):
     attention_biases: tuple[torch.FloatTensor, ...] | None = None
 
 
 @dataclass
-class ErnieRnaModelOutputWithPastAndCrossAttentions(ModelOutput):
-    last_hidden_state: torch.FloatTensor = None
-    past_key_values: tuple[tuple[torch.FloatTensor, ...]] | None = None
-    hidden_states: tuple[torch.FloatTensor, ...] | None = None
-    attentions: tuple[torch.FloatTensor, ...] | None = None
-    cross_attentions: tuple[torch.FloatTensor, ...] | None = None
+class ErnieRnaModelOutputWithPastAndCrossAttentions(BaseModelOutputWithPastAndCrossAttentions):
     attention_biases: tuple[torch.FloatTensor, ...] | None = None
 
 
